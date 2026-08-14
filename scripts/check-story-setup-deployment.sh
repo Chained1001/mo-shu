@@ -476,7 +476,7 @@ assert_grep 'AGENTS_VERSION.*-gt 25|AGENTS_VERSION" -gt 25' "$HOOKS_DIR/session-
 assert_grep 'agents_version.*小于 `25`|版本 < 25' "$SKILL_DIR/SKILL.md" "story-setup redeploy branch must treat agents_version 24 as stale"
 assert_grep 'agents_version.*大于 `25`' "$SKILL_DIR/SKILL.md" "story-setup must stop before downgrading a newer deployment"
 assert_grep 'Notice: agents bundle 版本不匹配' "$REPO_ROOT/skills/story-review/SKILL.md" "story-review must surface an agents_version mismatch"
-assert_grep '大于 25 时额外提示先更新 oh-story-claudecode' "$REPO_ROOT/skills/story-review/SKILL.md" "story-review must tell newer deployments to update the package first"
+assert_grep '大于 25 时额外提示先更新 mo-shu' "$REPO_ROOT/skills/story-review/SKILL.md" "story-review must tell newer deployments to update the package first"
 assert_grep '^version:[[:space:]]*1\.2\.7$' "$SKILL_FILE" "story-setup frontmatter must match the deployed setup version"
 
 # Phase 1 自检的目录名单是硬编码的，必须与实际 references/ 子目录集合一致。

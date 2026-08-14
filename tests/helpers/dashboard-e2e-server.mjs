@@ -5,7 +5,7 @@ import { createDashboardServer } from "../../skills/story/scripts/dashboard-serv
 
 const portIndex = process.argv.indexOf("--port");
 const port = portIndex >= 0 ? Number(process.argv[portIndex + 1]) : 43139;
-const fixtureRoot = await mkdtemp(resolve(tmpdir(), "oh-story-dashboard-e2e-"));
+const fixtureRoot = await mkdtemp(resolve(tmpdir(), "mo-shu-dashboard-e2e-"));
 await cp(resolve("demo"), fixtureRoot, { recursive: true });
 
 const server = createDashboardServer({ root: fixtureRoot });

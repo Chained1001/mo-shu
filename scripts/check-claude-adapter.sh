@@ -85,10 +85,10 @@ from pathlib import Path
 root = Path(sys.argv[1])
 names = sorted(path.parent.name for path in (root / "skills").glob("*/SKILL.md"))
 manifest = {
-    "name": "oh-story-ci-bundle",
+    "name": "mo-shu-ci-bundle",
     "version": "0.0.0",
-    "description": "Synthetic bundle for validating all oh-story skill components",
-    "author": {"name": "worldwonderer"},
+    "description": "Synthetic bundle for validating all mo-shu skill components",
+    "author": {"name": "chianed1001"},
     "skills": [f"./skills/{name}" for name in names],
 }
 (root / ".claude-plugin/plugin.json").write_text(
@@ -108,7 +108,7 @@ PY
     claude plugin marketplace add "$REPO_ROOT" >/dev/null
   while IFS= read -r name; do
     CLAUDE_CONFIG_DIR="$TMP_DIR/config" HOME="$TMP_DIR/home" \
-      claude plugin install "$name@oh-story-skills" --scope user >/dev/null
+      claude plugin install "$name@mo-shu-skills" --scope user >/dev/null
   done < <(python3 - "$MARKETPLACE" <<'PY'
 import json
 import sys
@@ -128,7 +128,7 @@ from pathlib import Path
 installed = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
 marketplace = json.loads(Path(sys.argv[2]).read_text(encoding="utf-8"))
 expected_count = int(sys.argv[3])
-expected = {f'{item["name"]}@oh-story-skills' for item in marketplace["plugins"]}
+expected = {f'{item["name"]}@mo-shu-skills' for item in marketplace["plugins"]}
 found = {item.get("id") for item in installed}
 if len(installed) != expected_count or found != expected:
     raise SystemExit(f"FAIL: installed Claude plugins mismatch; expected={sorted(expected)}, found={sorted(found)}")

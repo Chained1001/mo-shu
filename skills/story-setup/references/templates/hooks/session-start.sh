@@ -72,7 +72,7 @@ if sentinel_exists "$ROOT/.story-deployed"; then
         OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION 低于 v25。重新运行 /story-setup 刷新 hooks、agents 和 references（部署后需新开会话）。${NL}${NL}"
         HAS_CONTENT=true
       elif [ "$AGENTS_VERSION" -gt 25 ]; then
-        OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION 高于本 hook 支持的 v25。不要降级覆盖；请先更新 oh-story-claudecode。${NL}${NL}"
+        OUTPUT+="[WARN] story-setup agents_version=$AGENTS_VERSION 高于本 hook 支持的 v25。不要降级覆盖；请先更新 mo-shu。${NL}${NL}"
         HAS_CONTENT=true
       fi
       ;;
@@ -105,7 +105,7 @@ if sentinel_exists "$ROOT/.story-deployed"; then
     done
     IFS=$OLD_IFS
     if [ -n "$MISSING_REFS" ]; then
-      OUTPUT+="[WARN] story-setup 参考资料包缺失或为空：${MISSING_REFS}。重新运行 /story-setup；若重跑后仍报这条，是 skill 包本身没装全，按你的安装方式重装 oh-story-claudecode（npx skills add 或 marketplace 面板）再部署。${NL}${NL}"
+      OUTPUT+="[WARN] story-setup 参考资料包缺失或为空：${MISSING_REFS}。重新运行 /story-setup；若重跑后仍报这条，是 skill 包本身没装全，按你的安装方式重装 mo-shu（git pull 或 marketplace 面板）再部署。${NL}${NL}"
       HAS_CONTENT=true
     fi
   fi
@@ -172,9 +172,9 @@ story_update_check() {
   local checked=0
   if [ "$((now - last))" -ge 86400 ]; then
     checked=1
-    latest=$(curl -fsS --max-time 5 "https://api.github.com/repos/worldwonderer/oh-story-claudecode/releases/latest" 2>/dev/null \
+    latest=$(curl -fsS --max-time 5 "https://gitee.com/api/v5/repos/chianed1001/mo-shu/releases/latest" 2>/dev/null \
       | grep -o '"tag_name"[[:space:]]*:[[:space:]]*"[^"]*"' | head -1 | grep -o '[0-9][0-9.]*' | head -1) || latest=""
-    # 成功失败都写时间戳：失败时 latest 留空当负缓存，否则取不到 GitHub 的环境每次开会话
+    # 成功失败都写时间戳：失败时 latest 留空当负缓存，否则取不到 Gitee 的环境每次开会话
     # 都要白等 5 秒 curl，且永远等不到提醒。
     printf '%s\n%s\n' "$now" "$latest" > "$cache" 2>/dev/null || true
   fi
@@ -183,7 +183,7 @@ story_update_check() {
   [ "$checked" -eq 1 ] || return 0
   [ -n "$latest" ] || return 0
   if [ "$latest" != "$cur" ] && [ "$(printf '%s\n%s\n' "$cur" "$latest" | sort -t. -k1,1n -k2,2n -k3,3n | tail -1)" = "$latest" ]; then
-    OUTPUT+="[INFO] 网文工具箱有新版本 v${latest}（当前 v${cur}）。更新：npx skills add worldwonderer/oh-story-claudecode -y -g 后重跑 /story-setup；或对 /story 说“检查更新”。关掉提醒：export STORY_NO_UPDATE_CHECK=1${NL}"
+    OUTPUT+="[INFO] 网文工具箱有新版本 v${latest}（当前 v${cur}）。更新：git pull 后重跑 /story-setup；或对 /story 说“检查更新”。关掉提醒：export STORY_NO_UPDATE_CHECK=1${NL}"
     HAS_CONTENT=true
   fi
 }

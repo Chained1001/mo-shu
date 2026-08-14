@@ -2,7 +2,7 @@
 
 **English** | [中文](README.md)
 
-# oh-story-claudecode
+# mo-shu
 
 A web novel writing skill pack with a built-in adapter for Claude Code. Covers the full pipeline for long-form Chinese web novels: trend scanning, deconstruction, writing, and AI tone removal.
 
@@ -69,25 +69,13 @@ flowchart LR
 
 ## Installation
 
-**Option 1** Tell Claude Code:
-
-```
-Install this skill https://github.com/worldwonderer/oh-story-claudecode
-```
-
-To upgrade, repeat the same instruction.
-
-**Option 2** Command line:
-
 ```bash
-npx skills add worldwonderer/oh-story-claudecode -y -g
+git clone https://gitee.com/chianed1001/mo-shu.git
 ```
 
-`-g` installs globally (available in every directory); drop `-g` to install only into the current directory. Re-run the same command to update.
+After cloning, run `/story-setup` from your writing project root to deploy. To update, run `git pull` inside the repository directory.
 
-On Windows you may occasionally see an `ENOENT ... mkdir` error while the run still ends with `Done!`. That means a skill was only partially installed. If a whole subdirectory of story-setup's reference bundle is missing, `/story-setup` reports an incomplete reference bundle; other forms of partial install may go unreported. Either way, re-run the same install command to fix it.
-
-After updating, if a project has already run `/story-setup`, re-run `/story-setup` from the project root to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/worldwonderer/oh-story-claudecode/releases).
+After updating, if a project has already run `/story-setup`, re-run `/story-setup` from the project root to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://gitee.com/chianed1001/mo-shu/releases).
 
 **Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (story-architect, narrative-writer, consistency-checker, etc.) are written into your project's `.claude/agents/` by `/story-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/story-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
 
@@ -299,7 +287,7 @@ Contributions are welcome — new skills, knowledge base additions, market data 
 ## Community
 
 - **Telegram**: <https://t.me/ohstoryclaudecode> — chat, troubleshooting, and feature discussion.
-- **GitHub Discussions**: [ask questions, get help, share workflows](https://github.com/worldwonderer/oh-story-claudecode/discussions).
+- **GitHub Discussions**: [ask questions, get help, share workflows](https://gitee.com/chianed1001/mo-shu/discussions).
 
 ## Acknowledgments
 

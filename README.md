@@ -1,6 +1,6 @@
 [English](README_EN.md) | **中文**
 
-# oh-story-claudecode
+# mo-shu
 
 长篇网文写作 skill 包，覆盖扫榜、拆文、写作、去AI味的全流程。内置适配 Claude Code。
 
@@ -67,25 +67,13 @@ flowchart LR
 
 ## 安装
 
-**方式一** 直接告诉 Claude Code：
-
-```
-安装这个 skill https://github.com/worldwonderer/oh-story-claudecode
-```
-
-升级时再说一次同一句话即可。
-
-**方式二** 命令行：
-
 ```bash
-npx skills add worldwonderer/oh-story-claudecode -y -g
+git clone https://gitee.com/chianed1001/mo-shu.git
 ```
 
-`-g` 全局安装，所有目录可用；去掉 `-g` 则只装到当前目录。更新时重新执行同一条命令即可。
+克隆到本地后，在写作项目根目录运行 `/story-setup` 部署。更新时在仓库目录执行 `git pull` 即可。
 
-Windows 上偶尔会看到 `ENOENT ... mkdir` 报错但末尾仍显示 `Done!`，这是有技能没装全。story-setup 的参考资料目录整个缺了一块时，跑 `/story-setup` 会提示参考资料包不完整；其它形式的残缺不一定有提示。无论有没有报错，重跑同一条安装命令即可修复。
-
-升级后如果项目里已经跑过 `/story-setup`，建议在项目根重跑一次 `/story-setup`，同步 hooks / agents / references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/worldwonderer/oh-story-claudecode/releases)。
+升级后如果项目里已经跑过 `/story-setup`，建议在项目根重跑一次 `/story-setup`，同步 hooks / agents / references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://gitee.com/chianed1001/mo-shu/releases)。
 
 **多 agent 协作要先部署再新开会话：** 7 个专业 agent（story-architect、narrative-writer、consistency-checker 等）由 `/story-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/story-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 
@@ -301,7 +289,7 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 ## 交流
 
 - **Telegram 群**：<https://t.me/ohstoryclaudecode> —— 日常交流、踩坑、新功能讨论。
-- **GitHub Discussions**：[提问 / 求助 / 分享用法](https://github.com/worldwonderer/oh-story-claudecode/discussions)，方便检索。
+- **GitHub Discussions**：[提问 / 求助 / 分享用法](https://gitee.com/chianed1001/mo-shu/discussions)，方便检索。
 
 ## 致谢
 

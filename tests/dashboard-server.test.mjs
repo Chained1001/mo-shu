@@ -32,7 +32,7 @@ afterEach(async () => {
 });
 
 async function createWorkspace() {
-  const root = await mkdtemp(resolve(tmpdir(), "oh-story-dashboard-test-"));
+  const root = await mkdtemp(resolve(tmpdir(), "mo-shu-dashboard-test-"));
   temporaryDirectories.push(root);
   await mkdir(resolve(root, "拆文库", "盘龙", "章节"), { recursive: true });
   await mkdir(resolve(root, "长篇", "示例书", "大纲"), { recursive: true });
@@ -60,7 +60,7 @@ async function createWorkspace() {
 }
 
 async function createProjectDiscoveryWorkspace() {
-  const root = await mkdtemp(resolve(tmpdir(), "oh-story-dashboard-projects-"));
+  const root = await mkdtemp(resolve(tmpdir(), "mo-shu-dashboard-projects-"));
   temporaryDirectories.push(root);
 
   await mkdir(resolve(root, "长篇", "标准长篇", "正文"), { recursive: true });
@@ -73,7 +73,7 @@ async function createProjectDiscoveryWorkspace() {
 
 // 一个目录超过单页 200 项即可验证分页；不用再造 5000 个文件测试全量树预算。
 async function createOversizedWorkspace(fileCount = 205) {
-  const root = await mkdtemp(resolve(tmpdir(), "oh-story-dashboard-oversized-"));
+  const root = await mkdtemp(resolve(tmpdir(), "mo-shu-dashboard-oversized-"));
   temporaryDirectories.push(root);
   const body = resolve(root, "长篇", "巨书", "正文");
   const library = resolve(root, "拆文库", "盘龙");
@@ -96,7 +96,7 @@ async function createOversizedWorkspace(fileCount = 205) {
 }
 
 async function createDeepSearchWorkspace() {
-  const root = await mkdtemp(resolve(tmpdir(), "oh-story-dashboard-deep-search-"));
+  const root = await mkdtemp(resolve(tmpdir(), "mo-shu-dashboard-deep-search-"));
   temporaryDirectories.push(root);
   const deepRoot = resolve(root, "A深项目", "正文");
   const targetRoot = resolve(root, "B目标项目", "正文");
@@ -110,7 +110,7 @@ async function createDeepSearchWorkspace() {
 }
 
 async function createSearchBudgetWorkspace(fileCount = 5005) {
-  const root = await mkdtemp(resolve(tmpdir(), "oh-story-dashboard-search-budget-"));
+  const root = await mkdtemp(resolve(tmpdir(), "mo-shu-dashboard-search-budget-"));
   temporaryDirectories.push(root);
   const body = resolve(root, "预算项目", "正文");
   await mkdir(body, { recursive: true });
