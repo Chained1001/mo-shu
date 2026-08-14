@@ -1193,7 +1193,6 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
     for relative in (
         "skills/story-import/SKILL.md",
         "skills/story-import/references/structure-mapping-long.md",
-        "skills/story-import/references/structure-mapping-short.md",
     ):
         import_contract = repo_root / relative
         findings.extend(
@@ -1214,7 +1213,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
         )
 
     # 长篇的「对标发现」随 Phase 1-3 从 SKILL.md 搬进 workflow-setup.md（#269 减无条件加载），
-    # 断言跟着内容走；短篇的对标发现仍在自己的 SKILL.md 里。
+    # 断言跟着内容走。
     for relative in (
         "skills/story-long-write/references/workflow-setup.md",
             "skills/story-long-write/references/cross-book-recall.md",
