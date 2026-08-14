@@ -218,17 +218,6 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 
 **Long-form** Qidian (起点中文网) · Fanqie Novels (番茄小说) · Jinjiang (晋江文学城) · Qimao (七猫小说) · Ciweimao (刺猬猫)
 
-I built this skill pack to help me through a job-hunting transition :joy:, and I hope it can help others too.
-
-## Contributing
-
-Contributions are welcome — new skills, knowledge base additions, market data updates. See [CONTRIBUTING.md](CONTRIBUTING.md) (Chinese only).
-
-## Community
-
-- **Telegram**: <https://t.me/ohstoryclaudecode> — chat, troubleshooting, and feature discussion.
-- **GitHub Discussions**: [ask questions, get help, share workflows](https://gitee.com/chianed1001/mo-shu/discussions).
-
 ## Acknowledgments
 
 - This project is a fork of [worldwonderer/oh-story-claudecode](https://github.com/worldwonderer/oh-story-claudecode) (MIT License). Thanks to the original author.

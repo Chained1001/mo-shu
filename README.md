@@ -220,17 +220,6 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 
 **长篇** 起点中文网 · 番茄小说 · 晋江文学城 · 七猫小说 · 刺猬猫
 
-这套 skill 现在能让我度过找工作的过渡期 :joy:，希望也能帮到有需要的朋友。
-
-## 贡献
-
-欢迎贡献新 skill、补充知识库、更新市场数据。详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
-
-## 交流
-
-- **Telegram 群**：<https://t.me/ohstoryclaudecode> —— 日常交流、踩坑、新功能讨论。
-- **GitHub Discussions**：[提问 / 求助 / 分享用法](https://gitee.com/chianed1001/mo-shu/discussions)，方便检索。
-
 ## 致谢
 
 - 本项目基于 [worldwonderer/oh-story-claudecode](https://github.com/worldwonderer/oh-story-claudecode)（MIT License）二次开发，感谢原作者。
