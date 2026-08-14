@@ -12,12 +12,8 @@ skills/
 ├── story-long-write/        # 长篇写作
 ├── story-long-analyze/      # 长篇拆文
 ├── story-long-scan/         # 长篇扫榜
-├── story-short-write/       # 短篇写作
-├── story-short-analyze/     # 短篇拆文
-├── story-short-scan/        # 短篇扫榜
 ├── story-deslop/            # 去AI味
 ├── story-review/            # 多视角审查
-├── story-cover/             # 封面生成
 └── browser-cdp/             # 浏览器操控
 scripts/                       # 开发守卫 / 测试 / 代码生成（完整索引见 scripts/README.md）
 ```
@@ -72,7 +68,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-openclaw-skills.sh` — OpenClaw 单行 frontmatter、`metadata.openclaw` 与可选真实 CLI 发现检查
 - `scripts/check-codex-adapter.sh` — Codex repo skills symlink、custom-agent TOML、hook 生成确定性与 launcher 契约
 - `scripts/test-codex-hooks.sh` — Codex hooks 合成事件测试
-- `scripts/check-zcode-adapter.sh` — ZCode plugin/marketplace、13 Skills/Commands、受支持 Hook 事件与部署锚点检查
+- `scripts/check-zcode-adapter.sh` — ZCode plugin/marketplace、9 Skills/Commands、受支持 Hook 事件与部署锚点检查
 - `scripts/test-zcode-hooks.sh` — ZCode 严格 JSON Hook 契约、正文守卫、连续性与跨平台 Node runner 测试
 - 采集脚本 `node --check` 语法校验
 
@@ -222,7 +218,7 @@ PR 中如果修改了 Claude Code 模板文件，CI 会自动检测 opencode 模
 
 - **agent-references** 部署到 `skills/story-setup/references/agent-references/`（非隐藏），而非 `.opencode/skills/`
 - **agent 文件** 双份部署：`.opencode/agents/`（opencode 系统使用）+ `agents/`（Glob 可见副本）
-- **subagent 检测**：所有 spawn agent 的 skill（story-review、story-long-write、story-deslop、story-import、story-long-analyze、story-short-write）需按 `.claude/agents/` → `.opencode/agents/` → `.codex/agents/` 顺序检查；ZCode 3.3.4 与 OpenClaw Phase 1 不部署项目 agents，走 solo/direct fallback。
+- **subagent 检测**：所有 spawn agent 的 skill（story-review、story-long-write、story-deslop、story-import、story-long-analyze、）需按 `.claude/agents/` → `.opencode/agents/` → `.codex/agents/` 顺序检查；ZCode 3.3.4 与 OpenClaw Phase 1 不部署项目 agents，走 solo/direct fallback。
 
 **插件输出不可见**：opencode 插件的 `output.extra.system` 已移除（真实 API 中不存在此字段）。系统提示注入改用 `experimental.session.compacting` 的 `output.context` 传递写作上下文。
 
@@ -243,7 +239,7 @@ OpenClaw 当前采用 **Phase 1 skills-only** 适配：
 
 - canonical source 仍是仓库根 `skills/`；不要为 OpenClaw 维护第二份 skill。
 - 所有 `SKILL.md` frontmatter 必须符合 OpenClaw/AgentSkills 约束：单行 `name`、单行 `description`、单行 JSON `metadata`，且 `metadata.openclaw` 存在。
-- `metadata.openclaw.requires.bins/env/config/anyBins` 用于 OpenClaw load-time gating；例如 `story-cover` 通过 `GPT_IMAGE_API_KEY` 控制可见性。
+- `metadata.openclaw.requires.bins/env/config/anyBins` 用于 OpenClaw load-time gating。
 - `story-setup target_cli=openclaw` 只部署项目 `skills/` 与 `references/openclaw/AGENTS.md.tmpl`，不部署 OpenClaw agents/hooks/plugin。
 - OpenClaw 会在 session 启动时 snapshot eligible skills；变更后需要新 session 或等待 skills watcher 刷新。
 
@@ -266,7 +262,7 @@ OPENCLAW_REAL_CHECK=1 bash scripts/check-openclaw-skills.sh  # 本机安装 open
 
 ZCode 采用「原生 plugin + `story-setup` workspace 部署」双入口：
 
-- `.zcode-plugin/plugin.json` 与根 `marketplace.json` 暴露同一组 13 Skills、13 Commands 和 ZCode Hooks；版本必须与 `skills/story/VERSION` 同步。
+- `.zcode-plugin/plugin.json` 与根 `marketplace.json` 暴露同一组 9 Skills、9 Commands 和 ZCode Hooks；版本必须与 `skills/story/VERSION` 同步。
 - `skills/story-setup/references/zcode/` 是 workspace 部署模板，包含 `AGENTS.md.tmpl`、Commands、`config.json.patch` 与无第三方依赖的 Node Hook runner。
 - ZCode 3.3.4 只支持 `SessionStart`、`UserPromptSubmit`、`PreToolUse`、`PermissionRequest`、`PostToolUse`、`PostToolUseFailure`、`Stop`。不要复制 Claude 的 `PreCompact`、`PostCompact`、`SessionEnd`、`SubagentStop` 或 `Notification`。
 - Hook stdout 为空表示放行；只要非空就必须满足严格 JSON schema。诊断只写 stderr，异常 fail-open；优先使用 `process` + `node`，不要引入 shell/Python launcher 的跨平台分支。

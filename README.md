@@ -2,7 +2,7 @@
 
 # oh-story-claudecode
 
-网文写作 skill 包，覆盖长篇与短篇网络小说的扫榜、拆文、写作、去AI味、封面图全流程。内置适配 Claude Code、OpenCode、ZCode、OpenClaw、Codex CLI、Reasonix；能读取项目文件的 Web AI / Agent 环境也可按通用 skills 路径使用。
+网文写作 skill 包，覆盖长篇网络小说的扫榜、拆文、写作、去AI味全流程。内置适配 Claude Code、OpenCode、ZCode、OpenClaw、Codex CLI、Reasonix；能读取项目文件的 Web AI / Agent 环境也可按通用 skills 路径使用。
 
 ## 核心思路
 
@@ -33,7 +33,6 @@ flowchart LR
     classDef final fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
 
     entry_l{{"长篇作者"}}:::entry
-    entry_s{{"短篇作者"}}:::entry
     entry_r{{"已有方向"}}:::entry
     entry_i{{"已有小说"}}:::entry
 
@@ -44,20 +43,17 @@ flowchart LR
     subgraph S1 ["  扫榜选材"]
         direction TB
         scan_l["长篇扫榜"]:::phase
-        scan_s["短篇扫榜"]:::phase
     end
 
     subgraph S2 ["  拆文学习"]
         direction TB
         analyze_l["长篇拆文"]:::phase
-        analyze_s["短篇拆文"]:::phase
         import_l["已有小说导入"]:::phase
     end
 
     subgraph S3 ["  落笔创作"]
         direction TB
         write_l["长篇写作"]:::phase
-        write_s["短篇写作"]:::phase
     end
 
     subgraph S4 ["  精修定稿"]
@@ -65,20 +61,16 @@ flowchart LR
     end
 
     entry_l --> setup
-    entry_s --> setup
     setup --> scan_l
     setup --> scan_s
     scan_l --> analyze_l
-    scan_s --> analyze_s
     analyze_l --> write_l
-    analyze_s --> write_s
     entry_r -.->|跳过准备| write_l
     entry_r -.->|跳过准备| write_s
     entry_i -.->|推荐先部署| setup
     setup -.->|逆向导入| import_l
     import_l -.->|续写| write_l
     write_l --> deslop
-    write_s --> deslop
 ```
 
 ## 安装
@@ -135,13 +127,9 @@ Windows 上偶尔会看到 `ENOENT ... mkdir` 报错但末尾仍显示 `Done!`�
 | `story-long-write` | `/story-long-write` `/写长篇` | 长篇写作 · 大纲搭建、人物设定、正文输出 |
 | `story-long-analyze` | `/story-long-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
 | `story-long-scan` | `/story-long-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
-| `story-short-write` | `/story-short-write` | 短篇写作 · 情绪设计、反转构思、精修出稿 |
-| `story-short-analyze` | `/story-short-analyze` | 短篇拆文 · 故事核、结构分析、情感线、反转设计、写作手法、共鸣分析 |
-| `story-short-scan` | `/story-short-scan` | 短篇扫榜 · 知乎盐言/番茄短篇风口数据 |
 | `story-deslop` | `/story-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
 | `story-import` | `/story-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
 | `story-review` | `/story-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点/知乎评分标准 |
-| `story-cover` | `/story-cover` `/封面` | 封面生成 · 书名题材分析 + GPT-Image-2 出图 |
 | `browser-cdp` | `/browser-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
 
 > `story-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
@@ -156,17 +144,10 @@ Windows 上偶尔会看到 `ENOENT ... mkdir` 报错但末尾仍显示 `Done!`�
 ### Story Dashboard
 
 运行 `/story dashboard`（Codex 用 `$story dashboard`）打开本地写作工作台，浏览拆文库与
-长/短篇项目文件树，并完成搜索、Markdown 预览、文本编辑、冲突保护保存和确认删除。
+长篇项目文件树，并完成搜索、Markdown 预览、文本编辑、冲突保护保存和确认删除。
 服务仅监听 `127.0.0.1`，小说内容不会上传。
 
 ![OH STORY 本地写作工作台](demo/story-dashboard.png)
-
-<details>
-<summary>封面生成示例</summary>
-
-![封面示例 — 剑道独尊](demo/封面-剑道独尊.png)
-
-</details>
 
 <details>
 <summary>拆文 demo — 盘龙</summary>
@@ -205,24 +186,6 @@ demo/拆文库/盘龙/
 ```
 
 长篇拆文会额外生成 `文风.md`，并在 `剧情/` 下产出 `节奏.md`（节奏/关键信息递进/情绪触发爆发节律）和 `情绪模块.md`（读者需求/情绪引擎/可复用写作模块）；日更写作会通过 `对标/{书名}/剧情/` 读取这些素材，避免文风、节奏和情绪模块偏离对标书。
-
-</details>
-
-<details>
-<summary>拆文 demo — 曾将爱意私藏（短篇）</summary>
-
-使用 `/story-short-analyze` 拆解短篇《曾将爱意私藏》（约 8500 字，追妻火葬场 · 死遁）的完整输出：
-
-```
-demo/拆文库/曾将爱意私藏/
-├── 原文/原文.txt        # 原文备份
-├── 拆文报告.md          # 故事核 + 五维评分 + 爆点6维 + 认知反转 + 共鸣9层
-├── 情节节点.md          # 54 个情节节点（原文引用 + 情绪标记 −9~+9）
-├── 写作手法.md          # POV / 对话 / 信息差 / 物件钩子 等 11 项
-└── _meta.json           # 结构计数 structure_counts（验收门控依据）
-```
-
-短篇拆文产出 `拆文报告 / 情节节点 / 写作手法`，下游 `/story-short-write` 据此写同题材新短篇。
 
 </details>
 
@@ -318,25 +281,6 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 │   └── {topic}.md       # 按研究主题拆分
 ```
 
-**短篇：**
-
-```
-项目根/
-├── 拆文库/              # analyze 输出（项目根，数据源）
-│   └── {书名}/
-│       ├── 拆文报告.md
-│       ├── 情节节点.md
-│       └── 写作手法.md
-└── {短篇标题}/
-    ├── 设定.md          # 基本信息 + 对标摘要
-    ├── 小节大纲.md      # 分节结构 + 情绪曲线
-    ├── 正文.md          # 完成稿
-    └── 对标/            # 引用视图（从 拆文库/ 同步）
-        └── {书名}/
-            ├── 拆文报告.md
-            ├── 情节节点.md
-            └── 写作手法.md
-```
 
 **拆文库：** 拆文 skill 默认输出到项目根目录 `拆文库/{书名}/`，产出结构化目录（角色/剧情/设定/章节），其中长篇剧情目录包含 `节奏.md` 和 `情绪模块.md`，是 analyze 的源数据（source of truth）。写作 skill 通过 `对标/{书名}/剧情/` 等子目录消费这些资产（项目级引用视图），或自动回退读取 `拆文库/`。
 
@@ -352,25 +296,21 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 | 主题 | 内容 | 所在 skill |
 |:-----|:-----|:-----------|
 | 大纲排布 | 五步大纲法 · 故事结构分级 · 节点设计法 · 升级感设计 | long-write |
-| 开头设计 | 开篇模式 · 前 500 字设计 · 黄金三章开头策略 | long-write / short-write |
-| 人物设计 | 角色设定 · 人物提取 · 关系映射 · 动机链 · 群像 | long-write / short-write / short-analyze |
-| 钩子技法 | 章尾钩子 13 式 · 章首钩子 7 式 · 段落级钩子 · 悬念编排 | long-write / short-write / short-analyze |
-| 情绪设计 | 6 种弧形模板 · 期待感管理 · 题材赛道策略 | long-write / short-write |
-| 题材框架 | 长篇八节点 · 短篇压缩三幕 · 8 大题材开头模板 | long-write / short-write / short-analyze |
-| 对话技法 | 节奏 · 潜台词 · 信息控制 · 对话模式数据库 | long-write / short-write |
-| 反转工具箱 | 类型 · 时机 · 误导底层路径 | long-write / short-write |
+| 开头设计 | 开篇模式 · 前 500 字设计 · 黄金三章开头策略 | long-write |
+| 人物设计 | 角色设定 · 人物提取 · 关系映射 · 动机链 · 群像 | long-write  |
+| 钩子技法 | 章尾钩子 13 式 · 章首钩子 7 式 · 段落级钩子 · 悬念编排 | long-write  |
+| 情绪设计 | 6 种弧形模板 · 期待感管理 · 题材赛道策略 | long-write |
+| 题材框架 | 长篇八节点 · 8 大题材开头模板 | long-write  |
+| 对话技法 | 节奏 · 潜台词 · 信息控制 · 对话模式数据库 | long-write |
+| 反转工具箱 | 类型 · 时机 · 误导底层路径 | long-write |
 | 风格模块 | 对话 · 打斗 · 智斗 · 镜头式写作 · 装逼打脸 · 白描 | long-write |
 | 高级技法 | 小纲四步法 · 高潮逆推 · 双线结构 · AB 交织法 | long-write |
-| 去AI味 | 预防 · 三遍去AI法 · 改写范例库 · 禁用词表 | deslop / long-write / short-write |
-| 质量检查 | 通用 · 长篇专项 · 短篇专项 · 毒点排查 | long-write / short-write / short-analyze |
-| 写作公式 | 19 大题材写作公式 · 三翻四震 · 感情线四阶段 | short-write / short-analyze |
-| 女频写作 | 女读者偏好 · 情感描写 · 感情线模式 · 对标拆书 | short-write |
-| 拆文方法 | 黄金三章 · 情绪曲线 · 结构拆解 · 知乎风格分析 | long-analyze / short-analyze |
-| 短篇方法论 | 故事核 · 情节节点 · 爆点分析 · 写作手法 · 节奏分析 · 共鸣分析 · 人物分类 · 平台适配 | short-analyze |
+| 去AI味 | 预防 · 三遍去AI法 · 改写范例库 · 禁用词表 | deslop / long-write |
+| 质量检查 | 通用 · 长篇专项 · 毒点排查 | long-write  |
+| 拆文方法 | 黄金三章 · 情绪曲线 · 结构拆解 · 知乎风格分析 | long-analyze |
 | 拆文实例 | 完整案例拆解 · 模板化输出 | short-analyze |
 | 读者画像 | 9 维画像 · 目标读者分析 | long-scan |
-| 市场数据 | 题材趋势 · 平台特性 · 采集格式 · 投稿指南 | long-scan / short-scan |
-| 封面风格 | 10 大题材视觉风格 · 色彩构图 · 提示词模板 | story-cover |
+| 市场数据 | 题材趋势 · 平台特性 · 采集格式 · 投稿指南 | long-scan |
 | 多视角审稿 | 多视角审稿 · 评分标准 · 毒点排查 | story-review |
 
 </details>
@@ -379,9 +319,8 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 
 **长篇** 起点中文网 · 番茄小说 · 晋江文学城 · 七猫小说 · 刺猬猫
 
-**短篇** 知乎盐言故事 · 番茄短篇 · 七猫短篇
 
-真实产出样例见 [demo/](demo/)：短篇拆文《曾将爱意私藏》· 长篇拆文《盘龙》· 长篇续写工程《让你管账号，你高燃混剪炸全网》· 封面《剑道独尊》示例图。
+真实产出样例见 [demo/](demo/)：长篇拆文《盘龙》· 长篇续写工程《让你管账号，你高燃混剪炸全网》。
 
 这套 skill 现在能让我度过找工作的过渡期 :joy:，希望也能帮到有需要的朋友。
 

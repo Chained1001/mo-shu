@@ -4,7 +4,7 @@
 
 # oh-story-claudecode
 
-A web novel writing skill pack with built-in adapters for Claude Code, OpenCode, ZCode, OpenClaw, Codex CLI, and Reasonix. Web AI / agent environments that can read project files can use the generic skills path. Covers the full pipeline for long-form and short-form Chinese web novels: trend scanning, deconstruction, writing, AI tone removal, and cover generation.
+A web novel writing skill pack with built-in adapters for Claude Code, OpenCode, ZCode, OpenClaw, Codex CLI, and Reasonix. Web AI / agent environments that can read project files can use the generic skills path. Covers the full pipeline for long-form Chinese web novels: trend scanning, deconstruction, writing, and AI tone removal.
 
 ## Core Approach
 
@@ -35,7 +35,6 @@ flowchart LR
     classDef final fill:#fce4ec,color:#333,stroke:#e57373,stroke-width:1px
 
     entry_l{{"Long-form Author"}}:::entry
-    entry_s{{"Short-form Author"}}:::entry
     entry_r{{"Has an Idea"}}:::entry
     entry_i{{"Existing Novel"}}:::entry
 
@@ -46,20 +45,17 @@ flowchart LR
     subgraph S1 ["  Trend Scanning"]
         direction TB
         scan_l["Long-form Scan"]:::phase
-        scan_s["Short-form Scan"]:::phase
     end
 
     subgraph S2 ["  Deconstruction"]
         direction TB
         analyze_l["Long-form Deconstruction"]:::phase
-        analyze_s["Short-form Deconstruction"]:::phase
         import_l["Existing Novel Import"]:::phase
     end
 
     subgraph S3 ["  Writing"]
         direction TB
         write_l["Long-form Write"]:::phase
-        write_s["Short-form Write"]:::phase
     end
 
     subgraph S4 ["  Polish"]
@@ -67,20 +63,14 @@ flowchart LR
     end
 
     entry_l --> setup
-    entry_s --> setup
     setup --> scan_l
-    setup --> scan_s
     scan_l --> analyze_l
-    scan_s --> analyze_s
     analyze_l --> write_l
-    analyze_s --> write_s
     entry_r -.->|Skip Prep| write_l
-    entry_r -.->|Skip Prep| write_s
     entry_i -.->|Setup Recommended| setup
     setup -.->|Reverse Import| import_l
     import_l -.->|Continue Writing| write_l
     write_l --> deslop
-    write_s --> deslop
 ```
 
 ## Installation
@@ -106,17 +96,17 @@ On Windows you may occasionally see an `ENOENT ... mkdir` error while the run st
 <details>
 <summary>Codex / ZCode / OpenCode / OpenClaw / Reasonix / Web AI usage notes</summary>
 
-**Codex users:** Use it in-place: Codex scans `$REPO_ROOT/.agents/skills` (a symlink to `skills/`) and discovers all 13 skills; invoke via `$story`, `$story-setup`, or `/skills`. On Windows, enable git `core.symlinks=true` or the symlink breaks — then use the `$story-setup` deployment below.
+**Codex users:** Use it in-place: Codex scans `$REPO_ROOT/.agents/skills` (a symlink to `skills/`) and discovers all 9 skills; invoke via `$story`, `$story-setup`, or `/skills`. On Windows, enable git `core.symlinks=true` or the symlink breaks — then use the `$story-setup` deployment below.
 
 After `$story-setup` deploys into a writing project, it creates `.codex/agents/*.toml`, `.codex/hooks.json`, `.codex/hooks/{story_codex_hook.py,run-story-hook.sh,run-story-hook.cmd}`, and `.codex/skills/story-setup/references/agent-references/`. Trust the project `.codex/` layer, review/trust hooks in `/hooks`, and open a fresh Codex session so custom agents load.
 
-**ZCode users:** Add this repository as a marketplace in Plugin Management and install `oh-story`; then invoke the 13 Skills/Commands through `$story`, `$story-setup`, or the `/` panel. With `target_cli=zcode`, `$story-setup` deploys `.zcode/skills/`, `.zcode/commands/`, and `.zcode/hooks/story_zcode_hook.js`, then safely merges `.zcode/config.json` and the root `AGENTS.md`. Hooks require `node` on PATH. ZCode 3.3.4 does not execute project/plugin custom agents and has no `PreCompact` or `SessionEnd`; affected workflows report a solo/direct fallback, while `SessionStart` restores context after compaction.
+**ZCode users:** Add this repository as a marketplace in Plugin Management and install `oh-story`; then invoke the 9 Skills/Commands through `$story`, `$story-setup`, or the `/` panel. With `target_cli=zcode`, `$story-setup` deploys `.zcode/skills/`, `.zcode/commands/`, and `.zcode/hooks/story_zcode_hook.js`, then safely merges `.zcode/config.json` and the root `AGENTS.md`. Hooks require `node` on PATH. ZCode 3.3.4 does not execute project/plugin custom agents and has no `PreCompact` or `SessionEnd`; affected workflows report a solo/direct fallback, while `SessionStart` restores context after compaction.
 
 **OpenCode users:** After global install, opencode auto-discovers skills from `~/.claude/skills/`; trigger story-setup with natural language on first use (e.g., "use story-setup to deploy the web novel environment"), then **exit and re-enter with `opencode -c`** for slash commands to work. Some hook behaviors differ from Claude Code (session-start / session-end / compact, etc.) — see the OpenCode section in [CONTRIBUTING.md](CONTRIBUTING.md).
 
 **OpenClaw users:** Current support is skills-only. OpenClaw can discover the 13 story skills from workspace `skills/`, `.agents/skills`, `~/.agents/skills`, `~/.openclaw/skills`, or configured extra skill roots. `SKILL.md` files use OpenClaw-compatible single-line `name` / `description` plus single-line JSON `metadata.openclaw`. When `story-setup` targets OpenClaw, it copies the skills into project `skills/` and writes an OpenClaw `AGENTS.md`; agents/hooks are intentionally deferred, so outline-before-prose guards are soft skill checks rather than runtime enforcement. If new skills do not appear immediately, open a fresh OpenClaw session or wait for the skills watcher to refresh.
 
-**Reasonix users:** Current support is Skills + a native plugin manifest. Reasonix natively scans project skill roots (`.agents/skills` etc., a symlink to `skills/`) and discovers all 13 skills — verify with `reasonix doctor capabilities`; you can also `reasonix plugin install` via the root `reasonix-plugin.json`. When `story-setup` targets `target_cli=reasonix`, it copies the skills into project `skills/` and writes a Reasonix `AGENTS.md`; hooks/custom agents are intentionally deferred, so skills needing specialist agents fall back to solo/direct. If Windows symlinks are disabled, use the native plugin instead.
+**Reasonix users:** Current support is Skills + a native plugin manifest. Reasonix natively scans project skill roots (`.agents/skills` etc., a symlink to `skills/`) and discovers all 9 skills — verify with `reasonix doctor capabilities`; you can also `reasonix plugin install` via the root `reasonix-plugin.json`. When `story-setup` targets `target_cli=reasonix`, it copies the skills into project `skills/` and writes a Reasonix `AGENTS.md`; hooks/custom agents are intentionally deferred, so skills needing specialist agents fall back to solo/direct. If Windows symlinks are disabled, use the native plugin instead.
 
 **Generic Web AI / agent users:** If your platform can read a GitHub repo or project files, have the agent read `skills/*/SKILL.md` plus the relevant `references/`. For local project copies, run `story-setup` with `target_cli=generic`; it only writes a generic `AGENTS.md` and `skills/`. Without this project's hooks/custom agents, checks run as skill-level soft constraints or solo/direct fallbacks.
 
@@ -137,13 +127,9 @@ After updating, if a project has already run `/story-setup`, re-run `/story-setu
 | `story-long-write` | `/story-long-write` | Long-form writing — outline building, character design, prose output |
 | `story-long-analyze` | `/story-long-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
 | `story-long-scan` | `/story-long-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
-| `story-short-write` | `/story-short-write` | Short-form writing — emotion design, twist crafting, polish & delivery |
-| `story-short-analyze` | `/story-short-analyze` | Short-form deconstruction — story core, structure, emotional arc, reversal design, writing techniques, resonance analysis |
-| `story-short-scan` | `/story-short-scan` | Short-form trend scan — Zhihu Yanyan/Fanqie short-form trending data |
 | `story-deslop` | `/story-deslop` | De-AI-ify — detect and remove AI writing traces |
 | `story-import` | `/story-import` | Reverse import — parse existing novels into standard project structure |
 | `story-review` | `/story-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian/Zhihu scoring rubrics |
-| `story-cover` | `/story-cover` | Cover generation — title & genre analysis + GPT-Image-2 image generation |
 | `browser-cdp` | `/browser-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
 
 > `story-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
@@ -158,13 +144,6 @@ save with conflict protection, or confirm a file deletion. It listens only on `1
 uploads story content.
 
 ![OH STORY local writing desk](demo/story-dashboard.png)
-
-<details>
-<summary>Cover generation example</summary>
-
-![Cover example — Sword Dao Supreme](demo/封面-剑道独尊.png)
-
-</details>
 
 <details>
 <summary>Deconstruction demo — Coiling Dragon</summary>
@@ -203,24 +182,6 @@ demo/拆文库/盘龙/
 ```
 
 Long-form deconstruction also produces `文风.md`, plus `剧情/节奏.md` (pacing, key-info progression, emotional trigger eruption rhythm) and `剧情/情绪模块.md` (reader needs, emotional engine, reusable writing modules); daily writing consumes these through `对标/{书名}/剧情/` to keep voice, pacing, and emotion modules close to the benchmark.
-
-</details>
-
-<details>
-<summary>Deconstruction demo — Once I Hid My Love (曾将爱意私藏, short-form)</summary>
-
-`/story-short-analyze` deconstructing the short story 《曾将爱意私藏》 (~8,500 chars, win-back / "faked-death" genre):
-
-```
-demo/拆文库/曾将爱意私藏/
-├── 原文/原文.txt        # Source backup
-├── 拆文报告.md          # Story core + 5-dim scores + 6-facet payoff + cognitive reversal + 9-layer resonance
-├── 情节节点.md          # 54 plot points (source quotes + emotion markers −9~+9)
-├── 写作手法.md          # POV / dialogue / info-gap / object-hook — 11 techniques
-└── _meta.json           # structure_counts (Phase 7 gate basis)
-```
-
-Short-form deconstruction outputs `拆文报告 / 情节节点 / 写作手法`; downstream `/story-short-write` writes a new same-genre story from them.
 
 </details>
 
@@ -317,10 +278,6 @@ The file system separates settings, outlines, prose, and tracking into independe
 │   └── {topic}.md           # Split by research topic
 ```
 
-**Short-form file structure:**
-
-```
-短篇/{Title}/
 ├── 正文.md                  # Final draft
 ├── 小节大纲.md              # 8-section structure + emotion curve
 └── 拆文库/                  # If a reference novel exists (analyze output)
@@ -344,25 +301,20 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 | Topic | Contents | Skill |
 |:------|:---------|:------|
 | Outline Layout | Five-step outline method · Story structure levels · Node design · Progression design | long-write |
-| Opening Design | Opening patterns · First 500 words · Golden First 3 Chapters | long-write / short-write |
-| Character Design | Character profiles · Character extraction · Relationship mapping · Motivation chains · Ensemble casts | long-write / short-write / short-analyze |
-| Hook Techniques | 13 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | long-write / short-write / short-analyze |
-| Emotion Design | 6 arc templates · Expectation management · Genre track strategies | long-write / short-write |
-| Genre Frameworks | Long-form 8-node · Short-form compressed 3-act · 8 genre opening templates | long-write / short-write / short-analyze |
-| Dialogue Techniques | Rhythm · Subtext · Information control · Dialogue pattern database | long-write / short-write |
-| Twist Toolbox | Types · Timing · Misdirection base paths | long-write / short-write |
+| Opening Design | Opening patterns · First 500 words · Golden First 3 Chapters | long-write |
+| Character Design | Character profiles · Character extraction · Relationship mapping · Motivation chains · Ensemble casts | long-write  |
+| Hook Techniques | 13 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | long-write  |
+| Emotion Design | 6 arc templates · Expectation management · Genre track strategies | long-write |
+| Genre Frameworks | Long-form 8-node · 8 genre opening templates | long-write  |
+| Dialogue Techniques | Rhythm · Subtext · Information control · Dialogue pattern database | long-write |
+| Twist Toolbox | Types · Timing · Misdirection base paths | long-write |
 | Style Modules | Dialogue · Combat · Mind games · Cinematic writing · Face-slapping · Plain description | long-write |
 | Advanced Techniques | 4-step micro-outline · Climax reverse-engineering · Dual-thread structure · AB interweaving | long-write |
-| De-AI-ify | Prevention · 3-pass de-AI method · Rewrite examples · Banned word list | deslop / long-write / short-write |
-| Quality Checks | General · Long-form specific · Short-form specific · Toxic trope detection | long-write / short-write / short-analyze |
-| Writing Formulas | 21 genre formulas · Three-flip-four-shock (escalating reversal) · Romance four-stage | short-write / short-analyze |
-| Female-oriented Writing | Female reader preferences · Emotional description · Romance patterns · Benchmark analysis | short-write |
-| Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown · Zhihu style analysis | long-analyze / short-analyze |
-| Short-form Methodology | Story core · Plot nodes · Explosive point analysis · Writing techniques · Rhythm analysis · Resonance analysis · Character classification · Platform fit | short-analyze |
-| Deconstruction Examples | Full case breakdowns · Template output | short-analyze |
+| De-AI-ify | Prevention · 3-pass de-AI method · Rewrite examples · Banned word list | deslop / long-write |
+| Quality Checks | General · Long-form specific · Toxic trope detection | long-write  |
+| Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown · Zhihu style analysis | long-analyze |
 | Reader Profiles | 9-dimension profiles · Target reader analysis | long-scan |
-| Market Data | Genre trends · Platform characteristics · Collection formats · Submission guides | long-scan / short-scan |
-| Cover Styles | 10 genre visual styles · Color composition · Prompt templates | story-cover |
+| Market Data | Genre trends · Platform characteristics · Collection formats · Submission guides | long-scan |
 | Adversarial Review | Multi-perspective review · Scoring rubrics · Toxic trope detection | story-review |
 
 </details>
@@ -371,9 +323,8 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 
 **Long-form** Qidian (起点中文网) · Fanqie Novels (番茄小说) · Jinjiang (晋江文学城) · Qimao (七猫小说) · Ciweimao (刺猬猫)
 
-**Short-form** Zhihu Yanyan (知乎盐言故事) · Fanqie Short-form (番茄短篇) · Qimao Short-form (七猫短篇)
 
-Real output samples are in [demo/](demo/): short-form deconstruction 《曾将爱意私藏》 · long-form deconstruction 《盘龙》 · long-form continuation project 《让你管账号，你高燃混剪炸全网》 · cover sample 《剑道独尊》.
+Real output samples are in [demo/](demo/): long-form deconstruction 《盘龙》 · long-form continuation project 《让你管账号，你高燃混剪炸全网》
 
 I built this skill pack to help me through a job-hunting transition :joy:, and I hope it can help others too.
 
