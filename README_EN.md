@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v0.7.6):** three previously-ineffective prose-stage rules now have executable criteria — word-count reporting, sentence-length distribution, and per-item outline expansion. New outline-copy detection distinguishes verbatim anchors (oaths, system panels, case-file quotes) from transcription. **This release ships `agents_version` 25** — deployed projects must rerun `/story-setup` and start a new session. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.0.0):** this release targets Claude Code only — the OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic adapters have been removed; the project is renamed to **mo-shu (墨枢)** and moved to Gitee. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 
@@ -291,6 +291,7 @@ Contributions are welcome — new skills, knowledge base additions, market data 
 
 ## Acknowledgments
 
+- This project is a fork of [worldwonderer/oh-story-claudecode](https://github.com/worldwonderer/oh-story-claudecode) (MIT License). Thanks to the original author.
 - [LINUX DO - The New Ideal Community](https://linux.do) — Community support
 - [FanqieRankTracker](https://github.com/wen1701/FanqieRankTracker) — Fanqie Novels font obfuscation decoding reference
 - [Zhuque AIGC Detector CLI](https://github.com/Sophomoresty/zhuque) — External retest reference used during anti-AI-writing experiments

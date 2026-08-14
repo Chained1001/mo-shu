@@ -16,7 +16,7 @@
 
 围绕四条线展开：爆款逆向 · 剧情模块化重组 · 上下文状态分层管理 · 人机协同。
 
-> **最近更新（v0.7.6）**：正文写作的三条空转规则已落地——字数统计、句长分布、细纲逐项展开现在都有可执行判据；新增细纲照搬检测，把必须逐字进正文的「复沓锚句」与誊抄区分开。**本版 `agents_version` 为 25**，已部署项目需重新运行 `/story-setup` 并新开会话。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **最近更新（v1.0.0）**：本版起专注 Claude Code 单端——移除 OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic 六个适配层；项目更名为 **mo-shu（墨枢）** 并迁移到 Gitee。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 流程总览
 
@@ -293,6 +293,7 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 
 ## 致谢
 
+- 本项目基于 [worldwonderer/oh-story-claudecode](https://github.com/worldwonderer/oh-story-claudecode)（MIT License）二次开发，感谢原作者。
 - [LINUX DO - The New Ideal Community](https://linux.do) — 社区支持
 - [FanqieRankTracker](https://github.com/wen1701/FanqieRankTracker) — 番茄小说字体反爬解码方案参考
 - [Zhuque AIGC Detector CLI](https://github.com/Sophomoresty/zhuque) — 去 AI 味实验中的外部复测工具参考

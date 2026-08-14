@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.0.0
+
+> 本版起专注 Claude Code 单端：移除 OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic 六个 CLI 适配层及全部相关脚本、CI 工作流与共享资产；项目更名为 **mo-shu（墨枢）**，迁移到 Gitee，安装方式改为 `git clone`，版本更新检查改查 Gitee releases。
+
+### 变更
+
+- 移除 6 个非 Claude 适配层目录、根级插件清单（reasonix-plugin.json / marketplace.json / .zcode-plugin）与 14 个适配脚本
+- 9 个 SKILL.md 及 hooks / scripts / CI 工作流收敛为 Claude-only
+- 项目名 oh-story-claudecode → mo-shu，GitHub → Gitee，安装命令 npx skills add → git clone
+- LICENSE 版权人、marketplace owner、测试断言等统一更新
+
 ## v0.7.6
 
 > 这版的重点在正文那一段。写正文的专业 agent 有三条规则一直在空转：它被要求「写完必须立即统计字数」，可它的工具白名单里根本没有 Bash，那条命令跑不了，而同一句话又禁掉了唯一的替代手段——于是整个「字数达标是硬性要求」小节挂在一条无法执行的命令上；被要求「返回前报出句长分布」，同样无从计算，只能编，而主会话正拿这个数做质量校验。第三条更隐蔽：模板里「正文逐项展开细纲」是最高优先级的明令，而「可自由编排、合并穿插情节点」写在主 skill 里、从不进 spawn 提示词，子代理也不读主 skill——它只看见限制的半边，就按一个情节点一段平推成流水账。三条都已修好。同时新增细纲照搬检测：细纲把情节点写成成品散文句时，正文只剩誊抄，全章最好的几句其实在写细纲那一步就写完了，此前没有任何检测。**本版 `agents_version` 为 25**（v0.7.5 是 24），已部署的项目要重新跑 `/story-setup` 并新开会话。
@@ -9,7 +20,7 @@ All notable changes to this project will be documented in this file.
 ### 升级须知（本版必读）
 
 ```bash
-npx skills add worldwonderer/oh-story-claudecode -y -g
+git clone https://gitee.com/chianed1001/mo-shu.git
 ```
 
 然后在写作项目根目录重跑 `/story-setup`，并**新开一个会话**（专业 agent 只在会话启动时注册，正文 agent 这次改了工具白名单，不新开会话拿不到）。完整说明见 `skills/story-setup/UPGRADING.md`。
@@ -59,7 +70,7 @@ npx skills add worldwonderer/oh-story-claudecode -y -g
 ### 升级须知（本版必读）
 
 ```bash
-npx skills add worldwonderer/oh-story-claudecode -y -g
+git clone https://gitee.com/chianed1001/mo-shu.git
 ```
 
 然后在写作项目根目录重跑 `/story-setup`，并**新开一个会话**（专业 agent 只在会话启动时注册）。完整说明见 `skills/story-setup/UPGRADING.md`。
@@ -145,7 +156,7 @@ npx skills add worldwonderer/oh-story-claudecode -y -g
   - 守卫层：只读 agent 的 Bash 检测式只认「执行 \`cmd\`」，「运行 / 跑」完全绕过——上条的越权指令正是这样溜过全套 CI 的；正则补齐并按行豁免委派句式。一条断言禁止 story-import 描述旧追踪迁移，与本版行为相反，改为钉「迁移必须走存档重建」。回炉放行分支补了 parity 回归用例。
 - **章节概要改叙事化、原文引用改精选（#275 #276）**：概要不再要求用「因为…所以…」串联，改为按时序讲清事件、原因、结果，优先保留改变走向的动作与结果、反常信息、跨章伏笔线索。原文引用只留关键转折、关键台词、写法样本，每章至多 8 条——实测引用占章节摘要 45.5%，而下游 Stage 3 事实溯源回原文、Stage 6 文风锚点从原文切片，均不消费逐节点引用。并行 chapter-extractor 与串行两条路径的要求收敛到一份模板。
 - **Dashboard 隔离项目与拆文库节点预算（#268）**：两类目录不再共用同一份节点预算。此前超大项目先扫描耗尽预算后，拆文库即使真实存在也返回空数组，界面把「预算被另一类耗尽」显示成「拆文库为空」。现在各自持有扫描状态与预算，任一类触顶只截断自身。
-- **短篇导入与篇幅分流（#285 #286 #287 #288）**：story-import 调用短篇拆解管道时不再声称对方「无停靠点」——它的 Phase 1 有字数路由和续跑三选一两个提问点，现改为四个 Step 逐条给导入场景取值，题材识别照跑（`genre_detected` 是阻断级必填）。篇幅分流补字数上界，此前「无章节分隔即短篇」不看字数，十万字裸文本会被建成单文件短篇工程。`选题决策.md` 补自动发现（写作与拆文此前都只看项目根，回填功能长期空转）。story-setup 加参考目录自检，检出 Windows 下 `npx skills add` 偶发的部分安装。
+- **短篇导入与篇幅分流（#285 #286 #287 #288）**：story-import 调用短篇拆解管道时不再声称对方「无停靠点」——它的 Phase 1 有字数路由和续跑三选一两个提问点，现改为四个 Step 逐条给导入场景取值，题材识别照跑（`genre_detected` 是阻断级必填）。篇幅分流补字数上界，此前「无章节分隔即短篇」不看字数，十万字裸文本会被建成单文件短篇工程。`选题决策.md` 补自动发现（写作与拆文此前都只看项目根，回填功能长期空转）。story-setup 加参考目录自检，检出 Windows 下 命令行安装 偶发的部分安装。
 
 ### 维护
 
@@ -209,7 +220,7 @@ npx skills add worldwonderer/oh-story-claudecode -y -g
 
 ### 新增
 
-- **ZCode 3.3.4 原生适配（#234）**：新增 `.zcode-plugin/plugin.json` 与根 `marketplace.json`，把仓库作为 `oh-story` plugin 暴露 13 个 Skills、13 个 Commands 和严格 JSON Hooks；`story-setup` 新增 `target_cli=zcode`，部署 `.zcode/skills` / `.zcode/commands` / `.zcode/hooks`，安全合并 `.zcode/config.json` 与根 `AGENTS.md`。无第三方依赖的 Node hook runner 覆盖 SessionStart 上下文/连续性恢复、PreToolUse 大纲守卫与 commit advisory、PostToolUse 正文轻量确定性网；非空 stdout 只输出 ZCode 接受的严格 JSON，异常写 stderr 并 fail-open。ZCode 3.3.4 不执行项目/plugin custom agents、无 `.zcode/rules`/PreCompact/SessionEnd，涉及专业 Agent 的 Skill 与 story-review 明确降级 solo/direct，不伪造平台能力。
+- **ZCode 3.3.4 原生适配（#234）**：新增 `.zcode-plugin/plugin.json` 与根 `marketplace.json`，把仓库作为 `mo-shu` plugin 暴露 13 个 Skills、13 个 Commands 和严格 JSON Hooks；`story-setup` 新增 `target_cli=zcode`，部署 `.zcode/skills` / `.zcode/commands` / `.zcode/hooks`，安全合并 `.zcode/config.json` 与根 `AGENTS.md`。无第三方依赖的 Node hook runner 覆盖 SessionStart 上下文/连续性恢复、PreToolUse 大纲守卫与 commit advisory、PostToolUse 正文轻量确定性网；非空 stdout 只输出 ZCode 接受的严格 JSON，异常写 stderr 并 fail-open。ZCode 3.3.4 不执行项目/plugin custom agents、无 `.zcode/rules`/PreCompact/SessionEnd，涉及专业 Agent 的 Skill 与 story-review 明确降级 solo/direct，不伪造平台能力。
 - **Reasonix 原生支持 Phase 1（#238）**：新增根 `reasonix-plugin.json` plugin manifest（version 钉住 `skills/story/VERSION`）与 README 安装说明；Reasonix 扫描 `.agents/skills`（与 Codex 共用的 `skills/` symlink）发现 13 个 skill，`check-reasonix-adapter.sh` 守卫 manifest。项目级 `story-setup` 部署与 hooks 留待后续阶段，当前涉及专业 Agent 的流程走 solo/direct。
 - **短篇题材风格包按平台语料重建（#231）**：`story-short-write` 题材风格包从 4 个扩到 10 个（新增世情打脸、民俗怪谈、悬疑、甜宠、双男主、沙雕脑洞），按七猫/知乎/黑岩/点众四平台真实语料重建开头模式、爽点密度、对话风格、情绪模式与结尾模式，并修正世情题材误路由。
 
