@@ -68,12 +68,14 @@ flowchart LR
 ## 安装
 
 ```bash
-git clone https://gitee.com/chianed1001/mo-shu.git
+npx skills add Chained1001/mo-shu -y -g
 ```
 
-克隆到本地后，在写作项目根目录运行 `/moshu-setup` 部署。更新时在仓库目录执行 `git pull` 即可。
+`-g` 全局安装，所有目录可用；去掉 `-g` 只装到当前目录。更新时重新执行同一命令。
 
-升级后如果项目里已经跑过 `/moshu-setup`，建议在项目根重跑一次 `/moshu-setup`，同步 hooks / agents / references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://gitee.com/chianed1001/mo-shu/releases)。
+> 国内网络访问 GitHub 慢时可用 Gitee 镜像：`git clone https://gitee.com/chianed1001/mo-shu.git`，然后把 `skills/moshu-*` 复制到 `~/.claude/skills/`。
+
+安装后，在写作项目根目录运行 `/moshu-setup` 部署。升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。
 
 **多 agent 协作要先部署再新开会话：** 7 个专业 agent（story-architect、narrative-writer、consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 

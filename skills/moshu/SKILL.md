@@ -101,10 +101,10 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 用户问"有没有新版本""检查更新""升级"时执行。**只通知，更不更新由用户定，不自动安装。**
 
 1. **当前版本**：读本 skill 同目录的 `VERSION` 文件；缺失则视为未知。
-2. **最新版本**：`curl -fsS --max-time 5 https://gitee.com/api/v5/repos/chianed1001/mo-shu/releases/latest` 取 `.tag_name`（jq 或 grep）。查不到 → 告知"暂时拉不到最新版本，可手动看 [Releases](https://gitee.com/chianed1001/mo-shu/releases)"，不报错。
+2. **最新版本**：`curl -fsS --max-time 5 https://api.github.com/repos/Chained1001/mo-shu/releases/latest` 取 `.tag_name`（jq 或 grep）。查不到 → 告知"暂时拉不到最新版本，可手动看 [Releases](https://github.com/Chained1001/mo-shu/releases)"，不报错。
 3. **比较**：去掉 `v` 前缀按语义版本比（major.minor.patch）。
 4. **告知**：
    - 已最新 → 「已是最新版 vX.Y.Z」。
-   - 有新版 → 列出 当前 vA → 最新 vB + [Releases](https://gitee.com/chianed1001/mo-shu/releases)/[CHANGELOG](https://gitee.com/chianed1001/mo-shu/blob/master/CHANGELOG.md)（能拿到 release notes 就附本次要点），再用 AskUserQuestion 问「现在更新吗？」：
-     - 选更新 → 在仓库目录跑 `git pull`（或重新 `git clone https://gitee.com/chianed1001/mo-shu.git`）；完成后提示：已部署过的项目在项目根重跑 `/moshu-setup` 同步 hooks/agents/references，并**新开一个会话**让 agents 重新注册。
+   - 有新版 → 列出 当前 vA → 最新 vB + [Releases](https://github.com/Chained1001/mo-shu/releases)/[CHANGELOG](https://github.com/Chained1001/mo-shu/blob/master/CHANGELOG.md)（能拿到 release notes 就附本次要点），再用 AskUserQuestion 问「现在更新吗？」：
+     - 选更新 → 跑 `npx skills add Chained1001/mo-shu -y -g`（`-g` 全局，去掉则只更当前目录）；完成后提示：已部署过的项目在项目根重跑 `/moshu-setup` 同步 hooks/agents/references，并**新开一个会话**让 agents 重新注册。
      - 选先不 → 不动，告知随时可再来。

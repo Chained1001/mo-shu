@@ -70,12 +70,14 @@ flowchart LR
 ## Installation
 
 ```bash
-git clone https://gitee.com/chianed1001/mo-shu.git
+npx skills add Chained1001/mo-shu -y -g
 ```
 
-After cloning, run `/moshu-setup` from your writing project root to deploy. To update, run `git pull` inside the repository directory.
+`-g` installs globally (available in every directory); drop `-g` to install only into the current directory. Re-run the same command to update.
 
-After updating, if a project has already run `/moshu-setup`, re-run `/moshu-setup` from the project root to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://gitee.com/chianed1001/mo-shu/releases).
+> If GitHub is slow to reach from your network, use the Gitee mirror: `git clone https://gitee.com/chianed1001/mo-shu.git`, then copy `skills/moshu-*` into `~/.claude/skills/`.
+
+After installing, run `/moshu-setup` from your writing project root to deploy. After updating, re-run `/moshu-setup` to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/Chained1001/mo-shu/releases).
 
 **Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (story-architect, narrative-writer, consistency-checker, etc.) are written into your project's `.claude/agents/` by `/moshu-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/moshu-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
 
