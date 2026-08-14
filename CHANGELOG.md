@@ -4,13 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## v1.0.0
 
-> 本版起专注 Claude Code 单端：移除 OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic 六个 CLI 适配层及全部相关脚本、CI 工作流与共享资产；项目更名为 **mo-shu（墨枢）**，迁移到 Gitee，安装方式改为 `git clone`，版本更新检查改查 Gitee releases。
+> 本版起专注 Claude Code 单端：移除 OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic 六个 CLI 适配层及全部相关脚本、CI 工作流与共享资产；项目更名为 **mo-shu（墨枢）**，仓库迁至 GitHub（Chained1001/mo-shu），版本更新检查改查 GitHub releases。
 
 ### 变更
 
 - 移除 6 个非 Claude 适配层目录、根级插件清单（reasonix-plugin.json / marketplace.json / .zcode-plugin）与 14 个适配脚本
 - 9 个 SKILL.md 及 hooks / scripts / CI 工作流收敛为 Claude-only
-- 项目名 oh-story-claudecode → mo-shu，GitHub → Gitee，安装命令 npx skills add → git clone
+- 项目名 oh-story-claudecode → mo-shu，仓库迁至 Chained1001/mo-shu（GitHub）
 - LICENSE 版权人、marketplace owner、测试断言等统一更新
 
 ## v0.7.6
@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 ### 升级须知（本版必读）
 
 ```bash
-git clone https://gitee.com/chianed1001/mo-shu.git
+git clone https://github.com/Chained1001/mo-shu.git
 ```
 
 然后在写作项目根目录重跑 `/story-setup`，并**新开一个会话**（专业 agent 只在会话启动时注册，正文 agent 这次改了工具白名单，不新开会话拿不到）。完整说明见 `skills/story-setup/UPGRADING.md`。
@@ -70,7 +70,7 @@ git clone https://gitee.com/chianed1001/mo-shu.git
 ### 升级须知（本版必读）
 
 ```bash
-git clone https://gitee.com/chianed1001/mo-shu.git
+git clone https://github.com/Chained1001/mo-shu.git
 ```
 
 然后在写作项目根目录重跑 `/story-setup`，并**新开一个会话**（专业 agent 只在会话启动时注册）。完整说明见 `skills/story-setup/UPGRADING.md`。
