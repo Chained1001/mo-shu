@@ -380,7 +380,7 @@ def read_text(path: Path) -> Optional[str]:
         return None
 
 
-# 二进制资产读不出文本是正常的（demo 图片、__pycache__ 字节码），静默跳过即可；其余文件
+# 二进制资产读不出文本是正常的（图片、__pycache__ 字节码），静默跳过即可；其余文件
 # 一律按 UTF-8 文本对待。GBK/cp936 的 Markdown 会让所有内容规则一起失效——regex_hits 拿到
 # None 就当「没命中」，检查照样打 [PASS]——所以文本文件解码失败必须是命名失败，不是跳过。
 BINARY_SUFFIXES = frozenset(
@@ -979,7 +979,7 @@ def progress_schema_pin_findings(repo_root: Path, expected: int) -> List[Finding
     """每个字面 `schema_version: N` 锚点都必须是当前续跑契约版本。
 
     续跑契约同时写在 analyze 的写入/恢复段、import 的当前拆文契约、UPGRADING 当前契约段和
-    demo 基准进度文件里。只核对 pipeline-ops.md 会让 bump 之后其余文件静默留在旧版本——技能
+    基准进度文件里。只核对 pipeline-ops.md 会让 bump 之后其余文件静默留在旧版本——技能
     包自相矛盾、续跑拒收自己写出的 `_progress.md`，而 CI 全绿。参照 `agents_version` 的做法
     （见 upgrading_version_findings）：任何写成 `schema_version: N` 的行都必须是当前值。
     仓库根的 CHANGELOG.md 是历史记录，故意不在扫描范围内；版本说明表的 `| 2 | 当前契约… |`

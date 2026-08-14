@@ -65,7 +65,7 @@ test("用内置 fixture 浏览拆文库、搜索项目并编辑保存", async ({
   await expect(page.locator("#fileTree")).not.toContainText("关系.md");
   await expect(page.locator("#fileTree")).not.toContainText("细纲_第003章");
   await expect(page.locator("#fileTree")).not.toContainText("盘龙");
-  // 断言「树被过滤成命中集」而不是比行数：命中数会随 demo 增加同名文件而变化
+  // 断言「树被过滤成命中集」而不是比行数：命中数会随 fixture 增加同名文件而变化
   // （角色既有 设定/角色/{名}.md 又有 追踪/角色状态/{名}.md），行数比较会偶然失效。
   const filteredPaths = await page
     .locator("#fileTree .file-row")
@@ -85,7 +85,7 @@ test("用内置 fixture 浏览拆文库、搜索项目并编辑保存", async ({
   expect(consoleErrors).toEqual([]);
 });
 
-test("从真实 demo 删除文稿前明确确认并刷新文件树", async ({ page, request }, testInfo) => {
+test("从内置 fixture 删除文稿前明确确认并刷新文件树", async ({ page, request }, testInfo) => {
   const retryFiles = [
     "拆文库/盘龙/_progress.md",
     "拆文库/盘龙/快速预览.md",
