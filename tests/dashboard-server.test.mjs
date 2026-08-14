@@ -55,7 +55,7 @@ async function createWorkspace() {
     "utf8",
   );
   await writeFile(resolve(root, "拆文库", "盘龙", ".omc", "state", "secrets.json"), "{}", "utf8");
-  await writeFile(resolve(root, "长篇", "示例书", "封面.png"), "not-an-image", "utf8");
+  await writeFile(resolve(root, "长篇", "示例书", "图片.png"), "not-an-image", "utf8");
   return root;
 }
 
@@ -156,13 +156,13 @@ describe("workspace scanning", () => {
     const workspace = await scanWorkspace(resolve("demo"));
     assert.deepEqual(
       workspace.libraries.map((entry) => entry.path),
-      ["拆文库/曾将爱意私藏", "拆文库/盘龙"],
+      ["拆文库/盘龙"],
     );
     assert.deepEqual(
       workspace.projects.map((entry) => entry.path),
       ["长篇/让你管账号，你高燃混剪炸全网"],
     );
-    assert.equal(workspace.stats.libraries, 2);
+    assert.equal(workspace.stats.libraries, 1);
     assert.equal(workspace.stats.projects, 1);
     assert.equal(workspace.stats.editableFiles, null);
     assert.equal(workspace.stats.onDemand, true);
@@ -182,8 +182,8 @@ describe("workspace scanning", () => {
       page.entries.filter((entry) => entry.type === "directory").map((entry) => entry.name),
       ["大纲", "正文"],
     );
-    const cover = page.entries.find((entry) => entry.name === "封面.png");
-    assert.equal(cover.editable, false);
+    const img = page.entries.find((entry) => entry.name === "图片.png");
+    assert.equal(img.editable, false);
     assert.equal(page.nextCursor, null);
 
     const bodyPage = await listWorkspaceDirectory(root, "长篇/示例书/正文");
@@ -596,7 +596,7 @@ describe("HTTP API", () => {
     const baseUrl = await startServer(root);
 
     const unsupported = await fetch(
-      `${baseUrl}/api/file?path=${encodeURIComponent("长篇/示例书/封面.png")}`,
+      `${baseUrl}/api/file?path=${encodeURIComponent("长篇/示例书/图片.png")}`,
     );
     assert.equal(unsupported.status, 415);
 

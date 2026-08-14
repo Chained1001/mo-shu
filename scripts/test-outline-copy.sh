@@ -125,19 +125,7 @@ expect_status 0
 expect_contains "无未授权誊抄"
 expect_contains "1 处 18 字"
 
-# --- 5. 短篇标准结构：正文.md + 小节大纲.md，单参调用必须自动发现 ---
-CASE="short-story-autodiscover"
-mkdir -p "$TMP_DIR/短篇"
-cat >"$TMP_DIR/短篇/小节大纲.md" <<EOF
-## 第一节
-- 点1：${COPIED}。
-EOF
-printf '%s。\n' "$COPIED" >"$TMP_DIR/短篇/正文.md"
-run "$TMP_DIR/短篇/正文.md"
-expect_status 1
-expect_contains "22 字「${COPIED}」"
-
-# --- 6. 长篇标准结构：正文/第N章 + 大纲/细纲_第N章，单参调用必须自动发现 ---
+# --- 5. 长篇标准结构：正文/第N章 + 大纲/细纲_第N章，单参调用必须自动发现 ---
 CASE="long-form-autodiscover"
 mkdir -p "$TMP_DIR/长篇/正文" "$TMP_DIR/长篇/大纲"
 cat >"$TMP_DIR/长篇/大纲/细纲_第001章.md" <<EOF

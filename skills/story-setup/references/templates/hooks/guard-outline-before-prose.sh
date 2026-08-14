@@ -4,9 +4,9 @@
 #
 # 拦截三类：
 #   - 长篇 正文/第N章_*.md 首建且缺细纲：要求同书 大纲/细纲_第N章.md 存在
-#   - 短篇 正文.md 首建且缺大纲：要求同目录 小节大纲.md 存在
 #   - 长篇追踪检查点不成立：state 缺失/schema 不符/续写状态卡修订不一致/首建新章时
-#     上一章事务未提交（判定走共享核，与 opencode/zcode/codex 同一份；见下方该段注释）
+#     上一章事务未提交（判定走共享核；见下方该段注释）
+#   - 上一章有未清毒句式欠账：首建新章时，上一章未标「去味:跳过」且检出毒句式先清再写
 # 细纲/大纲门只在首建时判，追踪门对首建与续写都判（与 JS 核 proseBlockReason 同序）。
 # 非正文目标、解析不到路径一律静默放行。
 # 设计原则：宁可漏拦不可误伤——任何不确定都 exit 0。
@@ -105,22 +105,6 @@ BASE="$(basename "$ABS")"
 PARENT="$(basename "$(dirname "$ABS")")"
 
 case "$BASE" in
-  正文.md)
-    # 短篇单文件正文：已存在则放行（续写/改稿）
-    [ -f "$ABS" ] && exit 0
-    BOOK_DIR="$(dirname "$ABS")"
-    # story-import 迁移：已有 拆文库/{书名}/ 分析源时，正文先于小节大纲迁移是正常流程（小节大纲由拆文反推），放行
-    [ -d "$ROOT/拆文库/$(basename "$BOOK_DIR")" ] && exit 0
-    # 仅在确为短篇工程时拦截（有 设定.md 信号——story-short-write/import 都先产 设定.md），
-    # 避免误伤 docs/正文.md 等非作品文件
-    [ -f "$BOOK_DIR/设定.md" ] || exit 0
-    if [ ! -f "$BOOK_DIR/小节大纲.md" ]; then
-      printf '%s\n' "⛔ 写正文被拦截：${TARGET} 缺少同目录 小节大纲.md。" >&2
-      printf '%s\n' "   先按 story-short-write 完成「小节大纲.md」，再写正文（不允许跳过大纲直接写正文）。" >&2
-      printf '%s\n' "   如确需先起草，请先补建 小节大纲.md。" >&2
-      exit 2
-    fi
-    ;;
   *)
     # 长篇分章正文：父目录须为「正文」，文件名形如 第N章...
     [ "$PARENT" = "正文" ] || exit 0
@@ -162,8 +146,8 @@ case "$BASE" in
     fi
     # 追踪检查点门：state 缺失 / schema 不是 4 / 续写状态卡修订与 state 不一致 / 首建新章
     # 时上一章事务未提交，都拦下。判定走共享核（story_hook_cli.js tracking-checkpoint），
-    # 与 opencode/zcode/codex 同一份实现——issue #305 之前这道门只进了 JS 核与 codex py，
-    # Claude 侧独缺，会静默写出若干章无追踪的正文。
+    # 同一份实现——issue #305 之前这道门只进了 JS 核，Claude 侧独缺，
+    # 会静默写出若干章无追踪的正文。
     # 需要解析 JSON，只能靠 node；node 缺席/核缺失/子命令不识别一律放行（宁可漏拦不可误伤，
     # 与本文件其余降级一致）。SessionStart 连续性提醒与批末 check 仍兜底。
     if node -e "" >/dev/null 2>&1 && [ -f "$CLI" ]; then
@@ -186,7 +170,7 @@ case "$BASE" in
       PROSE_DIR="$(dirname "$ABS")"
       PREV_FILE=""
       # glob 已按字典序，但同章号的原稿备份（workflow-revision 的「备份原稿」产物）
-      # 也会命中；显式跳过 _原稿_，与 JS 核 / codex py 取同一个「上一章」。
+      # 也会命中；显式跳过 _原稿_，与 JS 核取同一个「上一章」。
       for f in "$PROSE_DIR"/第*章*.md; do
         [ -e "$f" ] || continue
         case "$(basename "$f")" in *_原稿_*) continue ;; esac
@@ -197,11 +181,11 @@ case "$BASE" in
         TOXIC="$(node "$CLI" prose-toxic "$PREV_FILE" 2>/dev/null || true)"
         if [ -n "$TOXIC" ]; then
           printf '%s\n' "⛔ 写正文被拦截：上一章（$(basename "$PREV_FILE")）有未清毒句式欠账，先清零再写第 ${NUM} 章；用户显式豁免时在上一章标题行下加 <!-- 去味:跳过 --> 后重试。" >&2
-          # 只列前 8 条。不能写 `printf … | head -n 8`：欠账多时 head 先退出，printf 吃 SIGPIPE，
+          # 只列前 6 条。不能写 `printf … | head -n 6`：欠账多时 head 先退出，printf 吃 SIGPIPE，
           # pipefail 下整条管道返回 141，set -e 立刻终止脚本——下面的 exit 2 永远走不到，拦截
           # 退成「非阻塞错误」放过这次写入。改用 here-string 直喂 head（无管道即无 SIGPIPE），
           # 再兜一层 || true，保证无论如何都能走到 exit 2。
-          head -n 8 <<< "$TOXIC" >&2 || true
+          head -n 6 <<< "$TOXIC" >&2 || true
           exit 2
         fi
       fi

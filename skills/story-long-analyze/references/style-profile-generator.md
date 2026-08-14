@@ -86,7 +86,7 @@ PYEOF
 
 实测输出形如 `sentences=6; short_lt15=66%; mid_15to30=33%; long_gt30=0%; avg_len=12; punct_density=15%`。
 
-把输出的 `short_lt15 / mid_15to30 / long_gt30 / avg_len / punct_density` 数值直接填进 `style-profile-protocol.md` 模板第 40 行的 `{...X% / Y% / Z%}` 占位符——`confidence: high`，因为是确定性测量，不是抽样估计。
+把输出的 `short_lt15 / mid_15to30 / long_gt30 / avg_len / punct_density` 数值直接填进 `style-profile-protocol.md` 模板第 41 行的 `{...X% / Y% / Z%}` 占位符——`confidence: high`，因为是确定性测量，不是抽样估计。
 
 **Bash 不可用时的降级**（仅子代理上下文等极端情况，主线程不会触发）：
 

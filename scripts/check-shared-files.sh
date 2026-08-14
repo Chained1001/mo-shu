@@ -16,43 +16,29 @@ if [ ! -d "$SKILLS_DIR" ]; then
   exit 1
 fi
 
-# Known intentional differences (basename): these files are expected to differ
-# - output-templates.md: each skill owns output schemas
-# - material-decomposition.md: long/short analyze use different decomposition pipelines
-# - quality-checklist.md: story-short-analyze's copy points to material-decomposition.md
-#   (absent in story-short-write); the two copies are intentionally skill-specific
-# - 4 genre files: story-short-analyze prepends a "## 用作拆文标尺时" analyst-lens
-#   header (consumed as a reference standard for source-story evaluation, not a writer
-#   playbook). Writer skills don't get the header. Wholesale-ignored here because their
-#   non-analyst copies have not all been confirmed byte-identical.
-#   genre-writing-formulas.md graduated to ANALYST_DIVERGENT_NAMES and returned to the
-#   guarded set once the analyst (story-short-analyze) copy was removed.
-#   are byte-identical and now guarded.
-# - AGENTS.md.tmpl / hooks.json: CLI-specific project templates differ deliberately
-#   and are validated by each CLI adapter check.
+# Known intentional differences (basename): these files are expected to differ across skills.
+# After the short-form skills were removed, some entries below are harmless no-ops (single
+# copy or no copy at all) kept to avoid churn in the guard config.
+# - output-templates.md / material-decomposition.md: single-copy (story-long-analyze).
+# - quality-checklist.md: story-long-write (writer) copy differs from story-review and
+#   agent-references (reviewer) copies — intentionally skill-specific.
+# - genre-catalog.md / genre-core-mechanics.md / genre-readers.md: historically carried an
+#   analyst-lens fork; wholesale-ignored to avoid false mismatches.
+# - genre-writing-techniques.md: no longer present in the repo — no-op.
+# - AGENTS.md.tmpl / hooks.json: removed together with the non-Claude CLI adapters — no-op.
 IGNORE_NAMES="output-templates.md material-decomposition.md quality-checklist.md \
 genre-catalog.md genre-core-mechanics.md genre-readers.md \
 genre-writing-techniques.md \
 AGENTS.md.tmpl hooks.json"
 
-# Analyst-divergent (basename): the story-short-analyze copy intentionally prepends the
-# "## 用作拆文标尺时" analyst-lens header, so it is dropped from the comparison set; all
-# OTHER copies (writer skills + agent-references) must still stay byte-identical. Stricter
-# than a wholesale ignore — it still guards writer↔writer drift.
-ANALYST_DIVERGENT_NAMES=""
-
-# Genre-style-divergent (basename): the story-short-write copy under references/genre-styles/
-# is a short-form writer style pack, a different artifact from the long-form
-# references/genre-prose-cards/ card of the same basename (story-long-write + its story-setup
-# deployment mirror). Drop the genre-styles copy from the comparison; the prose-card copies
-# must still stay byte-identical. Stricter than a wholesale ignore.
+# Genre-style-divergent (basename): drop the references/genre-styles/ fork copy (if any);
+# the remaining prose-card copies must stay byte-identical.
 GENRE_STYLE_DIVERGENT_NAMES="双男主.md"
 
 # Longform-divergent (basename): story-long-write's copy carries a long-form-only
 # section (长篇单元情绪引擎) that references reader-contract-and-progression.md, which
-# exists only under story-long-write; syncing it to the short-write / agent-references
-# copies would create a dangling reference. Drop the story-long-write copy from the
-# comparison; the short-write and agent-references copies must still stay byte-identical.
+# exists only under story-long-write; syncing it to the agent-references copy would create
+# a dangling reference. Drop the story-long-write copy from the comparison.
 LONGFORM_DIVERGENT_NAMES="emotional-methods.md"
 
 mismatches=0
@@ -93,7 +79,7 @@ list_reference_basenames() {
   local path
   while IFS= read -r path; do
     case "$path" in
-      */.gitkeep|*/opencode/*) ;;
+      */.gitkeep) ;;
       *) printf '%s\n' "${path##*/}" ;;
     esac
   done <<< "$REFERENCE_FILES"
@@ -121,24 +107,8 @@ for base in $dup_names; do
     [ "${fpath##*/}" = "$base" ] && paths+=("$fpath")
   done <<< "$REFERENCE_FILES"
 
-  # Analyst-divergent basenames: drop the story-short-analyze copy (intentional
-  # analyst-lens fork); the remaining copies must still be byte-identical.
-  case " $ANALYST_DIVERGENT_NAMES " in
-    *" $base "*)
-      filtered=()
-      for p in ${paths[@]+"${paths[@]}"}; do
-        case "$p" in
-          */story-short-analyze/*) ;;
-          *) filtered+=("$p") ;;
-        esac
-      done
-      paths=(${filtered[@]+"${filtered[@]}"})
-      ;;
-  esac
-
-  # Genre-style-divergent basenames: drop the short-form references/genre-styles/ copy
-  # (a different artifact from the long-form genre-prose-cards/ card); the remaining
-  # prose-card copies must still be byte-identical.
+  # Genre-style-divergent basenames: drop the references/genre-styles/ fork copy (if any);
+  # the remaining prose-card copies must still be byte-identical.
   case " $GENRE_STYLE_DIVERGENT_NAMES " in
     *" $base "*)
       filtered=()

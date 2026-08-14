@@ -4,7 +4,7 @@
 
 # oh-story-claudecode
 
-A web novel writing skill pack with built-in adapters for Claude Code, OpenCode, ZCode, OpenClaw, Codex CLI, and Reasonix. Web AI / agent environments that can read project files can use the generic skills path. Covers the full pipeline for long-form Chinese web novels: trend scanning, deconstruction, writing, and AI tone removal.
+A web novel writing skill pack with a built-in adapter for Claude Code. Covers the full pipeline for long-form Chinese web novels: trend scanning, deconstruction, writing, and AI tone removal.
 
 ## Core Approach
 
@@ -18,13 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> Starting in v0.7.6: the focus is the prose stage. Three rules in `narrative-writer` had been running on empty. "Count the words immediately after writing" hands the agent a Bash command, but Bash was never in its tool allowlist — and the same sentence forbids the only alternative, model estimation — so "hitting the word target is a hard requirement" rested on nothing executable. "Report the sentence-length distribution before returning" was equally uncomputable and could only be invented, while the main session was using that number as a quality check. And "expand every outline item in order" sat under a top-priority heading, while the half that loosens it — you may freely rearrange, merge, and interleave plot points — lived only in the main skill, never entered the spawn prompt, and was never read by the subagent; seeing only the restriction, it flattened the chapter into one paragraph per plot point. All three are fixed; in a live run the first draft landed inside the acceptance range (the control group came in under 73% of the floor). New outline-copy detection catches prose that has degenerated into transcription when outline items are written as finished prose sentences, with a companion "verbatim anchor" field so lines that must appear word-for-word (oaths, system panels, case-file quotes) are not flagged. Also: writing prose via a Bash redirect on Claude Code now hits the outline/tracking guard, and the text loaded on every session drops another fifth (book-opening −30%, revision −41%). **This release ships `agents_version` 25** — deployed projects must rerun `/story-setup` and start a new session.
->
-> Starting in v0.7.5: a stability release. The prose-write guard on Claude Code gains the tracking checkpoint the other three CLIs have had since v0.7.3 — the primary CLI previously let you silently write chapters with no tracking at all. `story-long-write`'s SKILL.md, the one file loaded in full every time the skill fires, drops from 82 KB to 54 KB (the three book-opening phases move into an on-demand `workflow-setup.md`, so daily-update sessions stop paying for outlining steps they never use). And a batch of over-accumulated restriction rules is cleared out — one of which flagged an ordinary "he said" in prose as a violation. **This release ships `agents_version` 24** — deployed projects must rerun `/story-setup` and start a new session.
->
-> Starting in v0.7.4: all fixes. `story-import` no longer registers the user's own book as a benchmark (which is why the benchmark directory used to look identical to their own settings); story-setup no longer misidentifies Reasonix / generic projects as OpenClaw on redeploy, and multi-end deployments no longer report a missing reference bundle every session; the Stage 6 style statistics no longer fail outright on Windows. The `agents_version` spawn gate becomes a notice rather than a block — a version mismatch still spawns in parallel, and only genuinely missing agent files fall back to solo. **This release ships `agents_version` 23** — deployed projects must rerun `/story-setup` and start a new session.
->
-> For earlier versions, see [CHANGELOG.md](CHANGELOG.md).
+> **Latest update (v0.7.6):** three previously-ineffective prose-stage rules now have executable criteria — word-count reporting, sentence-length distribution, and per-item outline expansion. New outline-copy detection distinguishes verbatim anchors (oaths, system panels, case-file quotes) from transcription. **This release ships `agents_version` 25** — deployed projects must rerun `/story-setup` and start a new session. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 
@@ -75,7 +69,7 @@ flowchart LR
 
 ## Installation
 
-**Option 1** Tell Claude Code / OpenCode / ZCode / OpenClaw / Codex / Reasonix, or another Web AI / agent platform that can import a GitHub repo or skill:
+**Option 1** Tell Claude Code:
 
 ```
 Install this skill https://github.com/worldwonderer/oh-story-claudecode
@@ -93,43 +87,24 @@ npx skills add worldwonderer/oh-story-claudecode -y -g
 
 On Windows you may occasionally see an `ENOENT ... mkdir` error while the run still ends with `Done!`. That means a skill was only partially installed. If a whole subdirectory of story-setup's reference bundle is missing, `/story-setup` reports an incomplete reference bundle; other forms of partial install may go unreported. Either way, re-run the same install command to fix it.
 
-<details>
-<summary>Codex / ZCode / OpenCode / OpenClaw / Reasonix / Web AI usage notes</summary>
-
-**Codex users:** Use it in-place: Codex scans `$REPO_ROOT/.agents/skills` (a symlink to `skills/`) and discovers all 9 skills; invoke via `$story`, `$story-setup`, or `/skills`. On Windows, enable git `core.symlinks=true` or the symlink breaks — then use the `$story-setup` deployment below.
-
-After `$story-setup` deploys into a writing project, it creates `.codex/agents/*.toml`, `.codex/hooks.json`, `.codex/hooks/{story_codex_hook.py,run-story-hook.sh,run-story-hook.cmd}`, and `.codex/skills/story-setup/references/agent-references/`. Trust the project `.codex/` layer, review/trust hooks in `/hooks`, and open a fresh Codex session so custom agents load.
-
-**ZCode users:** Add this repository as a marketplace in Plugin Management and install `oh-story`; then invoke the 9 Skills/Commands through `$story`, `$story-setup`, or the `/` panel. With `target_cli=zcode`, `$story-setup` deploys `.zcode/skills/`, `.zcode/commands/`, and `.zcode/hooks/story_zcode_hook.js`, then safely merges `.zcode/config.json` and the root `AGENTS.md`. Hooks require `node` on PATH. ZCode 3.3.4 does not execute project/plugin custom agents and has no `PreCompact` or `SessionEnd`; affected workflows report a solo/direct fallback, while `SessionStart` restores context after compaction.
-
-**OpenCode users:** After global install, opencode auto-discovers skills from `~/.claude/skills/`; trigger story-setup with natural language on first use (e.g., "use story-setup to deploy the web novel environment"), then **exit and re-enter with `opencode -c`** for slash commands to work. Some hook behaviors differ from Claude Code (session-start / session-end / compact, etc.) — see the OpenCode section in [CONTRIBUTING.md](CONTRIBUTING.md).
-
-**OpenClaw users:** Current support is skills-only. OpenClaw can discover the 13 story skills from workspace `skills/`, `.agents/skills`, `~/.agents/skills`, `~/.openclaw/skills`, or configured extra skill roots. `SKILL.md` files use OpenClaw-compatible single-line `name` / `description` plus single-line JSON `metadata.openclaw`. When `story-setup` targets OpenClaw, it copies the skills into project `skills/` and writes an OpenClaw `AGENTS.md`; agents/hooks are intentionally deferred, so outline-before-prose guards are soft skill checks rather than runtime enforcement. If new skills do not appear immediately, open a fresh OpenClaw session or wait for the skills watcher to refresh.
-
-**Reasonix users:** Current support is Skills + a native plugin manifest. Reasonix natively scans project skill roots (`.agents/skills` etc., a symlink to `skills/`) and discovers all 9 skills — verify with `reasonix doctor capabilities`; you can also `reasonix plugin install` via the root `reasonix-plugin.json`. When `story-setup` targets `target_cli=reasonix`, it copies the skills into project `skills/` and writes a Reasonix `AGENTS.md`; hooks/custom agents are intentionally deferred, so skills needing specialist agents fall back to solo/direct. If Windows symlinks are disabled, use the native plugin instead.
-
-**Generic Web AI / agent users:** If your platform can read a GitHub repo or project files, have the agent read `skills/*/SKILL.md` plus the relevant `references/`. For local project copies, run `story-setup` with `target_cli=generic`; it only writes a generic `AGENTS.md` and `skills/`. Without this project's hooks/custom agents, checks run as skill-level soft constraints or solo/direct fallbacks.
-
-</details>
-
 After updating, if a project has already run `/story-setup`, re-run `/story-setup` from the project root to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/worldwonderer/oh-story-claudecode/releases).
 
-**Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (story-architect, narrative-writer, consistency-checker, etc.) are written into your project's `.claude/agents/` by `/story-setup`, or into `.codex/agents/*.toml` by `$story-setup`. Claude Code and Codex register custom agents most reliably at session start; ZCode 3.3.4, OpenClaw Phase 1, Reasonix Phase 1, and the generic path default to skills + solo fallback. To check Claude/Codex agents: run `/story-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
+**Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (story-architect, narrative-writer, consistency-checker, etc.) are written into your project's `.claude/agents/` by `/story-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/story-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
 
-**Import and continuation order:** run `/story-setup` from the writing-project root first to deploy hooks, agents, and `AGENTS.md`; start or refresh the session, then run `/story-import` for the existing novel and continue with `/story-long-write 日更` or `/story-long-write 写第N章`. You can also run `/story-import` directly; if setup is missing, it offers to run setup first or continue with a serial import.
+**Import and continuation order:** run `/story-setup` from the writing-project root first to deploy hooks and agents; start or refresh the session, then run `/story-import` for the existing novel and continue with `/story-long-write 日更` or `/story-long-write 写第N章`. You can also run `/story-import` directly; if setup is missing, it offers to run setup first or continue with a serial import.
 
 ## Skills
 
 | Skill | Trigger | Description |
 |:------|:--------|:------------|
-| `story-setup` | `/story-setup` / `$story-setup` | Environment setup — Claude/OpenCode/Codex/ZCode/OpenClaw/Reasonix plus generic (safe merge) |
-| `story` | `/story` / `$story` / `/story dashboard` | Toolbox router plus a local deconstruction/project dashboard |
+| `story-setup` | `/story-setup` | Environment setup — Claude Code (safe merge) |
+| `story` | `/story` / `/story dashboard` | Toolbox router plus a local deconstruction/project dashboard |
 | `story-long-write` | `/story-long-write` | Long-form writing — outline building, character design, prose output |
 | `story-long-analyze` | `/story-long-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
 | `story-long-scan` | `/story-long-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
 | `story-deslop` | `/story-deslop` | De-AI-ify — detect and remove AI writing traces |
 | `story-import` | `/story-import` | Reverse import — parse existing novels into standard project structure |
-| `story-review` | `/story-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian/Zhihu scoring rubrics |
+| `story-review` | `/story-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian scoring rubrics |
 | `browser-cdp` | `/browser-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
 
 > `story-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
@@ -138,8 +113,8 @@ Natural language also triggers: `帮我开书` ("help me start writing") → `st
 
 ### Story Dashboard
 
-Run `/story dashboard` (`$story dashboard` in Codex) to open the local writing desk. Browse
-deconstruction libraries and long/short project trees, then search, preview Markdown, edit text,
+Run `/story dashboard` to open the local writing desk. Browse
+deconstruction libraries and long project trees, then search, preview Markdown, edit text,
 save with conflict protection, or confirm a file deletion. It listens only on `127.0.0.1` and never
 uploads story content.
 
@@ -148,13 +123,13 @@ uploads story content.
 <details>
 <summary>Deconstruction demo — Coiling Dragon</summary>
 
-Full output from `/story-long-analyze` deep mode on the first 23 chapters of *Coiling Dragon*:
+Full output from `/story-long-analyze` on the first 23 chapters of *Coiling Dragon*:
 
 ```
 demo/拆文库/盘龙/
 ├── 概要.md              # Novel overview + chapter index
-├── 拆文报告.md           # 5-dimension scoring + pacing analysis + takeaways
-├── 文风.md              # Benchmark voice: sentence rhythm, punctuation, dialogue subtext, emotion pacing
+├── 拆文报告.md           # 5-dimension scoring + payoff density + takeaways
+├── 文风.md              # Sentence rhythm, punctuation, dialogue subtext, emotion pacing + anchors
 ├── 章节/
 │   ├── 第1章_深度拆解.md … 第3章_深度拆解.md  # One deep analysis per Golden-3 chapter
 │   └── 第1章_摘要.md … 第23章_摘要.md          # One summary file per chapter
@@ -167,8 +142,8 @@ demo/拆文库/盘龙/
 │   ├── 沃顿.md           # Functional character
 │   └── 角色关系.md        # Relationship network
 ├── 剧情/
-│   ├── 故事线.md          # Framework + 4 plotlines + 2 storylines
-│   ├── 强者过境与魔法启蒙.md etc.  # Five scene-level plot units
+│   ├── 故事线.md          # Framework recognition + 4 plotlines + single main thread
+│   ├── 强者过境与魔法启蒙.md etc.  # Four scene-level plot units
 │   ├── 节奏.md            # Pacing + key-info progression + emotional trigger eruption rhythm
 │   └── 情绪模块.md        # Reader needs + emotional engine + reusable writing modules
 └── 设定/
@@ -196,8 +171,7 @@ demo/长篇/让你管账号，你高燃混剪炸全网/
 ├── 大纲/        大纲.md · 卷纲_第1卷.md · 细纲_第001–020章.md (one file per chapter)
 ├── 设定/        角色/ (6 character files) · 世界观/{background · cheat-system}
 │                关系.md · 题材定位.md · 文风.md
-└── 追踪/        _tracking-state.json · 上下文.md · 伏笔.md · 逐章记录/
-                 角色状态/{角色名}.md · 时间线/{作者真相.md · 读者已知.md}
+└── 追踪/        _tracking-state.json · 上下文.md · 伏笔.md · 角色状态/{角色名}.md · 时间线/{作者真相.md · 读者已知.md}
 ```
 
 Per-chapter extraction (events / characters / settings / foreshadowing / timeline) is reverse-engineered into a continuation bible, so the author seamlessly continues from chapter 21.
@@ -218,7 +192,7 @@ Writing skills internally coordinate 7 specialized agents:
 | **story-explorer** | Haiku | Story query — read-only character/foreshadowing/setting/progress lookup, quick context loading |
 | **chapter-extractor** | Haiku | Chapter extraction — summaries, plot points, character mentions, parallel deconstruction unit |
 
-Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — 100+ methodology files), without reserving context window space.
+Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — 58 methodology files in the agent-references bundle, nearly 200 references across the repo), without reserving context window space.
 
 ## Automation Hooks
 
@@ -232,7 +206,7 @@ Agents load writing theory from `references/` on demand (character design, dialo
 | pre-compact.sh | Before context compaction | Save progress snapshot path and line-count summary |
 | post-compact.sh | After context compaction | Prompt to read progress snapshot for context recovery |
 | validate-story-commit.sh | git commit | Check hardcoded attributes, setting required fields (warning only, non-blocking) |
-| guard-outline-before-prose.sh | Before writing prose (Write/Edit) | Blocks first creation of a chapter/story body when its 细纲/小节大纲 is missing (blocking) — enforces outline-first |
+| guard-outline-before-prose.sh | Before writing prose (Write/Edit) | Blocks first creation of a chapter body when its 细纲 (chapter outline) is missing (blocking) — enforces outline-first |
 | check-prose-after-write.sh | After writing prose (Write/Edit) | Lightly scan for truncation, leaked workflow terms, deterministic toxic phrasing, and word-count debt (advisory) |
 
 ## Project File Structure
@@ -245,46 +219,37 @@ The file system separates settings, outlines, prose, and tracking into independe
 
 ```
 {Book Title}/
-├── Settings/
-│   ├── World/              # Background, power systems, etc. — one file per topic
-│   ├── Characters/         # One file per character (Shen_Zhi.md, Lu_Yanzhi.md)
-│   ├── Factions/           # One file per faction/organization (Tianji_Pavilion.md)
-│   ├── Relationships.md    # Character relationship map
-│   └── Genre_Positioning.md # Core trope + benchmark analysis
-├── Outline/
-│   ├── Outline.md          # Full-book volume-level structure
-│   ├── Volume_1.md         # One per volume: payoff pacing + emotion arc + character arc + foreshadowing + twists
-│   ├── Chapter_001.md      # One per chapter: summary + multi-line plot + relationships/order + hooks
+├── 设定/ (Settings)
+│   ├── 世界观/          # World: background, power systems, etc. — one file per topic
+│   ├── 角色/            # Characters: one file per person (江晨.md, 钟嘉嘉.md)
+│   ├── 势力/            # Factions: one file per faction/organization (火箭军文工团.md)
+│   ├── 关系.md          # Character relationship map
+│   └── 题材定位.md      # Genre core trope + benchmark analysis
+├── 大纲/ (Outline)
+│   ├── 大纲.md          # Full-book volume-level structure
+│   ├── 卷纲_第一卷.md   # One per volume: payoff pacing + emotion arc + character arc + foreshadowing + twists
+│   ├── 细纲_第001章.md  # One per chapter: summary + multi-line plot + relationships/order + hooks
 │   └── ...
-├── Prose/
-│   ├── Chapter_001_Title.md
+├── 正文/ (Prose)
+│   ├── 第001章_章名.md
 │   └── ...
-├── Benchmark/                # Benchmark reference (structured subdirs synced from deconstruction)
-│   └── {Benchmark Book}/
-│       ├── Source/              # Benchmark book original chapters
-│       ├── Characters/         # Structured character profiles (synced from analyze)
-│       ├── Plotlines/          # Structured plot lines/pacing/emotion modules (synced from analyze)
-│       ├── Settings/           # Structured world settings (synced from analyze)
-│       ├── 文风.md              # Benchmark voice used before daily writing
-│       └── Report.md            # Analyze skill output
-├── Tracking/                # File-first continuity state
+├── 对标/ (Benchmark)    # Benchmark reference (structured subdirs synced from deconstruction)
+│   └── {对标书名}/
+│       ├── 原文/            # Benchmark book original chapters
+│       ├── 角色/            # Structured character profiles (synced from analyze)
+│       ├── 剧情/            # Structured plot lines/pacing/emotion modules (synced from analyze)
+│       ├── 设定/            # Structured world settings (synced from analyze)
+│       ├── 文风.md          # Benchmark voice read before daily writing
+│       └── 拆文报告.md      # Analyze skill output
+├── 追踪/ (Tracking)    # File-first continuity state
 │   ├── _tracking-state.json # Single structured authority (not loaded into prose prompts)
-│   ├── Context.md           # Derived hot context (7 fixed sections, ≤12 KB)
-│   ├── Chapter_Records/     # Compact continuity record / revision overlay (≤3072 bytes)
-│   ├── Character_Status/    # Derived snapshot per core character
-│   ├── Foreshadowing.md     # Derived current foreshadowing view
-│   └── Timeline/            # Derived author-truth and reader-known views
-├── References/              # story-researcher output
-│   └── {topic}.md           # Split by research topic
-```
-
-├── 正文.md                  # Final draft
-├── 小节大纲.md              # 8-section structure + emotion curve
-└── 拆文库/                  # If a reference novel exists (analyze output)
-    └── {Book}/
-        ├── 拆文报告.md
-        ├── 情节节点.md
-        └── 写作手法.md
+│   ├── 上下文.md        # Derived hot context (7 fixed sections, ≤12 KB)
+│   ├── 逐章记录/        # Compact continuity record / revision overlay (≤3072 bytes)
+│   ├── 角色状态/        # Derived snapshot per core character
+│   ├── 伏笔.md          # Derived current foreshadowing view
+│   └── 时间线/          # Derived author-truth and reader-known views
+├── 参考资料/ (References) # story-researcher output
+│   └── {topic}.md       # Split by research topic
 ```
 
 **Deconstruction Library:** Deconstruction skills save structured outputs (characters, plotlines, settings, chapters) under `拆文库/{Book Title}/` at project root; long-form plot output includes `节奏.md` and `情绪模块.md`. Writing skills consume these assets through `对标/{书名}/剧情/` and related benchmark subdirectories, or automatically fall back to reading from the deconstruction library.
@@ -302,17 +267,17 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 |:------|:---------|:------|
 | Outline Layout | Five-step outline method · Story structure levels · Node design · Progression design | long-write |
 | Opening Design | Opening patterns · First 500 words · Golden First 3 Chapters | long-write |
-| Character Design | Character profiles · Character extraction · Relationship mapping · Motivation chains · Ensemble casts | long-write  |
-| Hook Techniques | 13 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | long-write  |
+| Character Design | Character profiles · Character extraction · Relationship mapping · Motivation chains · Ensemble casts | long-write |
+| Hook Techniques | 13 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | long-write |
 | Emotion Design | 6 arc templates · Expectation management · Genre track strategies | long-write |
-| Genre Frameworks | Long-form 8-node · 8 genre opening templates | long-write  |
+| Genre Frameworks | Long-form 8-node · 8 genre opening templates | long-write |
 | Dialogue Techniques | Rhythm · Subtext · Information control · Dialogue pattern database | long-write |
 | Twist Toolbox | Types · Timing · Misdirection base paths | long-write |
 | Style Modules | Dialogue · Combat · Mind games · Cinematic writing · Face-slapping · Plain description | long-write |
 | Advanced Techniques | 4-step micro-outline · Climax reverse-engineering · Dual-thread structure · AB interweaving | long-write |
 | De-AI-ify | Prevention · 3-pass de-AI method · Rewrite examples · Banned word list | deslop / long-write |
-| Quality Checks | General · Long-form specific · Toxic trope detection | long-write  |
-| Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown · Zhihu style analysis | long-analyze |
+| Quality Checks | General · Long-form specific · Toxic trope detection | long-write |
+| Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown | long-analyze |
 | Reader Profiles | 9-dimension profiles · Target reader analysis | long-scan |
 | Market Data | Genre trends · Platform characteristics · Collection formats · Submission guides | long-scan |
 | Adversarial Review | Multi-perspective review · Scoring rubrics · Toxic trope detection | story-review |
@@ -322,7 +287,6 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 ## Supported Platforms
 
 **Long-form** Qidian (起点中文网) · Fanqie Novels (番茄小说) · Jinjiang (晋江文学城) · Qimao (七猫小说) · Ciweimao (刺猬猫)
-
 
 Real output samples are in [demo/](demo/): long-form deconstruction 《盘龙》 · long-form continuation project 《让你管账号，你高燃混剪炸全网》
 

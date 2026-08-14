@@ -2,7 +2,6 @@
 name: story-import
 version: 1.0.0
 description: "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 story-long-write 后续写作流程；内部复用 story-long-analyze 的拆解管道。触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」。"
-metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claudecode"}}
 ---
 # story-import：逆向导入已有小说
 
@@ -12,7 +11,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 ---
 
-> Agent 兼容性：检查专业 agent 是否可用时，按 `.claude/agents/{agent}.md` → `.opencode/agents/{agent}.md` → `.codex/agents/{agent}.toml` 的顺序查找。Codex 原生子代理调用优先使用同名 `agent_type`；如果当前 Codex 运行时返回 `unknown agent_type` 或未暴露 custom-agent registry，必须降级为 solo/direct。检测到 `.zcode/` 时同样直接 solo/direct，因为 ZCode 3.3.4 不执行项目 custom agents；报告 `Fallback: project custom agents unavailable -> solo`。Claude/OpenCode 兼容面保留 `subagent_type`。
+> Agent 兼容性：检查专业 agent 是否可用时，检查 `.claude/agents/{agent}.md`；不存在或运行时不暴露 custom agent registry 时必须降级为 solo/direct，报告 `Fallback: project custom agents unavailable -> solo`。Claude Code 兼容面保留 `subagent_type`。
 >
 > Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 25` 不一致时（标记缺失、字段缺失/非整数、小于或大于 25）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 25）` 并提示重新运行 `/story-setup` 后新开会话；大于 25 时额外提示先更新 oh-story-claudecode，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
@@ -29,6 +28,8 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 先用拆解管道完整拆解小说（输出到 `拆文库/{导入书名}/`），再将分析结果迁移为项目结构。该目录保存本书导入分析，保留不丢弃，但不属于外部对标视图。
 
 ### 原则 2：复用不重复
+
+拆解能力复用 story-long-analyze 的完整管道，不在 story-import 内另写一套等价拆解逻辑；迁移时以 `拆文库/{导入书名}/` 的产物为唯一数据源，引用而不复制，不重复生成分析文件。
 
 
 ---
@@ -91,17 +92,16 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
    - 是否完本：{是/否（半成品写到第N章）}
    - **最后一章是否完整**：完整章 / 残稿（写了一半）。若是残稿，提示用户并把「残稿到第 N 章」记入上下文，让用户决定是「基于残章续写」还是「先补完再导入」。story-import 只记录用户决定，不替用户选。
 3. **外部对标（可选、与导入源分离）**：用户已经明确指定外部对标时，记录 `{对标书名}` 并确认 `拆文库/{对标书名}/` 是该参考作品的独立拆解产物；不得把 `{导入书名}` 或本次刚生成的拆文目录当候选。用户未指定时不追加提问，记为“未绑定”，后续交给写作 skill 的对标发现流程。
-4. **输出确认**：向用户展示检测到的章节范围、字数、判定的篇幅类型、最后一章状态，以及“外部对标：{对标书名/未绑定}”，确认后开始分析。
+4. **输出确认**：向用户展示检测到的章节范围、字数、篇幅（长篇）、最后一章状态，以及“外部对标：{对标书名/未绑定}”，确认后开始分析。
 
 ### Step 5：环境检测前置
 
 在进入 Phase 2 之前，先检测项目是否已部署 story-setup 基础设施：
 
 - 先读取 `.story-deployed` 并执行顶部 Spawn 版本门禁；旧版 `chapter-extractor` 文件即使仍在磁盘上也不可复用。
-- 只有 `agents_version: 25` 通过后，才按 `.claude/agents/chapter-extractor.md` → `.opencode/agents/chapter-extractor.md` → `.codex/agents/chapter-extractor.toml` 检查 Phase 2 长篇并行 agent。
-- 如果 `.story-deployed` 的 `target_cli` 包含 `zcode`，项目 agents 缺失是 ZCode 3.3.4 的预期状态：不要提示重复部署，直接以串行 solo/direct 进入分析并报告 fallback。
+- 只有 `agents_version: 25` 通过后，才按 `.claude/agents/chapter-extractor.md` 检查 Phase 2 长篇并行 agent。
 
-**部署标记缺失、版本无效/过期，或当前端的 agent 不可用，且不是已部署 ZCode 项目时**，提示用户：
+**部署标记缺失、版本无效/过期，或当前端的 agent 不可用时**，提示用户：
 
 > 「检测到当前项目尚未部署写作基础设施。建议先运行 `/story-setup` 再回来导入，否则深度分析阶段无法使用并行 chapter-extractor agent。」
 
@@ -123,7 +123,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 调用 story-long-analyze 的**完整拆解管道**；不要做「复用方法论」式的半流程，要驱动整条管道跑完，拿到全套结构化产物。
 
-| 篇幅 | 调用的拆解管道 | 产物目录 |
+| 类型 | 调用的拆解管道 | 产物目录 |
 |------|--------------|---------|
 | 长篇 | story-long-analyze 的完整管道（Stage 0-6） | `拆文库/{导入书名}/` |
 
@@ -156,7 +156,7 @@ story-long-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 A
 ├── 章节/
 │   ├── 第1章_深度拆解.md
 │   ├── 第1章_摘要.md
-│   └── ...               # 每章同时有 第N章_深度拆解.md 和 第N章_摘要.md
+│   └── ...               # 黄金三章（第1-3章）同时有 深度拆解 和 摘要；其余章只有 摘要
 ├── 快速预览.md
 ├── 角色/
 │   ├── {角色名}.md
@@ -164,6 +164,7 @@ story-long-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 A
 ├── 剧情/
 │   ├── {剧情标题}.md
 │   ├── 故事线.md
+│   ├── README.md        # 剧情目录索引（节奏/情绪模块/故事线的权威范围）
 │   ├── 节奏.md          # 关键信息推进 / 情绪触动点 / 爆发节奏
 │   ├── 情绪模块.md      # 读者需求 / 情绪引擎 / 可复现模块
 │   └── 散落情节.md
@@ -207,11 +208,11 @@ story-long-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 A
 
 将 `拆文库/{导入书名}/` 的分析结果迁移为可被写作 skill 消费的项目结构。
 
-### 分流路由
+### 迁移路径
 
-按 Phase 1 判定的篇幅类型分流，两条路径产出的工程结构完全不同：
+长篇导入统一走 3-L 长篇结构迁移：
 
-| 篇幅 | 迁移路径 | 映射规则 | 续写接手 |
+| 类型 | 迁移路径 | 映射规则 | 续写接手 |
 |------|---------|---------|---------|
 | 长篇 | **3-L：长篇结构迁移** | [references/structure-mapping-long.md](references/structure-mapping-long.md) | story-long-write 日更循环 |
 
@@ -402,13 +403,13 @@ story-long-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 A
 
 ### Step 1：质量检查
 
-按篇幅对照对应的质量检查清单：
+对照长篇质量检查清单：
 
 - **长篇**：完整导入质量清单见 [references/structure-mapping-long.md](references/structure-mapping-long.md) 末尾（含正文文件数对照、核心角色独立快照、作者/读者时间线隔离、`tracking_commit.py check` 通过、卷划分已经用户确认等）。
 
 ### Step 2：缺失项提示
 
-输出导入结果摘要和待补充项，按篇幅分支。
+输出导入结果摘要和待补充项。
 
 **长篇导入完成报告**：
 
@@ -444,7 +445,7 @@ story-long-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 A
 ### Step 3：项目激活
 
 - 设置 `.active-book` 指向导入的书名/标题目录
-- 可选验证：如果项目已部署 story-explorer agent（优先检查 `.claude/agents/` 下的 `story-explorer.md` 是否存在；不存在时再检查 `.opencode/agents/`，再不存在时检查 `.codex/agents/`），可 spawn `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：progress\n查询参数：导入验证")` 交叉验证迁移数据完整性
+- 可选验证：如果项目已部署 story-explorer agent（检查 `.claude/agents/story-explorer.md` 是否存在），可 spawn `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：progress\n查询参数：导入验证")` 交叉验证迁移数据完整性
 
 > setup 环境检测已在 Phase 1「环境检测前置」完成，此处不再重复检测。
 
@@ -487,6 +488,7 @@ story-long-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 A
 | 长篇迁移映射规则 | `references/structure-mapping-long.md` |
 | 角色状态反推规则（长篇） | `references/character-state-reverse.md` |
 | 角色状态规则（character-state-reverse.md 依赖） | `references/state-tracking.md` |
+| 追踪事务协议（init/commit/check JSON） | `references/tracking-transaction.md` |
 | 正文格式规范 | `references/format-and-structure.md` |
 
 

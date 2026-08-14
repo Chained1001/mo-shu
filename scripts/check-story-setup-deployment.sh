@@ -132,7 +132,7 @@ while IFS= read -r src; do
 done < <(grep -RhoE '^source[[:space:]]+"[^"]+"' "$HOOKS_DIR"/*.sh | sed -E 's/^source[[:space:]]+"//;s/"$//' | sort -u)
 # node 共享核 + CLI 桥：正文网/字数/路径抽取/git commit 侦测/连续性的单一实现，被 bash hook 经
 # `node "$(dirname "$0")/story_hook_cli.js"` 调用。大纲阻断判定与 staged markdown warnings 未归核，
-# 仍是各端独立实现（Claude 纯 bash；codex↔core 由 test-prose-net-parity.sh Part E 锁 parity）。
+# 仍是 Claude 纯 bash 独立实现（大纲阻断判定 + staged markdown warnings 未归核）。
 # 这两条不是 source 依赖，上面的 grep 抓不到，显式断言存在 + 语法有效，否则 hook 静默退化
 # （node 缺失时 hook 自身 exit 0、session-start.sh 会话起点提示一次，此处按开发机有 node 校验）。
 assert_file "$HOOKS_DIR/story_hook_core.js"
@@ -173,29 +173,6 @@ done
 for group in 'templates/hooks/' 'templates/rules' 'templates/agents' 'agent-references' 'settings-hooks\.json' 'CLAUDE\.md' '\.story-deployed'; do
   assert_grep "$group" "$SKILL_FILE" "deployment manifest missing asset group: $group"
 done
-assert_file "$SKILL_DIR/references/openclaw/AGENTS.md.tmpl"
-assert_file "$SKILL_DIR/references/generic/AGENTS.md.tmpl"
-assert_file "$SKILL_DIR/references/reasonix/AGENTS.md.tmpl"
-assert_file "$SKILL_DIR/references/zcode/AGENTS.md.tmpl"
-assert_file "$SKILL_DIR/references/zcode/config.json.patch"
-assert_file "$SKILL_DIR/references/zcode/hooks/hooks.json"
-assert_file "$SKILL_DIR/references/zcode/hooks/story_zcode_hook.js"
-assert_file "$SKILL_DIR/references/zcode/hooks/story_hook_core.js"
-# OpenCode shares the same prose-guard core (byte-identity guarded by check-opencode-adapter.sh);
-# it deploys alongside plugin.ts as .opencode/plugins/lib/story_hook_core.js (lib/ subdir so it
-# escapes OpenCode's single-level .opencode/plugins/*.js plugin auto-discovery).
-assert_file "$SKILL_DIR/references/opencode/story_hook_core.js"
-assert_grep 'opencode/story_hook_core\.js' "$SKILL_FILE" "deployment manifest missing OpenCode shared prose-guard core"
-assert_grep 'references/openclaw/AGENTS\.md\.tmpl' "$SKILL_FILE" "deployment manifest missing OpenClaw AGENTS template"
-assert_grep 'OpenClaw skills-only|target_cli 含 openclaw' "$SKILL_FILE" "story-setup must document OpenClaw skills-only deployment"
-assert_grep 'references/generic/AGENTS\.md\.tmpl' "$SKILL_FILE" "deployment manifest missing generic AGENTS template"
-assert_grep 'target_cli 含 generic|通用 Web AI / 其他 Agent' "$SKILL_FILE" "story-setup must document generic Web AI deployment"
-assert_grep 'references/reasonix/AGENTS\.md\.tmpl' "$SKILL_FILE" "deployment manifest missing Reasonix AGENTS template"
-assert_grep 'Reasonix skills-only|target_cli 含 reasonix' "$SKILL_FILE" "story-setup must document Reasonix skills-only deployment"
-assert_grep 'references/zcode/AGENTS\.md\.tmpl' "$SKILL_FILE" "deployment manifest missing ZCode AGENTS template"
-assert_grep 'target_cli 含 zcode|target_cli = zcode' "$SKILL_FILE" "story-setup must document ZCode deployment"
-assert_grep '\.zcode/config\.json' "$SKILL_FILE" "story-setup must document ZCode config merge"
-assert_grep '不部署.*\.zcode/agents|不创建.*\.zcode/agents' "$SKILL_FILE" "story-setup must document ZCode agent boundary"
 assert_grep 'references_dir' "$SKILL_FILE" "sentinel references_dir must be documented"
 assert_grep 'resolver_strategy' "$SKILL_FILE" "sentinel resolver_strategy must be documented"
 assert_grep 'target_cli' "$SKILL_FILE" "sentinel target_cli must be documented"
@@ -255,17 +232,8 @@ python3 "$CLAUDE_MERGE" --existing "$TMP_DIR/claude-v25.json" --template "$SETTI
 cmp -s "$TMP_DIR/claude-v25.json" "$TMP_DIR/claude-v25-again.json" \
   || fail "Claude settings merge is not idempotent"
 
-# 重部署时 sentinel 的 target_cli 是权威：不认它就会每次重问，且 skills-only 三端根本无从探测。
+# 重部署时 sentinel 的 target_cli 是权威：不认它就会每次重问。
 assert_grep '已部署项目以 sentinel 里的值为准' "$SKILL_FILE" "story-setup must reuse the deployed target_cli on redeploy"
-# metadata.openclaw 在 13 个 skill 上全都有，拿它判定会把 reasonix / generic 项目误认成 OpenClaw。
-assert_no_grep '中的 `metadata\.openclaw`' "$SKILL_FILE" "story-setup must not detect OpenClaw from the skills bundle it deploys itself"
-assert_grep '不作 OpenClaw 信号' "$SKILL_FILE" "story-setup must explain why metadata.openclaw is not a detection signal"
-# skills-only 三端只能靠各自 AGENTS.md 的标题行区分；SKILL.md 引用的标记必须在模板里真的存在。
-assert_grep '网文写作工具集（Reasonix）' "$SKILL_FILE" "story-setup must detect a deployed Reasonix project from AGENTS.md"
-assert_grep '网文写作工具集（通用 Agent / Web AI）' "$SKILL_FILE" "story-setup must detect a deployed generic project from AGENTS.md"
-assert_grep '网文写作工具集（Reasonix）' "$SKILL_DIR/references/reasonix/AGENTS.md.tmpl" "Reasonix AGENTS template must carry the marker story-setup detects"
-assert_grep '网文写作工具集（通用 Agent / Web AI）' "$SKILL_DIR/references/generic/AGENTS.md.tmpl" "generic AGENTS template must carry the marker story-setup detects"
-assert_grep '网文写作工具集（OpenClaw）' "$SKILL_DIR/references/openclaw/AGENTS.md.tmpl" "OpenClaw AGENTS template must carry the marker story-setup detects"
 echo "  OK TS2 deployment manifest"
 
 # TS3 — Agent reference bundle integrity
@@ -413,38 +381,6 @@ if echo "$mixed_version_out" | grep -q '高于本 hook'; then
   fail "session-start incorrectly nagged '高于本 hook' for current agents_version=25 just because setup_skill_version lags"
 fi
 
-# 多端部署的 references_dir 是逗号分隔多条路径。整串当一条路径查会每次开会话都误报缺失，
-# 且反过来漏掉真正缺的那一条——两个方向都要钉住。
-multi_end_root="$TMP_DIR/multi-end-refs"
-mkdir -p "$multi_end_root/.claude/skills/story-setup/references/agent-references"
-mkdir -p "$multi_end_root/.codex/skills/story-setup/references/agent-references"
-setup_git_repo "$multi_end_root"
-copy_hooks "$multi_end_root"
-touch "$multi_end_root/.claude/skills/story-setup/references/agent-references/dummy.md"
-touch "$multi_end_root/.codex/skills/story-setup/references/agent-references/dummy.md"
-cat > "$multi_end_root/.story-deployed" <<'SENTINEL'
-deployed_at: 2026-05-24T00:00:00Z
-agents_version: 25
-setup_skill_version: 1.2.7
-target_cli: claude-code,codex
-resolver_strategy: project-local-skill-reference
-references_dir: .claude/skills/story-setup/references/agent-references,.codex/skills/story-setup/references/agent-references
-SENTINEL
-multi_end_out="$(run_from_nested "$multi_end_root" session-start.sh 2>&1 || true)"
-if echo "$multi_end_out" | grep -q '参考资料包缺失或为空'; then
-  fail "session-start falsely reported missing references for a complete multi-end deployment"
-fi
-
-rm -rf "$multi_end_root/.codex"
-multi_end_partial_out="$(run_from_nested "$multi_end_root" session-start.sh 2>&1 || true)"
-echo "$multi_end_partial_out" | grep -q '参考资料包缺失或为空' \
-  || fail "session-start did not warn when one end of a multi-end references_dir is missing"
-echo "$multi_end_partial_out" | grep -q '\.codex/skills/story-setup/references/agent-references' \
-  || fail "session-start did not name the missing end in a multi-end references_dir"
-if echo "$multi_end_partial_out" | grep -q '\.claude/skills/story-setup/references/agent-references,'; then
-  fail "session-start reported the whole comma-joined references_dir instead of only the missing end"
-fi
-
 echo "  OK TS5 sentinel diagnostics"
 
 # TS6 — Short project non-mutation
@@ -556,7 +492,7 @@ for ref_dir in "$SKILL_DIR"/references/*/; do
   esac
 done
 ref_dir_count="$(find "$SKILL_DIR/references" -maxdepth 1 -mindepth 1 -type d | wc -l | tr -d ' ')"
-[ "$ref_dir_count" -eq 8 ] || fail "story-setup references/ now has $ref_dir_count subdirs (expected 8); update the Phase 1 self-check list and this assertion"
+[ "$ref_dir_count" -eq 2 ] || fail "story-setup references/ now has $ref_dir_count subdirs (expected 2); update the Phase 1 self-check list and this assertion"
 assert_grep '剧情/情绪模块\.md.*missing_primary_contract|missing_primary_contract.*剧情/情绪模块\.md' "$SKILL_DIR/references/templates/agents/story-explorer.md" "story-explorer must require the current emotion-module artifact"
 assert_grep '剧情/节奏\.md.*missing_primary_contract|missing_primary_contract.*剧情/节奏\.md' "$SKILL_DIR/references/templates/agents/story-explorer.md" "story-explorer must require the current rhythm artifact"
 assert_no_grep 'legacy_deconstruction|contract_version.*legacy|pre-v12' "$SKILL_DIR/references/templates/agents/story-explorer.md" "story-explorer must not keep legacy benchmark branches"
@@ -581,8 +517,6 @@ assert_grep '不得把已有项目默认为日更 3 章|默认为日更 3 章' "
 assert_grep '默认停在细纲交付|默认停靠.*Phase 1→3' "$REPO_ROOT/skills/story-long-write/SKILL.md" "story-long-write opening flow must stop after outline by default"
 assert_grep '本轮 K（最多 3 章）后必须进入 Step 3/4 收尾并停止|最多 3 章.*收尾并停止' "$REPO_ROOT/skills/story-long-write/references/workflow-daily.md" "daily workflow must stop after bounded batch"
 assert_grep '细纲边界|outline_underfilled|不得自造剧情' "$SKILL_DIR/references/templates/agents/narrative-writer.md" "narrative-writer must enforce outline boundary and report outline_underfilled"
-assert_grep 'outline_underfilled' "$SKILL_DIR/references/opencode/agents/narrative-writer.md" "opencode narrative-writer must inherit outline_underfilled boundary"
-assert_grep 'outline_underfilled' "$SKILL_DIR/references/codex/agents/narrative-writer.toml" "codex narrative-writer must inherit outline_underfilled boundary"
 assert_grep '导入续写入口顺序|推荐顺序.*story-setup' "$REPO_ROOT/skills/story-import/SKILL.md" "story-import must answer setup-vs-import order before asking for source"
 echo "  OK TS10 version + behavior anchors"
 
@@ -619,11 +553,10 @@ PY
 # 长篇授权流：缺细纲拦截 / 有细纲放行 / 章号补零容忍
 [ "$(run_guard 'book/正文/第1章_开端.md')" = "2" ] || fail "guard did not BLOCK long prose when 细纲 missing"
 : > "$guard_root/book/大纲/细纲_第1章.md"
-# 细纲齐了还要过追踪检查点（issue #305 起 Claude 侧也有这道门，与另三端同序）。
+# 细纲齐了还要过追踪检查点（Claude 侧这道门走共享核 trackingCheckpointIssue）。
 # 本节测的是细纲门与路径分类，不是追踪门，所以先落一份有效 state 把追踪这一维固定住。
 # last_committed 取一个大于本节所有用例章号的值：章号已在追踪范围内即跳过顺序校验，
-# 于是 第1/7/123/124 章都只被细纲门判定。顺序校验本身由 test-prose-net-parity.sh Part F
-# 的场景矩阵覆盖，不在这里重复。
+# 于是 第1/7/123/124 章都只被细纲门判定。
 mkdir -p "$guard_root/book/追踪"
 printf '{"schema_version":4,"state_revision":0,"last_committed_chapter":200}\n' > "$guard_root/book/追踪/_tracking-state.json"
 printf '> 状态修订：0。\n' > "$guard_root/book/追踪/上下文.md"
@@ -635,7 +568,7 @@ mv "$guard_root/book/追踪/_state.bak" "$guard_root/book/追踪/_tracking-state
 [ "$(run_guard 'book/正文/第001章_开端.md')" = "0" ] || fail "guard did not tolerate chapter-number zero padding (第001章 vs 细纲_第1章)"
 : > "$guard_root/book/大纲/细纲_第7章_惊变.md"
 [ "$(run_guard 'book/正文/第7章_x.md')" = "0" ] || fail "guard did not tolerate title-suffixed 细纲 (细纲_第7章_惊变.md)"
-# 非作品文件 / 无短篇工程信号 -> 放行（宁可漏拦不可误伤）
+# 非作品文件 / 无故事工程信号 -> 放行（宁可漏拦不可误伤）
 [ "$(run_guard 'book/设定/角色.md')" = "0" ] || fail "guard wrongly blocked a non-prose file"
 [ "$(run_guard 'docs/正文.md')" = "0" ] || fail "guard wrongly blocked a non-story 正文.md (no 设定.md signal)"
 # 已存在正文 -> 放行（续写/改稿/去AI味）

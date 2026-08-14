@@ -182,10 +182,10 @@ try {
   assert.strictEqual(run(["--quote-mode=ascii", ascii]).status, 0);
   assert.strictEqual(fs.readFileSync(ascii, "utf8"), '"甲"与"乙"\n');
 
-  const yan = path.join(tmpDir, "yan.md");
-  fs.writeFileSync(yan, '"甲"和“乙”\n', "utf8");
-  assert.strictEqual(run(["--quote-mode", "yan", yan]).status, 0);
-  assert.strictEqual(fs.readFileSync(yan, "utf8"), "「甲」和「乙」\n");
+  const corner = path.join(tmpDir, "corner.md");
+  fs.writeFileSync(corner, '"甲"和“乙”\n', "utf8");
+  assert.strictEqual(run(["--quote-mode", "corner", corner]).status, 0);
+  assert.strictEqual(fs.readFileSync(corner, "utf8"), "「甲」和「乙」\n");
 
   const missing = run([path.join(tmpDir, "missing.md")]);
   assert.strictEqual(missing.status, 2);

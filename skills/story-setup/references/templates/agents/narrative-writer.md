@@ -53,13 +53,15 @@ memory: project
 | 参考文件 | 何时读取 |
 |---|---|
 | `story-setup/references/agent-references/writing-craft.md` | 正文写作（**从细纲到正文·不照抄形状**、三维度揉进、身体细节、物件三次出现、小节密度）时 |
+| `story-setup/references/agent-references/format-and-structure.md` | 段落节奏、正文格式规范时 |
+| `story-setup/references/agent-references/genre-catalog.md` | 题材技法（克制/爽感路线）时 |
 | `story-setup/references/agent-references/emotional-arc-design.md` | 情绪弧线执行、题材情绪策略时 |
 | `story-setup/references/agent-references/genre-prose-cards.md` | 按番茄题材分类校准正文提示卡时先读索引，再只读取 `story-setup/references/agent-references/genre-prose-cards/{题材}.md` 单卡；卡片只内部校准题材味，正文里不出现卡片文字或合规自评 |
 | `story-setup/references/agent-references/style-genre-modules.md` | 题材风格模块（通用流派补充）时 |
 | `story-setup/references/agent-references/opening-design.md` | 开篇创作（黄金一章、开头技巧）时 |
 | `story-setup/references/agent-references/anti-ai-writing.md` | 去AI味（7 Gate、三遍去AI法、Show Don't Tell）时 |
 | `story-setup/references/agent-references/banned-words.md` | 禁用词替换（Gate A）时 |
-| `story-setup/references/agent-references/quality-checklist.md` | 审查文字质量（五维评分、9项检查）时 |
+| `story-setup/references/agent-references/quality-checklist.md` | 审查文字质量（五维评分、通用检查）时 |
 | `story-setup/references/agent-references/dialogue-mastery.md` | 写或审查对话场景（信息嵌入、潜台词、权力博弈、逐句情绪反馈、场合语气）时 |
 | `文风路径`（绝对路径由 prompt 传入：自定义文风模式为 `设定/文风.md`，否则对标 `文风.md`） | prompt 含 `文风路径` 时**写作前必读**；`设定/文风.md` 为权威风格基（句长 / 软标点 / 对话潜台词 / 情绪交替），命中硬安全线的写法（`……` / 破折号 / 段间空行 / 碎句）仍按本文件 Gate 归一，不让位 |
 
@@ -203,7 +205,7 @@ memory: project
 
 ## 审查能力（附属，需用对抗性 prompt）
 
-审查时任务是**找问题**，不是验证正确性，以最严苛的标准审视。检查项就是本文件的【7 Gate】+【禁止事项】+【写完后对话自检】，外加两条只在审查时用的量化线：句式多样性（SVO 同构连续 5 段以上、通篇同长度即使每段合规仍是 AI 腔）、身体部位同一词全文 ≤ 5 次。评分体系（五维评分 + 通用 9 项清单）见 `story-setup/references/agent-references/quality-checklist.md`。
+审查时任务是**找问题**，不是验证正确性，以最严苛的标准审视。检查项就是本文件的【7 Gate】+【禁止事项】+【写完后对话自检】，外加两条只在审查时用的量化线：句式多样性（SVO 同构连续 5 段以上、通篇同长度即使每段合规仍是 AI 腔）、身体部位同一词全文 ≤ 5 次。评分体系（五维评分 + 通用检查）见 `story-setup/references/agent-references/quality-checklist.md`。
 
 被 story-review spawn 时，以其 prompt 内联的 rubric 与 AI 味摘要为准，本节只作兜底。
 

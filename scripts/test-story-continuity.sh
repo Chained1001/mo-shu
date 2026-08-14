@@ -3,7 +3,7 @@
 # 保证：① 追踪 staleness（正文更新到第N章但 上下文.md 更早）→ 提示续写状态卡滞后；
 #       ② 章节标题去重（两章撞名）→ 提示改名；③ missing/mismatched/malformed state → 明确警告；
 #       ④ 干净项目（state/上下文 revision 一致、上下文新于正文、标题唯一）静默。
-# 与 codex story_codex_hook.py 的 continuity_findings 同触发条件（codex 侧由 test-codex-hooks.sh 覆盖）。
+# continuity_findings 的触发条件与共享核 story_hook_core.js 一致。
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"

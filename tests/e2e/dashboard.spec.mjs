@@ -13,7 +13,7 @@ test("用现有 demo 浏览拆文库、搜索项目并编辑保存", async ({ pa
   await expect(page).toHaveTitle(/OH STORY/);
   await expect(page.getByText("OH STORY", { exact: true })).toBeVisible();
   await expect(page.locator("#connectionStatus")).toContainText("仅本机");
-  await expect(page.locator("#libraryCount")).toHaveText("2");
+  await expect(page.locator("#libraryCount")).toHaveText("1");
   await expect(page.locator("#projectCount")).toHaveText("1");
   await expect(page.locator("#fileCount")).not.toHaveText("—");
 
@@ -24,7 +24,6 @@ test("用现有 demo 浏览拆文库、搜索项目并编辑保存", async ({ pa
   await expect(page.locator("#librariesTab")).toHaveAttribute("aria-selected", "true");
 
   await expect(page.locator("#fileTree")).toContainText("盘龙");
-  await expect(page.locator("#fileTree")).toContainText("曾将爱意私藏");
   await page.locator(".file-row[data-path='拆文库/盘龙/拆文报告.md']").click();
   await expect(page.locator("#editorTitle")).toHaveText("拆文报告.md");
   await expect(page.locator("#editorInput")).toHaveValue(/盘龙/);

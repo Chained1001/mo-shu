@@ -56,7 +56,7 @@ maxTurns: 25
 - **对话创作参考**：项目内搜索 `story-setup/references/agent-references/dialogue-mastery.md`
   - 创作对话前：阅读"人物语言差异化"的7维差异化方法
   - 设计潜台词时：阅读"深层设计：潜台词与议程"
-  - 审查对话质量时：阅读"自查清单"的三大自查项
+  - 审查对话质量时：阅读"质量检查"的三大自查项
 
 ---
 
@@ -128,7 +128,7 @@ maxTurns: 25
 - **能力一致性**：角色实力/能力是否前后一致，有无战力崩坏
 - **信息一致性**：角色知道什么/不知道什么是否前后一致
 
-对话质量审查参照 `story-setup/references/agent-references/dialogue-mastery.md`"自查清单"三大自查项：
+对话质量审查参照 `story-setup/references/agent-references/dialogue-mastery.md`"质量检查"三大自查项：
 1. 是否存在大量信息都必须用对话来展示
 2. 对话是否是问答式的一问一答
 3. 是否习惯依赖对话来推动剧情或人物变化

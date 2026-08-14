@@ -1,5 +1,5 @@
 #!/bin/bash
-# detect-story-gaps.sh — 检测写作项目中的 5 项缺口
+# detect-story-gaps.sh — 检测写作项目中的 6 项缺口
 # 设计原则：无缺口时完全静默，不输出任何内容，避免污染 context
 set -euo pipefail
 
@@ -19,7 +19,7 @@ NL=$'\n'
 OUTPUT=""
 HAS_WARNINGS=false
 
-# 1. 新项目检测：没有书名目录（同时支持长篇和短篇项目）
+# 1. 新项目检测：没有书名目录
 # bash 3.2 兼容：不用关联数组，由 discover_all_books 内部按顺序去重。
 declare -a BOOK_DIRS=()
 while IFS= read -r dir; do
@@ -43,8 +43,6 @@ for BOOK_DIR in "${BOOK_DIRS[@]}"; do
   if [ -d "$BOOK_DIR/正文" ]; then
     CHAPTER_COUNT=$(find "$BOOK_DIR/正文" -name "*.md" 2>/dev/null | wc -l | tr -d ' ' || true)
     case "$CHAPTER_COUNT" in ''|*[!0-9]*) CHAPTER_COUNT=0 ;; esac
-  elif [ -f "$BOOK_DIR/正文.md" ]; then
-    CHAPTER_COUNT=1
   fi
   if [ -d "$BOOK_DIR/设定" ]; then
     SETTING_COUNT=$(find "$BOOK_DIR/设定" -name "*.md" 2>/dev/null | wc -l | tr -d ' ' || true)
@@ -54,7 +52,7 @@ for BOOK_DIR in "${BOOK_DIRS[@]}"; do
     BOOK_OUTPUT+="[WARN] ${BOOK_NAME}：正文 ${CHAPTER_COUNT} 章，但设定文件只有 ${SETTING_COUNT} 个，建议补充设定。${NL}"
   fi
 
-  # 4. 过期或异常伏笔线索
+  # 3. 过期或异常伏笔线索
   if [ -f "$BOOK_DIR/追踪/伏笔.md" ]; then
     # 仅检查表格数据行中的状态列。当前协议正常状态（已埋/已回收/放弃）不报警，
     # 避免长篇项目每次 SessionStart 都触发全量伏笔审计。
@@ -77,14 +75,10 @@ for BOOK_DIR in "${BOOK_DIRS[@]}"; do
     fi
   fi
 
-  # 5. 大纲缺失（按项目类型区分判定）
-  if [ -d "$BOOK_DIR/正文" ] || [ -f "$BOOK_DIR/正文.md" ]; then
-    # 长篇判定：有 追踪/ 视为长篇，要求 大纲/ 目录
+  # 4. 大纲缺失
+  if [ -d "$BOOK_DIR/正文" ]; then
     if [ -d "$BOOK_DIR/追踪" ] && [ ! -d "$BOOK_DIR/大纲" ]; then
       BOOK_OUTPUT+="[WARN] ${BOOK_NAME}：已有 正文/ 但缺少 大纲/，建议先搭大纲。${NL}"
-    # 短篇判定：无 追踪/ 视为短篇，要求 小节大纲.md 单文件
-    elif [ ! -d "$BOOK_DIR/追踪" ] && [ ! -f "$BOOK_DIR/小节大纲.md" ]; then
-      BOOK_OUTPUT+="[WARN] ${BOOK_NAME}：已有正文但缺少 小节大纲.md，建议先搭大纲。${NL}"
     fi
   fi
 
@@ -95,7 +89,7 @@ for BOOK_DIR in "${BOOK_DIRS[@]}"; do
   fi
 done
 
-# 3. 全局拆文未完成检测（项目级，非书目级）
+# 5. 全局拆文未完成检测（项目级，非书目级）
 GLOBAL_PROGRESS_OUTPUT=""
 if [ -d "$ROOT/拆文库" ]; then
   # 同 session-start：按「最终状态」过滤，拆完的书不再报（裸数文件会永久误报）。
@@ -109,8 +103,8 @@ if [ -n "$GLOBAL_PROGRESS_OUTPUT" ]; then
   HAS_WARNINGS=true
 fi
 
-# 6. 跨批连续性兜底（追踪 staleness + 章节标题去重）——走 node 共享核 continuityFindings，
-# 与 Codex/OpenCode/ZCode 同一份实现。会话起点提醒：续写前发现「写了章但 上下文.md 没跟上」
+# 6. 跨批连续性兜底（追踪 staleness + 章节标题去重）——走 node 共享核 continuityFindings。
+# 会话起点提醒：续写前发现「写了章但 上下文.md 没跟上」
 # 或「两章撞名」。消息串与共享连续性核心保持一致；多书/并列去重的排序按 js 语义（已文档化，仅影响
 # advisory 顺序，不影响是否报）。扫描范围 repo-wide（与上方缺口检测一致），多书项目里非活跃书
 # 也会提醒——有意为之（切书前也想知道断线），不按 .active-book 收窄。staleness 用 mtime 比较

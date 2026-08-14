@@ -76,8 +76,7 @@ function discoverActiveBook(root) {
   if (tracking) return path.dirname(tracking)
   const body = findFirst(root, 4, (_full, entry) => entry.isDirectory() && entry.name === "正文")
   if (body) return path.dirname(body)
-  const bodyFile = findFirst(root, 4, (_full, entry) => entry.isFile() && entry.name === "正文.md")
-  return bodyFile ? path.dirname(bodyFile) : null
+  return null
 }
 
 function discoverAllBooks(root) {
@@ -90,8 +89,6 @@ function discoverAllBooks(root) {
       if (entry.name.startsWith(".") || entry.name === "node_modules") continue
       const full = path.join(base, entry.name)
       if (entry.isDirectory() && (entry.name === "追踪" || entry.name === "正文")) {
-        books.set(path.dirname(full), path.dirname(full))
-      } else if (entry.isFile() && entry.name === "正文.md") {
         books.set(path.dirname(full), path.dirname(full))
       }
     }
@@ -514,8 +511,8 @@ function commandBasename(value) {
   return parts[parts.length - 1]
 }
 
-// 目录形态的落盘目标一律用 "/" 拼：path.join 在 Windows 产出反斜杠，会让三端 parity 的
-// 逐字比较在 Windows 上错开（resolveTarget 之后也会把 \ 归一成 /，这里先统一即可）。
+// 目录形态的落盘目标一律用 "/" 拼：path.join 在 Windows 产出反斜杠，会让路径归一不一致
+// （resolveTarget 之后也会把 \ 归一成 /，这里先统一即可）。
 function joinPosix(directory, name) {
   return `${String(directory).replace(/[\\/]+$/, "")}/${name}`
 }
@@ -633,16 +630,6 @@ function extractPatchTargets(patchText) {
 function proseBlockReason(root, absolute) {
   const base = path.basename(absolute)
   const parent = path.basename(path.dirname(absolute))
-  if (base === "正文.md") {
-    if (fs.existsSync(absolute)) return null
-    const book = path.dirname(absolute)
-    if (fs.existsSync(path.join(root, "拆文库", path.basename(book)))) return null
-    if (!fs.existsSync(path.join(book, "设定.md"))) return null
-    if (!fs.existsSync(path.join(book, "小节大纲.md"))) {
-      return `⛔ 写正文被拦截：${safeRelative(root, absolute)} 缺少同目录 小节大纲.md。先按 story-short-write 完成「小节大纲.md」再写正文。`
-    }
-    return null
-  }
   if (parent !== "正文" || !/^第.*章.*\.md$/.test(base)) return null
   const match = base.match(/^第0*(\d+)章/)
   if (!match) return null
@@ -676,14 +663,13 @@ function proseBlockReason(root, absolute) {
   if (exists) return null
   // 欠账门（无状态）：写第 N 章（首建）前，上一章有未清毒句式且未标「去味:跳过」豁免时先清再写。
   // 判据现算自上一章文件本身，不落任何状态文件；找不到上一章/读取失败一律放行（宁可漏拦不可误伤）。
-  // js↔py 文案由 check-hook-regex-sync.sh 锁同步，判定由 test-prose-net-parity.sh Part E 锁 parity。
   const prevNum = Number(chapter) - 1
   if (prevNum >= 1) {
     let prevFile = null
     try {
       // readdir 顺序在 ext4/overlayfs 上是哈希序：不排序就可能挑中同章号的原稿备份
       // （workflow-revision 的「备份原稿」产物），拿早已被改写掉的旧文本报欠账。
-      // 显式排除 _原稿_ 备份并排序，保证四端与各文件系统上取到同一个「上一章」。
+      // 显式排除 _原稿_ 备份并排序，保证各文件系统上取到同一个「上一章」。
       const candidates = fs.readdirSync(path.dirname(absolute))
         .filter((file) => {
           const pm = file.match(/^第0*(\d+)章.*\.md$/)
@@ -739,9 +725,7 @@ function skippableLine(line) {
 // 线性扫描、量词有界，无回溯灾难。台词/弹幕/系统播报不算：逐行把成对引号段等长
 // 问号占位（占位天然截断各规则的字符类，规则不会跨引号拼出假命中；见
 // maskQuotedSpans 为何用问号而不是句号），占位后仍残留引号字符（跨行对话/未闭合）
-// 的行整行跳过。js↔py 同构实现（codex
-// story_codex_hook.py）由 scripts/check-hook-regex-sync.sh（规范串逐字锁）与
-// scripts/test-prose-net-parity.sh（fixture 逐字 diff）锁 parity，文案以本核为准。
+// 的行整行跳过。
 const TOXIC_QUOTE_SPANS = [/「[^」]*」/g, /『[^』]*』/g, /【[^】]*】/g, /“[^”]*”/g, /‘[^’]*’/g, /"[^"]*"/g, /'[^']*'/g]
 const TOXIC_QUOTE_CHARS = new Set(Array.from("「」『』【】“”‘’\"'"))
 // 分句起点边界（前一字符属于它才认「是A，不是B」的分句首「是」）；同时用作确认语的右边界。
@@ -761,7 +745,7 @@ const TOXIC_SENTENCE_PATTERNS = [
 const TOXIC_TRAILER_PATTERN = /没人知道|谁也不知道|谁也没想到|殊不知|(?:这)?才刚刚开(?:始|头)|正(?:朝着|向着)[^。！？!?\n]{0,24}(?:压|涌|袭|逼)(?:了?过去|了?过来|来)|(?<!正式)拉开(?:序幕|帷幕)|即将(?:开始|来临|降临)/
 // 章尾状态总结体：与 trailer-ending 共用文末窗口，盖章过去而非预告将来（同 check-ai-patterns.js）。
 // 收的都是 banned-words 已按名禁掉的形态；不收「(这|那)一刻…终于明白」——真人叙述里那是正常认知
-// 节拍，短篇第一人称审判句还是卖点。各分支要求落在句末断言位，避免吃进条件从句/动补/成语/及物用法/否定认知。
+// 节拍，第一人称审判句还是卖点。各分支要求落在句末断言位，避免吃进条件从句/动补/成语/及物用法/否定认知。
 const TOXIC_TRAILER_SUMMARY_PATTERN = /这一(?:夜|天|刻|战|年|局|役)[，,]?[^。！？!?，,\n]{0,6}(?<!命中)(?<!是)注定[^。！？!?\n]{0,8}[。！]|就这样[，,][^。！？!?，,\n]{0,8}(?:一切|全部)[^。！？!?，,\n]{0,4}(?:结束了|落幕|收场)[。！]|这一切[，,]?[^。！？!?，,\n]{0,6}(?:都)?(?:说明|意味着|结束了)(?!的)(?:(?!什么)[^。！？!?\n]){0,6}[。！]|(?:新的篇章|新的旅程|崭新的篇章|新的人生)[^。！？!?\n]{0,6}(?:开始|拉开|展开)|命运[^。！？!?\n]{0,6}齿轮/
 // 「是A，不是B」的反问尾巴（…，不是吗/么/吧）不算对比句；取匹配段最后一个「不是」后的首字判断。
 const TOXIC_REVERSE_TAIL = /.*[，,]\s*(?:而)?不是([^。！？!?\n]*)$/
@@ -900,12 +884,10 @@ function proseNetFindings(text) {
 function isProsePath(absolute) {
   const base = path.basename(absolute)
   const parent = path.basename(path.dirname(absolute))
-  if (base === "正文.md") return fs.existsSync(path.join(path.dirname(absolute), "设定.md"))
   if (parent !== "正文" || !/^第.*章.*\.md$/.test(base)) return false
   const book = path.dirname(path.dirname(absolute))
-  // 大纲/追踪/设定 must be directories; 设定.md a file — matches the bash oracle
-  // check-prose-after-write.sh (`[ -d 大纲 ] || … || [ -f 设定.md ]`).
-  return ["大纲", "追踪", "设定"].some((name) => existingDir(path.join(book, name))) || fs.existsSync(path.join(book, "设定.md"))
+  // 大纲/追踪/设定 must be directories
+  return ["大纲", "追踪", "设定"].some((name) => existingDir(path.join(book, name)))
 }
 
 function wordcountFinding(absolute, text) {
@@ -972,7 +954,7 @@ function proseAfterWrite(root, absolute) {
 // 线性手写分词，不用带歧义交替的正则：旧式 /"(?:\\.|[^"])*"|'[^']*'|[^\s]+/ 里 \\. 与 [^"] 都能吃
 // 反斜杠，而调用方先按 [;&|\n] 拆段会拆开引号内的分隔符、留下一个不闭合的 "，此时每个反斜杠让
 // 搜索空间翻倍——`git commit -m "fix: 转义覆盖 \\n \\r … | see README"` 这种 130 字命令实测烧掉
-// 27s CPU，超过宿主 hook 的 timeoutMs（zcode 15000ms）被杀。逐字符扫描：引号内原样取字（成对
+// 27s CPU，超过宿主 hook 的 timeoutMs 被杀。逐字符扫描：引号内原样取字（成对
 // 引号剥掉，不闭合就取到段尾），ASCII 空白（空格/Tab/CR/LF）分词——U+3000 不是 shell 分词符，
 // 故不切。不解 \ 转义：resolveTarget 把 \ 当路径分隔符（Windows 路径）。
 function shellWords(segment) {
@@ -1092,7 +1074,7 @@ function isGitCommitCommand(command) {
   // Flatten subshell/brace grouping to spaces so `(git commit)` / `{ git commit; }` still expose
   // the git verb; split on separators; skip leading shell wrappers and control words
   // (then/do/else/elif) so a commit inside if/for/while is detected. Mirrors the Claude bash
-  // oracle validate-story-commit.sh and codex is_git_commit_command.
+  // oracle validate-story-commit.sh.
   for (const rawSegment of String(command).replace(/\r/g, "").replace(/[(){}]/g, " ").split(/[;&|\n]+/)) {
     const words = shellWords(rawSegment)
     let i = 0
@@ -1120,8 +1102,8 @@ function isGitCommitCommand(command) {
 const SETTING_NON_CHARACTER_FILES = new Set(["关系.md", "题材定位.md", "题材正文提示卡.md", "文风.md", "世界规则.md", "世界观.md", "金手指.md", "背景设定.md"])
 
 // 只查角色卡：整棵 设定/ 一刀切会让每次碰设定的提交都刷一屏假警告，把同框的
-// 「正文硬编码角色属性」真警告埋掉。判定口径与 validate-story-commit.sh / opencode
-// pre-commit.sh 的 case 分支一一对齐（bash↔js↔py 四端同口径，别单边改回一刀切）：
+// 「正文硬编码角色属性」真警告埋掉。判定口径与 validate-story-commit.sh 的
+// case 分支一一对齐（别单边改回一刀切）：
 // ① 设定/角色|人物 子目录内的文件 → 角色卡；
 // ② 其余 设定/<子目录>/ → 整目录跳过（世界观/势力/报告/原理/人物关系 等）；
 // ③ 设定/ 直属的扁平文件 → 除已知项目级设定件外都算角色卡（主角.md/配角.md/反派.md 等自定义命名）。
@@ -1160,7 +1142,7 @@ function stagedMarkdownWarnings(root) {
     const full = path.join(root, relative)
     let text = ""
     try { text = fs.readFileSync(full, "utf8") } catch { continue }
-    if (relative === "正文.md" || relative.includes("/正文.md") || relative.startsWith("正文/") || relative.includes("/正文/")) {
+    if (relative.startsWith("正文/") || relative.includes("/正文/")) {
       const hits = []
       text.split(/\r?\n/).forEach((line, index) => {
         if (/(身高|体重|年龄)[\s　]*(：|:)[\s　]*[0-9]+/.test(line)) hits.push(`${index + 1}:${line}`)

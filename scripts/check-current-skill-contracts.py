@@ -123,18 +123,6 @@ LEGACY_RULES = (
         ("skills/story-setup/SKILL.md",),
     ),
     AbsentRule(
-        "opencode-old-reference-prefix",
-        "OpenCode agents use the deployed skills/ reference path only",
-        r"\.opencode/skills/story-setup/references/agent-references/",
-        ("skills/story-setup/references/opencode/agents",),
-    ),
-    AbsentRule(
-        "codex-old-reference-prefix",
-        "Codex agents use the deployed .codex/skills reference path only",
-        r"\.(?:claude|opencode)/skills/story-setup/references/agent-references/|\{项目根\}/skills/story-setup/references/agent-references/",
-        ("skills/story-setup/references/codex/agents",),
-    ),
-    AbsentRule(
         "story-import-self-main-benchmark",
         "story-import never registers the imported work itself as a benchmark",
         r"导入当前书时至少登记自身|主对标书:\s*\{书名\}",
@@ -198,8 +186,6 @@ LEGACY_RULES = (
         (
             "skills/story-long-write/SKILL.md",
             "skills/story-setup/references/templates/agents/narrative-writer.md",
-            "skills/story-setup/references/opencode/agents/narrative-writer.md",
-            "skills/story-setup/references/codex/agents/narrative-writer.toml",
         ),
     ),
     AbsentRule(
@@ -411,7 +397,7 @@ def read_text(path: Path) -> Optional[str]:
         return None
 
 
-# 二进制资产读不出文本是正常的（demo 封面图、__pycache__ 字节码），静默跳过即可；其余文件
+# 二进制资产读不出文本是正常的（demo 图片、__pycache__ 字节码），静默跳过即可；其余文件
 # 一律按 UTF-8 文本对待。GBK/cp936 的 Markdown 会让所有内容规则一起失效——regex_hits 拿到
 # None 就当「没命中」，检查照样打 [PASS]——所以文本文件解码失败必须是命名失败，不是跳过。
 BINARY_SUFFIXES = frozenset(
@@ -465,7 +451,7 @@ TEXT_SUFFIXES = frozenset(
 
 
 def is_binary_asset(path: Path) -> bool:
-    """二进制资产（封面图、字节码、.DS_Store 之类）读不出文本是正常的。
+    """二进制资产（图片、字节码、.DS_Store 之类）读不出文本是正常的。
 
     后缀白名单之外再看有没有 NUL 字节：这样 `.DS_Store`、无后缀的二进制不会误报，而
     GBK/cp936 的 Markdown（没有 NUL）仍会被判成必须修的文本文件。读不到字节就按文本算，

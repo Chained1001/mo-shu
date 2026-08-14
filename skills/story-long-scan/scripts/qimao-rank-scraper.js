@@ -19,7 +19,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const RANK_URL = "https://www.qimao.com/paihang";
 
@@ -56,8 +56,10 @@ const PERIODS = [
 function rankUrl(channelId, rankTypeId, periodId) {
   const channel = CHANNELS.find((item) => item.id === channelId);
   const rankType = RANK_TYPES.find((item) => item.id === rankTypeId);
-  const period = PERIODS.find((item) => item.id === (periodId || "day"));
-  if (!channel || !rankType || !period) return "";
+  if (!channel || !rankType) return "";
+  if (!periodId) return `${RANK_URL}/${channel.path}/${rankType.path}/`;
+  const period = PERIODS.find((item) => item.id === periodId);
+  if (!period) return "";
   return `${RANK_URL}/${channel.path}/${rankType.path}/${period.path}/`;
 }
 
@@ -218,7 +220,7 @@ function summarizeQuality(books, rawCount) {
   };
 }
 
-function renderMarkdown(ch, rt, period, url, books, rawCount, now = new Date().toISOString()) {
+function renderMarkdown(ch, rt, period, url, books, rawCount, now = localTimestamp()) {
   const periodLabel = period ? period.label : "";
   const summary = summarizeQuality(books, rawCount);
   const lines = [

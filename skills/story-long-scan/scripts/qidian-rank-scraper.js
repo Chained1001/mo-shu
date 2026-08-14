@@ -29,7 +29,7 @@
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
-const { ab, sleep, evalJSON, scrollLoad, getArg, localDateStamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSON, scrollLoad, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const PC_BASE_URL = "https://www.qidian.com/rank";
 const MOBILE_BASE_URL = "https://m.qidian.com";
@@ -69,8 +69,7 @@ const RANK_TYPES = [
   {
     id: "newsign",
     label: "新人签约新书榜",
-    mobilePath: "/rank/sign/",
-    mobileLabel: "签约榜",
+    mobilePath: "/rank/newsign/",
   },
   { id: "recom", label: "原创推荐榜", mobilePath: "/rank/rec/", mobileLabel: "推荐榜" },
   { id: "readindex", label: "阅读指数榜", mobilePath: "/rank/readindex/" },
@@ -367,7 +366,7 @@ function summarizeQuality(books, rawCount) {
 }
 
 function renderMarkdown(rt, books, url, sourceMode, extraLines = [], rawCount = books.length) {
-  const now = new Date().toISOString();
+  const now = localTimestamp();
   const summary = summarizeQuality(books, rawCount);
   const lines = [
     `# 起点 · ${rt.label}`,

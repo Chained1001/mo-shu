@@ -4,7 +4,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const USAGE = `Usage: node normalize-punctuation.js [--check] [--quote-mode keep|ascii|yan] <file...>
+const USAGE = `Usage: node normalize-punctuation.js [--check] [--quote-mode keep|ascii|corner] <file...>
 
 Normalize正文 punctuation deterministically:
   - replace ellipses, em dashes, and double hyphens with Chinese punctuation
@@ -24,7 +24,7 @@ for (let i = 2; i < process.argv.length; i += 1) {
     options.check = true;
   } else if (arg === '--quote-mode') {
     const value = process.argv[i + 1];
-    if (!value) die('--quote-mode requires keep, ascii, or yan');
+    if (!value) die('--quote-mode requires keep, ascii, or corner');
     options.quoteMode = value;
     i += 1;
   } else if (arg.startsWith('--quote-mode=')) {
@@ -39,7 +39,7 @@ for (let i = 2; i < process.argv.length; i += 1) {
   }
 }
 
-if (!['keep', 'ascii', 'yan'].includes(options.quoteMode)) {
+if (!['keep', 'ascii', 'corner'].includes(options.quoteMode)) {
   die(`Invalid --quote-mode: ${options.quoteMode}`);
 }
 if (options.files.length === 0) {
@@ -396,11 +396,11 @@ function normalizeQuotes(line, quoteMode, quoteOpen, lineNo) {
       findings.push({ line: lineNo, column: i + 1, type: 'quote-style', message: '按显式 quote-mode 转为半角双引号。' });
       continue;
     }
-    if (quoteMode === 'yan' && (ch === '"' || ch === '“' || ch === '”')) {
+    if (quoteMode === 'corner' && (ch === '"' || ch === '“' || ch === '”')) {
       const replacement = quoteOpen || ch === '”' ? '」' : '「';
       output += replacement;
       quoteOpen = replacement === '「';
-      findings.push({ line: lineNo, column: i + 1, type: 'quote-style', message: '按显式 quote-mode 转为盐言引号。' });
+      findings.push({ line: lineNo, column: i + 1, type: 'quote-style', message: '按显式 quote-mode 转为「」引号。' });
       continue;
     }
     output += ch;

@@ -16,7 +16,6 @@ test("story skill exposes the platform-specific dashboard triggers", async () =>
 
   assert.match(skill, /^name: story$/m);
   assert.match(skill, /\/story dashboard/);
-  assert.match(skill, /\$story dashboard/);
   assert.match(
     skill,
     /\| 工作台 \| dashboard、工作台、看拆文库、浏览项目文件、打开项目面板 \| 见下方「Dashboard 工作台」 \|/,
@@ -29,7 +28,7 @@ test("story skill exposes the platform-specific dashboard triggers", async () =>
   assert.match(skill, /不要主动增加 `--allow-network`/);
 });
 
-test("Claude Code marketplace exposes story while Codex uses the canonical skill bundle", async () => {
+test("Claude Code marketplace exposes the story skill", async () => {
   const marketplace = JSON.parse(await read(".claude-plugin/marketplace.json"));
   const claudeStory = marketplace.plugins.find((plugin) => plugin.name === "story");
 
@@ -38,7 +37,7 @@ test("Claude Code marketplace exposes story while Codex uses the canonical skill
   assert.match(claudeStory.description, /\/story dashboard/);
 
   const readme = await read("README.md");
-  assert.match(readme, /`\/story dashboard`（Codex 用 `\$story dashboard`）/);
+  assert.match(readme, /`\/story dashboard` 打开本地写作工作台/);
 
   for (const relativePath of [
     "SKILL.md",

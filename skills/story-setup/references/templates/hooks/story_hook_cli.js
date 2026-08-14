@@ -3,23 +3,18 @@
 
 // story_hook_cli.js — Claude Code bash hook 的 node 桥
 // Claude 侧 hook 是 bash（settings.json 挂 bash 脚本），归核逻辑走这里 require 的
-// 共享核 story_hook_core.js——和 OpenCode/ZCode 用的是同一份，由 check-shared-files
-// 保证字节相同。归核（单份实现在 core）的面：正文网/字数（prose-net）、路径抽取
-// （extract-target）、Bash 正文写入前置门（prose-command-guard）、git commit 侦测
-// （is-git-commit）、连续性（continuity）、追踪检查点（tracking-checkpoint）。
-// 尚未归核、各端独立实现的面：
+// 共享核 story_hook_core.js。归核（单份实现在 core）的面：正文网/字数（prose-net）、
+// 路径抽取（extract-target）、Bash 正文写入前置门（prose-command-guard）、git commit
+// 侦测（is-git-commit）、连续性（continuity）、追踪检查点（tracking-checkpoint）。
+// 尚未归核、Claude 独立实现的面：
 //   - Write/Edit/MultiEdit 的大纲/细纲阻断判定：Claude 走 guard-outline-before-prose.sh
 //     纯 bash。它必须在无 node 的运行时也拦得住（官方推荐的原生二进制装法不带 Node），
 //     所以保留纯 bash 判定。Bash 命令要先区分真正写入和只读提及，故经本 CLI 复用共享核；
 //     node 缺席时该命令面降级放行。追踪检查点同样因要解析 JSON，经 tracking-checkpoint
 //     子命令执行、node 缺席时降级放行。
-//     codex prose_block_reason ↔ core proseBlockReason 由
-//     scripts/test-prose-net-parity.sh Part E 锁 parity。
-//   - staged markdown warnings：Claude 走 validate-story-commit.sh bash grep；codex
-//     staged_markdown_warnings ↔ core stagedMarkdownWarnings 同由 Part E 锁 parity。
+//   - staged markdown warnings：Claude 走 validate-story-commit.sh bash grep，
 //     匹配语义与文案以 JS core 为准。
-// 各端只留读写各自 hook I/O 格式的薄壳。node 天生按 UTF-8 写 stdout，顺带免掉了
-// 旧内嵌 python 那套 cp936/LC_ALL 编码体操。
+// node 天生按 UTF-8 写 stdout，顺带免掉了旧内嵌 python 那套 cp936/LC_ALL 编码体操。
 
 const fs = require("node:fs")
 const path = require("node:path")
@@ -131,8 +126,7 @@ if (command === "extract-target") {
   }
 } else if (command === "tracking-checkpoint") {
   // 追踪检查点门（BLOCKING 面）：guard-outline-before-prose.sh 调本子命令复用共享核
-  // trackingCheckpointIssue，与 codex py / opencode / zcode 同一份判定（issue #305 之前
-  // Claude 侧独缺这道门，同一工程同一次写正文，主力端放行、另三端拦下）。
+  // trackingCheckpointIssue 同一份判定（issue #305 之前 Claude 侧独缺这道门）。
   // 用法：tracking-checkpoint <root> <bookDir> <上一章号|->
   //   首建新章传上一章号，做「上一章事务是否已提交」的顺序校验；
   //   正文已存在（续写/改稿/回炉）传 `-`，只校验 state 自身的存在/schema/修订一致性。
@@ -154,8 +148,7 @@ if (command === "extract-target") {
   }
 } else if (command === "is-git-commit") {
   // git commit 侦测。命令优先取 STORY_COMMIT_COMMAND，缺省再从 HOOK_INPUT 挖 command/cmd/script。
-  // 用共享核 isGitCommitCommand（js 分词语义，与 OpenCode/ZCode 一致；对「引号内分隔符」这类
-  // 边界与旧 python shlex 有已文档化、仅 advisory 的差异）。是 git commit → exit 0，否则 exit 1。
+  // 用共享核 isGitCommitCommand（js 分词语义）。是 git commit → exit 0，否则 exit 1。
   let raw = process.env.STORY_COMMIT_COMMAND || ""
   if (!raw) {
     const hookInput = process.env.HOOK_INPUT || ""

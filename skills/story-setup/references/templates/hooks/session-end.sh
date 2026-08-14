@@ -1,6 +1,6 @@
 #!/bin/bash
 # session-end.sh — 会话结束时按需记录最后状态
-# 设计原则：默认静默且不写文件；显式启用时也不创建短篇项目的 追踪/ 目录
+# 设计原则：默认静默且不写文件；显式启用时也不创建追踪目录
 set -euo pipefail
 
 # 加载公共函数库
@@ -17,7 +17,7 @@ fi
 
 BOOK_DIR=$(discover_active_book)
 
-# 只写入已存在的追踪目录；不要 mkdir，避免把短篇项目误升级成长篇结构。
+# 只写入已存在的追踪目录；不要 mkdir。
 if [ -n "$BOOK_DIR" ] && [ -d "$BOOK_DIR/追踪" ]; then
   echo "[$(date '+%Y-%m-%dT%H:%M:%S%z')] session ended" >> "$BOOK_DIR/追踪/session-log.txt"
 fi

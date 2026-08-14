@@ -342,15 +342,15 @@ def test_templates_and_web_assets_are_scanned_for_cross_skill_paths() -> None:
             root / "skills/demo/SKILL.md",
             "---\nname: demo\ndescription: Demo\n---\n# Demo\n\n"
             "Deploy `references/CLAUDE.md.tmpl` and `assets/index.html`, "
-            "patch with `references/opencode.json.patch`, style with `assets/styles.css`.\n",
+            "patch with `references/settings-hooks.json.patch`, style with `assets/styles.css`.\n",
         )
         write(
             root / "skills/demo/references/CLAUDE.md.tmpl",
             "# 项目约定\n\n必读：story-setup/references/agent-references/craft.md。\n",
         )
         write(
-            root / "skills/demo/references/opencode.json.patch",
-            "+  \"instructions\": \"story-setup/references/generic/AGENTS.md.tmpl\"\n",
+            root / "skills/demo/references/settings-hooks.json.patch",
+            "+  \"instructions\": \"story-setup/references/templates/CLAUDE.md.tmpl\"\n",
         )
         write(
             root / "skills/demo/assets/index.html",
@@ -365,7 +365,7 @@ def test_templates_and_web_assets_are_scanned_for_cross_skill_paths() -> None:
         assert result.returncode == 1, result.stdout + result.stderr
         for asset in (
             "references/CLAUDE.md.tmpl:3",
-            "references/opencode.json.patch:1",
+            "references/settings-hooks.json.patch:1",
             "assets/index.html:1",
             "assets/styles.css:1",
         ):
@@ -428,7 +428,7 @@ def test_brace_enumerations_name_each_file() -> None:
         write(
             root / "skills/demo/SKILL.md",
             "---\nname: demo\ndescription: Demo\n---\n# Demo\n\n"
-            "平台 rubric：`references/rubrics/{fanqie,qidian,zhihu}.md`\n",
+            "平台 rubric：`references/rubrics/{fanqie,qidian,missing}.md`\n",
         )
         write(root / "skills/demo/references/rubrics/fanqie.md", "# fanqie\n")
         write(root / "skills/demo/references/rubrics/qidian.md", "# qidian\n")
@@ -437,7 +437,7 @@ def test_brace_enumerations_name_each_file() -> None:
         result = run(root)
         assert result.returncode == 1, result.stdout + result.stderr
         # 点名枚举展开成逐个路径：缺失成员是断链，命中成员算已引用，未点名的仍是死引用
-        assert "references/rubrics/zhihu.md" in result.stdout, result.stdout
+        assert "references/rubrics/missing.md" in result.stdout, result.stdout
         assert "[broken-inline-path]" in result.stdout, result.stdout
         assert (
             "[dead-reference] skills/demo/references/rubrics/orphan.md" in result.stdout

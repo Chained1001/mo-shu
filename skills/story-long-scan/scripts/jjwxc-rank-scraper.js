@@ -24,7 +24,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, getArg, localDateStamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSONBase64, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const BASE_URL = "https://www.jjwxc.net/topten.php";
 
@@ -281,7 +281,7 @@ function scrapeRank(port, rankTypeId, channelId) {
   }
   const quality = problems.length ? "[存在问题]" : "[OK]";
 
-  const now = new Date().toISOString();
+  const now = localTimestamp();
   const lines = [
     `# 晋江 · ${rt.label}`,
     "",

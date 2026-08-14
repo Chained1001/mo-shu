@@ -27,7 +27,7 @@ resolve_project_path() {
 }
 
 # discover_active_book — 单本书查询（活跃书目）
-# 优先 root/.active-book；其次 find 第一个 追踪/ (长篇) 或 正文/ / 正文.md (短篇) 目录。
+# 优先 root/.active-book；其次 find 第一个 追踪/ 或 正文/ 目录。
 # 使用场景：session-start / session-end / pre-compact / post-compact —— 一次会话只关心当前活跃的那本书。
 discover_active_book() {
   local root
@@ -77,11 +77,11 @@ discover_active_book() {
     return
   fi
 
-  # 短篇 fallback：查找 正文/ 目录或 正文.md（maxdepth 4 覆盖 推荐/短篇/书名/正文 结构）
+  # 长篇 fallback：查找 正文/ 目录（maxdepth 4 覆盖 长篇/书名/正文 结构）
   local story_path
   story_path=$(find "$root" -maxdepth 4 \
     \( -type d ! -path "$root" \( -name '.*' -o -name node_modules \) -prune \) -o \
-    \( \( -type d -name "正文" -o -type f -name "正文.md" \) -print -quit \) 2>/dev/null || true)
+    \( -type d -name "正文" -print -quit \) 2>/dev/null || true)
   if [ -n "$story_path" ]; then
     dirname "$story_path"
   fi
@@ -139,9 +139,9 @@ discover_all_books() {
     find "$root" -maxdepth 4 \
       \( -type d ! -path "$root" \( -name '.*' -o -name node_modules \) -prune \) -o \
       \( -type d -name "追踪" -print \) 2>/dev/null | while IFS= read -r d; do dirname "$d"; done
-    # 短篇：正文/ 父目录 或 正文.md 父目录
+    # 长篇：正文/ 父目录
     find "$root" -maxdepth 4 \
       \( -type d ! -path "$root" \( -name '.*' -o -name node_modules \) -prune \) -o \
-      \( \( -type d -name "正文" -o -type f -name "正文.md" \) -print \) 2>/dev/null | while IFS= read -r d; do dirname "$d"; done
+      \( -type d -name "正文" -print \) 2>/dev/null | while IFS= read -r d; do dirname "$d"; done
   } | awk 'NF && !seen[$0]++'
 }

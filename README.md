@@ -2,7 +2,7 @@
 
 # oh-story-claudecode
 
-网文写作 skill 包，覆盖长篇网络小说的扫榜、拆文、写作、去AI味全流程。内置适配 Claude Code、OpenCode、ZCode、OpenClaw、Codex CLI、Reasonix；能读取项目文件的 Web AI / Agent 环境也可按通用 skills 路径使用。
+长篇网文写作 skill 包，覆盖扫榜、拆文、写作、去AI味的全流程。内置适配 Claude Code。
 
 ## 核心思路
 
@@ -16,13 +16,7 @@
 
 围绕四条线展开：爆款逆向 · 剧情模块化重组 · 上下文状态分层管理 · 人机协同。
 
-> v0.7.6 起：重点在正文那一段。写正文的 `narrative-writer` 有三条规则一直在空转——「写完必须立即统计字数」给的是一条 Bash 命令，可它的工具白名单里没有 Bash，同一句话又禁掉了模型估算，于是「字数达标是硬性要求」背后没有任何可执行判据；「返回前报出句长分布」同样只能编，而主会话正拿它做质量校验；「正文逐项展开细纲」是最高优先级的明令，放宽的那半边却只写在主 skill 里、从不进 spawn 提示词，子代理只看见限制，就按一个情节点一段平推成流水账。三条都已修好，实跑首次落盘即进验收区间（对照组不到下限的 73%）。新增细纲照搬检测：细纲把情节点写成成品散文句时正文只剩誊抄，配套的「复沓锚句」字段让必须逐字进正文的原话（誓言、系统面板、案卷原话）不被误判。另外 Claude Code 上用 Bash 重定向写正文也会被大纲/追踪守卫拦下，以及每次会话固定加载的文本再降两成（开书 −30%、回炉 −41%）。**本版 `agents_version` 为 25**，已部署项目需重新运行 `/story-setup` 并新开会话。
->
-> v0.7.5 起：稳定版。补上 Claude Code 写正文守卫缺的追踪检查点门——另三端从 v0.7.3 起就有，主力端此前会静默写出若干章没有追踪的正文；长篇 `story-long-write` 每次触发都整份进上下文的 SKILL.md 从 82 KB 降到 54 KB（开书三阶段抽成按需读的 `workflow-setup.md`，日更不再为用不上的建纲步骤付费）；清掉一批过度累加的限制指令，其中一条把正文里普通的「他说」判成了违规。**本版 `agents_version` 为 24**，已部署项目需重新运行 `/story-setup` 并新开会话。
->
-> v0.7.4 起：全是修复。`story-import` 不再把用户自己的书登记成对标（此前会出现「对标目录内容跟自己设定完全相同」）；story-setup 重部署不再把 Reasonix / generic 项目误判成 OpenClaw，多端部署也不再每次开会话误报参考包缺失；Stage 6 文风统计在 Windows 上不再必挂。spawn 的 `agents_version` 硬门禁改成提示——版本不匹配照常并行，只有 agent 文件缺失才降级 solo。**本版 `agents_version` 为 23**，已部署项目需重新运行 `/story-setup` 并新开会话。
->
-> 更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **最近更新（v0.7.6）**：正文写作的三条空转规则已落地——字数统计、句长分布、细纲逐项展开现在都有可执行判据；新增细纲照搬检测，把必须逐字进正文的「复沓锚句」与誊抄区分开。**本版 `agents_version` 为 25**，已部署项目需重新运行 `/story-setup` 并新开会话。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 流程总览
 
@@ -62,11 +56,9 @@ flowchart LR
 
     entry_l --> setup
     setup --> scan_l
-    setup --> scan_s
     scan_l --> analyze_l
     analyze_l --> write_l
     entry_r -.->|跳过准备| write_l
-    entry_r -.->|跳过准备| write_s
     entry_i -.->|推荐先部署| setup
     setup -.->|逆向导入| import_l
     import_l -.->|续写| write_l
@@ -75,7 +67,7 @@ flowchart LR
 
 ## 安装
 
-**方式一** 直接告诉 Claude Code / OpenCode / ZCode / OpenClaw / Codex / Reasonix，或其他支持导入 GitHub 仓库/skill 的 Web AI / Agent 平台：
+**方式一** 直接告诉 Claude Code：
 
 ```
 安装这个 skill https://github.com/worldwonderer/oh-story-claudecode
@@ -93,43 +85,24 @@ npx skills add worldwonderer/oh-story-claudecode -y -g
 
 Windows 上偶尔会看到 `ENOENT ... mkdir` 报错但末尾仍显示 `Done!`，这是有技能没装全。story-setup 的参考资料目录整个缺了一块时，跑 `/story-setup` 会提示参考资料包不完整；其它形式的残缺不一定有提示。无论有没有报错，重跑同一条安装命令即可修复。
 
-<details>
-<summary>Codex / ZCode / OpenCode / OpenClaw / Reasonix / Web AI 使用说明</summary>
-
-**Codex 用户：** repo 内直接使用：Codex 会扫描 `$REPO_ROOT/.agents/skills`（指向 `skills/` 的 symlink）发现 13 个 skill；用 `$story`、`$story-setup` 或 `/skills` 调用。Windows 上 git 需开 `core.symlinks=true`，否则 symlink 失效，改走下方 `$story-setup` 部署。
-
-跑 `$story-setup` 部署到写作项目后，会写入 `.codex/agents/*.toml`、`.codex/hooks.json`、`.codex/hooks/{story_codex_hook.py,run-story-hook.sh,run-story-hook.cmd}` 和 `.codex/skills/story-setup/references/agent-references/`；请信任项目 `.codex/` 配置层并在 `/hooks` review/trust hooks、新开 Codex 会话，让 custom agents 生效。
-
-**ZCode 用户：** 在 Plugin Management 中把本仓库加入 marketplace，安装 `oh-story` 后可用 `$story`、`$story-setup` 或 `/` 面板调用 13 个 Skills/Commands。`$story-setup` 选择 `target_cli=zcode` 会部署 `.zcode/skills/`、`.zcode/commands/`、`.zcode/hooks/story_zcode_hook.js`，安全合并 `.zcode/config.json` 与根 `AGENTS.md`；Hook 依赖 PATH 中的 `node`。ZCode 3.3.4 不执行项目/plugin custom agents，也没有 `PreCompact` / `SessionEnd`，相关流程会明确降级 solo/direct，compact 后由 `SessionStart` 恢复上下文。
-
-**OpenCode 用户：** 全局安装后 opencode 自动从 `~/.claude/skills/` 发现 skills；首次用自然语言触发 story-setup（如「用 story-setup 部署网文写作环境」），**部署后退出重进 `opencode -c`** 才能用 slash command。部分 hook 行为与 Claude Code 有差异（session-start / session-end / compact 等），详见 [CONTRIBUTING.md](CONTRIBUTING.md) 的 OpenCode 章节。
-
-**OpenClaw 用户：** 当前支持 skills-only：OpenClaw 可从 workspace `skills/`、`.agents/skills`、`~/.agents/skills`、`~/.openclaw/skills` 等 skill root 发现本项目 13 个 skill；`SKILL.md` 已按 OpenClaw 要求使用单行 `name` / `description` 与单行 JSON `metadata.openclaw`。`story-setup` 选择 `target_cli=openclaw` 时会把 skills 复制到项目 `skills/` 并写入 OpenClaw 版 `AGENTS.md`；agents/hooks 暂不部署，写正文前大纲守卫在 OpenClaw 下是 skill 内软约束。部署后如未显示新 skills，请新开 OpenClaw session 或等待 watcher 刷新。
-
-**Reasonix 用户：** 当前支持 skills + 原生 plugin manifest：Reasonix 原生扫描项目 skill root（`.agents/skills` 等，指向 `skills/` 的 symlink）发现 13 个 skill，用 `reasonix doctor capabilities` 校验；也可用根 `reasonix-plugin.json` 走 `reasonix plugin install`。`story-setup` 选择 `target_cli=reasonix` 时会把 skills 复制到项目 `skills/` 并写入 Reasonix 版 `AGENTS.md`；hooks/custom agents 暂不部署，涉及专业 Agent 的 skill 走 solo/direct fallback。Windows 未启用 symlink 时改走原生 plugin。
-
-**Web AI / 通用 Agent 用户：** 平台能读取 GitHub 仓库或项目文件时，可让 Agent 读取 `skills/*/SKILL.md` 与对应 `references/`；需要本地副本时，`story-setup` 可选 `target_cli=generic`，只写通用 `AGENTS.md` 和 `skills/`。无本项目 hooks/custom agents 的环境按 skill 内软约束或 solo/direct fallback 执行。
-
-</details>
-
 升级后如果项目里已经跑过 `/story-setup`，建议在项目根重跑一次 `/story-setup`，同步 hooks / agents / references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/worldwonderer/oh-story-claudecode/releases)。
 
-**多 agent 协作要先部署再新开会话：** 7 个专业 agent（story-architect、narrative-writer、consistency-checker 等）由 `/story-setup` 写入项目 `.claude/agents/`，或由 `$story-setup` 写入 `.codex/agents/*.toml`。Claude Code / Codex 都在会话启动时更稳定地注册 custom agent；ZCode 3.3.4、OpenClaw Phase 1、Reasonix Phase 1 与 generic 路径默认走 skills + solo fallback。判断是否生效：新会话里跑 `/story-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
+**多 agent 协作要先部署再新开会话：** 7 个专业 agent（story-architect、narrative-writer、consistency-checker 等）由 `/story-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/story-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 
-**导入续写顺序：** 推荐先在写作项目根运行 `/story-setup`（部署 hooks/agents/AGENTS），新开/刷新会话后运行 `/story-import` 导入已有小说，再用 `/story-long-write 日更` 或 `/story-long-write 写第N章` 续写。也可以直接运行 `/story-import`；它会先检测是否已 setup，未部署时让你选择先去 setup 或继续串行导入。
+**导入续写顺序：** 推荐先在写作项目根运行 `/story-setup`（部署 hooks/agents），新开/刷新会话后运行 `/story-import` 导入已有小说，再用 `/story-long-write 日更` 或 `/story-long-write 写第N章` 续写。也可以直接运行 `/story-import`；它会先检测是否已 setup，未部署时让你选择先去 setup 或继续串行导入。
 
 ## Skills
 
 | Skill | 触发 | 说明 |
 |:------|:-----|:-----|
-| `story-setup` | `/story-setup` `$story-setup` `/准备写书` | 环境部署 · Claude/OpenCode/Codex/ZCode/OpenClaw/Reasonix + generic（已有配置安全合并） |
-| `story` | `/story` `$story` `/story dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
+| `story-setup` | `/story-setup` `/准备写书` | 环境部署 · Claude Code（已有配置安全合并） |
+| `story` | `/story` `/story dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
 | `story-long-write` | `/story-long-write` `/写长篇` | 长篇写作 · 大纲搭建、人物设定、正文输出 |
 | `story-long-analyze` | `/story-long-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
 | `story-long-scan` | `/story-long-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
 | `story-deslop` | `/story-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
 | `story-import` | `/story-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
-| `story-review` | `/story-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点/知乎评分标准 |
+| `story-review` | `/story-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
 | `browser-cdp` | `/browser-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
 
 > `story-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
@@ -143,7 +116,7 @@ Windows 上偶尔会看到 `ENOENT ... mkdir` 报错但末尾仍显示 `Done!`�
 
 ### Story Dashboard
 
-运行 `/story dashboard`（Codex 用 `$story dashboard`）打开本地写作工作台，浏览拆文库与
+运行 `/story dashboard` 打开本地写作工作台，浏览拆文库与
 长篇项目文件树，并完成搜索、Markdown 预览、文本编辑、冲突保护保存和确认删除。
 服务仅监听 `127.0.0.1`，小说内容不会上传。
 
@@ -221,7 +194,7 @@ demo/长篇/让你管账号，你高燃混剪炸全网/
 | **story-explorer** | Haiku | 故事查询 · 角色/伏笔/设定/进度只读查询，日更上下文快速加载 |
 | **chapter-extractor** | Haiku | 章节提取 · 摘要+情节点+角色提及，并行拆文核心单元 |
 
-Agent 按需加载 `references/` 中的写作理论（角色设计、对话技法、反转工具箱等），部署包 agent-references 含 58 份方法论文件，全仓 references 共 200+ 份，不预占上下文。
+Agent 按需加载 `references/` 中的写作理论（角色设计、对话技法、反转工具箱等），部署包 agent-references 含 58 份方法论文件，全仓 references 近 200 份，不预占上下文。
 
 ## 自动化 Hooks
 
@@ -235,7 +208,7 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 | pre-compact.sh | 上下文压缩前 | 保存进度快照路径和行数摘要 |
 | post-compact.sh | 上下文压缩后 | 提示读取进度快照恢复上下文 |
 | validate-story-commit.sh | git commit 时 | 检查硬编码属性、设定必填字段（仅警告，不阻断） |
-| guard-outline-before-prose.sh | 写正文前（Write/Edit） | 缺对应细纲/小节大纲时阻止首次创建正文（阻断），强制先搭大纲 |
+| guard-outline-before-prose.sh | 写正文前（Write/Edit） | 缺对应细纲时阻止首次创建正文（阻断），强制先搭大纲 |
 | check-prose-after-write.sh | 正文写入后（Write/Edit） | 轻量扫描截断、工程词、毒句式和字数欠账（提醒，不阻断） |
 
 ## 项目文件结构
@@ -281,7 +254,6 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 │   └── {topic}.md       # 按研究主题拆分
 ```
 
-
 **拆文库：** 拆文 skill 默认输出到项目根目录 `拆文库/{书名}/`，产出结构化目录（角色/剧情/设定/章节），其中长篇剧情目录包含 `节奏.md` 和 `情绪模块.md`，是 analyze 的源数据（source of truth）。写作 skill 通过 `对标/{书名}/剧情/` 等子目录消费这些资产（项目级引用视图），或自动回退读取 `拆文库/`。
 
 **`.active-book`：** 项目根目录的文本文件，内容是当前活跃书目的**相对路径**（如 `长篇/我的小说`），hook 和写作 skill 据此定位当前项目。
@@ -297,18 +269,17 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 |:-----|:-----|:-----------|
 | 大纲排布 | 五步大纲法 · 故事结构分级 · 节点设计法 · 升级感设计 | long-write |
 | 开头设计 | 开篇模式 · 前 500 字设计 · 黄金三章开头策略 | long-write |
-| 人物设计 | 角色设定 · 人物提取 · 关系映射 · 动机链 · 群像 | long-write  |
-| 钩子技法 | 章尾钩子 13 式 · 章首钩子 7 式 · 段落级钩子 · 悬念编排 | long-write  |
+| 人物设计 | 角色设定 · 人物提取 · 关系映射 · 动机链 · 群像 | long-write |
+| 钩子技法 | 章尾钩子 13 式 · 章首钩子 7 式 · 段落级钩子 · 悬念编排 | long-write |
 | 情绪设计 | 6 种弧形模板 · 期待感管理 · 题材赛道策略 | long-write |
-| 题材框架 | 长篇八节点 · 8 大题材开头模板 | long-write  |
+| 题材框架 | 长篇八节点 · 8 大题材开头模板 | long-write |
 | 对话技法 | 节奏 · 潜台词 · 信息控制 · 对话模式数据库 | long-write |
 | 反转工具箱 | 类型 · 时机 · 误导底层路径 | long-write |
 | 风格模块 | 对话 · 打斗 · 智斗 · 镜头式写作 · 装逼打脸 · 白描 | long-write |
 | 高级技法 | 小纲四步法 · 高潮逆推 · 双线结构 · AB 交织法 | long-write |
 | 去AI味 | 预防 · 三遍去AI法 · 改写范例库 · 禁用词表 | deslop / long-write |
-| 质量检查 | 通用 · 长篇专项 · 毒点排查 | long-write  |
-| 拆文方法 | 黄金三章 · 情绪曲线 · 结构拆解 · 知乎风格分析 | long-analyze |
-| 拆文实例 | 完整案例拆解 · 模板化输出 | short-analyze |
+| 质量检查 | 通用 · 长篇专项 · 毒点排查 | long-write |
+| 拆文方法 | 黄金三章 · 情绪曲线 · 结构拆解 | long-analyze |
 | 读者画像 | 9 维画像 · 目标读者分析 | long-scan |
 | 市场数据 | 题材趋势 · 平台特性 · 采集格式 · 投稿指南 | long-scan |
 | 多视角审稿 | 多视角审稿 · 评分标准 · 毒点排查 | story-review |
@@ -318,7 +289,6 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 ## 适用平台
 
 **长篇** 起点中文网 · 番茄小说 · 晋江文学城 · 七猫小说 · 刺猬猫
-
 
 真实产出样例见 [demo/](demo/)：长篇拆文《盘龙》· 长篇续写工程《让你管账号，你高燃混剪炸全网》。
 

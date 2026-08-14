@@ -15,8 +15,7 @@ fi
 
 is_git_commit_command() {
   # 走 node 共享核 isGitCommitCommand：命令优先取 STORY_COMMIT_COMMAND，缺省从 HOOK_INPUT
-  # 挖 command/cmd/script。js 分词语义，与 OpenCode/ZCode 一致；对「引号内分隔符」这类边界
-  # 与旧 python shlex 有已文档化、仅 advisory 的差异（不影响本 hook 的 exit 0 非阻塞语义）。
+  # 挖 command/cmd/script。js 分词语义（共享核 isGitCommitCommand）。
   # node 探测不到就当「非 commit」，让下方静默放行（兜底不反噬提交流程；native 安装可能
   # 无 node，此时 commit 格式提示停用，session-start.sh 会在会话起点提示一次）。
   node -e "" >/dev/null 2>&1 || return 1
@@ -56,13 +55,12 @@ while IFS= read -r -d '' file; do
   fi
 
   # 检查正文文件是否包含硬编码的情节值
-  # 匹配语义与警告文案对齐 JS core（story_hook_core.js stagedMarkdownWarnings，跨 CLI 的
-  # 权威实现；py↔js 由 scripts/test-prose-net-parity.sh Part E 锁 parity）。
+  # 匹配语义与警告文案对齐 JS core（story_hook_core.js stagedMarkdownWarnings 权威实现）。
   # 冒号/空白都用交替而不是把全角字符塞进方括号字符组：含全角字符的字符组在 C 区域会被
   # 拆成单字节、漏匹配；(：|:) 同时命中全角「：」和半角「:」，([[:space:]]|　) 在 LC_ALL=C 下
   # 也认全角空格 U+3000（否则全角空格分隔的写法会漏检/误判）。
   case "$file" in
-    正文.md|*/正文.md|正文/*|*/正文/*)
+    正文/*|*/正文/*)
       HARDCODED=$(grep -nE "(身高|体重|年龄)([[:space:]]|　)*(：|:)([[:space:]]|　)*[0-9]+" "$FULL_PATH" 2>/dev/null || true)
       if [ -n "$HARDCODED" ]; then
         WARNINGS="$WARNINGS${NL}⚠ $file: 正文硬编码角色属性，应引用设定文件：${NL}$HARDCODED"
@@ -79,10 +77,7 @@ while IFS= read -r -d '' file; do
   # 都刷一屏假警告，把同框的「正文硬编码角色属性」真警告埋掉。判定：设定/角色|人物 子目录内的
   # 文件 + 设定/ 直属的扁平角色卡（角色.md/主角.md/配角.md/反派.md 等自定义命名）才查；
   # 其余子目录与已知项目级文件跳过。
-  # 四端同口径：本脚本（Claude）、OpenCode 的 .git/hooks/pre-commit、JS core 的
-  # isCharacterSheetPath / stagedMarkdownWarnings、codex 的 _is_character_sheet_path /
-  # staged_markdown_warnings 已全部收窄到同一判定。改任一端都要四端一起改，否则
-  # 同一次提交在不同 CLI 上会给出不同警告（parity 测试 Part E 锁 py↔js 两端）。
+  # 判定口径与 JS core 的 isCharacterSheetPath / stagedMarkdownWarnings 一致。
   # 别为了「对齐权威实现」把这段改回去——那会把假警告一起改回来。
   IS_CHARACTER_SHEET=false
   case "$file" in

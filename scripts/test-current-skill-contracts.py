@@ -355,9 +355,9 @@ setup_skill_version: {setup_skill_version}
 deployed_at: 2026-07-14T00:00:00Z
 agents_version: {agents_version}
 setup_skill_version: {setup_skill_version}
-target_cli: codex
+target_cli: claude-code
 resolver_strategy: project-first
-references_dir: .codex/skills/story-setup/references
+references_dir: .claude/skills/story-setup/references/agent-references
 ```
 """.format(
         agents_version=manifest.agents_version,
@@ -370,7 +370,7 @@ references_dir: .codex/skills/story-setup/references
         "well-formed structured sentinel must pass",
     )
 
-    incomplete = structured.replace("target_cli: codex\n", "")
+    incomplete = structured.replace("target_cli: claude-code\n", "")
     require(
         "setup-sentinel-fields"
         in finding_codes(

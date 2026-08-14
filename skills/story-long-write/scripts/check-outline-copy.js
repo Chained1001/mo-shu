@@ -21,10 +21,10 @@
  * 豁免量单独统计并在报告末尾列出，滥用锚句绕过检测时一眼可见。
  *
  * 由 narrative-writer 落盘后自查、主会话收尾复扫时调用（两侧同一份实现，口径一致）。
- * 不进 hook：正文兜底 hook 的共享核是四端共用的，不为单项检测扩面。
+ * 不进 hook：正文兜底 hook 的共享核不为单项检测扩面。
  *
  * 用法：
- *   node check-outline-copy.js <正文路径...>                    # 自动找同章细纲；短篇找同目录小节大纲
+ *   node check-outline-copy.js <正文路径...>                    # 自动找同章细纲
  *   node check-outline-copy.js --outline <细纲路径> <正文路径...> # 指定细纲
  *
  * 位置参数一律按正文处理，与 check-ai-patterns.js 的 `<file...>` 口径一致：
@@ -115,11 +115,6 @@ function splitByAnchors(frag, anchors) {
 /** 定位同章细纲：遍历 大纲/ 按章号正则匹配，支持带后缀的文件名 */
 function findOutline(proseFile) {
   const base = path.basename(proseFile)
-  // 短篇没有章号：正文.md 与 小节大纲.md 在同目录平铺
-  if (base === '正文.md') {
-    const sibling = path.join(path.dirname(proseFile), '小节大纲.md')
-    return fs.existsSync(sibling) ? sibling : null
-  }
   const m = base.match(/^第\s*0*(\d+)\s*章/)
   if (!m) return null
   const chapter = m[1]

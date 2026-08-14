@@ -88,8 +88,8 @@ if sentinel_exists "$ROOT/.story-deployed"; then
     fi
   done
 
-  # 多端部署时 references_dir 是逗号分隔的多条路径，逐条查；整串当一个路径查会必然查不到，
-  # 每次开会话都误报「参考资料包缺失」。
+  # references_dir 逐条查（按逗号分隔；整串当一个路径查会必然查不到，
+  # 每次开会话都误报「参考资料包缺失」）。
   REFERENCES_DIR=$(read_sentinel_field references_dir "$ROOT/.story-deployed")
   if [ -n "$REFERENCES_DIR" ]; then
     MISSING_REFS=""
@@ -146,7 +146,7 @@ if [ -d "$ROOT/拆文库" ]; then
   PROGRESS_COUNT=$(discover_incomplete_analyses "$ROOT" | wc -l | tr -d ' ' || true)
   case "$PROGRESS_COUNT" in ''|*[!0-9]*) PROGRESS_COUNT=0 ;; esac
   if [ "$PROGRESS_COUNT" -gt 0 ]; then
-    OUTPUT+="[INFO] 拆文库/ 中有 $PROGRESS_COUNT 个未完成拆文。运行 /story-long-analyze 或 /story-short-analyze。${NL}"
+    OUTPUT+="[INFO] 拆文库/ 中有 $PROGRESS_COUNT 个未完成拆文。运行 /story-long-analyze。${NL}"
     HAS_CONTENT=true
   fi
 fi

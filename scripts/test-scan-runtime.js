@@ -768,8 +768,7 @@ function testFanqiePureFunctions() {
   assert.strictEqual(fanqie.fmtStatus(""), "未知");
 }
 
-// 点众：CLI 流程（探活→提取→质量门→写盘）+ --channel all 部分失败退出码
-// 参数错误必须在打开浏览器/进入 per-target 容错前快速失败，给出具体参数名和值。
+// 长篇扫榜 scraper 参数校验：非法参数必须在打开浏览器/进入 per-target 容错前快速失败，给出具体参数名和值。
 function testLongScanArgumentValidation() {
   const cases = [
     ["fanqie-rank-scraper.js", ["--channel", "2"], /未知 --channel: 2/],
@@ -794,7 +793,6 @@ function testLongScanArgumentValidation() {
   }
 }
 
-// 黑岩：字段漂移必须拦在写盘前，字数格式不许随宿主 locale 变
 // ---------------------------------------------------------------------------
 // setup-cdp-chrome.js 的 --reset 闸门夹具。
 // 全程只碰 127.0.0.1 上一个临时端口，不发外部请求、不碰真 Chrome：

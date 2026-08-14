@@ -10,10 +10,10 @@
 # 检测器，是独立的轻量网（毒句式规则与 check-ai-patterns.js 的同名规则统一规格）。
 #
 # 覆盖范围：只在 PostToolUse 的 Write|Edit|MultiEdit 上触发。cat>/tee/cp/mv 等用 Bash
-# 写正文的路径绕过本 hook（Claude/OpenCode 侧 Bash 只做 pre-guard，无 post-write 兜底）；
-# 这类路径由 Codex 的 Stop 回合末 git 改动集扫描兜全。已知边界，非缺陷。
+# 写正文的路径绕过本 hook（Claude 侧 Bash 只做 pre-guard，无 post-write 兜底）。
+# 已知边界，非缺陷。
 #
-# 网与字数逻辑走 node 共享核 story_hook_core.js（和 OpenCode/ZCode 同一份），只留 bash
+# 网与字数逻辑走 node 共享核 story_hook_core.js，只留 bash
 # 做事件路由与文件类型判定。node 天生按 UTF-8 写 stdout，免掉旧内嵌 python 的 cp936 体操。
 #
 # 非阻塞（exit 0，advisory 提醒，不挡写作）；无发现时完全静默（不污染 context）；
@@ -58,19 +58,15 @@ BASE="$(basename "$ABS")"
 PARENT="$(basename "$(dirname "$ABS")")"
 
 # 只对「正文」文件兜底，绝不碰代码/细纲/设定/大纲等非正文文件：
-#   - 短篇：{书}/正文.md，且同目录有 设定.md（真短篇工程信号，排除 docs/正文.md 之类）
 #   - 长篇：{书}/正文/第N章*.md（父目录必须是「正文」），且 {书} 有 大纲/追踪/设定（真书结构）
 # case 模式锚定首字：细纲_第N章.md（首字「细」）、卷纲_第1卷.md、check-ai-patterns.js、
-# 设定.md、大纲.md 等天然都不匹配 `正文.md`/`第*章*.md`，不会被捕获。
+# 设定.md、大纲.md 等天然都不匹配 `第*章*.md`，不会被捕获。
 IS_PROSE=false
 case "$BASE" in
-  正文.md)
-    [ -f "$(dirname "$ABS")/设定.md" ] && IS_PROSE=true
-    ;;
   第*章*.md)
     if [ "$PARENT" = "正文" ]; then
       BOOK="$(dirname "$(dirname "$ABS")")"
-      if [ -d "$BOOK/大纲" ] || [ -d "$BOOK/追踪" ] || [ -d "$BOOK/设定" ] || [ -f "$BOOK/设定.md" ]; then
+      if [ -d "$BOOK/大纲" ] || [ -d "$BOOK/追踪" ] || [ -d "$BOOK/设定" ]; then
         IS_PROSE=true
       fi
     fi

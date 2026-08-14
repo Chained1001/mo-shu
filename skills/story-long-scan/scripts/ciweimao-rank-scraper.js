@@ -17,7 +17,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const RANK_URL = "https://www.ciweimao.com/rank-index";
 
@@ -82,7 +82,7 @@ function extractAllRanks(port) {
     "    var nextVal=i+1<lines.length?lines[i+1]:'';" +
     "    var metric='';" +
     "    if(/^[\\d.]+(万)?$/.test(nextVal)){metric=nextVal;i++}" +
-    "    curEntries.push({rank:parseInt(rm[1]),title:rm[3],author:'',genre:rm[2],metric:metric});" +
+    "    curEntries.push({rank:parseInt(rm[1]),title:rm[3],author:'[待补]',genre:rm[2],metric:metric});" +
     "    continue" +
     "  }" +
     "}" +
@@ -185,17 +185,21 @@ function main() {
         continue;
       }
 
-      const now = new Date().toISOString();
+      const now = localTimestamp();
       const norm = (s) => (s || "").replace(/\s+/g, "");
       const linked = section.entries.filter((e) =>
         urls.some((u) => norm(u.title) === norm(e.title))
       ).length;
+      const missingAuthor = section.entries.filter((e) => !e.author || e.author === "[待补]").length;
       const lines = [
         `# 刺猬猫 · ${rt.label}`,
         "",
         `- 来源：${RANK_URL}`,
         `- 抓取时间：${now}`,
         `- 条目数：${section.entries.length}`,
+        `- 数据质量：${missingAuthor > 0 ? "存在问题" : "OK"}`,
+        `- 有效条目：${section.entries.length - missingAuthor} / ${section.entries.length}`,
+        `- 问题摘要：${missingAuthor > 0 ? "榜单页不提供作者，相关条目作者标 [待补]" : "无"}`,
         `- 作品页链接：${linked} / ${section.entries.length}`,
         "",
         "---",

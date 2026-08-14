@@ -232,21 +232,19 @@ def test_no_tracking_fallback_or_context_style_fingerprint_remains() -> None:
 
 def test_hooks_fail_closed_on_invalid_tracking_checkpoints() -> None:
     js = read("skills/story-setup/references/templates/hooks/story_hook_core.js")
-    py = read("skills/story-setup/references/codex/hooks/story_codex_hook.py")
-    for label, text in (("JS hook", js), ("Codex hook", py)):
-        require_all(
-            text,
-            (
-                "_tracking-state.json 缺失",
-                "schema_version=4",
-                "state_revision",
-                "mode=revision 事务重建派生视图",
-                "重新 /story-import",
-                "last_committed_chapter",
-                "必须先提交",
-            ),
-            label,
-        )
+    require_all(
+        js,
+        (
+            "_tracking-state.json 缺失",
+            "schema_version=4",
+            "state_revision",
+            "mode=revision 事务重建派生视图",
+            "重新 /story-import",
+            "last_committed_chapter",
+            "必须先提交",
+        ),
+        "JS hook",
+    )
 
 
 def test_daily_quality_repairs_close_tracking_before_batch_finish() -> None:

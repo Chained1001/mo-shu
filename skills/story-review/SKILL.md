@@ -2,7 +2,6 @@
 name: story-review
 version: 1.1.1
 description: "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/story-review、/审查、「审查一下」「帮我审一下」。"
-metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claudecode"}}
 ---
 # story-review：多视角对抗式审查
 
@@ -27,19 +26,14 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 1. **确定请求模式**：解析用户输入中的 `full`、`lean`、`solo`；未指定时目标模式为 `full`。
 2. **确认是否允许 spawn**：如果当前已经在子代理/Agent 内执行，不再递归 spawn，直接降级为 `solo`。
-3. **识别 ZCode 能力边界**：如果当前运行于 ZCode 且项目使用 `.zcode/`，ZCode 3.3.4 不执行项目/plugin custom agents；不要因为磁盘上存在其他端的 agent 文件就尝试同名 spawn，直接降级 `solo` 并报告 `Fallback: project custom agents unavailable -> solo`。
-4. **检查核心 Agent 部署状态**（检查项目内 agents，同时兼容 Claude Code、OpenCode 和 Codex）：
-   - 优先检查 `.claude/agents/`，其次检查 `.opencode/agents/`，再检查 `.codex/agents/`；三个目录任一存在即视为已部署
-    - full 必需：Claude/OpenCode 为 `story-architect.md`、`character-designer.md`、`narrative-writer.md`、`consistency-checker.md`；Codex 为同名 `.toml`
-    - lean 必需：Claude/OpenCode 为 `story-architect.md`、`consistency-checker.md`；Codex 为同名 `.toml`
-    - 对每个必需 Agent 文件：
-      - **Claude Code agent（`.claude/agents/`）**：读取 frontmatter，确认 `name:` 与 subagent_type 完全一致；frontmatter 缺失、不可解析或 name 不匹配时视为 malformed agent。
-      - **OpenCode agent（`.opencode/agents/`）**：文件名即 agent 名（OpenCode 不要求在 frontmatter 中写 `name:`），读取 frontmatter 确认 `mode: subagent` 和 `permission` 字段存在且可解析即可；frontmatter 缺失或不可解析视为 malformed。
-      - **Codex agent（`.codex/agents/`）**：文件名为 `{agent}.toml`，TOML 必须可解析，且包含 `name`、`description`、`developer_instructions`；`name` 必须与目标 agent 完全一致。
+3. **检查核心 Agent 部署状态**（检查项目内 `.claude/agents/`）：
+   - full 必需：`story-architect.md`、`character-designer.md`、`narrative-writer.md`、`consistency-checker.md`
+   - lean 必需：`story-architect.md`、`consistency-checker.md`
+   - 对每个必需 Agent 文件：读取 frontmatter，确认 `name:` 与 subagent_type 完全一致；frontmatter 缺失、不可解析或 name 不匹配时视为 malformed agent。
    - 如果目标模式所需任一文件缺失或 malformed，**不要尝试 spawn 缺失/异常 Agent**；自动降级为 `solo`，并在报告开头写明：`Fallback: missing agents -> solo` 或 `Fallback: malformed agents -> solo`，列出问题文件，建议用户运行 `/story-setup`。
-5. **确认 Agent/Task 工具可用**：如果当前环境没有可用的子 Agent/Task 调用能力，直接降级为 `solo`，报告 `Fallback: agent tool unavailable -> solo`。
-6. **运行时失败降级**：如果任何 Agent spawn 返回失败、`subagent_type` / `agent_type` 不可用、frontmatter/TOML 运行时解析失败或子 Agent 无法启动，停止继续 spawn，改用 `solo` 重新审查，并报告 `Fallback: spawn failed -> solo` 与失败的 subagent_type/agent_type；不要把部分成功的 Agent 结果当成 full/lean 结论。
-7. **确定实际模式**：报告中必须同时列出 `Requested Mode` 与 `Effective Mode`。
+4. **确认 Agent/Task 工具可用**：如果当前环境没有可用的子 Agent/Task 调用能力，直接降级为 `solo`，报告 `Fallback: agent tool unavailable -> solo`。
+5. **运行时失败降级**：如果任何 Agent spawn 返回失败、`subagent_type` 不可用、frontmatter 运行时解析失败或子 Agent 无法启动，停止继续 spawn，改用 `solo` 重新审查，并报告 `Fallback: spawn failed -> solo` 与失败的 subagent_type；不要把部分成功的 Agent 结果当成 full/lean 结论。
+6. **确定实际模式**：报告中必须同时列出 `Requested Mode` 与 `Effective Mode`。
 
 ---
 
@@ -55,7 +49,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 Requested Mode: full | lean | solo
 Effective Mode: full | lean | solo
 Fallback: none | project custom agents unavailable -> solo | missing agents -> solo | malformed agents -> solo | agent tool unavailable -> solo | spawn failed -> solo | subagent recursion guard -> solo
-Rubric: fanqie | qidian | zhihu | generic web-fiction
+Rubric: fanqie | qidian | generic web-fiction
 Rubric Source: file | embedded fallback
 ```
 
@@ -63,14 +57,9 @@ Rubric Source: file | embedded fallback
 
 可读取参考文件时，按以下顺序尝试，第一个命中即用：
 1. `{项目根}/.claude/skills/{规范路径}`（Claude Code 项目内安装）
-2. `{项目根}/.opencode/skills/{规范路径}`（OpenCode 项目内安装）
-3. `{项目根}/.codex/skills/{规范路径}`（Codex 项目内安装）
-4. `{项目根}/.zcode/skills/{规范路径}`（ZCode 项目内安装）
-5. `{项目根}/skills/{规范路径}`（OpenClaw / Reasonix / generic 部署，也是本仓库开发环境）
-6. `{项目根}/.agents/skills/{规范路径}`（Codex / Reasonix 扫描的项目 skill root，通常是指向 `skills/` 的 symlink）
-7. 当前运行时加载本 skill 的目录，或其可访问的全局 skill 搜索路径中同名 `{skill-name}/...` 目录
+2. 当前运行时加载本 skill 的目录，或其可访问的全局 skill 搜索路径中同名 `{skill-name}/...` 目录
 
-> 靠前几层不存在是正常的，不是部署损坏。`/story-setup` 只在 ZCode 的 `.zcode/skills/` 和 OpenClaw / Reasonix / generic 的 `skills/` 下整份复制 skill；Codex 项目部署不复制 skill 本体，本 skill 由 Codex 从 skill root 加载，references 就在其中，通常命中第 6 或第 7 层。不要手工把 `references/` 复制进 `.codex/skills/`——手工副本不受 story-setup 管理，升级后会静默变旧。
+> 第 1 层不存在是正常的（本仓库开发环境或未部署的项目），不是部署损坏。`/story-setup` 把 references 整份部署进项目的 `.claude/skills/` 目录；本仓库开发环境通常命中第 2 层。
 
 规范路径如下；禁止只写裸文件名，禁止跨 skill 误读其他 skill 的 references：
 
@@ -83,7 +72,7 @@ Rubric Source: file | embedded fallback
 | 角色关系/好感度 | `story-review/references/character-relations.md` |
 | 对话质量 | `story-review/references/dialogue-mastery.md` |
 | 审查禁用词 | `story-review/references/banned-words.md` |
-| 平台 rubric | `story-review/references/rubrics/{fanqie,qidian,zhihu}.md` |
+| 平台 rubric | `story-review/references/rubrics/{fanqie,qidian}.md` |
 | 标点预检脚本 | `story-review/scripts/normalize-punctuation.js` |
 | AI句式预检脚本 | `story-review/scripts/check-ai-patterns.js` |
 
@@ -107,7 +96,7 @@ Rubric Source: file | embedded fallback
 - 具体字数表达校验：正文用“这五个字 / 短短四字 / 三个字一落 / 八个字砸下去”等具体字数表达评价台词、题字、信件、念头或弹幕时，必须能确认统计口径、机器核对结果和叙事必要；不能确保字数计算正确时，按文字自然度问题处理，建议改成“这句话一落”“那几个字”“话音落下”等非具体数字表达。
 - 格式可读性：段落短、对话独立、无多余空行；格式阻碍阅读按 S3，严重混乱按 S2。
 - 剧情循环：目标 → 阻碍 → 行动 → 代价/反馈 → 新期待；缺少目标/阻碍/反馈通常至少 S2。
-- 高潮构建：蓄能 → 假胜 → 崩解 → 反转/兑现；高潮直接平铺、无代价或无兑现通常 S2/S3。
+- 高潮构建：蓄能 → 假胜 → 崩解 → 交叉死磕 → 悬置收尾；高潮直接平铺、无代价或无兑现通常 S2/S3。
 - 关系进展：互动尺度必须匹配当前关系阶段；越界亲密、突然信任、突然敌对都需要铺垫，否则按影响定 S1/S2。
 - 伏笔状态：伏笔状态需可追踪；伏笔密度只作为结构风险提示，除非直接造成理解混乱，否则不升级到 S2+。
 
@@ -121,7 +110,6 @@ AI 味 / 禁用词 fallback 速查：
 平台 fallback 摘要：
 - 番茄：强开局、强冲突、高频爽点/情绪反馈、低理解门槛。
 - 起点：设定自洽、升级路径、长线期待、世界观承载力。
-- 知乎盐言：短篇钩子、反转密度、情绪兑现、信息差推进。
 
 ### 传给子 Agent 的规则
 
@@ -158,7 +146,6 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
    - 不要把 `.active-book` 当作平台来源；它只能辅助定位当前书名目录。
    - 番茄小说 → 优先读取 `story-review/references/rubrics/fanqie.md`；不可读时使用内置番茄 fallback 摘要。
    - 起点 → 优先读取 `story-review/references/rubrics/qidian.md`；不可读时使用内置起点 fallback 摘要。
-   - 知乎盐言 → 优先读取 `story-review/references/rubrics/zhihu.md`；不可读时使用内置知乎 fallback 摘要。
    - 未识别平台 → 优先读取 `story-review/references/quality-rubric.md`；不可读时使用内置通用网文内容 rubric，并报告 `Rubric: generic web-fiction` 与 `Rubric Source: file | embedded fallback`。
 5. **形成审查基准包摘要**：把已加载的文件内容或内置 fallback 摘要压缩为 5-12 条审查标准，后续 solo 和子 Agent 都必须使用这份摘要。摘要必须保留一条句长标准：叙述默认是逗号长句，碎句和电报体与 AI 腔同级处理，不因「短」放行。
 6. **确定性预检（只报告，不修改）**：当审查范围包含本地正文文件路径时，运行本 skill 自带脚本：
@@ -172,9 +159,9 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
    - 其余 prose findings 统一按 S4：只指出读感风险，不替代人工判断；功能性写法标 `[需复核]` 并保留。完整类别和修法见 `anti-ai-writing.md`。
    - `check-degeneration.js` 报告模型退化（逐字复读/截断/占位符/工程词泄漏），每条带 `severity: blocking|advisory`：blocking（复读/截断/tier1 工程词）作为 S1/S2 `prose` findings，修复建议是「重新生成该段，不是改写」；advisory（tier2 章节/歧义词）作为 S4。
    - 这三个预检脚本只读；`story-review` **不修改正文、设定或大纲文件**，需要自动修复正文时建议转 `/story-deslop`。full / lean 模式只有下方「追踪文件维护」允许修改 `追踪/`；分批审查的所有模式都可按上方契约写 **.story-review/state.md**，solo 除该状态外不写项目内容。
-   - 默认 `--quote-mode keep`，不把知乎盐言短篇的 `「」` 当作问题；只有项目明确指定引号风格时才检查对应转换建议。
+   - 默认 `--quote-mode keep`，不把古言/日式的 `「」` 当作问题；只有项目明确指定引号风格时才检查对应转换建议。
 
-**story-explorer 预查询（可选）**。仅当 `Effective Mode` 仍为 `full`/`lean`、当前允许 spawn 且 Agent/Task 工具可用时，才可检查 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `story-explorer.md` 或 `story-explorer.toml` 并 spawn `story-explorer` 预查设定摘要；`solo` 或子代理递归保护场景下不得 spawn，只能直接 Read/Grep。Prompt 示例：
+**story-explorer 预查询（可选）**。仅当 `Effective Mode` 仍为 `full`/`lean`、当前允许 spawn 且 Agent/Task 工具可用时，才可检查 `.claude/agents/story-explorer.md` 是否存在并 spawn `story-explorer` 预查设定摘要；`solo` 或子代理递归保护场景下不得 spawn，只能直接 Read/Grep。Prompt 示例：
 
 ```text
 项目目录：{dir}
@@ -209,7 +196,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 ## Phase 2：并行 Spawn Agent（full/lean 模式）
 
-使用 Agent/Task 工具并行调用（Codex 原生子代理使用 `agent_type`，Claude Code 兼容面使用 `subagent_type`；实际字段以当前 CLI 暴露的工具为准）。每个 Agent 不继承父对话上下文，prompt 必须自包含项目路径、审查范围、文件路径、必要摘录、审查基准包摘要、Rubric Source 和统一 Findings Schema。
+使用 Agent/Task 工具并行调用（Claude Code 使用 `subagent_type`）。每个 Agent 不继承父对话上下文，prompt 必须自包含项目路径、审查范围、文件路径、必要摘录、审查基准包摘要、Rubric Source 和统一 Findings Schema。
 
 **调用规则**：执行 Phase 0 后，只有实际模式仍是 full/lean 时才 spawn。不要 spawn 缺失 Agent。
 
@@ -234,7 +221,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   4. 钩子和反转设计质量如何？
   5. 范围控制：有无角色/设定膨胀？
   6. 剧情循环是否存在且可重复？（参照审查基准包摘要里的剧情循环原则）
-  7. 高潮场景是否用了蓄能→假胜→崩解结构？（参照审查基准包摘要里的高潮构建原则）
+  7. 高潮场景是否用了蓄能→假胜→崩解→交叉死磕→悬置收尾结构？（参照审查基准包摘要里的高潮构建原则）
   8. 伏笔密度、连载期待和结构信息量是否合理？（伏笔密度通常只作为 S4 结构风险，除非已造成理解混乱）
   9. 按平台 rubric 或通用内容 rubric 逐项对照，标记 PASS/FAIL。
   10. 继承的开放项里，本批本该兑现的钩子/伏笔是否落空？
@@ -300,7 +287,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   7. 是否存在删掉无损的任务卡点或流程细节？若只是水/局部节奏问题标 S3；明显拖垮主线推进标 S2。
   8. 身体部位同一词是否超 5 次？
   9. AI味分级（轻度/中度/重度）及证据。
-  10. 去 AI 补充复核：是否有作者解释总结/意义尾巴；是否连续堆精致戏剧反应短语；是否把已有手机/屏幕/公告/规则/证据载体改成叙述者解释；是否把任务卡点当成自然感或凑字数手段；是否机械删除了有功能的生活化/角色化比喻或短篇主观审判句。
+  10. 去 AI 补充复核：是否有作者解释总结/意义尾巴；是否连续堆精致戏剧反应短语；是否把已有手机/屏幕/公告/规则/证据载体改成叙述者解释；是否把任务卡点当成自然感或凑字数手段；是否机械删除了有功能的生活化/角色化比喻或主观审判句。
 
   输出格式：
   VERDICT: APPROVE / CONCERNS / REJECT
@@ -344,7 +331,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 1. 收集实际执行的 reviewer VERDICT 和 FINDINGS。
 2. 合并去重：按 `severity` 排序（S1 > S2 > S3 > S4），同级内按影响范围排序。
-3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 agent 目录（优先 `.claude/agents/`，其次 `.opencode/agents/`，再检查 `.codex/agents/`）下的 `story-researcher.md` 或 `story-researcher.toml` 已部署时，才可额外 spawn `story-researcher` 搜索验证；`solo`、missing/malformed/stale/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
+3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 `.claude/agents/story-researcher.md` 已部署时，才可额外 spawn `story-researcher` 搜索验证；`solo`、missing/malformed/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
 4. **分歧呈现**：如果 reviewer 间有冲突意见，明确呈现分歧让用户裁决；不要自动妥协。
 5. 输出综合审查报告。报告必须列出实际模式、fallback 原因、使用的 rubric、Rubric Source、审查范围和证据不足项。
 
@@ -361,7 +348,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 Requested Mode: full | lean
 Effective Mode: full | lean
 Fallback: none
-Rubric: fanqie | qidian | zhihu | generic web-fiction
+Rubric: fanqie | qidian | generic web-fiction
 Rubric Source: file | embedded fallback
 审查范围: {章节/文件/批次}
 
@@ -417,8 +404,8 @@ solo 必须执行基础检查：
 === 故事审查报告（solo）===
 Requested Mode: {full | lean | solo}
 Effective Mode: solo
-Fallback: none | missing agents -> solo | malformed agents -> solo | agent tool unavailable -> solo | spawn failed -> solo | subagent recursion guard -> solo
-Rubric: fanqie | qidian | zhihu | generic web-fiction
+Fallback: none | project custom agents unavailable -> solo | missing agents -> solo | malformed agents -> solo | agent tool unavailable -> solo | spawn failed -> solo | subagent recursion guard -> solo
+Rubric: fanqie | qidian | generic web-fiction
 Rubric Source: file | embedded fallback
 审查范围: {章节/文件}
 

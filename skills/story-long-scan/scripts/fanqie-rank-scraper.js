@@ -20,7 +20,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 // 一次详情请求的并发批大小。番茄详情页用同步 XHR 拉取，批太大会撞上
 // cdp-utils 里 ab() 的 20s 超时；超时会显式失败，这里分批是为了避免整个题材被中断。
@@ -282,7 +282,7 @@ function scrapeChannel(ch, type) {
     console.log(`  发现 ${categories.length} 个品类`);
   }
 
-  const now = new Date().toISOString();
+  const now = localTimestamp();
   const lines = [
     `# 番茄 · ${chLabel}${tyLabel} · 全 ${categories.length} 题材`,
     "",
