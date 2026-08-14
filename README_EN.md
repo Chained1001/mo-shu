@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.0.0):** this release targets Claude Code only — the OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic adapters have been removed; the project is renamed to **mo-shu (墨枢)** and moved to Gitee. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.0.0):** this release targets Claude Code only — the OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic adapters have been removed; the project is renamed to **mo-shu (墨枢)**. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 
@@ -74,8 +74,6 @@ npx skills add Chained1001/mo-shu -y -g
 ```
 
 `-g` installs globally (available in every directory); drop `-g` to install only into the current directory. Re-run the same command to update.
-
-> If GitHub is slow to reach from your network, use the Gitee mirror: `git clone https://gitee.com/chianed1001/mo-shu.git`, then copy `skills/moshu-*` into `~/.claude/skills/`.
 
 After installing, run `/moshu-setup` from your writing project root to deploy. After updating, re-run `/moshu-setup` to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/Chained1001/mo-shu/releases).
 

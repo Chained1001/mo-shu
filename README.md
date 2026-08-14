@@ -16,7 +16,7 @@
 
 围绕四条线展开：爆款逆向 · 剧情模块化重组 · 上下文状态分层管理 · 人机协同。
 
-> **最近更新（v1.0.0）**：本版起专注 Claude Code 单端——移除 OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic 六个适配层；项目更名为 **mo-shu（墨枢）** 并迁移到 Gitee。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **最近更新（v1.0.0）**：本版起专注 Claude Code 单端——移除 OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic 六个适配层；项目更名为 **mo-shu（墨枢）**。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 流程总览
 
@@ -72,8 +72,6 @@ npx skills add Chained1001/mo-shu -y -g
 ```
 
 `-g` 全局安装，所有目录可用；去掉 `-g` 只装到当前目录。更新时重新执行同一命令。
-
-> 国内网络访问 GitHub 慢时可用 Gitee 镜像：`git clone https://gitee.com/chianed1001/mo-shu.git`，然后把 `skills/moshu-*` 复制到 `~/.claude/skills/`。
 
 安装后，在写作项目根目录运行 `/moshu-setup` 部署。升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。
 
