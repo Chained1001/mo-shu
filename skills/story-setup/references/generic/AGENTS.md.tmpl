@@ -9,13 +9,9 @@
 | 意图 | Skill | 说明 |
 |------|-------|------|
 | 写长篇 / 开书 / 续写 | story-long-write | 长篇网文写作（逐章推进） |
-| 写短篇 | story-short-write | 短篇网文写作（情绪驱动） |
 | 长篇拆文 | story-long-analyze | 长篇小说深度拆解 |
-| 短篇拆文 | story-short-analyze | 短篇小说拆文分析 |
 | 长篇扫榜 | story-long-scan | 长篇小说榜单与市场趋势 |
-| 短篇扫榜 | story-short-scan | 短篇小说榜单与情绪风口 |
 | 去 AI 味 | story-deslop | 去除 AI 写作痕迹 |
-| 封面 | story-cover | 生成封面图 |
 | 审查 | story-review | 多视角审查；无 custom agents 时降级为单线程审查 |
 | 导入 | story-import | 逆向导入已有小说到项目结构 |
 | 网文工具箱 | story | 模糊意图自动分发 |
@@ -27,7 +23,6 @@
 - `skills/` — 项目本地 skills；Agent 应先读对应 `SKILL.md`，再按需读取 `references/`
 - `拆文库/` — 拆文分析结果存放目录
 - `{书名}/正文/` — 长篇小说正文章节
-- `{书名}/正文.md` — 短篇小说正文
 - `{书名}/设定/` — 角色设定、世界设定
 - `{书名}/大纲/` — 卷纲、细纲
 - `{书名}/追踪/` — `_tracking-state.json` 唯一结构化权威、固定 7 栏 `上下文.md` 续写状态卡、逐章紧凑记录、核心角色独立派生快照、伏笔当前视图、作者与读者双时间线；全部通过追踪工具生成
@@ -35,7 +30,7 @@
 
 ## 通用使用约定
 
-- 写正文前先有大纲：长篇需要 `大纲/细纲_第N章*.md`，短篇需要 `小节大纲.md`。
+- 写正文前先有大纲：长篇需要 `大纲/细纲_第N章*.md`。
 - 无 hooks 的平台不会自动拦截越权写正文，Agent 必须在执行写作 skill 时自行检查大纲、上下文和追踪文件。
 - 无 custom agents 的平台按 solo/direct 执行；遇到 skill 要求调用 story-architect、narrative-writer 等 agent 时，改由当前 Agent 直接完成，并在结果里说明降级。
 - **去AI味自锁**（无 hook 平台此条是唯一防线）：每章正文落盘后，同一轮内立即按写作 skill 的「最毒句式速查 + 禁用词扫描」自检并清零（能运行 node 时跑 `check-ai-patterns.js --check --fail-on=blocking`）；写下一章前先复查上一章无欠账。唯一豁免＝用户显式说"本章不去味"，豁免章在标题行下加 `<!-- 去味:跳过 -->`。

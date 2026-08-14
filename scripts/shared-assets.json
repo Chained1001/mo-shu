@@ -6,16 +6,14 @@
       "source": "skills/story-deslop/scripts/check-ai-patterns.js",
       "targets": [
         "skills/story-long-write/scripts/check-ai-patterns.js",
-        "skills/story-review/scripts/check-ai-patterns.js",
-        "skills/story-short-write/scripts/check-ai-patterns.js"
+        "skills/story-review/scripts/check-ai-patterns.js"
       ]
     },
     {
       "name": "prose-outline-copy-detector",
       "source": "skills/story-long-write/scripts/check-outline-copy.js",
       "targets": [
-        "skills/story-deslop/scripts/check-outline-copy.js",
-        "skills/story-short-write/scripts/check-outline-copy.js"
+        "skills/story-deslop/scripts/check-outline-copy.js"
       ]
     },
     {
@@ -23,8 +21,7 @@
       "source": "skills/story-deslop/scripts/check-degeneration.js",
       "targets": [
         "skills/story-long-write/scripts/check-degeneration.js",
-        "skills/story-review/scripts/check-degeneration.js",
-        "skills/story-short-write/scripts/check-degeneration.js"
+        "skills/story-review/scripts/check-degeneration.js"
       ]
     },
     {
@@ -32,8 +29,7 @@
       "source": "skills/story-deslop/scripts/normalize-punctuation.js",
       "targets": [
         "skills/story-long-write/scripts/normalize-punctuation.js",
-        "skills/story-review/scripts/normalize-punctuation.js",
-        "skills/story-short-write/scripts/normalize-punctuation.js"
+        "skills/story-review/scripts/normalize-punctuation.js"
       ]
     },
     {
@@ -53,13 +49,6 @@
       ]
     },
     {
-      "name": "scan-cdp-utils",
-      "source": "skills/story-long-scan/scripts/cdp-utils.js",
-      "targets": [
-        "skills/story-short-scan/scripts/cdp-utils.js"
-      ]
-    },
-    {
       "name": "story-hook-core",
       "source": "skills/story-setup/references/templates/hooks/story_hook_core.js",
       "targets": [
@@ -73,16 +62,7 @@
       "targets": [
         "skills/story-long-write/references/banned-words.md",
         "skills/story-review/references/banned-words.md",
-        "skills/story-setup/references/agent-references/banned-words.md",
-        "skills/story-short-analyze/references/banned-words.md",
-        "skills/story-short-write/references/banned-words.md"
-      ]
-    },
-    {
-      "name": "short-analyze-output-contract",
-      "source": "skills/story-short-analyze/references/output-contract.md",
-      "targets": [
-        "skills/story-short-write/references/output-contract.md"
+        "skills/story-setup/references/agent-references/banned-words.md"
       ]
     }
   ]

@@ -12,10 +12,6 @@ const longUtilsPath = path.join(
   repoRoot,
   "skills/story-long-scan/scripts/cdp-utils.js"
 );
-const shortUtilsPath = path.join(
-  repoRoot,
-  "skills/story-short-scan/scripts/cdp-utils.js"
-);
 
 function makeFakeAgentBrowser(tmpDir) {
   const fakeProgram = `#!/usr/bin/env node
@@ -365,17 +361,13 @@ function listScraperPaths() {
       .readdirSync(path.join(repoRoot, "skills/story-long-scan/scripts"))
       .filter((name) => name.endsWith("-scraper.js"))
       .map((name) => path.join(repoRoot, "skills/story-long-scan/scripts", name)),
-    ...fs
-      .readdirSync(path.join(repoRoot, "skills/story-short-scan/scripts"))
-      .filter((name) => name.endsWith("-scraper.js"))
-      .map((name) => path.join(repoRoot, "skills/story-short-scan/scripts", name)),
   ].sort();
 }
 
 function testScraperImports() {
   const scraperPaths = listScraperPaths();
 
-  assert(scraperPaths.length >= 7, "expected all rank scraper modules");
+  assert(scraperPaths.length >= 5, "expected all rank scraper modules");
   for (const scraperPath of scraperPaths) {
     const probe = spawnSync(
       process.execPath,
@@ -777,31 +769,6 @@ function testFanqiePureFunctions() {
 }
 
 // 点众：CLI 流程（探活→提取→质量门→写盘）+ --channel all 部分失败退出码
-function testDzBrowseE2e() {
-  const scraper = path.join(
-    repoRoot,
-    "skills/story-short-scan/scripts/dz-browse-scraper.js"
-  );
-  const ok = runScraper(scraper, ["--channel", "male"], {
-    SCAN_FAKE_HOST: "www.ishugui.com",
-    SCAN_TEST_STUB_SCROLL: "1",
-  });
-  assert.strictEqual(ok.status, 0, ok.stderr);
-  assert.strictEqual(ok.files.length, 1, `dz 应写一份报告: ${ok.files.join(", ")}`);
-  assert.match(ok.contents[0], /# 点众 · 男频短篇/);
-  assert.match(ok.contents[0], /数据质量：\[OK\]/);
-
-  // 男频成功、女频失败（URL 命中 /browse/on3）→ partial exit 2，只写男频
-  const partial = runScraper(scraper, ["--channel", "all"], {
-    SCAN_FAKE_HOST: "www.ishugui.com",
-    SCAN_FAKE_FAIL_OPEN: "/browse/on3",
-    SCAN_TEST_STUB_SCROLL: "1",
-  });
-  assert.strictEqual(partial.status, 2, partial.stderr);
-  assert.strictEqual(partial.files.length, 1, "女频失败时只写男频报告");
-  assert.match(partial.stderr, /点众采集 partial/);
-}
-
 // 参数错误必须在打开浏览器/进入 per-target 容错前快速失败，给出具体参数名和值。
 function testLongScanArgumentValidation() {
   const cases = [
@@ -828,89 +795,6 @@ function testLongScanArgumentValidation() {
 }
 
 // 黑岩：字段漂移必须拦在写盘前，字数格式不许随宿主 locale 变
-function testHeiyanFieldDriftAndWordFormat() {
-  const heiyan = loadFresh(
-    path.join(repoRoot, "skills/story-short-scan/scripts/heiyan-booklist-scraper.js")
-  );
-  assert.strictEqual(typeof heiyan.fmtWords, "function");
-  assert.strictEqual(heiyan.fmtWords(123456), "123,456字");
-  assert.strictEqual(heiyan.fmtWords("123456"), "123,456字");
-  assert.strictEqual(heiyan.fmtWords(0), "");
-  assert.strictEqual(heiyan.fmtWords(undefined), "");
-  assert.strictEqual(typeof heiyan.outputFilename, "function");
-  const date = "20260806";
-  const channelFiles = ["male", "female", "all"].map((channel) =>
-    heiyan.outputFilename(channel, date)
-  );
-  assert.strictEqual(
-    new Set(channelFiles).size,
-    channelFiles.length,
-    `黑岩产物名必须包含频道，不能同日互相覆盖: ${channelFiles.join(", ")}`
-  );
-  assert.deepStrictEqual(channelFiles, [
-    `黑岩书库列表_male_${date}.md`,
-    `黑岩书库列表_female_${date}.md`,
-    `黑岩书库列表_all_${date}.md`,
-  ]);
-  assert.throws(() => heiyan.outputFilename("../../escape", date), /未知 --channel/);
-
-  // toLocaleString() 在 de_* 下会写成 123.456（读起来像 123 字），fmtWords 必须不受影响
-  const probe = spawnSync(
-    process.execPath,
-    [
-      "-e",
-      "const {fmtWords}=require(process.argv[1]);process.stdout.write(fmtWords(123456));",
-      path.join(repoRoot, "skills/story-short-scan/scripts/heiyan-booklist-scraper.js"),
-    ],
-    {
-      cwd: repoRoot,
-      encoding: "utf8",
-      timeout: 5000,
-      env: { ...process.env, LC_ALL: "de_DE.UTF-8", LANG: "de_DE.UTF-8" },
-    }
-  );
-  assert.strictEqual(probe.status, 0, probe.stderr);
-  assert.strictEqual(probe.stdout, "123,456字", "字数格式不能跟宿主 locale 变");
-
-  // 缺字段不能被拼成 "undefined/undefined" 写进报告
-  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "story-scan-heiyan-"));
-  try {
-    const filepath = path.join(tmpDir, "out.md");
-    const books = [
-      { name: "甲书", userName: "作者甲", classifyStr: "男频", typeDesc: "都市", words: 123456 },
-      { name: "乙书", userName: "作者乙", classifyStr: "女频", typeDesc: null, words: 50000 },
-    ];
-    const origLog = console.log;
-    console.log = () => {};
-    try {
-      heiyan.buildAndSave(books, 2, books, filepath);
-    } finally {
-      console.log = origLog;
-    }
-    const written = fs.readFileSync(filepath, "utf8");
-    assert(!written.includes("undefined"), `报告里不能出现 undefined:\n${written}`);
-    assert(!written.includes("/null"), `报告里不能出现 null:\n${written}`);
-    assert(written.includes("*作者甲 · 男频/都市 · 123,456字 · 未公开*"), written);
-    assert(written.includes("*作者乙 · 女频 · 50,000字 · 未公开*"), written);
-
-    const malePath = path.join(tmpDir, heiyan.outputFilename("male", date));
-    const femalePath = path.join(tmpDir, heiyan.outputFilename("female", date));
-    console.log = () => {};
-    try {
-      heiyan.buildAndSave(books, 2, [books[0]], malePath);
-      heiyan.buildAndSave(books, 2, [books[1]], femalePath);
-    } finally {
-      console.log = origLog;
-    }
-    assert(fs.existsSync(malePath), "男频报告不应被女频采集覆盖");
-    assert(fs.existsSync(femalePath), "女频报告必须独立落盘");
-    assert(fs.readFileSync(malePath, "utf8").includes("甲书"));
-    assert(fs.readFileSync(femalePath, "utf8").includes("乙书"));
-  } finally {
-    fs.rmSync(tmpDir, { recursive: true, force: true });
-  }
-}
-
 // ---------------------------------------------------------------------------
 // setup-cdp-chrome.js 的 --reset 闸门夹具。
 // 全程只碰 127.0.0.1 上一个临时端口，不发外部请求、不碰真 Chrome：
@@ -1538,10 +1422,8 @@ function testCdpWindowsListenerParsingIsLocaleIndependent() {
 }
 
 testCdpUtils(longUtilsPath);
-testCdpUtils(shortUtilsPath);
 testWindowsInvocationBuilder(longUtilsPath);
 testLocalDateStamp(longUtilsPath);
-testLocalDateStamp(shortUtilsPath);
 testScraperFilenameDatesAreLocal();
 testScraperImports();
 testCliResultGate(longUtilsPath);
@@ -1551,9 +1433,7 @@ testQidianFieldContractAndDescriptionLimit();
 testQimaoPeriodPlan();
 testQimaoPartialTargetStatus();
 testFanqiePureFunctions();
-testDzBrowseE2e();
 testLongScanArgumentValidation();
-testHeiyanFieldDriftAndWordFormat();
 testCdpProbeUsesFreshSocket();
 testCdpWindowsListenerParsingIsLocaleIndependent();
 testCdpPlainReuseUnchanged();

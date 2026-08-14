@@ -314,7 +314,6 @@ node scripts/jjwxc-rank-scraper.js --type 12 --list-only                 # 只�
 |---|---|---|
 | 找到方向 | story-long-analyze | `/story-long-analyze` |
 | 直接开写 | story-long-write | `/story-long-write` |
-| 更适合短篇 | story-short-scan | `/story-short-scan` |
 
 ## 参考资料
 

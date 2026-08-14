@@ -15,8 +15,17 @@
       "strict": false,
       "version": "1.0.0",
       "category": "novel-writing",
-      "keywords": ["novel", "web-novel", "router", "chinese", "writing", "网文"],
-      "skills": ["./skills/story"]
+      "keywords": [
+        "novel",
+        "web-novel",
+        "router",
+        "chinese",
+        "writing",
+        "网文"
+      ],
+      "skills": [
+        "./skills/story"
+      ]
     },
     {
       "name": "story-long-scan",
@@ -25,8 +34,19 @@
       "strict": false,
       "version": "1.0.0",
       "category": "novel-market",
-      "keywords": ["long-novel", "ranking", "market", "trend", "起点", "番茄", "晋江", "chinese"],
-      "skills": ["./skills/story-long-scan"]
+      "keywords": [
+        "long-novel",
+        "ranking",
+        "market",
+        "trend",
+        "起点",
+        "番茄",
+        "晋江",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/story-long-scan"
+      ]
     },
     {
       "name": "story-long-analyze",
@@ -35,8 +55,17 @@
       "strict": false,
       "version": "1.0.0",
       "category": "novel-analysis",
-      "keywords": ["long-novel", "analysis", "breakdown", "golden-three-chapters", "爽文", "chinese"],
-      "skills": ["./skills/story-long-analyze"]
+      "keywords": [
+        "long-novel",
+        "analysis",
+        "breakdown",
+        "golden-three-chapters",
+        "爽文",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/story-long-analyze"
+      ]
     },
     {
       "name": "story-long-write",
@@ -45,38 +74,17 @@
       "strict": false,
       "version": "1.0.0",
       "category": "novel-writing",
-      "keywords": ["long-novel", "writing", "outline", "chapter", "worldbuilding", "chinese"],
-      "skills": ["./skills/story-long-write"]
-    },
-    {
-      "name": "story-short-scan",
-      "description": "短篇网文扫榜。分析知乎盐言故事、番茄短篇等平台热门短篇数据，捕捉风口题材。",
-      "source": "./",
-      "strict": false,
-      "version": "1.0.0",
-      "category": "novel-market",
-      "keywords": ["short-novel", "ranking", "market", "知乎盐言", "番茄短篇", "chinese"],
-      "skills": ["./skills/story-short-scan"]
-    },
-    {
-      "name": "story-short-analyze",
-      "description": "短篇网文拆文。拆解爆款短篇小说的叙事结构、情绪曲线、反转技巧、钩子设计。",
-      "source": "./",
-      "strict": false,
-      "version": "3.0.0",
-      "category": "novel-analysis",
-      "keywords": ["short-novel", "analysis", "structure", "twist", "hook", "chinese"],
-      "skills": ["./skills/story-short-analyze"]
-    },
-    {
-      "name": "story-short-write",
-      "description": "短篇网文写作。辅助短篇小说创作，从构思到成稿，聚焦情绪拉扯与节奏把控。",
-      "source": "./",
-      "strict": false,
-      "version": "1.0.0",
-      "category": "novel-writing",
-      "keywords": ["short-novel", "writing", "emotion", "pacing", "chinese"],
-      "skills": ["./skills/story-short-write"]
+      "keywords": [
+        "long-novel",
+        "writing",
+        "outline",
+        "chapter",
+        "worldbuilding",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/story-long-write"
+      ]
     },
     {
       "name": "story-deslop",
@@ -85,8 +93,18 @@
       "strict": false,
       "version": "1.0.0",
       "category": "novel-polish",
-      "keywords": ["de-ai", "humanize", "deslop", "去AI味", "润色", "去味", "chinese"],
-      "skills": ["./skills/story-deslop"]
+      "keywords": [
+        "de-ai",
+        "humanize",
+        "deslop",
+        "去AI味",
+        "润色",
+        "去味",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/story-deslop"
+      ]
     },
     {
       "name": "browser-cdp",
@@ -95,8 +113,18 @@
       "strict": false,
       "version": "1.0.0",
       "category": "browser-automation",
-      "keywords": ["browser", "cdp", "chrome", "agent-browser", "浏览器", "登录态", "automation"],
-      "skills": ["./skills/browser-cdp"]
+      "keywords": [
+        "browser",
+        "cdp",
+        "chrome",
+        "agent-browser",
+        "浏览器",
+        "登录态",
+        "automation"
+      ],
+      "skills": [
+        "./skills/browser-cdp"
+      ]
     },
     {
       "name": "story-setup",
@@ -105,8 +133,19 @@
       "strict": false,
       "version": "1.2.7",
       "category": "novel-infra",
-      "keywords": ["setup", "deploy", "hooks", "agents", "初始化", "部署", "基础设施", "chinese"],
-      "skills": ["./skills/story-setup"]
+      "keywords": [
+        "setup",
+        "deploy",
+        "hooks",
+        "agents",
+        "初始化",
+        "部署",
+        "基础设施",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/story-setup"
+      ]
     },
     {
       "name": "story-review",
@@ -115,8 +154,21 @@
       "strict": false,
       "version": "1.1.1",
       "category": "novel-quality",
-      "keywords": ["review", "audit", "multi-agent", "rubric", "审查", "评分", "番茄", "起点", "知乎", "chinese"],
-      "skills": ["./skills/story-review"]
+      "keywords": [
+        "review",
+        "audit",
+        "multi-agent",
+        "rubric",
+        "审查",
+        "评分",
+        "番茄",
+        "起点",
+        "知乎",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/story-review"
+      ]
     },
     {
       "name": "story-import",
@@ -125,18 +177,17 @@
       "strict": false,
       "version": "1.0.0",
       "category": "novel-import",
-      "keywords": ["import", "reverse-engineer", "导入", "反推", "迁移", "chinese"],
-      "skills": ["./skills/story-import"]
-    },
-    {
-      "name": "story-cover",
-      "description": "网文封面生成。分析书名题材，生成专业封面图，支持 10 大题材视觉风格。",
-      "source": "./",
-      "strict": false,
-      "version": "1.0.0",
-      "category": "novel-cover",
-      "keywords": ["cover", "封面", "image", "GPT-Image", "chinese"],
-      "skills": ["./skills/story-cover"]
+      "keywords": [
+        "import",
+        "reverse-engineer",
+        "导入",
+        "反推",
+        "迁移",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/story-import"
+      ]
     }
   ]
 }

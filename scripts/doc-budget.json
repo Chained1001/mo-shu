@@ -31,11 +31,6 @@
       "why": "开书/补纲路径加载"
     },
     {
-      "path": "skills/story-short-write/SKILL.md",
-      "budget": 16800,
-      "why": "短篇任一场景都无条件加载"
-    },
-    {
       "path": "skills/story-setup/references/templates/agents/narrative-writer.md",
       "budget": 13150,
       "why": "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则"

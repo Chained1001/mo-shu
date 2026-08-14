@@ -66,8 +66,8 @@ from pathlib import Path
 
 skills = sorted(Path('skills').glob('*/SKILL.md'))
 commands = sorted(Path('skills/story-setup/references/zcode/commands').glob('*.md'))
-assert len(skills) == 13, f'expected 13 skills, got {len(skills)}'
-assert len(commands) == 13, f'expected 13 commands, got {len(commands)}'
+assert len(skills) == 9, f'expected 9 skills, got {len(skills)}'
+assert len(commands) == 9, f'expected 9 commands, got {len(commands)}'
 expected = {p.parent.name for p in skills}
 assert {p.stem for p in commands} == expected
 
@@ -92,7 +92,7 @@ for command in commands:
     assert 'description' in keys and 'skills' in keys
     assert '$ARGUMENTS' in body
 PY
-echo "  OK 13 Skills + 13 Commands (schema and one-to-one names)"
+echo "  OK 9 Skills + 9 Commands (schema and one-to-one names)"
 
 python3 - <<'PY'
 import json
@@ -172,7 +172,7 @@ assert_grep 'references/zcode/config\.json\.patch' skills/story-setup/SKILL.md "
 assert_grep 'hooks 互斥' skills/story-setup/SKILL.md "story-setup must document the plugin/workspace hooks mutex (skip config hooks merge when plugin installed, avoid double-firing)"
 assert_grep '\.zcode/skills/story-setup/references/agent-references' skills/story-setup/SKILL.md "story-setup missing ZCode reference path"
 
-for skill in story-long-write story-short-write story-long-analyze story-import story-deslop story-review; do
+for skill in story-long-write story-long-analyze story-import story-deslop story-review; do
   assert_grep 'ZCode 3\.3\.4|\.zcode/' "skills/$skill/SKILL.md" "$skill must document ZCode fallback"
 done
 

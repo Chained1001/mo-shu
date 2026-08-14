@@ -394,7 +394,7 @@ function renderTree() {
         : `没有找到“${query}”`
       : state.activeView === "libraries"
         ? "工作区里还没有拆文库。运行拆文 skill 后，档案会出现在这里。"
-        : "还没有识别到写作项目。长篇需包含正文、大纲、设定或追踪目录；短篇需包含正文.md，并同时包含小节大纲.md或设定.md。";
+        : "还没有识别到写作项目。长篇需包含正文、大纲、设定或追踪目录。";
     message.append(text);
     elements.fileTree.append(message);
     const truncation = searchTruncationMessage();

@@ -471,9 +471,9 @@ Rubric Source: file | embedded fallback
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 要修改查出的问题 | story-long-write / story-short-write | 返回对应写作 skill 修改 |
+| 要修改查出的问题 | story-long-write | 返回对应写作 skill 修改 |
 | 发现 AI 味需清理 | story-deslop | `/story-deslop` |
-| 需要重新拆解对标书 | story-long-analyze / story-short-analyze | `/story-long-analyze` 或 `/story-short-analyze` |
+| 需要重新拆解对标书 | story-long-analyze | `/story-long-analyze` |
 
 ---
 

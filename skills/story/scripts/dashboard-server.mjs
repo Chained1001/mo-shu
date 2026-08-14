@@ -23,8 +23,6 @@ const MODULE_PATH = fileURLToPath(import.meta.url);
 const ASSET_DIR = fileURLToPath(new URL("../assets/", import.meta.url));
 const EDITABLE_EXTENSIONS = new Set([".md", ".txt", ".json", ".yaml", ".yml", ".toml"]);
 const LONG_PROJECT_DIRECTORY_MARKERS = new Set(["正文", "大纲", "设定", "追踪"]);
-const SHORT_PROJECT_BODY_FILE = "正文.md";
-const SHORT_PROJECT_COMPANION_FILES = new Set(["小节大纲.md", "设定.md"]);
 const IGNORED_DIRECTORIES = new Set([
   ".git",
   ".omc",
@@ -370,10 +368,7 @@ async function findProjectRoots(
   const isLongProject = [...LONG_PROJECT_DIRECTORY_MARKERS].some((marker) =>
     childDirectoryNames.has(marker),
   );
-  const isShortProject =
-    childFileNames.has(SHORT_PROJECT_BODY_FILE) &&
-    [...SHORT_PROJECT_COMPANION_FILES].some((marker) => childFileNames.has(marker));
-  if (isLongProject || isShortProject) {
+  if (isLongProject) {
     projects.push({
       absolutePath: currentPath,
       relativePath: relative(root, currentPath),

@@ -515,15 +515,13 @@ echo "  OK TS7 commit hook self-gating"
 
 # TS8 — detect-story-gaps multi-book traversal
 multi_root="$TMP_DIR/multi-book"
-mkdir -p "$multi_root/long/追踪" "$multi_root/long/正文" "$multi_root/short"
+mkdir -p "$multi_root/long/追踪" "$multi_root/long/正文" 
 setup_git_repo "$multi_root"
 copy_hooks "$multi_root"
 printf 'long\n' > "$multi_root/.active-book"
 printf '长篇正文\n' > "$multi_root/long/正文/第1章.md"
-printf '短篇正文\n' > "$multi_root/short/正文.md"
 multi_out="$(run_from_nested "$multi_root" detect-story-gaps.sh || true)"
 echo "$multi_out" | grep -q '^检查：long$' || fail "detect-story-gaps did not inspect long project when .active-book is set"
-echo "$multi_out" | grep -q '^检查：short$' || fail "detect-story-gaps did not inspect short project alongside long project"
 long_count="$(printf '%s\n' "$multi_out" | grep -c '^检查：long$' || true)"
 [ "$long_count" -eq 1 ] || fail "detect-story-gaps reported long project $long_count times; expected exactly once"
 echo "  OK TS8 multi-book gap detection"
@@ -591,9 +589,8 @@ echo "  OK TS10 version + behavior anchors"
 # TS11 — Outline-before-prose write guard (BLOCKING PreToolUse hook)
 guard_root="$TMP_DIR/outline-guard"
 mkdir -p "$guard_root/book/正文" "$guard_root/book/大纲" "$guard_root/book/设定" \
-         "$guard_root/short" "$guard_root/docs" \
-         "$guard_root/impbook/正文" "$guard_root/拆文库/impbook" \
-         "$guard_root/impshort" "$guard_root/拆文库/impshort"
+         "$guard_root/docs" \
+         "$guard_root/impbook/正文" "$guard_root/拆文库/impbook" 
 setup_git_repo "$guard_root"
 copy_hooks "$guard_root"
 assert_file "$guard_root/.claude/hooks/guard-outline-before-prose.sh"
@@ -638,21 +635,13 @@ mv "$guard_root/book/追踪/_state.bak" "$guard_root/book/追踪/_tracking-state
 [ "$(run_guard 'book/正文/第001章_开端.md')" = "0" ] || fail "guard did not tolerate chapter-number zero padding (第001章 vs 细纲_第1章)"
 : > "$guard_root/book/大纲/细纲_第7章_惊变.md"
 [ "$(run_guard 'book/正文/第7章_x.md')" = "0" ] || fail "guard did not tolerate title-suffixed 细纲 (细纲_第7章_惊变.md)"
-# 短篇授权流：有 设定.md 信号 + 缺小节大纲 -> 拦截；补小节大纲 -> 放行
-: > "$guard_root/short/设定.md"
-[ "$(run_guard 'short/正文.md')" = "2" ] || fail "guard did not BLOCK short prose when 小节大纲.md missing"
-: > "$guard_root/short/小节大纲.md"
-[ "$(run_guard 'short/正文.md')" = "0" ] || fail "guard wrongly blocked short prose when 小节大纲.md present"
 # 非作品文件 / 无短篇工程信号 -> 放行（宁可漏拦不可误伤）
 [ "$(run_guard 'book/设定/角色.md')" = "0" ] || fail "guard wrongly blocked a non-prose file"
 [ "$(run_guard 'docs/正文.md')" = "0" ] || fail "guard wrongly blocked a non-story 正文.md (no 设定.md signal)"
 # 已存在正文 -> 放行（续写/改稿/去AI味）
 : > "$guard_root/book/正文/第9章_x.md"
 [ "$(run_guard 'book/正文/第9章_x.md')" = "0" ] || fail "guard wrongly blocked rewrite of an existing prose file"
-# story-import 迁移流：存在 拆文库/{书名}/ 源 -> 正文先于大纲/小节大纲迁移，放行
 [ "$(run_guard 'impbook/正文/第1章_x.md')" = "0" ] || fail "guard wrongly blocked story-import LONG prose migration (拆文库 source present)"
-: > "$guard_root/impshort/设定.md"
-[ "$(run_guard 'impshort/正文.md')" = "0" ] || fail "guard wrongly blocked story-import SHORT prose migration (拆文库 source present)"
 # Bash 命令面：真正写正文才拦；只提及正文路径不得误伤。第8章无细纲，故写入应阻断。
 if command -v node >/dev/null 2>&1; then
   [ "$(run_bash_guard 'cat draft.md > book/正文/第8章_x.md')" = "2" ] \

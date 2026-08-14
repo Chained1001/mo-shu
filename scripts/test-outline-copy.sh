@@ -12,7 +12,6 @@ SCRIPT="$REPO_ROOT/skills/story-long-write/scripts/check-outline-copy.js"
 DETECTOR_COPIES=(
   "$REPO_ROOT/skills/story-long-write/scripts/check-outline-copy.js"
   "$REPO_ROOT/skills/story-deslop/scripts/check-outline-copy.js"
-  "$REPO_ROOT/skills/story-short-write/scripts/check-outline-copy.js"
 )
 for detector_copy in "${DETECTOR_COPIES[@]}"; do
   node --check "$detector_copy" >/dev/null

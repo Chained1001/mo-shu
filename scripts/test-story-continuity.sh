@@ -71,15 +71,6 @@ out="$(run "$T2")"
 [ -z "$out" ] || { echo "FAIL: 干净项目应静默，却输出："; echo "$out" >&2; fails=$((fails+1)); }
 rm -rf "$T2"
 
-# ⑤ 短篇项目（无 追踪/）：不做 staleness（无 上下文.md），也不误报
-T3="$(mktemp -d)"
-mkdir -p "$T3/短篇/正文" "$T3/短篇/设定"
-printf 'a\n' > "$T3/短篇/设定/角色.md"; printf 'b\n' > "$T3/短篇/设定/世界.md"; printf 'c\n' > "$T3/短篇/设定/力量.md"
-printf '# 第1章 起\n正文。\n' > "$T3/短篇/正文/第001章_起.md"
-mkdir -p "$T3/短篇/大纲"; printf '大纲\n' > "$T3/短篇/大纲/卷纲.md"
-out="$(run "$T3")"
-printf '%s' "$out" | grep -q '续写状态卡更早' && { echo "FAIL: 短篇无追踪不应报 staleness"; echo "$out" >&2; fails=$((fails+1)); } || true
-rm -rf "$T3"
 
 if [ "$fails" -ne 0 ]; then
   echo "Story continuity tests FAILED ($fails)." >&2

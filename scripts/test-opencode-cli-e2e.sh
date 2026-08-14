@@ -43,7 +43,6 @@ from pathlib import Path
 expected = {
     "browser-cdp",
     "story",
-    "story-cover",
     "story-deslop",
     "story-import",
     "story-long-analyze",
@@ -51,9 +50,6 @@ expected = {
     "story-long-write",
     "story-review",
     "story-setup",
-    "story-short-analyze",
-    "story-short-scan",
-    "story-short-write",
 }
 
 data = json.loads(Path(sys.argv[1]).read_text())
@@ -109,7 +105,6 @@ cfg = json.loads(Path(sys.argv[1]).read_text())
 expected_commands = {
     "browser-cdp",
     "story",
-    "story-cover",
     "story-deslop",
     "story-import",
     "story-long-analyze",
@@ -117,9 +112,6 @@ expected_commands = {
     "story-long-write",
     "story-review",
     "story-setup",
-    "story-short-analyze",
-    "story-short-scan",
-    "story-short-write",
 }
 expected_agents = {
     "chapter-extractor",

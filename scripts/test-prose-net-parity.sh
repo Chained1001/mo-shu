@@ -550,11 +550,9 @@ JS
   #     毒句式欠账门（上一章有欠账拦 / 标「去味:跳过」豁免放 / 全角冒号「去味：跳过」豁免放 /
   #     上一章含坏字节替换解码继续扫仍拦）、新书无脚手架时仍须先建细纲（拦）
   local blk="$tmp/blk"
-  mkdir -p "$blk/long/正文" "$blk/long/大纲" "$blk/short" "$blk/short2" \
+  mkdir -p "$blk/long/正文" "$blk/long/大纲" \
     "$blk/long2/正文" "$blk/long2/大纲" "$blk/long3/正文" "$blk/long3/大纲"
   : > "$blk/long/大纲/细纲_第2章.md"
-  : > "$blk/short/设定.md"
-  : > "$blk/short2/其他.md"
   : > "$blk/long2/大纲/细纲_第2章.md"
   printf '%s\n' '# 第1章 旧' '' '声音不大，却带着一股狠劲。' > "$blk/long2/正文/第1章_旧.md"
   : > "$blk/long3/大纲/细纲_第2章.md"
@@ -584,7 +582,7 @@ import importlib.util, sys
 from pathlib import Path
 spec = importlib.util.spec_from_file_location("ch", sys.argv[1]); m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 root = Path(sys.argv[2])
-for rel in ["long/正文/第1章_起.md", "long/正文/第2章_承.md", "short/正文.md", "short2/正文.md", "long2/正文/第2章_新.md", "long3/正文/第2章_新.md", "long4/正文/第2章_新.md", "long5/正文/第2章_新.md", "long6/正文/第2章_新.md", "bare/正文/第1章_起.md"]:
+for rel in ["long/正文/第1章_起.md", "long/正文/第2章_承.md", "long2/正文/第2章_新.md", "long3/正文/第2章_新.md", "long4/正文/第2章_新.md", "long5/正文/第2章_新.md", "long6/正文/第2章_新.md", "bare/正文/第1章_起.md"]:
     reason = m.prose_block_reason(root, root / rel)
     sys.stdout.buffer.write((f"{rel} :: {reason if reason else '-'}\n").encode("utf-8"))
 PY
@@ -592,7 +590,7 @@ PY
 const path = require("node:path")
 const core = require(process.argv[2])
 const root = process.argv[3]
-for (const rel of ["long/正文/第1章_起.md", "long/正文/第2章_承.md", "short/正文.md", "short2/正文.md", "long2/正文/第2章_新.md", "long3/正文/第2章_新.md", "long4/正文/第2章_新.md", "long5/正文/第2章_新.md", "long6/正文/第2章_新.md", "bare/正文/第1章_起.md"]) {
+for (const rel of ["long/正文/第1章_起.md", "long/正文/第2章_承.md", "long2/正文/第2章_新.md", "long3/正文/第2章_新.md", "long4/正文/第2章_新.md", "long5/正文/第2章_新.md", "long6/正文/第2章_新.md", "bare/正文/第1章_起.md"]) {
   const reason = core.proseBlockReason(root, path.join(root, rel))
   console.log(`${rel} :: ${reason || "-"}`)
 }
@@ -604,8 +602,6 @@ JS
   fi
   grep -q '第1章_起.md :: ⛔' "$tmp/bpy.txt" || { echo "FAIL: 长篇缺细纲未被拦截" >&2; return 3; }
   grep -q '第2章_承.md :: -' "$tmp/bpy.txt" || { echo "FAIL: 长篇有细纲被误拦" >&2; return 3; }
-  grep -q 'short/正文.md :: ⛔' "$tmp/bpy.txt" || { echo "FAIL: 短篇缺小节大纲未被拦截" >&2; return 3; }
-  grep -q 'short2/正文.md :: -' "$tmp/bpy.txt" || { echo "FAIL: 无设定信号的正文.md 被误拦" >&2; return 3; }
   grep -q '毒句式欠账' "$tmp/bpy.txt" || { echo "FAIL: 上一章毒句式欠账未被欠账门拦截" >&2; return 3; }
   grep -q 'long3/正文/第2章_新.md :: -' "$tmp/bpy.txt" || { echo "FAIL: 标「去味:跳过」豁免的上一章仍被欠账门误拦" >&2; return 3; }
   grep -q 'long4/正文/第2章_新.md :: -' "$tmp/bpy.txt" || { echo "FAIL: 全角冒号豁免标记「去味：跳过」未被欠账门认可" >&2; return 3; }

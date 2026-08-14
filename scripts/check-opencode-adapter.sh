@@ -672,7 +672,7 @@ assert_grep 'proseNetFindings' "$ROOT/story_hook_core.js" "shared core must carr
 # exercises the before/after/compacting hooks (stronger than the structural greps above).
 node --experimental-strip-types scripts/test-opencode-plugin.mjs
 assert_grep 'AGENTS\.md|OpenCode' "$ROOT/AGENTS.md.tmpl" "OpenCode AGENTS template must be present"
-assert_grep 'story-long-write|story-short-write|story-review' "$ROOT/AGENTS.md.tmpl" "OpenCode AGENTS template must mention story skill routing"
+assert_grep 'story-long-write|story-review' "$ROOT/AGENTS.md.tmpl" "OpenCode AGENTS template must mention story skill routing"
 
 echo "  OK plugin behavior and instruction anchors"
 echo ""

@@ -105,12 +105,6 @@ LEGACY_RULES = (
         ("skills/story-setup/references/templates/hooks",),
     ),
     AbsentRule(
-        "obsolete-short-benchmark-path",
-        "short writing uses only current benchmark paths",
-        r"\{短篇标题\}/拆文库/\{书名\}",
-        ("skills/story-short-write",),
-    ),
-    AbsentRule(
         "dotted-demo-workflow-label",
         "shipped demos do not preserve dotted workflow labels",
         r"(?:Step|Phase|Stage)\s*[0-9]+\.[0-9]+",
@@ -231,7 +225,6 @@ SPAWN_CAPABLE_SKILLS = (
     "skills/story-long-analyze/SKILL.md",
     "skills/story-long-write/SKILL.md",
     "skills/story-review/SKILL.md",
-    "skills/story-short-write/SKILL.md",
 )
 
 
@@ -1224,10 +1217,8 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
     # 断言跟着内容走；短篇的对标发现仍在自己的 SKILL.md 里。
     for relative in (
         "skills/story-long-write/references/workflow-setup.md",
-        "skills/story-short-write/SKILL.md",
-        "skills/story-long-write/references/cross-book-recall.md",
-        "skills/story-short-write/references/cross-book-recall.md",
-    ):
+            "skills/story-long-write/references/cross-book-recall.md",
+        ):
         benchmark_discovery = repo_root / relative
         findings.extend(
             require_pattern(

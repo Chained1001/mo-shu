@@ -436,9 +436,8 @@ node scripts/check-outline-copy.js <正文文件...>
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 继续写作 | story-long-write / story-short-write | `/story-long-write` 或 `/story-short-write` |
-| 发现结构问题 | story-long-analyze / story-short-analyze | `/story-long-analyze` 或 `/story-short-analyze` |
-| 准备做封面 | story-cover | `/story-cover` |
+| 继续写作 | story-long-write | `/story-long-write` |
+| 发现结构问题 | story-long-analyze | `/story-long-analyze` |
 
 ---
 

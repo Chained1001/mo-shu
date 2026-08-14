@@ -307,7 +307,6 @@ Stage 3-5 分块见 [material-decomposition.md](references/material-decompositio
 |---|---|---|
 | 准备开写 | story-long-write | `/story-long-write` |
 | 需要市场数据 | story-long-scan | `/story-long-scan` |
-| 更适合短篇 | story-short-scan → story-short-analyze | `/story-short-scan` |
 
 ---
 

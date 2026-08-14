@@ -269,7 +269,6 @@ def test_undecodable_markdown_is_a_named_failure() -> None:
             "UTF-16 Markdown 含 NUL，但仍是契约文本，不能伪装成二进制资产跳过",
         )
         target.write_text(dotted, encoding="utf-8")
-        (demo / "封面.png").write_bytes(b"\x89PNG\r\n\x1a\n\xff\xfe")
         # 无后缀 / 非白名单后缀的二进制（.DS_Store 之类）靠 NUL 字节识别，不能误报
         (demo / ".DS_Store").write_bytes(b"\x00\x00\x00\x01Bud1\xff\xfe")
         require(
@@ -518,7 +517,6 @@ def test_story_import_keeps_self_out_of_benchmarks() -> None:
         "story-import-self-main-benchmark": "主对标书: {书名}\n导入当前书时至少登记自身为 `主`。\n",
         "story-import-self-benchmark-copy": (
             "把 `拆文库/{书名}/` 复制到 `{项目}/对标/{书名}/`。\n"
-            "短篇复制到 `{标题}/对标/{书名}/`。\n"
         ),
         "story-import-self-benchmark-summary": "## 对标摘要：{原书名}\n",
         "story-import-self-benchmark-fields": (

@@ -1,12 +1,12 @@
 ---
 name: story-import
 version: 1.0.0
-description: "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 story-long-write / story-short-write 后续写作流程；内部复用 story-long-analyze / story-short-analyze 的拆解管道，按篇幅自动分流。触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」。"
+description: "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 story-long-write 后续写作流程；内部复用 story-long-analyze 的拆解管道。触发方式：/story-import、「导入小说」「反向解析」「导入」「把我的书导进来」。"
 metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claudecode"}}
 ---
 # story-import：逆向导入已有小说
 
-你是小说项目逆向工程师。导入按篇幅分流：长篇走 Phase 3-L，短篇走 Phase 3-S。
+你是小说项目逆向工程师。只处理长篇导入。
 
 **交付物是写作工程**：把作者已有的书重建为可续写的**写作工程**（项目结构 + 拆文库分析资产）。`拆文库/{导入书名}/` 是重建工程的数据源，不能当成用完即弃的中间产物，也不能替代交付物本身——交付物应让作者能直接续写。执行时以「建工程」为可见目标，别把「拆文」当成终点或对外标签。
 
@@ -23,7 +23,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 - `{导入书名}`：用户自己已经写到一半或已经完本、现在要重建为工程的小说；它的分析源固定为 `拆文库/{导入书名}/`。
 - `{对标书名}`：用户另行选择的外部参考作品；它必须是独立拆解产物，来源固定为 `拆文库/{对标书名}/`，且不得指向本次导入源。
 - `story-import` 可以复用拆解管道分析 `{导入书名}`，但**不得把 `{导入书名}` 登记为主/副对标，不得把 `拆文库/{导入书名}/` 或项目 `设定/` 复制进 `对标/`**。
-- 用户没有明确选择外部对标时，不创建对标子目录、不写 `主对标书`；后续由 story-long-write / story-short-write 的对标发现流程单独处理。
 
 ### 原则 1：先分析后迁移
 
@@ -31,7 +30,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 ### 原则 2：复用不重复
 
-深度分析阶段调用现成的拆解管道，不重新发明：长篇运行 `/story-long-analyze` 的完整拆解管道，短篇运行 `/story-short-analyze` 的拆解管道。拆解方法论与输出模板由对应 analyze skill 自带，story-import 不执行拆解方法论、不维护这些文件。
 
 ---
 
@@ -69,7 +67,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 > 「你是想把这本书做成可续写的写作工程（设定/大纲/正文/追踪，能接着写第 N+1 章），还是只要一份拆文库分析？」
 
 - 要可续写工程 → 走完整 story-import（Phase 2 拆 + Phase 3 迁移）。
-- 只要分析 / 拆文库 → 直接用 `/story-long-analyze`（短篇 `/story-short-analyze`），到拆文库为止，不进 Phase 3 迁移。
 
 ### Step 3：输入方式识别
 
@@ -92,7 +89,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
    - 题材类型：{用户提供}
    - 目标平台：{起点/番茄/晋江/其他}
    - 是否完本：{是/否（半成品写到第N章）}
-   - **篇幅类型**：长篇 / 短篇 —— 按 [references/length-routing.md](references/length-routing.md) 自动检测（用户显式声明 > 结构信号 > 字数兜底），并向用户复述检测结果请其确认。判定结果决定 Phase 3 走长篇还是短篇路径。
    - **最后一章是否完整**：完整章 / 残稿（写了一半）。若是残稿，提示用户并把「残稿到第 N 章」记入上下文，让用户决定是「基于残章续写」还是「先补完再导入」。story-import 只记录用户决定，不替用户选。
 3. **外部对标（可选、与导入源分离）**：用户已经明确指定外部对标时，记录 `{对标书名}` 并确认 `拆文库/{对标书名}/` 是该参考作品的独立拆解产物；不得把 `{导入书名}` 或本次刚生成的拆文目录当候选。用户未指定时不追加提问，记为“未绑定”，后续交给写作 skill 的对标发现流程。
 4. **输出确认**：向用户展示检测到的章节范围、字数、判定的篇幅类型、最后一章状态，以及“外部对标：{对标书名/未绑定}”，确认后开始分析。
@@ -118,18 +114,18 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 ### Step 6：原文备份
 
-原文备份由 Phase 2 调用的 analyze 拆解管道负责（analyze 管道前置步骤会把原文复制/保存到 `拆文库/{导入书名}/原文/`，对应 story-long-analyze 与 story-short-analyze 的「原文备份（管道前置步骤）」）。Phase 1 只需确认源文件就绪（路径有效或文本已拿到），不在此处单独备份，避免与 analyze 管道重复备份逻辑。
+原文备份由 Phase 2 调用的 story-long-analyze 拆解管道负责（其前置步骤会把原文复制/保存到 `拆文库/{导入书名}/原文/`）。此处 Phase 1 只确认源文件路径存在、可读、文本文件可用，不再重复备份，避免与 analyze 管道重复操作逻辑。
+
 
 ---
 
 ## Phase 2：深度分析
 
-按 Phase 1 判定的篇幅类型，调用对应 analyze skill 的**完整拆解管道**；不要做「复用方法论」式的半流程，要驱动整条管道跑完，拿到全套结构化产物。
+调用 story-long-analyze 的**完整拆解管道**；不要做「复用方法论」式的半流程，要驱动整条管道跑完，拿到全套结构化产物。
 
 | 篇幅 | 调用的拆解管道 | 产物目录 |
 |------|--------------|---------|
 | 长篇 | story-long-analyze 的完整管道（Stage 0-6） | `拆文库/{导入书名}/` |
-| 短篇 | story-short-analyze 的拆解管道（Stage 2-6） | `拆文库/{导入书名}/` |
 
 ### 调用契约
 
@@ -145,21 +141,6 @@ story-long-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 A
 - **兜底**：若运行环境实际仍停在 Stage 1 询问处，story-import 自动选择「继续全量拆解」，**绝不把停靠询问甩给用户**。
 - 环境检测（Phase 1）发现未部署 chapter-extractor agent 且用户选择「继续导入」时，Stage 2 逐章摘要降级为串行处理，产物仍完整，仅速度变慢。
 
-#### 短篇：单一全量管道
-
-story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点**，一次跑完即可。它的 Phase 1 四个 Step 都要跑，按下表的导入场景取值执行，不整段跳过：
-
-| Phase 1 步骤 | 导入场景下的处理 |
-|-------------|----------------|
-| Step 1：拿到原文 | 用 story-import Phase 1 已确认的源文件，不重新问 |
-| Step 2：字数检查（长短篇路由） | 篇幅已在 story-import Phase 1 判定并经用户确认，直接答「按短篇继续」，不重新路由 |
-| Step 3：题材识别 | **照常跑**，题材标尺必须加载；story-import Phase 1 Step 4 已确认的题材类型直接代入，不重复提问 |
-| Step 4：续跑检查（`拆文库/{导入书名}/_meta.json` 已存在时三选一） | 先看旧产出是否可直接复用：`stages_completed` 已含 6 且 `拆文报告.md` / `情节节点.md` / `写作手法.md` / `原文/` 均非空、来源与本次导入源一致 → 直接进 Phase 3，不重跑也不归档。否则本轮首次进入 Phase 2 → 按 (a) 覆盖：先把旧产出归档到 `拆文库/{导入书名}/_archive_{时间戳}/`，再从 Stage 2 重跑；同一轮导入内重试同一本书 → 按 (b) 续跑。不把三选一甩给用户，也不跳过归档 |
-
-`_meta.json` 的 `genre_detected` 由 Step 3 产出，是拆文契约的阻断级必填字段，下游 story-short-write 靠它选题材标尺——**不要跳过 Step 3 直接从原文备份起跑**。
-
-- 措辞示例：启动深度分析时声明「《{导入书名}》篇幅已确认为短篇（题材 {题材类型}，全文约 {N} 字），Step 2 直接按短篇继续，Step 4 按覆盖并归档处理，题材识别照跑，确保 Stage 2-6 全部产出」。
-- **兜底**：若运行环境仍抛出「此文字数 {N} 偏长，建议改用 `/story-long-analyze`」或灰区提问「介于短/长之间，按短篇还是长篇拆？」，一律按 Phase 1 已锁定的判定逐字回「按短篇继续」，**绝不把路由询问甩给用户**。
 
 ### 输出目录
 
@@ -194,19 +175,6 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 └── _progress.md
 ```
 
-#### 短篇拆文库结构
-
-短篇分析输出到 `拆文库/{导入书名}/`，与 story-short-analyze 拆解管道一致：
-
-```
-拆文库/{导入书名}/
-├── 原文/
-│   └── 原文.txt          # 扩展名随源文件；对话直接贴入的文本存为 原文.md
-├── 拆文报告.md
-├── 情节节点.md
-├── 写作手法.md
-└── _meta.json           # 管道元数据 + 结构计数（下游 story-short-write 必读）
-```
 
 ### 长篇完整管道（Stage 0-6）
 
@@ -222,13 +190,6 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 | 5 | 汇总报告 | 全部输出 | 拆文报告.md（含「读者需求 / 情绪引擎」「关键信息与扩写技法总览」「节奏与情绪触动点」「可复现模块」，并指向 `剧情/节奏.md` / `剧情/情绪模块.md`） | 报告生成完成 |
 | 6 | 文风 | 拆文报告.md + 章节/第1-3章_深度拆解.md + 章节/*_摘要.md + 原文/原文.txt | 文风.md（本书历史写法分析） | 文风落盘 `拆文库/{导入书名}/文风.md`，保留为导入分析，不复制到本书 `对标/` |
 
-### 短篇拆文管道
-
-> 管道详细说明见 story-short-analyze（运行 `/story-short-analyze`），此处仅列概要。
-
-短篇为单一全量管道（Stage 2-6 严格串行），产物落盘 `拆文库/{导入书名}/`：Stage 2 结构+情节节点 → Stage 3 情感线+爆点 → Stage 4 反转+写作手法 → Stage 5 人物+开头结尾 → Stage 6 综合评估，最终汇总为 `拆文报告.md`、`情节节点.md`、`写作手法.md`，另有 `_meta.json` 记管道元数据与结构计数。
-
-长篇分块沿用 story-long-analyze：Stage 2 用 chapter-extractor agent 并行，其余阶段按该 skill「分块策略」的章数阈值执行，story-import 不另定一套。
 
 ### 恢复机制
 
@@ -239,7 +200,6 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 
 ### 质量检查
 
-长篇阶段 3-4 完成前执行质量检查（置信度 >= 0.85，覆盖率 85%-95%，重叠率 <= 35%），由 story-long-analyze 拆解管道自带的质量检查负责。短篇质量检查见 story-short-analyze 各阶段的完成标志。
 
 ---
 
@@ -254,7 +214,6 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 | 篇幅 | 迁移路径 | 映射规则 | 续写接手 |
 |------|---------|---------|---------|
 | 长篇 | **3-L：长篇结构迁移** | [references/structure-mapping-long.md](references/structure-mapping-long.md) | story-long-write 日更循环 |
-| 短篇 | **3-S：短篇结构迁移** | [references/structure-mapping-short.md](references/structure-mapping-short.md) | story-short-write Phase 3 逐场景写作 |
 
 ---
 
@@ -438,47 +397,6 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 
 ---
 
-## Phase 3-S：短篇结构迁移
-
-将 `拆文库/{导入书名}/` 的短篇拆文产物迁移为 `{短篇标题}/` 短篇工程结构，供 story-short-write Phase 3 逐场景写作无缝接手。迁移规则详见 [references/structure-mapping-short.md](references/structure-mapping-short.md)。
-
-> **短篇工程与长篇完全不同**：短篇正文是单文件 `正文.md`（不切章），**不产** `追踪/`、`大纲/`、`正文/` 等长篇目录。迁移时严禁误建这些长篇专属目录。
-
-### 短篇目标工程结构
-
-```
-{短篇标题}/
-├── 设定.md              ← 含核心框架 + 本书续写基线
-├── 小节大纲.md          ← 按段-小节结构反推
-├── 正文.md              ← 单文件全文正文
-└── 对标/{对标书名}/     ← 可选：仅外部对标引用视图
-    ├── 拆文报告.md
-    ├── 情节节点.md
-    └── 写作手法.md
-```
-
-### 迁移步骤
-
-#### Step 1：正文迁移
-
-将 `拆文库/{导入书名}/原文/` 的全文迁移为单文件 `{标题}/正文.md`，按 [format-and-structure.md](references/format-and-structure.md) 规范化格式（小节标记 `###1.`、段间仅单换行、对话引号按项目/平台约定统一）。**原文已是成稿，不重写内容，只规范格式。**
-
-#### Step 2：设定生成
-
-从 `拆文报告.md`、`写作手法.md` 反推 `{标题}/设定.md`，含两个区块：
-
-- **核心框架**：对齐 story-short-write 核心框架模板（基本信息、一句话梗概、核心反转、情绪设计、人设速写）。
-- **本书续写基线**：把已写内容的故事结构、情绪节奏、核心反转机制、既有写作手法写入续写基线区；这是本书内部上下文，不是对标摘要。
-
-#### Step 3：小节大纲生成
-
-从 `情节节点.md` 的功能分段反推 `{标题}/小节大纲.md`，按开头段/铺垫段/升级段/反转段/结尾段映射；短篇只做轻量蓝图：每节写 `结构段/五段功能`、主事件、3-5 个子事件、目标情绪、人物/关系变化、因果/逻辑链、结尾承接/小钩子。钩子或关系无法判断时标 `[待补充]`，不套用长篇完整章节蓝图。
-
-#### Step 4：外部对标引用视图（可选）
-
-仅当 Phase 1 已显式绑定外部 `{对标书名}` 时，才把 `拆文库/{对标书名}/` 同步为 `{标题}/对标/{对标书名}/`；没有绑定则跳过。不得把 `拆文库/{导入书名}/` 整体复制进 `对标/`。
-
----
 
 ## Phase 4：项目激活
 
@@ -487,7 +405,6 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 按篇幅对照对应的质量检查清单：
 
 - **长篇**：完整导入质量清单见 [references/structure-mapping-long.md](references/structure-mapping-long.md) 末尾（含正文文件数对照、核心角色独立快照、作者/读者时间线隔离、`tracking_commit.py check` 通过、卷划分已经用户确认等）。
-- **短篇**：质量清单见 [references/structure-mapping-short.md](references/structure-mapping-short.md) 末尾的质量检查清单（含 `正文.md` 单文件存在且格式合规、`设定.md` 含核心框架+本书续写基线、未误建长篇专属目录等）。
 
 ### Step 2：缺失项提示
 
@@ -523,33 +440,10 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 - 运行 `/story-long-write` + "日更" 开始续写
 ```
 
-**短篇导入完成报告**：
-
-```
-=== 导入完成报告（短篇）===
-标题：{短篇标题}
-源文件：{Y} 字
-项目目录：{路径}
-
-## 已生成文件
-- 正文.md（单文件，{Y} 字）
-- 设定.md（核心框架 + 本书续写基线）
-- 小节大纲.md（{N} 个小节）
-- 外部对标：{未绑定 / `对标/{对标书名}/` 已同步 / 绑定失败及修复动作}
-
-## 待补充项
-- [ ] 所有 [待补充] 标记的文件已复核
-- [ ] 小节大纲的章首/章尾钩子需要补充
-- [ ] 核心反转的铺垫线索已确认
-
-## 下一步操作
-- 运行 `/story-short-write` Phase 3 开始续写
-```
 
 ### Step 3：项目激活
 
 - 设置 `.active-book` 指向导入的书名/标题目录
-- 确认项目可以被对应写作 skill 识别（长篇 → story-long-write，短篇 → story-short-write）
 - 可选验证：如果项目已部署 story-explorer agent（优先检查 `.claude/agents/` 下的 `story-explorer.md` 是否存在；不存在时再检查 `.opencode/agents/`，再不存在时检查 `.codex/agents/`），可 spawn `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：progress\n查询参数：导入验证")` 交叉验证迁移数据完整性
 
 > setup 环境检测已在 Phase 1「环境检测前置」完成，此处不再重复检测。
@@ -558,7 +452,7 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 
 ## 大型作品处理（>200 章）
 
-> 本节仅适用于长篇导入。短篇为单文件全量迁移，无增量导入需求。
+> 本节仅适用于长篇导入。
 
 超过 200 章的作品，**拆解可以分批，追踪初始化必须一次覆盖全部已写章节**：
 
@@ -578,7 +472,6 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 
 | 场景 | 加载文件 |
 |------|---------|
-| 篇幅分流判定 | `references/length-routing.md` |
 | 章节格式识别 | 由 story-long-analyze 拆解管道（运行 `/story-long-analyze`）的阶段 1 负责 |
 
 ### Phase 2：深度分析
@@ -586,44 +479,37 @@ story-short-analyze 的拆解管道（Stage 2-6）本身**无 Stage 1 停靠点*
 | 场景 | 加载文件 / 相关 skill |
 |------|---------|
 | 长篇深度分析（方法论、质量检查、输出模板均自带） | 运行 `/story-long-analyze` 调用长篇拆解管道 |
-| 短篇深度分析（方法论、质量检查、输出模板均自带） | 运行 `/story-short-analyze` 调用短篇拆解管道 |
 
 ### Phase 3：结构迁移
 
 | 场景 | 加载文件 |
 |------|---------|
 | 长篇迁移映射规则 | `references/structure-mapping-long.md` |
-| 短篇迁移映射规则 | `references/structure-mapping-short.md` |
 | 角色状态反推规则（长篇） | `references/character-state-reverse.md` |
 | 角色状态规则（character-state-reverse.md 依赖） | `references/state-tracking.md` |
-| 短篇正文格式规范 | `references/format-and-structure.md` |
+| 正文格式规范 | `references/format-and-structure.md` |
 
-> 长篇细纲模板格式参见 story-long-write（Phase 3 细纲部分）；短篇核心框架模板参见 story-short-write（核心框架部分）。这两项为纯文本指引，story-import 不加载对应 skill 的文件。
 
 ### Phase 4：项目激活
 
 | 场景 | 说明 |
 |------|---------|
 | 长篇项目结构规范 | 参见 story-long-write（Phase 4 项目文件结构） |
-| 短篇项目结构规范 | 参见 story-short-write（Phase 3 项目结构） |
 | 环境部署 | 部署模板由 `/story-setup` 提供，story-import 不负责部署 |
 
 ---
 
 ## 流程衔接
 
-**流水线：** 长篇 / 短篇
+**流水线：** 长篇
 **位置：** 导入（在开书之前）
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
 | 导入完想继续写（长篇） | story-long-write | `/story-long-write` + "日更" |
-| 导入完想继续写（短篇） | story-short-write | `/story-short-write` |
 | 导入完想审查质量 | story-review | `/story-review` |
 | 想深入分析对标（长篇） | story-long-analyze | `/story-long-analyze` |
-| 想深入分析对标（短篇） | story-short-analyze | `/story-short-analyze` |
 | 从零开新书（长篇） | story-long-write | `/story-long-write` + "开书" |
-| 从零开新书（短篇） | story-short-write | `/story-short-write` |
 | 项目未部署环境 | story-setup | `/story-setup` |
 
 ---

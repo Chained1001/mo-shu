@@ -15,15 +15,11 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 | 用户意图 | 关键词示例 | 路由到 |
 |---|---|---|
 | 写长篇 | 开书、写大纲、长篇、连载 | `/story-long-write` |
-| 写短篇 | 短篇、盐言、一万字 | `/story-short-write` |
 | 长篇拆文 | 拆文、分析这本书、黄金三章 | `/story-long-analyze` |
-| 短篇拆文 | 拆短篇、分析这个故事 | `/story-short-analyze` |
 | 长篇扫榜 | 长篇排行、什么火、起点/番茄/晋江 | `/story-long-scan` |
 | 选题决策 | 写什么能爆、帮我选题、选题方向 | `/story-long-scan` |
-| 短篇扫榜 | 短篇排行、知乎盐言排行 | `/story-short-scan` |
 | 去 AI 味 | 去 AI 味、太 AI、去味 | `/story-deslop` |
 | 审查稿件 | 审查、审稿、帮我审一下、一致性检查、看看有没有问题 | `/story-review` |
-| 封面 | 封面、封面图 | `/story-cover` |
 | 环境部署 | 准备写书、搭环境、初始化 | `/story-setup` |
 | 浏览器操控 | 浏览器、抓取、登录态 | `/browser-cdp` |
 | 导入小说 | 导入、反向解析、导入小说、把我的书导进来 | `/story-import` |
@@ -59,7 +55,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 工作台会识别标准 `拆文库/{书名}/`，兼容存量 `拆文库-{书名}/`。写作项目识别同时支持：
 
 - 长篇目录结构：目录内含 `正文/`、`大纲/`、`设定/` 或 `追踪/` 任一普通子目录。
-- 短篇单文件结构：目录内含普通文件 `正文.md`，并同时含 `小节大纲.md` 或 `设定.md`。
 
 符号链接不作为项目标记，只有单个 `正文.md` 的普通资料目录也不会被误认。浏览器可编辑
 `.md`、`.txt`、`.json`、`.yaml`、`.yml`、`.toml`，保存或确认删除前做内容版本校验（sha256），检测到外部修改时提示重新载入，防止
@@ -74,7 +69,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 2. 匹配上表，找到对应的 skill
 3. 如果能明确匹配，直接调用对应 skill（Claude/OpenCode 可用 `Skill("skill-name")` 或 slash command；Codex 用 `$skill-name` / `/skills`；OpenClaw 用 `/skill skill-name` 或自然语言点名）
 4. 如果无法匹配，询问用户想做什么（从上表中选择）
-5. 如果用户说"我想写小说"但未指定长篇/短篇，询问篇幅类型后再路由
 
 ## 查询降级
 
@@ -98,7 +92,7 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 
 用户想切换或查看在写的书时（一个项目可同时有多本）：
 
-1. 在项目根查找所有书目录：包含 `追踪/` 或 `设定/` 子目录的目录（含 `长篇/`、`短篇/` 下的子目录）。
+1. 在项目根查找所有书目录：包含 `追踪/` 或 `设定/` 子目录的目录（含 `长篇/` 下的子目录）。
 2. 列出书名，并标出当前 `.active-book` 指向的那本。
 3. 让用户选择，把所选书的相对路径写入项目根 `.active-book`（覆盖原内容）。
 4. 只发现一本时直接确认为活跃书，无需询问。

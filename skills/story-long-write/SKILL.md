@@ -229,7 +229,6 @@ metadata: {"openclaw":{"source":"https://github.com/worldwonderer/oh-story-claud
 | 写完，去 AI 味 | story-deslop | `/story-deslop` |
 | 想对比参考书 | story-long-analyze | `/story-long-analyze` |
 | 需要市场方向 | story-long-scan | `/story-long-scan` |
-| 太长，适合短篇 | story-short-write | `/story-short-write` |
 
 ---
 
