@@ -91,7 +91,7 @@ PYEOF
 **Bash 不可用时的降级**（仅子代理上下文等极端情况，主线程不会触发）：
 
 - 跳过本步骤；句长段写「Bash 工具不可用，跳过确定性统计」
-- `confidence: low`，narrative-writer 让位回默认 Gate D（按句长标准校准）
+- `confidence: low`，moshu-narrative-writer 让位回默认 Gate D（按句长标准校准）
 
 ### Step 5: 选原文锚点片段 (4-6 段)
 
@@ -108,7 +108,7 @@ PYEOF
 - 用 Step 4 从 `_progress.md` 读取的章节起止行
 - 该章原文从中选 1 段 300-500 字（优先选对话+动作交织的段落，纯独白/纯设定段不选）
 - 用 `Read offset limit` 切出，保留原标点和段落断行
-- **锚点必须逐字连续切片，禁止改写/缩写/跳段/拼接**：narrative-writer 拿锚点当 few-shot 直接学，标注的行号要能回查原文。落盘前逐段抽 1-2 句 `grep -F` 回 `原文/原文.txt`，grep 不到即说明被改写或拼接——重切为忠实连续片段。确需跳过中间过渡段时，分别标各自真实行号（如「行264-267 + 行269-270」）并在引用块内用「（……中略……）」显式断开，不得用一个连续行号区间假装连续
+- **锚点必须逐字连续切片，禁止改写/缩写/跳段/拼接**：moshu-narrative-writer 拿锚点当 few-shot 直接学，标注的行号要能回查原文。落盘前逐段抽 1-2 句 `grep -F` 回 `原文/原文.txt`，grep 不到即说明被改写或拼接——重切为忠实连续片段。确需跳过中间过渡段时，分别标各自真实行号（如「行264-267 + 行269-270」）并在引用块内用「（……中略……）」显式断开，不得用一个连续行号区间假装连续
 
 ### Step 6: 落盘
 
@@ -132,11 +132,11 @@ PYEOF
 | `章节/第1-3章_深度拆解.md` 缺失 | 跳过 Step 2；对话潜台词段从拆文报告兜底；confidence: low |
 | `拆文报告.md` 不存在 | **停止 Stage 6**，提示用户拆文未完成，先跑完 Stage 5 |
 
-## 与 chapter-extractor 的关系
+## 与 moshu-chapter-extractor 的关系
 
-**不修改 chapter-extractor**。文风直接从既有字段（基调/主题标签/可借鉴要素）整理生成即可。
+**不修改 moshu-chapter-extractor**。文风直接从既有字段（基调/主题标签/可借鉴要素）整理生成即可。
 
-句长 / 标点密度由 Step 4 的跨平台 Python 1-liner 在 Stage 6 主线程直接算出，不依赖 chapter-extractor。
+句长 / 标点密度由 Step 4 的跨平台 Python 1-liner 在 Stage 6 主线程直接算出，不依赖 moshu-chapter-extractor。
 
 ## 与写作端的关系
 

@@ -11,7 +11,7 @@
 当用户准备写某一章时：
 
 1. **检查细纲**：读取 `大纲/细纲_第{N}章.md`，并从对应 `大纲/卷纲_第X卷.md` 读取当前剧情单元（单元ID/位置、卷契约、本卷主推线/战果、终局底牌边界、风险等级）。如果不存在或缺少当前章节蓝图的必需字段，**必须先补建细纲再写正文**，不允许跳过细纲直接写作。补建时参考卷纲中本章对应的事件规划和上下文，补齐阶段位置、结构公式、禁止提前释放、内容概括、情节安排、人物关系/出场顺序、情节细化、结尾设定；无法从已有证据判断的字段写 `[待补充]`，不杜撰副线或关系。
-2. **读取上下文**（按需选择；缺失时遵循各项及SKILL.md Phase 4 的「缺失文件处理」，仅明确标为可选的非主产物跳过。可选快捷路径：如果项目已部署 story-explorer agent（检查 `.claude/agents/story-explorer.md` 是否存在），可 spawn `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={check 的值}，state_revision={check 的值}")` 一次获取上下文）：
+2. **读取上下文**（按需选择；缺失时遵循各项及SKILL.md Phase 4 的「缺失文件处理」，仅明确标为可选的非主产物跳过。可选快捷路径：如果项目已部署 moshu-explorer agent（检查 `.claude/agents/moshu-explorer.md` 是否存在），可 spawn `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={check 的值}，state_revision={check 的值}")` 一次获取上下文）：
    - (1) `正文/第{N-1}章_*.md` — 上一章正文
    - (2) `大纲/细纲_第{N}章.md` — 本章细纲（含钩子设计）
    - (2a) `大纲/卷纲_第X卷.md` — 当前剧情单元、卷契约与终局储备（主推线/战果、终局底牌边界）
@@ -19,7 +19,7 @@
    - (4) `设定/角色/{相关角色}.md`、`设定/势力/{相关势力}.md`（如存在）— 本章涉及的角色与势力（按细纲出场筛选）
    - (5) 对标书路径下 `拆文报告.md`（按对标书路径查找）— 对标参考
    - (6) `对标/{对标书名}/原文/第{N}章_*.md`（如存在）— 同位置章节参考
-   - (7) `参考资料/{topic}.md`（如存在）— 历史研究资料（由 story-researcher 产出）
+   - (7) `参考资料/{topic}.md`（如存在）— 历史研究资料（由 moshu-researcher 产出）
    - (8) 对标书路径下 `剧情/故事线.md`（按对标书路径查找）— 剧情单元索引，用于确定本章涉及哪些剧情单元
    - (9) 对标书路径下 `剧情/{相关剧情单元}.md`（按对标书路径查找）— 从索引中选择与本章相关的剧情单元文件
    - (10) 对标书路径下 `设定/世界观/*.md`（glob，按对标书路径查找）— 从当前拆文产出的主题化设定中获取参考；目录缺失则记录缺口并跳过本项，不读取扁平历史路径
@@ -36,9 +36,9 @@
      - (d) **文风召回**：先直接读 `设定/文风.md`（不经 explorer）：含实质内容（去空白 ≥200 字，或含 句长 / 标点 / 对话 / 锚点 / 笔调 小节且小节内有可执行约束：比例 / 例句 / 禁止或偏好描述）则置 `custom_style=true`、进入「自定义文风模式」，它作权威风格基（句长 / 软标点 / 潜台词 / 情绪交替），对标 / 拆文 `文风.md` 降为参考（锚点 + 句长兜底）；空 / 仅空白 / 仅标题 / 占位 stub（待办 / 待补充 / ___）视为不存在。否则按「对标书路径查找」规则读 `{对标书路径}/文风.md`（路径优先 `{项目}/对标/{书名}/`，回退 `拆文库/{书名}/`）；多本对标书时从 `设定/题材定位.md` 读 `主对标书` 字段。**未进入自定义文风模式且**文风文件不存在 → **fail-fast 报错**：「对标书 X 缺少 文风.md。请用 `/moshu-analyze` 跑 Stage 6 生成文风，再 `/moshu-import` 同步。」不 inline 生成（自定义文风模式则不 fail-fast；情绪 / 节奏轴 `missing_primary_contract` 仍独立阻塞）
      - (e) **匹配章节挑选**：从 `{对标书路径}/章节/*_摘要.md` grep `基调：(紧张|轻松|悲伤|热血|爽|甜|温馨|恐怖|压抑|其他)`（全角冒号），按本章目标情绪挑章 K——多章同基调时选择规则：先看爽点类型是否接近，再看情节点数量/原文章节估算字数是否接近本章目标字数，最后取章节号最小者；必读 `{对标书路径}/章节/第K章_摘要.md`，若同章存在 `第K章_深度拆解.md` 则加读，否则回退黄金三章深度拆解/文风文件里的可借鉴技巧，不因非黄金三章缺少深度拆解而失败
      - (f) **结构化模块召回**：从对标的结构化子目录（角色/剧情/设定）中按本章情节检索相关模块；若与 `剧情/情绪模块.md` / `剧情/节奏.md` 冲突，权威文件优先，记录 `conflict`
-     - (g) 输出"主对标召回摘要 + 副对标召回摘要 + selected_emotion_module + rhythm_reference + genre_prose_card + 文风召回指令 + 原文锚点片段引用"，作为 narrative-writer 的输入。**多对标书时**参 `references/cross-book-recall.md`：主对标提供文风、原文锚点与 selected_emotion_module / rhythm_reference；副对标/参考对标按阶段预算提供结构化摘要，不限制登记书目，不读取副书 `文风.md` / 原文，超过预算时裁条目不裁书目记录。
-     - **快捷路径**：项目已部署 story-explorer agent 时，可一次性召回文风/模块材料。
-       - 检查 `.claude/agents/story-explorer.md` 是否存在。
+     - (g) 输出"主对标召回摘要 + 副对标召回摘要 + selected_emotion_module + rhythm_reference + genre_prose_card + 文风召回指令 + 原文锚点片段引用"，作为 moshu-narrative-writer 的输入。**多对标书时**参 `references/cross-book-recall.md`：主对标提供文风、原文锚点与 selected_emotion_module / rhythm_reference；副对标/参考对标按阶段预算提供结构化摘要，不限制登记书目，不读取副书 `文风.md` / 原文，超过预算时裁条目不裁书目记录。
+     - **快捷路径**：项目已部署 moshu-explorer agent 时，可一次性召回文风/模块材料。
+       - 检查 `.claude/agents/moshu-explorer.md` 是否存在。
        - 查询类型：`benchmark_style_load`；传入项目目录、章节号、目标基调/字数和爽点类型。
        - 需要返回：`style_profile_path`、`style_profile_summary`、`selected_emotion_module`、`rhythm_reference`、来源路径、匹配章节、锚点片段、`gaps`。
        - `gaps.missing_primary_contract` 为 true 时先按 `repair_action` 修复，不进入正文生成。
@@ -52,13 +52,13 @@
 	     - 检查任务卡点：本章如果有“办事被卡住”，它必须卡出信息、关系、代价、选择或伏笔变化；没有就不强补。
 	     - 契约风险检查：按 `references/reader-contract-and-progression.md` 判定 契约安全 / 需补强 / 契约破坏；若高光/收益被配角、机构或偶然性拿走且没有可见交换，先修纲再写。
      - 例：「快节奏打脸——账单暴露→逼问→反证→公开代价；读者等了三章，这章必须一拳到位。」
-4. **资料研究**（按需）：如果写作中遇到需要查证的外部事实（历史年代、地理方位、职业细节等），如果项目已部署 story-researcher agent（检查 `.claude/agents/story-researcher.md` 是否存在），spawn `story-researcher` agent 搜索并输出到 `参考资料/` 目录。如 agent 不可用，由主线程直接执行。研究完成后再继续写作。
+4. **资料研究**（按需）：如果写作中遇到需要查证的外部事实（历史年代、地理方位、职业细节等），如果项目已部署 moshu-researcher agent（检查 `.claude/agents/moshu-researcher.md` 是否存在），spawn `moshu-researcher` agent 搜索并输出到 `参考资料/` 目录。如 agent 不可用，由主线程直接执行。研究完成后再继续写作。
 5. **标题预检**：写正文前从细纲读取章名；如与既有章节同名或明显重复，先按本章核心事件改名，并同步细纲标题与正文文件名。
 	6. **写作**：第 1 章如果以内心戏、设定认知或独处开场，必须先把内心变化外化为可见事件（决定、误判、对话、物件变化、外部压力），再按字数目标展开；不得用大段心理独白凑字。若第 1 章低于目标，或正文代入感/推进感偏薄，优先回到细纲补有用子事件、对话交锋或选择代价，不要补解释性内心戏；任务卡点只在角色本来有要办的事、且能卡出信息/关系/代价/选择/伏笔变化时使用，没有就不强补。
    - **正文元信息隔离**：`章节：第{N}章`、`上一章：正文/第{N-1}章_*.md`、`匹配第K章`、`细纲文件` 等只用于定位材料。标题行以外的正文不得出现 `第[一二三四五六七八九十百千万两0-9]+章|上一章|上章|前一章|本章|这一章|前文|后文|伏笔|细纲|读者` 这类写作工程词。需要承接前文时，改成角色能感知的事件锚点或相对时间，例如“比第一章那三秒开火更疼”必须写成“比那三秒开火更疼”。例外：角色在故事世界内真实阅读/讨论“第X章”文本，或真实身为作者/读者并谈论读者身份时，可保留相应词。
 7. **正文执行**：
-   - 先检查 narrative-writer agent：`.claude/agents/narrative-writer.md`。
-   - 如可用，spawn `Agent(subagent_type: "narrative-writer", prompt: ...)`，prompt 只传本章必需材料：
+   - 先检查 moshu-narrative-writer agent：`.claude/agents/moshu-narrative-writer.md`。
+   - 如可用，spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: ...)`，prompt 只传本章必需材料：
      - 项目目录、章节、细纲文件、上一章、输出路径。
      - 写前准备输出：本节速记、情绪目标、涉及角色、参考技法。
      - 主对标/拆文路径、主/副对标召回摘要。
@@ -69,7 +69,7 @@
      - 字数目标、情节点预算、格式硬约束。
      - 细纲优先边界（内容层）：只展开本章细纲，不自造新剧情；每条情节点都要独立落地，不许漏、不许两条并一句；若字数目标靠现有情节点无法达标，返回 `outline_underfilled` 欠账点，由主会话补纲/确认后再写。
      - 正文形状（形状层）：落地位置、顺序、拆成几处由子代理编排，可打散重排、把相邻几条缝进同一个连续动作；不要一条一段平推，不把细纲措辞原样搬进叙述。
-   - 不把本文件整套规则复制进 prompt；细节以已加载 references 和 narrative-writer 模板为准。
+   - 不把本文件整套规则复制进 prompt；细节以已加载 references 和 moshu-narrative-writer 模板为准。
    - agent 输出写入 `正文/第XXX章_章名.md`。如 agent 未部署，由主线程直接写作。
 8. **字数验证**（写作完成后的第一件事）：用跨平台 Python 字符统计本章实际字数，探测顺序 `python3/python/py`；不要用 `wc -c` 或模型估算，Windows 不直接假定 `python3` 命令可用。macOS/Linux 可用 `wc -m` 备选。
    - 字数 < 细纲目标 90%：对照情节点预算找欠账点。密点（爽点/打脸/反转）被写薄时，重写到对应预算；低压/关系/信息整理章则补细纲内已有铺垫、互动或表演节拍，不硬塞爽点。若现有细纲没有足够可展开内容，停止并输出 `outline_underfilled` 欠账点，先补纲/确认，不能让正文自造新剧情。
@@ -116,21 +116,21 @@
 
 **正文元信息扫描**：按上方步骤 10 清掉标题行以外的写作工程词，再进入其他检查。`check-degeneration.js` 会确定性复扫这一项。
 
-**写后同轮清零**：正文落盘不是汇报时机——每章落盘后必须在**同一轮**内跑完上方步骤 10-11 扫描、下方确定性收尾脚本与 narrative-writer 审查，blocking 清零才算本章完成；不得先汇报"已写完"再等指示。写后 hook 会对落盘正文自动扫描确定性毒句式并把命中推回——那是兜底网不是替代，hook 报出的命中当轮清零。**唯一豁免**：用户显式说"本章不去味/跳过检查"——豁免时在该章标题行下加一行 `<!-- 去味:跳过 -->`（写后 hook 的毒句式推回与写下一章前的欠账拦截都认这个标记；其余网照常）。
+**写后同轮清零**：正文落盘不是汇报时机——每章落盘后必须在**同一轮**内跑完上方步骤 10-11 扫描、下方确定性收尾脚本与 moshu-narrative-writer 审查，blocking 清零才算本章完成；不得先汇报"已写完"再等指示。写后 hook 会对落盘正文自动扫描确定性毒句式并把命中推回——那是兜底网不是替代，hook 报出的命中当轮清零。**唯一豁免**：用户显式说"本章不去味/跳过检查"——豁免时在该章标题行下加一行 `<!-- 去味:跳过 -->`（写后 hook 的毒句式推回与写下一章前的欠账拦截都认这个标记；其余网照常）。
 
 **确定性收尾**：本批正文写完后，主会话对实际落盘文件运行 `node scripts/check-ai-patterns.js --check --fail-on=blocking 正文/第XXX章_*.md` 与 `node scripts/check-outline-copy.js 正文/第XXX章_*.md`（细纲照搬复扫）。blocking 命中先回正文改写并复扫；advisory 与细纲重合逐条读原文判断，确属问题才改，功能性写法标 `[需复核]`——每条都要有结论，不为归零机械改写；细纲重合里判定保留的补进细纲「复沓锚句」，下章起不再复报。其中 `formulaic-parallelism` 必须连同对话一起复核，不能因为 hook 不阻断台词就略过。
-随后运行 `node scripts/normalize-punctuation.js 正文/第XXX章_*.md`（默认 `--quote-mode keep`）清理无功能省略号、破折号、双连字符和独立分隔线；古言/日式的「」不受影响。narrative-writer agent 不运行这些脚本。
+随后运行 `node scripts/normalize-punctuation.js 正文/第XXX章_*.md`（默认 `--quote-mode keep`）清理无功能省略号、破折号、双连字符和独立分隔线；古言/日式的「」不受影响。moshu-narrative-writer agent 不运行这些脚本。
 
 **退化防护**：正文落盘后运行 `node scripts/check-degeneration.js --check 正文/第XXX章_*.md`。blocking（复读、截断、拒绝语、tier1 工程词泄漏）只重写受影响章节，最多 2 次；仍失败就报告证据让用户定夺。
 advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界面用语、弹幕刷屏、重复台词等有功能则保留。
 
-### Agent 调用：consistency-checker
+### Agent 调用：moshu-consistency-checker
 
-质量检查阶段，如果项目已部署 consistency-checker agent（检查 `.claude/agents/consistency-checker.md` 是否存在），spawn `Agent(subagent_type: "consistency-checker", prompt: "项目目录：{dir}\n检查范围：{本次写作的章节}\n检查类型：事实冲突+伏笔断线+角色属性不一致")` 执行一致性检查，获取 S1-S4 分级报告。如 agent 不可用，由主线程参照 quality-checklist.md 直接检查。
+质量检查阶段，如果项目已部署 moshu-consistency-checker agent（检查 `.claude/agents/moshu-consistency-checker.md` 是否存在），spawn `Agent(subagent_type: "moshu-consistency-checker", prompt: "项目目录：{dir}\n检查范围：{本次写作的章节}\n检查类型：事实冲突+伏笔断线+角色属性不一致")` 执行一致性检查，获取 S1-S4 分级报告。如 agent 不可用，由主线程参照 quality-checklist.md 直接检查。
 
-### Agent 调用：narrative-writer（去AI味审查）
+### Agent 调用：moshu-narrative-writer（去AI味审查）
 
-质量检查阶段，如果项目已部署 narrative-writer agent（检查 `.claude/agents/narrative-writer.md` 是否存在），可 spawn `Agent(subagent_type: "narrative-writer", prompt: "项目目录：{dir}\n任务描述：审查+去AI味\n检查范围：{本次写作的章节}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/必要信息的直接删，会丢才润色（删除受比例上限与字数下限约束，跌破下限改降AI重写）\n检查项按你自己的 7 Gate、禁止事项与写完后对话自检全量执行，其中否定翻转句式和台词里的工整否定清单不因脚本豁免台词而跳过")` 执行文字质量审查和去AI味检查。如 agent 不可用，由主线程直接执行，检查项对照 `references/anti-ai-writing.md` 与 `references/banned-words.md`。
+质量检查阶段，如果项目已部署 moshu-narrative-writer agent（检查 `.claude/agents/moshu-narrative-writer.md` 是否存在），可 spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: "项目目录：{dir}\n任务描述：审查+去AI味\n检查范围：{本次写作的章节}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/必要信息的直接删，会丢才润色（删除受比例上限与字数下限约束，跌破下限改降AI重写）\n检查项按你自己的 7 Gate、禁止事项与写完后对话自检全量执行，其中否定翻转句式和台词里的工整否定清单不因脚本豁免台词而跳过")` 执行文字质量审查和去AI味检查。如 agent 不可用，由主线程直接执行，检查项对照 `references/anti-ai-writing.md` 与 `references/banned-words.md`。
 
 检查后若正文修订改变了连续性事实，必须构造 `mode=revision` 的同章追踪事务并执行 `scripts/tracking_commit.py commit`：
 - 伏笔变化用 `foreshadow_changes` 更新同一 ID 的当前行，不追加重复历史；

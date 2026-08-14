@@ -185,7 +185,7 @@ LEGACY_RULES = (
         r"(?:高速推进|正常节奏|舒缓铺垫|高潮爆发)\s*\|\s*≥\s*(?:2000|3000)\s*字/章",
         (
             "skills/moshu-write/SKILL.md",
-            "skills/moshu-setup/references/templates/agents/narrative-writer.md",
+            "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
         ),
     ),
     AbsentRule(
@@ -641,7 +641,7 @@ def spawn_preflight_findings(
     """Require every spawn-capable Skill to surface a stale/future agent bundle.
 
     版本不匹配只提示、不阻断：bump 的原因常常是别的部署物变了而 agent 模板根本没动
-    （v23 就只改了 story-explorer），硬闸会让所有人为无关变更付并行代价。真正该降级的
+    （v23 就只改了 moshu-explorer），硬闸会让所有人为无关变更付并行代价。真正该降级的
     信号是 agent 文件缺失或运行时不暴露 custom agent。
     """
 
@@ -1161,9 +1161,9 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
     # 不剔就一路错到底。剔除步骤和落表前的连续性校验都必须留在 Stage 0。
     findings.extend(require_pattern(long_analyze, r"先剔掉目录块", "stage0-toc-block-removal", "Stage 0 must drop the leading table-of-contents block before building the chapter table"))
     findings.extend(require_pattern(long_analyze, r"落表前校验章号连续", "stage0-chapter-table-validation", "Stage 0 must validate chapter numbers before writing the boundary table"))
-    explorer = repo_root / "skills/moshu-setup/references/templates/agents/story-explorer.md"
-    findings.extend(require_pattern(explorer, r"missing_primary_contract", "explorer-primary-failure", "story-explorer must fail closed on missing current benchmark artifacts"))
-    findings.extend(require_pattern(explorer, r"repair_action", "explorer-repair-action", "story-explorer must return an explicit repair action"))
+    explorer = repo_root / "skills/moshu-setup/references/templates/agents/moshu-explorer.md"
+    findings.extend(require_pattern(explorer, r"missing_primary_contract", "explorer-primary-failure", "moshu-explorer must fail closed on missing current benchmark artifacts"))
+    findings.extend(require_pattern(explorer, r"repair_action", "explorer-repair-action", "moshu-explorer must return an explicit repair action"))
 
     long_write = repo_root / "skills/moshu-write/SKILL.md"
     for artifact in manifest.primary_benchmark_artifacts:
@@ -1214,13 +1214,13 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
             )
         )
 
-    explorer_template = repo_root / "skills/moshu-setup/references/templates/agents/story-explorer.md"
+    explorer_template = repo_root / "skills/moshu-setup/references/templates/agents/moshu-explorer.md"
     findings.extend(
         require_pattern(
             explorer_template,
             r"self_benchmark_ignored",
             "explorer-self-benchmark-gap",
-            "story-explorer must report and ignore self-benchmark candidates",
+            "moshu-explorer must report and ignore self-benchmark candidates",
         )
     )
 

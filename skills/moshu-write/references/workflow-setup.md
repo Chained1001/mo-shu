@@ -44,18 +44,18 @@ SKILL.md 只保留场景路由与停靠规则；进入任一 Phase 前读本文�
 - 节奏感好 → 推荐：都市爽文、重生文、游戏文
 - 生活经验丰富 → 推荐：行业文、都市日常、种田文
 
-#### Agent 调用：story-architect
+#### Agent 调用：moshu-architect
 
-story-architect 属于高层级结构设计 agent。轻量题材定位优先由主会话完成；只有涉及复杂世界观、多线结构、强反转工程或用户明确要求时，才调用 story-architect。确认选题方向后，如果项目已部署 story-architect agent（检查 `.claude/agents/story-architect.md` 是否存在），可 spawn `Agent(subagent_type: "story-architect", prompt: "项目目录：{dir}\n任务类型：题材定位\n查询参数：{用户选择的方向+对标信息}")` 辅助题材分析和核心梗设计。如 agent 不可用，由主线程直接执行。
+moshu-architect 属于高层级结构设计 agent。轻量题材定位优先由主会话完成；只有涉及复杂世界观、多线结构、强反转工程或用户明确要求时，才调用 moshu-architect。确认选题方向后，如果项目已部署 moshu-architect agent（检查 `.claude/agents/moshu-architect.md` 是否存在），可 spawn `Agent(subagent_type: "moshu-architect", prompt: "项目目录：{dir}\n任务类型：题材定位\n查询参数：{用户选择的方向+对标信息}")` 辅助题材分析和核心梗设计。如 agent 不可用，由主线程直接执行。
 
-> **story-architect 契约摘要（spawn 时必须原样附带）**：部署的 story-architect agent 不认识本 skill 的 `references/reader-contract-and-progression.md`，只能靠 spawn prompt 里带的这段摘要对齐 schema，否则主线程和委托产出会用不同的推进规则。摘要内容：
+> **moshu-architect 契约摘要（spawn 时必须原样附带）**：部署的 moshu-architect agent 不认识本 skill 的 `references/reader-contract-and-progression.md`，只能靠 spawn prompt 里带的这段摘要对齐 schema，否则主线程和委托产出会用不同的推进规则。摘要内容：
 > - **终局储备边界**：终局底牌（头号宿敌/终极真相/金手指上限/身份终点/核心情感终点）是一次性资源，逐卷解锁，不得提前打光；升级台阶（境界/等级/地图/势力层级）按剩余档数逐级解锁，不得越级。
 > - **透支两问**（任一为"是"即需回退或改纲）：①是否动用了本阶段还不该解锁的终局底牌？②是否让某条升级线逼近天花板、后面没台阶接？
 > - **剧情单元**：卷纲内写剧情单元卡，含单元ID、主推线（1条）+ 战果线（若干，一战多得允许）、章级推进下限（快节奏保留可见事件/爽点下限）。
 > - **细纲层字段**：每章细纲必须带 单元ID/位置、主角目标/关键选择；「行动成本（可无）/收益归属」替代旧字段「代价兑现」——行动成本可无，不硬造代价，收益归属必须可见。
 > - **读者契约与主角代理权**：主角不可替代看因果权（决策/布局/授权/关键信息决定事情如何发生转向）+ 结算权（核心收益/认可按承诺回到应得者），不要求主角事事亲自动手；配角可执行局部动作，但不得无声夺走已承诺的高光/收益。
 > - **关键节点四问**（设计关键节点时统一问）：①谁决定事情为什么发生/如何进入？②谁作出不可替代的关键选择？③谁承担或选择关键后果？④核心收益/认可/权力最终结算给谁？
-> - 完整规则以主会话已加载的 `references/reader-contract-and-progression.md` 为准，此处只是给 story-architect 的压缩版；agent 本身不部署该文件，不能自己读取。
+> - 完整规则以主会话已加载的 `references/reader-contract-and-progression.md` 为准，此处只是给 moshu-architect 的压缩版；agent 本身不部署该文件，不能自己读取。
 
 ---
 
@@ -107,11 +107,11 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 
 > **多对标书时**：参 `references/cross-book-recall.md`，副对标 anchor 入「对标分析」表附录
 
-#### Agent 调用：story-architect + character-designer
+#### Agent 调用：moshu-architect + moshu-character-designer
 
-核心设定阶段，如果项目已部署对应 agent（检查 `.claude/agents/` 下的 `story-architect.md` 和 `character-designer.md` 是否存在），可 spawn 以下 agent 辅助：
-- `Agent(subagent_type: "story-architect", prompt: "项目目录：{dir}\n任务类型：核心设定\n查询参数：世界观构建+核心冲突设计")` — 辅助世界观和核心冲突设计；spawn prompt 必须原样附带 Phase 1 的「story-architect 契约摘要」（升级台阶检查约束力量体系设计）
-- `Agent(subagent_type: "character-designer", prompt: "项目目录：{dir}\n任务类型：角色设定\n查询参数：{主角设定信息}")` — 辅助角色设定和语言风格档案
+核心设定阶段，如果项目已部署对应 agent（检查 `.claude/agents/` 下的 `moshu-architect.md` 和 `moshu-character-designer.md` 是否存在），可 spawn 以下 agent 辅助：
+- `Agent(subagent_type: "moshu-architect", prompt: "项目目录：{dir}\n任务类型：核心设定\n查询参数：世界观构建+核心冲突设计")` — 辅助世界观和核心冲突设计；spawn prompt 必须原样附带 Phase 1 的「moshu-architect 契约摘要」（升级台阶检查约束力量体系设计）
+- `Agent(subagent_type: "moshu-character-designer", prompt: "项目目录：{dir}\n任务类型：角色设定\n查询参数：{主角设定信息}")` — 辅助角色设定和语言风格档案
 
 如 agent 不可用，由主线程直接执行。
 
@@ -269,16 +269,16 @@ story-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 
 前 3 章细纲额外加载 [references/opening-design.md](opening-design.md)（黄金三章法则+六大标准）。
 
-#### Agent 调用：story-architect
+#### Agent 调用：moshu-architect
 
-大纲搭建阶段优先由主会话产出卷纲+首批细纲；只有结构复杂、反转链多或主会话方案不稳时，才调用 story-architect agent。
+大纲搭建阶段优先由主会话产出卷纲+首批细纲；只有结构复杂、反转链多或主会话方案不稳时，才调用 moshu-architect agent。
 
-若已部署 story-architect agent（优先检查 `.claude/agents/story-architect.md`），可让它辅助：
+若已部署 moshu-architect agent（优先检查 `.claude/agents/moshu-architect.md`），可让它辅助：
 - 任务：卷级结构、首批细纲、钩子/反转/情绪弧线。
 - 章节定位：每章标高压/推进/修炼试错/关系回收/低压生活/信息整理；低压章可弱爽点，但仍要有往下看的理由。
 - 字数预算：每个情节点标密/疏和预算；密点展开，疏点带过；末尾写 `预算合计：X字（目标Y，范围Y-Z）`。
 - 主会话校验：每个情节点都有预算，合计落在 `[章目标, 章目标×1.1]`；不合格先补细纲再写正文。
-- **契约摘要必须原样附带**：本阶段的卷纲要直接产出终局储备（本卷主推线/战果、本卷解锁的终局里程碑、禁碰的未解锁底牌）和剧情单元（单元ID等字段），spawn prompt 必须带上 Phase 1「Agent 调用：story-architect」中的「story-architect 契约摘要」，让主线程与委托产出共用同一 schema。
+- **契约摘要必须原样附带**：本阶段的卷纲要直接产出终局储备（本卷主推线/战果、本卷解锁的终局里程碑、禁碰的未解锁底牌）和剧情单元（单元ID等字段），spawn prompt 必须带上 Phase 1「Agent 调用：moshu-architect」中的「moshu-architect 契约摘要」，让主线程与委托产出共用同一 schema。
 
 如 agent 不可用，由主线程直接执行。
 

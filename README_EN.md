@@ -79,7 +79,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 After installing, run `/moshu-setup` from your writing project root to deploy. After updating, re-run `/moshu-setup` to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/Chained1001/mo-shu/releases).
 
-**Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (story-architect, narrative-writer, consistency-checker, etc.) are written into your project's `.claude/agents/` by `/moshu-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/moshu-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
+**Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (moshu-architect, moshu-narrative-writer, moshu-consistency-checker, etc.) are written into your project's `.claude/agents/` by `/moshu-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/moshu-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
 
 **Import and continuation order:** run `/moshu-setup` from the writing-project root first to deploy hooks and agents; start or refresh the session, then run `/moshu-import` for the existing novel and continue with `/moshu-write 日更` or `/moshu-write 写第N章`. You can also run `/moshu-import` directly; if setup is missing, it offers to run setup first or continue with a serial import.
 
@@ -99,7 +99,7 @@ After installing, run `/moshu-setup` from your writing project root to deploy. A
 
 > `moshu-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
 
-Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-write`, `这篇太AI了` ("this is too AI-ish") → `moshu-deslop`, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `story-explorer`.
+Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-write`, `这篇太AI了` ("this is too AI-ish") → `moshu-deslop`, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `moshu-explorer`.
 
 ### Story Dashboard
 
@@ -174,13 +174,13 @@ Writing skills internally coordinate 7 specialized agents:
 
 | Agent | Model | Role |
 |:------|:------|:-----|
-| **story-architect** | Opus | Story architecture — genre positioning, outline structure, hook/twist design, emotion arcs |
-| **character-designer** | Sonnet | Character design — profiles, voice, motivation chains, dialogue writing |
-| **narrative-writer** | Sonnet | Narrative writer — prose writing, de-AI-ify, format compliance |
-| **consistency-checker** | Haiku | Consistency check — fact conflict scanning, foreshadowing tracking, S1-S4 grading reports |
-| **story-researcher** | Sonnet | Research — CDP search + full-text extraction, multi-source cross-verification, structured reference files |
-| **story-explorer** | Haiku | Story query — read-only character/foreshadowing/setting/progress lookup, quick context loading |
-| **chapter-extractor** | Haiku | Chapter extraction — summaries, plot points, character mentions, parallel deconstruction unit |
+| **moshu-architect** | Opus | Story architecture — genre positioning, outline structure, hook/twist design, emotion arcs |
+| **moshu-character-designer** | Sonnet | Character design — profiles, voice, motivation chains, dialogue writing |
+| **moshu-narrative-writer** | Sonnet | Narrative writer — prose writing, de-AI-ify, format compliance |
+| **moshu-consistency-checker** | Haiku | Consistency check — fact conflict scanning, foreshadowing tracking, S1-S4 grading reports |
+| **moshu-researcher** | Sonnet | Research — CDP search + full-text extraction, multi-source cross-verification, structured reference files |
+| **moshu-explorer** | Haiku | Story query — read-only character/foreshadowing/setting/progress lookup, quick context loading |
+| **moshu-chapter-extractor** | Haiku | Chapter extraction — summaries, plot points, character mentions, parallel deconstruction unit |
 
 Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — 58 methodology files in the agent-references bundle, nearly 200 references across the repo), without reserving context window space.
 
@@ -238,7 +238,7 @@ The file system separates settings, outlines, prose, and tracking into independe
 │   ├── 角色状态/        # Derived snapshot per core character
 │   ├── 伏笔.md          # Derived current foreshadowing view
 │   └── 时间线/          # Derived author-truth and reader-known views
-├── 参考资料/ (References) # story-researcher output
+├── 参考资料/ (References) # moshu-researcher output
 │   └── {topic}.md       # Split by research topic
 ```
 

@@ -14,6 +14,6 @@
 
 ## 使用方式
 
-- moshu-review 的 story-architect 视角引用此标准
+- moshu-review 的 moshu-architect 视角引用此标准
 - advisory only，不 blocking
 - 用户可自定义阈值

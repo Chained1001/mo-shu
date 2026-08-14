@@ -22,7 +22,7 @@
 
 ## Step 1：快速上下文加载
 
-**可选：使用 story-explorer agent 批量加载上下文**。如果项目已部署 story-explorer agent（检查 `.claude/agents/story-explorer.md` 是否存在），可以用 `Agent(subagent_type: "story-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={上一步 check 的值}，state_revision={上一步 check 的值}")` 执行 `context_load` 查询，一次获取全部写作上下文。spawn 返回后直接使用其 results，跳过下方手动加载步骤。如果 agent 不可用或返回不完整，回退到下方手动加载。
+**可选：使用 moshu-explorer agent 批量加载上下文**。如果项目已部署 moshu-explorer agent（检查 `.claude/agents/moshu-explorer.md` 是否存在），可以用 `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={上一步 check 的值}，state_revision={上一步 check 的值}")` 执行 `context_load` 查询，一次获取全部写作上下文。spawn 返回后直接使用其 results，跳过下方手动加载步骤。如果 agent 不可用或返回不完整，回退到下方手动加载。
 
 手动加载（默认方式）：
 
@@ -76,15 +76,15 @@
    - **上一章欠账检查**：写本章正文前，确认上一章正文无未清 blocking 毒句式欠账（写前 hook 会自动拦；hook 不可用时对上一章跑 `node scripts/check-ai-patterns.js --check --fail-on=blocking`）；有欠账先清完再写本章，除非上一章标了 `<!-- 去味:跳过 -->`（用户显式豁免）
    - **状态来源纪律**：不要为取状态/章号把完整 `_tracking-state.json` 加载进 prompt；缺失内容按下方「旧信息查找步骤」定点查询，不得用未标明来源的聊天记忆替代，也不得为了方便通读所有逐章记录。
    - **久别角色交叉检查**：本章细纲列出的核心复用角色若不在 `## 核心角色状态`，直接读取小文件 `追踪/角色状态/{名}.md`；不存在即视为当前检查点损坏，运行 `tracking_commit.py check` 并通过完整事务修复，不能临时扫描增量后手写替代。`设定/角色/{名}.md` 只有静态原始人设，不能替代动态快照。角色重新活跃后，把名字放进本章事务 `context.active_character_names`，由工具更新续写状态卡。
-   - **story-explorer 召回的 gaps 分支**（用 `benchmark_style_load` query_type 一次拿到 `{style_profile_path, style_profile_summary, selected_emotion_module, rhythm_reference, module_source_path, rhythm_source_path, matched_chapter_K, matched_chapter_techniques, anchor_excerpts, gaps}` 后按此分流）：
+   - **moshu-explorer 召回的 gaps 分支**（用 `benchmark_style_load` query_type 一次拿到 `{style_profile_path, style_profile_summary, selected_emotion_module, rhythm_reference, module_source_path, rhythm_source_path, matched_chapter_K, matched_chapter_techniques, anchor_excerpts, gaps}` 后按此分流）：
      - 若 `gaps.no_benchmark: true` → `custom_style` 为真则进入「自定义文风模式」（用 `设定/文风.md` 写作；无对标可召回，情绪 / 节奏目标改从本书细纲「目标情绪」、卷纲、`设定/题材定位.md` 等内部材料取，`selected_emotion_module` / `rhythm_reference` 记为「无」，不声称从对标召回）；否则跳过文风召回，在「意图确认」标记"无对标参考"
-     - 若 `gaps.missing_primary_contract: true` → 停止本章准备，按 `repair_action` 提示重跑 `/moshu-analyze` Stage 3+ 或重新 `/moshu-import`；不得进入 narrative-writer（情绪 / 节奏轴独立于文风轴，**自定义文风模式不豁免此停止**——补 `剧情/情绪模块.md` / `剧情/节奏.md`，而非写 `设定/文风.md`）
+     - 若 `gaps.missing_primary_contract: true` → 停止本章准备，按 `repair_action` 提示重跑 `/moshu-analyze` Stage 3+ 或重新 `/moshu-import`；不得进入 moshu-narrative-writer（情绪 / 节奏轴独立于文风轴，**自定义文风模式不豁免此停止**——补 `剧情/情绪模块.md` / `剧情/节奏.md`，而非写 `设定/文风.md`）
      - 若 `gaps.conflict` 或 `gaps.module_rhythm_conflict: true` → 意图确认必须说明冲突并按 `剧情/情绪模块.md` / `剧情/节奏.md` 的权威优先级执行；不得让 `文风.md` 覆盖情绪/节奏目标
      - 若 `gaps.profile_missing: true` → `custom_style` 为真则进入自定义文风模式继续；否则按上文 fail-fast 流程停止
      - 若 `gaps.profile_degenerate: true`（对标文风不可用） → `custom_style` 为真则用 `设定/文风.md` 写作；否则跳过文风、回到默认 Gates 写作
      - 若 `gaps.tone_match_failed: true` → 仅用整书文风写作，不喂 matched_chapter
-     - 否则原样传给 `style_profile_path`、`style_profile_summary`、`selected_emotion_module`、`rhythm_reference`、`module_source_path`、`rhythm_source_path`、`matched_chapter_K`、`matched_chapter_techniques`、`anchor_excerpts` 和 `genre_prose_card` 给 Step 2 末尾的 narrative-writer spawn prompt；其中 `selected_emotion_module` 必须进入情绪目标，`rhythm_reference` 必须进入节奏/爆发安排，`genre_prose_card` 必须进入题材取舍，`matched_chapter_techniques` 必须进入「文风召回指令」。写前准备记录必须保留 `gaps` 原值，尤其 `gaps.module_missing`、`gaps.rhythm_missing`、`gaps.conflict`、`gaps.matched_deep_dive_missing`；若 `matched_deep_dive_missing` 为 true，文风召回指令中明确写“同章深度拆解缺失，已回退黄金三章/文风技巧”，不得在后续报告中反转为 false
-     - **无 story-explorer 时直接执行**：主会话按 workflow-chapter.md 写前准备 (a)-(f) 手动依次召回情绪模块、节奏、题材卡、文风与匹配章 K；模块或节奏文件缺失时设置 `missing_primary_contract` 并停止修复
+     - 否则原样传给 `style_profile_path`、`style_profile_summary`、`selected_emotion_module`、`rhythm_reference`、`module_source_path`、`rhythm_source_path`、`matched_chapter_K`、`matched_chapter_techniques`、`anchor_excerpts` 和 `genre_prose_card` 给 Step 2 末尾的 moshu-narrative-writer spawn prompt；其中 `selected_emotion_module` 必须进入情绪目标，`rhythm_reference` 必须进入节奏/爆发安排，`genre_prose_card` 必须进入题材取舍，`matched_chapter_techniques` 必须进入「文风召回指令」。写前准备记录必须保留 `gaps` 原值，尤其 `gaps.module_missing`、`gaps.rhythm_missing`、`gaps.conflict`、`gaps.matched_deep_dive_missing`；若 `matched_deep_dive_missing` 为 true，文风召回指令中明确写“同章深度拆解缺失，已回退黄金三章/文风技巧”，不得在后续报告中反转为 false
+     - **无 moshu-explorer 时直接执行**：主会话按 workflow-chapter.md 写前准备 (a)-(f) 手动依次召回情绪模块、节奏、题材卡、文风与匹配章 K；模块或节奏文件缺失时设置 `missing_primary_contract` 并停止修复
    - **写后清零不拖到批末**：写后 hook 推回的毒句式命中当轮清零，不得攒到 Step 3。
    - 每章写完后**立即提交一次追踪事务**：
      1. 从刚落盘的正文、细纲和上一版续写状态卡提取 `result / character_changes / foreshadow_changes / timeline_events / constraints / next_chapter_commitments`。只记录会影响未来章节的变化；过程日志、质检计数、参照章和去 AI 味统计全部排除。
@@ -95,11 +95,11 @@
 
      `追踪/逐章记录/第NNN章.md` 由工具按 5 类变化生成，目标 ≤1536 字节、硬上限 3072 字节。它不是正文摘要大全，更不保存写作过程。`伏笔.md` 每个 ID 只有一行当前状态；角色状态按核心角色拆文件；时间线的客观事实和读者认知只在同一事件登记中维护，再派生作者/读者两个视图。
 
-     状态更新仍由主会话负责。narrative-writer 只写正文并回报必要的写作结果，不直接写 `追踪/`；主会话也不绕过事务工具直接修改最终追踪文件。
+     状态更新仍由主会话负责。moshu-narrative-writer 只写正文并回报必要的写作结果，不直接写 `追踪/`；主会话也不绕过事务工具直接修改最终追踪文件。
    - **质检提示**（可选）：本章写作完成。如需一致性检查，运行 `/moshu-review lean`。批量写作模式跳过此步骤，全部写完后再统一审查。
 3. **不中断但不并发**：一章写完不问用户，直接写下一章（除非用户要求逐章确认）；下一章必须读取上一章刚写入的正文和追踪更新后再开始。
 
-**资料研究（按需）**：如果写作中遇到需要查证的外部事实（历史年代、地理方位、职业细节等），暂停写作，spawn `story-researcher` agent 搜索并输出到 `参考资料/` 目录。研究完成后再继续写作。
+**资料研究（按需）**：如果写作中遇到需要查证的外部事实（历史年代、地理方位、职业细节等），暂停写作，spawn `moshu-researcher` agent 搜索并输出到 `参考资料/` 目录。研究完成后再继续写作。
 
 ### 旧信息查找步骤
 
@@ -109,12 +109,12 @@
 |------|------|------|
 | 1 | 续写状态卡已有 → 直接用 | 0 |
 | 2 | 伏笔 ID 查 `grep -n "F007" 追踪/伏笔.md`；角色查 `追踪/角色状态/{名}.md`；读者认知查 `时间线/读者已知.md`，作者真相查 `时间线/作者真相.md` | 一个当前行或一个有界小文件 |
-| 3 | 需要变化原因/历史时，调用 story-explorer 的 `foreshadow_status / character_status / timeline`；各 adapter 按自身 agent 调用方式，agent 不可用就直接 Grep/Read | 子代理/主会话只返回相关条目 |
+| 3 | 需要变化原因/历史时，调用 moshu-explorer 的 `foreshadow_status / character_status / timeline`；各 adapter 按自身 agent 调用方式，agent 不可用就直接 Grep/Read | 子代理/主会话只返回相关条目 |
 | 4 | explorer 不可用 → `grep -R -n --include='第*.md' "F007" 追踪/逐章记录/ 2>/dev/null \| tail -5`，只取最近 5 条匹配增量 | 只读取匹配行 |
 | 5 | 仍不够 → `Read` 对应增量或埋设章正文 | 1 个紧凑增量或单章正文 |
 | 6 | 全量读取所有逐章增量/正文 | **日更禁止**。只在 `/moshu-review` 或用户明确要求全面审计时 |
 
-**查询次数限制**：单章执行步骤 3 和步骤 4 合计超过 3 次，说明细纲没写清本章要消费哪些旧信息。这时一次性让 story-explorer 查询多项，并在批末口头提示细纲需补清回收项，不另写过程日志。
+**查询次数限制**：单章执行步骤 3 和步骤 4 合计超过 3 次，说明细纲没写清本章要消费哪些旧信息。这时一次性让 moshu-explorer 查询多项，并在批末口头提示细纲需补清回收项，不另写过程日志。
 
 查询结果只有在本章结束后仍影响后续时才进入追踪事务；当前伏笔由 `foreshadow_changes` 更新，核心角色由快照更新，事实/认知由 `timeline_events` 更新。不要直接改续写状态卡某一行。
 

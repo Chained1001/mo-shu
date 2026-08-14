@@ -16,7 +16,7 @@ description: "多视角对抗式审查。full/lean 模式在已部署 reviewer a
 ## Review Mode 选择
 
 - `/moshu-review` 或 `/moshu-review full` → 优先 spawn 全部 4 个 Agent；如果当前已经在子代理内，核心 Agent 未部署/异常，或 spawn 失败，自动降级为 solo。
-- `/moshu-review lean` → 优先 spawn `story-architect` + `consistency-checker`；如果当前已经在子代理内，任一所需 Agent 未部署/异常，或 spawn 失败，自动降级为 solo。
+- `/moshu-review lean` → 优先 spawn `moshu-architect` + `moshu-consistency-checker`；如果当前已经在子代理内，任一所需 Agent 未部署/异常，或 spawn 失败，自动降级为 solo。
 - `/moshu-review solo` → 不 spawn Agent，由当前会话执行基础审查。
 - 未指定 → 默认 full，并在报告里写明最终实际执行模式。
 
@@ -27,8 +27,8 @@ description: "多视角对抗式审查。full/lean 模式在已部署 reviewer a
 1. **确定请求模式**：解析用户输入中的 `full`、`lean`、`solo`；未指定时目标模式为 `full`。
 2. **确认是否允许 spawn**：如果当前已经在子代理/Agent 内执行，不再递归 spawn，直接降级为 `solo`。
 3. **检查核心 Agent 部署状态**（检查项目内 `.claude/agents/`）：
-   - full 必需：`story-architect.md`、`character-designer.md`、`narrative-writer.md`、`consistency-checker.md`
-   - lean 必需：`story-architect.md`、`consistency-checker.md`
+   - full 必需：`moshu-architect.md`、`moshu-character-designer.md`、`moshu-narrative-writer.md`、`moshu-consistency-checker.md`
+   - lean 必需：`moshu-architect.md`、`moshu-consistency-checker.md`
    - 对每个必需 Agent 文件：读取 frontmatter，确认 `name:` 与 subagent_type 完全一致；frontmatter 缺失、不可解析或 name 不匹配时视为 malformed agent。
    - 如果目标模式所需任一文件缺失或 malformed，**不要尝试 spawn 缺失/异常 Agent**；自动降级为 `solo`，并在报告开头写明：`Fallback: missing agents -> solo` 或 `Fallback: malformed agents -> solo`，列出问题文件，建议用户运行 `/moshu-setup`。
 4. **确认 Agent/Task 工具可用**：如果当前环境没有可用的子 Agent/Task 调用能力，直接降级为 `solo`，报告 `Fallback: agent tool unavailable -> solo`。
@@ -137,7 +137,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
    - 优先把文件路径、章节名、行号范围传给 reviewer，不要把整本或大量章节完整复制进每个 prompt。
    - 单文件或短片段可附 300-1200 字关键摘录。
    - 多章/整卷/整本审查必须分批：按章节或文件组拆分，每批输出独立 findings，再综合。
-   - **跨批连续性（分批必做）**：审每一批前，先读 `追踪/伏笔.md` 中状态为 `已埋` 且计划回收章 ≤ 本批末章的当前行，再按需读取相关 `追踪/逐章记录/第NNN章.md` 查变更原因；同时读取涉及角色的独立快照，并按上方契约把 state.md 的上一批未解决 findings 摘要作为「继承的开放项」注入 reviewer / consistency-checker prompt。新发现但尚未登记的开放钩子先列为维护候选，收尾时必须有正文证据才能进入修订事务。
+   - **跨批连续性（分批必做）**：审每一批前，先读 `追踪/伏笔.md` 中状态为 `已埋` 且计划回收章 ≤ 本批末章的当前行，再按需读取相关 `追踪/逐章记录/第NNN章.md` 查变更原因；同时读取涉及角色的独立快照，并按上方契约把 state.md 的上一批未解决 findings 摘要作为「继承的开放项」注入 reviewer / moshu-consistency-checker prompt。新发现但尚未登记的开放钩子先列为维护候选，收尾时必须有正文证据才能进入修订事务。
    - **乱序/重叠审查提醒**：若已审过靠后的范围（如先审 300-400），之后审靠前的范围（200-300）时，只有当本批**新增/改动了一个开放项、且其预计兑现章落在已审过的靠后范围内**，才提醒用户「200-300 的改动可能影响已审的 300-400」，并让用户选择复审受影响章节 / 全量复审 / 仅记为待办——**默认记为待办，不盲目全量重跑**。无具体跨范围依赖时不提醒。
 3. **读取相关支撑材料**：正文、相关设定、角色档案、大纲、追踪/上下文、伏笔文件；缺失时在报告中标记证据不足。
 4. **识别目标平台并加载 rubric**：
@@ -161,7 +161,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
    - 这三个预检脚本只读；`moshu-review` **不修改正文、设定或大纲文件**，需要自动修复正文时建议转 `/moshu-deslop`。full / lean 模式只有下方「追踪文件维护」允许修改 `追踪/`；分批审查的所有模式都可按上方契约写 **.moshu-review/state.md**，solo 除该状态外不写项目内容。
    - 默认 `--quote-mode keep`，不把古言/日式的 `「」` 当作问题；只有项目明确指定引号风格时才检查对应转换建议。
 
-**story-explorer 预查询（可选）**。仅当 `Effective Mode` 仍为 `full`/`lean`、当前允许 spawn 且 Agent/Task 工具可用时，才可检查 `.claude/agents/story-explorer.md` 是否存在并 spawn `story-explorer` 预查设定摘要；`solo` 或子代理递归保护场景下不得 spawn，只能直接 Read/Grep。Prompt 示例：
+**moshu-explorer 预查询（可选）**。仅当 `Effective Mode` 仍为 `full`/`lean`、当前允许 spawn 且 Agent/Task 工具可用时，才可检查 `.claude/agents/moshu-explorer.md` 是否存在并 spawn `moshu-explorer` 预查设定摘要；`solo` 或子代理递归保护场景下不得 spawn，只能直接 Read/Grep。Prompt 示例：
 
 ```text
 项目目录：{dir}
@@ -200,12 +200,12 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 **调用规则**：执行 Phase 0 后，只有实际模式仍是 full/lean 时才 spawn。不要 spawn 缺失 Agent。
 
-**Agent 1: story-architect**（subagent_type: story-architect）
+**Agent 1: moshu-architect**（subagent_type: moshu-architect）
 - full/lean 均调用。
 - 审查视角：主题对齐、大纲结构、钩子/反转质量、范围控制、平台期待。
 - 提示指令：
   ```
-  你是 story-architect，从故事架构层面审查以下内容。
+  你是 moshu-architect，从故事架构层面审查以下内容。
   你的任务是【找问题】，不是验证正确性。以最严苛的标准审视。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
@@ -235,12 +235,12 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   RECOMMENDATIONS: [修改建议]
   ```
 
-**Agent 2: character-designer**（subagent_type: character-designer）
+**Agent 2: moshu-character-designer**（subagent_type: moshu-character-designer）
 - full 模式调用。
 - 审查视角：角色语言风格一致性、对话质量、人物弧线、关系推进。
 - 提示指令：
   ```
-  你是 character-designer，从角色和对话层面审查以下内容。
+  你是 moshu-character-designer，从角色和对话层面审查以下内容。
   你的任务是【找问题】，不是验证正确性。以最严苛的标准审视。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
@@ -264,12 +264,12 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   RECOMMENDATIONS: [修改建议]
   ```
 
-**Agent 3: narrative-writer**（subagent_type: narrative-writer）
+**Agent 3: moshu-narrative-writer**（subagent_type: moshu-narrative-writer）
 - full 模式调用。
 - 审查视角：AI味检测（含解释腔/上帝感/安排感=模式 8）、情绪烈度（够不够爽/会不会太保守）、格式合规、节奏均匀度、文字自然度。
 - 提示指令：
   ```
-  你是 narrative-writer，从文字质量层面审查以下内容。
+  你是 moshu-narrative-writer，从文字质量层面审查以下内容。
   你的任务是【找问题】，不是验证正确性。以最严苛的标准审视。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
@@ -295,12 +295,12 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   RECOMMENDATIONS: [修改建议]
   ```
 
-**Agent 4: consistency-checker**（subagent_type: consistency-checker）
+**Agent 4: moshu-consistency-checker**（subagent_type: moshu-consistency-checker）
 - full/lean 均调用。
 - 审查视角：grep-first + 推理型一致性检测，输出 S1-S4 报告。
 - 提示指令：
   ```
-  你是 consistency-checker，使用 grep-first + 推理型一致性审查检测事实矛盾。
+  你是 moshu-consistency-checker，使用 grep-first + 推理型一致性审查检测事实矛盾。
   你的任务是【找事实矛盾、状态断线和需要推理才能发现的设定逻辑冲突】，不做创作评判，不评价文学质量，不输出创作修改建议。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
@@ -331,7 +331,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 1. 收集实际执行的 reviewer VERDICT 和 FINDINGS。
 2. 合并去重：按 `severity` 排序（S1 > S2 > S3 > S4），同级内按影响范围排序。
-3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 `.claude/agents/story-researcher.md` 已部署时，才可额外 spawn `story-researcher` 搜索验证；`solo`、missing/malformed/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
+3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 `.claude/agents/moshu-researcher.md` 已部署时，才可额外 spawn `moshu-researcher` 搜索验证；`solo`、missing/malformed/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
 4. **分歧呈现**：如果 reviewer 间有冲突意见，明确呈现分歧让用户裁决；不要自动妥协。
 5. 输出综合审查报告。报告必须列出实际模式、fallback 原因、使用的 rubric、Rubric Source、审查范围和证据不足项。
 
@@ -353,10 +353,10 @@ Rubric Source: file | embedded fallback
 审查范围: {章节/文件/批次}
 
 ## Verdict Summary / 结论汇总
-- story-architect: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
-- character-designer: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
-- narrative-writer: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
-- consistency-checker: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
+- moshu-architect: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
+- moshu-character-designer: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
+- moshu-narrative-writer: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
+- moshu-consistency-checker: APPROVE / CONCERNS(n) / REJECT / NOT_RUN
 
 > `NOT_RUN` 只用于 lean 模式排除的 reviewer 或可选 reviewer；如果 full/lean 必需 reviewer 缺失或 spawn 失败，应降级 solo，而不是在 full/lean 报告中标记 NOT_RUN 后继续综合。
 

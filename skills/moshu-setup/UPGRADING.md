@@ -43,18 +43,18 @@
 
 - Claude Code 的正文前置守卫现在也注册到 Bash：常见的重定向、`tee`、`touch`、`cp`、`mv`、`install` 写入正文时复用共享 JS 核识别目标并执行大纲/追踪门；只读命令里的引号示例与 heredoc 正文提及不拦，并按 hook `cwd` 解析相对路径。该面是**静态 best-effort 识别，不是 shell 沙箱**：环境变量间接路径、运行时生成命令与未列出的任意写文件程序无法可靠静态判定；这类写入应改用 Write/Edit。Bash 命令面依赖 node，node/共享核异常时显式告警后 fail-open；Write/Edit/MultiEdit 的纯 bash 兜底不受影响。
 - 共享 JS 的书目录发现统一限制为项目下 4 层，并剪枝隐藏目录、`node_modules`，避免 SessionStart/Stop 无界扫描。
-- narrative-writer 与部署 reference 增加“普通名词不用引号强调”的 Gate B；合法对话、直接引用、书名/代号和场内系统载体原文保留。
-- narrative-writer 的工具白名单加入 `Bash`：字数统计、句长分布、`check-ai-patterns.js` 与 `check-outline-copy.js` 复扫都要确定性数值，缺工具时这几条规则整条空转。字数与句长必须报实测值，探测不到 Python / node 时如实声明“未完成机器验证”，不得声称已统计或已运行脚本。
-- narrative-writer 的细纲消费规则拆成两条并列：内容层（每项独立落地、不许漏、不许两项并一句）与形状层（落地位置、顺序、断段自定，可打散重排，不要一项一段平推）。形状半边同步进 `moshu-write` 的 spawn 清单。
+- moshu-narrative-writer 与部署 reference 增加“普通名词不用引号强调”的 Gate B；合法对话、直接引用、书名/代号和场内系统载体原文保留。
+- moshu-narrative-writer 的工具白名单加入 `Bash`：字数统计、句长分布、`check-ai-patterns.js` 与 `check-outline-copy.js` 复扫都要确定性数值，缺工具时这几条规则整条空转。字数与句长必须报实测值，探测不到 Python / node 时如实声明“未完成机器验证”，不得声称已统计或已运行脚本。
+- moshu-narrative-writer 的细纲消费规则拆成两条并列：内容层（每项独立落地、不许漏、不许两项并一句）与形状层（落地位置、顺序、断段自定，可打散重排，不要一项一段平推）。形状半边同步进 `moshu-write` 的 spawn 清单。
 - 细纲「情节细化」新增**复沓锚句**字段：必须一字不差进正文的原话逐行列出并注明落点，没有写“无”。存量细纲缺该字段时按“无锚句”处理，行为与此前一致，不必回头补。
 
 重新部署后需**新开会话**，custom agent 与 hooks 才会重新注册。
 
 ## v24 当前契约
 
-- `.claude/rules/story-narrative.md` 删掉「禁止 AI 腔」红线块。该块只在 `拆文库/` `对标/` `设定/` 三个 path 下加载，正文目录根本不命中，五条规则也已由 narrative-writer 的 7 Gate / 禁止事项与 `check-ai-patterns.js` 的 blocking 规则覆盖。
+- `.claude/rules/story-narrative.md` 删掉「禁止 AI 腔」红线块。该块只在 `拆文库/` `对标/` `设定/` 三个 path 下加载，正文目录根本不命中，五条规则也已由 moshu-narrative-writer 的 7 Gate / 禁止事项与 `check-ai-patterns.js` 的 blocking 规则覆盖。
 - `.claude/rules/story-format.md` 的对话标签规则从「禁止「他说」「她道」」改为「避免对话标签机械化」：高频或公式化标签用动作/上下文替代，普通「说」低频使用可保留。此前该文件是全仓唯一把普通「说」判为违规的地方，与 `format-and-structure.md` 等 11 处口径冲突，且它正好在 `正文/` path 上加载。
-- `.claude/agents/narrative-writer.md` 精简约 19%：删除与 7 Gate / 禁止事项重复的审查清单（moshu-review spawn 时会内联完整 rubric）、正文写作阶段的具体字数表达校验（移到审查侧）、以及 `……`/`——`、段间空行、章节元信息正则的重复陈述。写作规则本身未放宽，Gate A-G 与禁止事项口径不变。
+- `.claude/agents/moshu-narrative-writer.md` 精简约 19%：删除与 7 Gate / 禁止事项重复的审查清单（moshu-review spawn 时会内联完整 rubric）、正文写作阶段的具体字数表达校验（移到审查侧）、以及 `……`/`——`、段间空行、章节元信息正则的重复陈述。写作规则本身未放宽，Gate A-G 与禁止事项口径不变。
 - `.claude/hooks/guard-outline-before-prose.sh` 补上追踪检查点门：追踪状态缺失、schema 不是 4、续写状态卡修订号与 state 不一致、首建新章时上一章事务未提交，都拦下写正文。细纲/大纲门只在首建时判，追踪门对首建与续写都判。判定经 `.claude/hooks/story_hook_cli.js` 的 `tracking-checkpoint` 子命令调共享核；需要解析 JSON，故 node 不在场时这道门放行（大纲/细纲门仍是纯 bash，无 node 也拦得住）。
   - **对已部署项目的影响**：v0.7.3 起就该迁移的旧追踪项目，此前在 Claude Code 上还能继续写，现在会被拦下。按提示走 `/moshu-import` 的「旧追踪项目迁移」重建 `追踪/` 即可，不必重跑全书拆解。
 

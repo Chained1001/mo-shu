@@ -77,7 +77,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 安装后，在写作项目根目录运行 `/moshu-setup` 部署。升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。
 
-**多 agent 协作要先部署再新开会话：** 7 个专业 agent（story-architect、narrative-writer、consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
+**多 agent 协作要先部署再新开会话：** 7 个专业 agent（moshu-architect、moshu-narrative-writer、moshu-consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 
 **导入续写顺序：** 推荐先在写作项目根运行 `/moshu-setup`（部署 hooks/agents），新开/刷新会话后运行 `/moshu-import` 导入已有小说，再用 `/moshu-write 日更` 或 `/moshu-write 写第N章` 续写。也可以直接运行 `/moshu-import`；它会先检测是否已 setup，未部署时让你选择先去 setup 或继续串行导入。
 
@@ -102,7 +102,7 @@ npx skills add Chained1001/mo-shu -y -g
 - 「这篇太 AI 了」→ `moshu-deslop`
 - 「把我的书导进来」→ `moshu-import`
 - 「打开工作台」→ `moshu dashboard`（本机浏览拆文库与写作项目，可轻量编辑）
-- 「沈栀现在什么状态」→ 自动 spawn `story-explorer` agent
+- 「沈栀现在什么状态」→ 自动 spawn `moshu-explorer` agent
 
 ### Story Dashboard
 
@@ -176,13 +176,13 @@ demo/长篇/让你管账号，你高燃混剪炸全网/
 
 | Agent | 模型 | 职责 |
 |:------|:-----|:-----|
-| **story-architect** | Opus | 故事架构 · 题材定位、大纲结构、钩子/反转设计、情绪弧线 |
-| **character-designer** | Sonnet | 角色设计 · 角色档案、语言风格、动机链、对话创作 |
-| **narrative-writer** | Sonnet | 叙事写手 · 正文写作、去AI味、格式合规 |
-| **consistency-checker** | Haiku | 一致性检查 · 事实冲突扫描、伏笔追踪、S1-S4 分级报告 |
-| **story-researcher** | Sonnet | 资料研究 · CDP 搜索+正文提取、多源交叉验证、结构化参考文件输出 |
-| **story-explorer** | Haiku | 故事查询 · 角色/伏笔/设定/进度只读查询，日更上下文快速加载 |
-| **chapter-extractor** | Haiku | 章节提取 · 摘要+情节点+角色提及，并行拆文核心单元 |
+| **moshu-architect** | Opus | 故事架构 · 题材定位、大纲结构、钩子/反转设计、情绪弧线 |
+| **moshu-character-designer** | Sonnet | 角色设计 · 角色档案、语言风格、动机链、对话创作 |
+| **moshu-narrative-writer** | Sonnet | 叙事写手 · 正文写作、去AI味、格式合规 |
+| **moshu-consistency-checker** | Haiku | 一致性检查 · 事实冲突扫描、伏笔追踪、S1-S4 分级报告 |
+| **moshu-researcher** | Sonnet | 资料研究 · CDP 搜索+正文提取、多源交叉验证、结构化参考文件输出 |
+| **moshu-explorer** | Haiku | 故事查询 · 角色/伏笔/设定/进度只读查询，日更上下文快速加载 |
+| **moshu-chapter-extractor** | Haiku | 章节提取 · 摘要+情节点+角色提及，并行拆文核心单元 |
 
 Agent 按需加载 `references/` 中的写作理论（角色设计、对话技法、反转工具箱等），部署包 agent-references 含 58 份方法论文件，全仓 references 近 200 份，不预占上下文。
 
@@ -240,7 +240,7 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 │   ├── 角色状态/        # 派生核心角色快照（江晨.md、钟嘉嘉.md）
 │   ├── 伏笔.md          # 派生伏笔当前视图
 │   └── 时间线/          # 派生作者真相.md + 读者已知.md
-├── 参考资料/            # story-researcher 输出的研究资料
+├── 参考资料/            # moshu-researcher 输出的研究资料
 │   └── {topic}.md       # 按研究主题拆分
 ```
 

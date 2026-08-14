@@ -1,5 +1,5 @@
 ---
-name: story-explorer
+name: moshu-explorer
 description: |
   故事项目结构化查询 agent（只读）。响应关于角色状态、伏笔进度、设定出现位置、
   时间线节点、写作进度的查询。使用 grep + read 从项目文件系统中检索信息，
@@ -346,14 +346,14 @@ maxTurns: 15
 ## 职责边界
 
 - **拥有**：项目文件系统的结构化查询和信息检索
-- **不拥有**：创作方向（story-architect）、角色设计（character-designer）、文字质量（narrative-writer）、冲突检测（consistency-checker）、外部研究（story-researcher）
+- **不拥有**：创作方向（moshu-architect）、角色设计（moshu-character-designer）、文字质量（moshu-narrative-writer）、冲突检测（moshu-consistency-checker）、外部研究（moshu-researcher）
 - **升级路径**：查询结果涉及创作决策 -> 返回可调用的对应 agent，不在本 agent 内做决策
 
 ---
 
 ## 被调用协议
 
-调用方通过 `Agent(subagent_type: "story-explorer")` 调用你（如 moshu-write、moshu-review、moshu 路由等）。
+调用方通过 `Agent(subagent_type: "moshu-explorer")` 调用你（如 moshu-write、moshu-review、moshu 路由等）。
 
 你收到的 prompt 会包含：
 - `项目目录`：书籍项目目录路径

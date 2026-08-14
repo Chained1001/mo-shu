@@ -31,14 +31,14 @@
       "why": "开书/补纲路径加载"
     },
     {
-      "path": "skills/moshu-setup/references/templates/agents/narrative-writer.md",
+      "path": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
       "budget": 13150,
       "why": "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则"
     },
     {
       "path": "skills/moshu-write/references/writing-craft.md",
       "budget": 8300,
-      "why": "narrative-writer 每章写作时读"
+      "why": "moshu-narrative-writer 每章写作时读"
     },
     {
       "path": "skills/moshu-write/references/anti-ai-writing.md",
@@ -73,7 +73,7 @@
       "label": "正文 agent 上下文",
       "budget": 38960,
       "files": [
-        "skills/moshu-setup/references/templates/agents/narrative-writer.md",
+        "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
         "skills/moshu-write/references/writing-craft.md",
         "skills/moshu-write/references/anti-ai-writing.md",
         "skills/moshu-write/references/banned-words.md"

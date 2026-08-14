@@ -131,7 +131,7 @@ def test_import_records_a_cutoff_without_fabricated_old_deltas() -> None:
 
 
 def test_reader_timeline_is_kept_separate_from_author_truth() -> None:
-    explorer = read("skills/moshu-setup/references/templates/agents/story-explorer.md")
+    explorer = read("skills/moshu-setup/references/templates/agents/moshu-explorer.md")
     require_all(
         explorer,
         (
@@ -140,9 +140,9 @@ def test_reader_timeline_is_kept_separate_from_author_truth() -> None:
             "作者真相.md",
             "reader` 结果不得混入 `objective_fact` 中尚未揭示的内容",
         ),
-        "story-explorer timeline",
+        "moshu-explorer timeline",
     )
-    checker = read("skills/moshu-setup/references/templates/agents/consistency-checker.md")
+    checker = read("skills/moshu-setup/references/templates/agents/moshu-consistency-checker.md")
     require_all(
         checker,
         (
@@ -182,7 +182,7 @@ def test_retired_tracking_architecture_is_absent() -> None:
         "skills/moshu-import/references/structure-mapping-long.md",
         "skills/moshu-review/SKILL.md",
         "skills/moshu-setup/references/templates/CLAUDE.md.tmpl",
-        "skills/moshu-setup/references/templates/agents/story-explorer.md",
+        "skills/moshu-setup/references/templates/agents/moshu-explorer.md",
         "skills/moshu-setup/references/templates/rules/story-consistency.md",
     )
     retired = (
@@ -224,10 +224,10 @@ def test_no_tracking_fallback_or_context_style_fingerprint_remains() -> None:
         ),
         "fail-closed tracking reads",
     )
-    writer = read("skills/moshu-setup/references/templates/agents/narrative-writer.md")
-    require("`上下文.md` 文风指纹" not in writer, "narrative-writer still reads a removed context style fingerprint")
-    require("追踪/上下文.md`「文风指纹」" not in writer, "narrative-writer still treats context as style storage")
-    require("续写状态卡不存文风" in writer, "narrative-writer must keep style out of tracking context")
+    writer = read("skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md")
+    require("`上下文.md` 文风指纹" not in writer, "moshu-narrative-writer still reads a removed context style fingerprint")
+    require("追踪/上下文.md`「文风指纹」" not in writer, "moshu-narrative-writer still treats context as style storage")
+    require("续写状态卡不存文风" in writer, "moshu-narrative-writer must keep style out of tracking context")
 
 
 def test_hooks_fail_closed_on_invalid_tracking_checkpoints() -> None:

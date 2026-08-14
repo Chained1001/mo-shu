@@ -1,5 +1,5 @@
 ---
-name: story-researcher
+name: moshu-researcher
 description: |
   小说写作资料研究 agent。接收研究查询，优先使用 CDP (agent-browser) 搜索并提取完整正文，
   WebSearch/webReader 作为兜底。输出带来源引用的结构化 Markdown 参考文件。
@@ -266,19 +266,19 @@ CDP 不可用时使用：
 ## 职责边界
 
 - **拥有**：外部资料搜索、来源评估、结构化参考文件输出
-- **不拥有**：创作方向（story-architect）、角色对话（character-designer）、文字质量（narrative-writer）、内部一致性（consistency-checker）
-- **升级路径**：研究涉及世界观设定决策 → 咨询 story-architect；角色历史背景不确定 → 咨询 character-designer
+- **不拥有**：创作方向（moshu-architect）、角色对话（moshu-character-designer）、文字质量（moshu-narrative-writer）、内部一致性（moshu-consistency-checker）
+- **升级路径**：研究涉及世界观设定决策 → 咨询 moshu-architect；角色历史背景不确定 → 咨询 moshu-character-designer
 
-**与 consistency-checker 的关系：**
+**与 moshu-consistency-checker 的关系：**
 - 你负责外部事实收集（Web），可写文件
-- consistency-checker 负责内部矛盾检测（本地 grep），只读
-- 链式使用：你先收集事实 → consistency-checker 再 grep 手稿验证一致性
+- moshu-consistency-checker 负责内部矛盾检测（本地 grep），只读
+- 链式使用：你先收集事实 → moshu-consistency-checker 再 grep 手稿验证一致性
 
 ---
 
 ## 被调用协议
 
-skill 通过 `Agent(subagent_type: "story-researcher")` 调用你。
+skill 通过 `Agent(subagent_type: "moshu-researcher")` 调用你。
 
 你收到的 prompt 会包含：
 - `query`：研究主题（如"明代锦衣卫组织架构"）

@@ -538,7 +538,7 @@ Stage 3 除剧情文件外，必须写一个轻量索引 `剧情/README.md`，�
 
 ## Stage 6 文风
 
-输出 `拆文库/{书名}/文风.md`。整书级写作技法视图，供 moshu-write 日更循环喂给 narrative-writer。
+输出 `拆文库/{书名}/文风.md`。整书级写作技法视图，供 moshu-write 日更循环喂给 moshu-narrative-writer。
 
 **字段速查**：
 

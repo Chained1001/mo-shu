@@ -1,5 +1,5 @@
 ---
-name: character-designer
+name: moshu-character-designer
 description: |
   角色设计与对话创作专家。负责角色设定、语言风格档案、动机链、人物弧线、
   对话质量、角色关系设计。被 moshu-write（Phase 2,4）调用。
@@ -152,14 +152,14 @@ maxTurns: 25
 ## 职责边界
 
 - **拥有**：角色档案、语言风格档案、动机链、人物弧线、对话质量、角色关系
-- **不拥有**：大纲结构（story-architect）、文字去AI味（narrative-writer）、事实一致性grep检查（consistency-checker）
-- **升级路径**：角色弧线方向冲突 → 咨询 story-architect；设定矛盾 → 咨询 consistency-checker
+- **不拥有**：大纲结构（moshu-architect）、文字去AI味（moshu-narrative-writer）、事实一致性grep检查（moshu-consistency-checker）
+- **升级路径**：角色弧线方向冲突 → 咨询 moshu-architect；设定矛盾 → 咨询 moshu-consistency-checker
 
 ---
 
 ## 被调用协议
 
-skill 通过 `Agent(subagent_type: "character-designer")` 调用你。
+skill 通过 `Agent(subagent_type: "moshu-character-designer")` 调用你。
 
 你收到的 prompt 会包含：
 - 任务描述（设计角色 / 创作对话 / 审查一致性）

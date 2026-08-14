@@ -72,7 +72,7 @@
 
 ## 原文锚点片段
 
-> 每片段 300-500 字，**用于 narrative-writer 写作时的范例片段**。从 `原文/原文.txt` 按章节分隔符切片。模仿手法、不抄字句。
+> 每片段 300-500 字，**用于 moshu-narrative-writer 写作时的范例片段**。从 `原文/原文.txt` 按章节分隔符切片。模仿手法、不抄字句。
 
 ### 片段 A — 基调：紧张
 **出处**：第 {K} 章 第 {段号} 段（行 {L1}-{L2}）
@@ -116,18 +116,18 @@
 
 | 值 | 触发条件 | 下游处理 |
 |---|---|---|
-| `high` | 数据直接可读（如基调序列从摘要 grep 得出） | narrative-writer 优先采纳，覆盖默认 Gate |
-| `med` | 从样本归纳且样本充足（如看章节基调走向、对话潜台词整理） | narrative-writer 参考，与默认 Gate 协商 |
-| `low` | 样本不足/原文缺失 | narrative-writer 让位回默认 Gate（不强制采纳） |
+| `high` | 数据直接可读（如基调序列从摘要 grep 得出） | moshu-narrative-writer 优先采纳，覆盖默认 Gate |
+| `med` | 从样本归纳且样本充足（如看章节基调走向、对话潜台词整理） | moshu-narrative-writer 参考，与默认 Gate 协商 |
+| `low` | 样本不足/原文缺失 | moshu-narrative-writer 让位回默认 Gate（不强制采纳） |
 
 ## 可用性语义
 
-- `文风可用：是` → 文风可用于写作，narrative-writer 按 confidence 分级使用。
-- `文风可用：否：{原因}` → 文风质量不足（例如原文缺失、锚点全是占位符）。story-explorer 读取时返回 `gaps.profile_degenerate: true`，narrative-writer 跳过文风，按默认 Gates 写作，避免被误导。
+- `文风可用：是` → 文风可用于写作，moshu-narrative-writer 按 confidence 分级使用。
+- `文风可用：否：{原因}` → 文风质量不足（例如原文缺失、锚点全是占位符）。moshu-explorer 读取时返回 `gaps.profile_degenerate: true`，moshu-narrative-writer 跳过文风，按默认 Gates 写作，避免被误导。
 
 ## 覆盖与不可模仿原则
 
 - **覆盖**：文风优先级排在 Gate D（节奏调整）、Gate B（句式去套路）、标点默认习惯之上——这些 Gate 是去 AI 味的**默认值**，文风有更具体的指令时文风赢。
 - **不可覆盖（硬约束）**：banned-words / Gate F 章末禁升华 / 禁止万能/堆叠比喻 / 禁止章末预告 / 字数下限——这些硬约束永远赢，即使文风示范了相反的用法。
 
-精确决议表见 `.claude/agents/narrative-writer.md` 的“被调用协议”段。
+精确决议表见 `.claude/agents/moshu-narrative-writer.md` 的“被调用协议”段。

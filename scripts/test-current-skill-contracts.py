@@ -555,7 +555,7 @@ def test_spawn_preflight_uses_agents_version_not_file_existence() -> None:
     manifest = repository_manifest()
     stale = manifest.agents_version - 1
     existence_only = """
-检测到 `.claude/agents/chapter-extractor.md` 存在，所以可以 spawn。
+检测到 `.claude/agents/moshu-chapter-extractor.md` 存在，所以可以 spawn。
 .story-deployed:
   agents_version: {stale}
 """.format(stale=stale)
@@ -765,7 +765,7 @@ def test_issue_315_333_343_prompt_contracts() -> None:
         encoding="utf-8"
     )
     writer = (
-        REPO_ROOT / "skills/moshu-setup/references/templates/agents/narrative-writer.md"
+        REPO_ROOT / "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md"
     ).read_text(encoding="utf-8")
     require(
         "普通名词" in anti_ai and "引号强调" in anti_ai,
@@ -773,7 +773,7 @@ def test_issue_315_333_343_prompt_contracts() -> None:
     )
     require(
         "引号强调" in writer and "对话" in writer,
-        "#315: narrative-writer Gate B must prevent quote emphasis without banning dialogue",
+        "#315: moshu-narrative-writer Gate B must prevent quote emphasis without banning dialogue",
     )
 
     style = (
