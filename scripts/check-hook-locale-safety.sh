@@ -14,7 +14,7 @@ if [ -z "$REPO_ROOT" ]; then
   echo "Error: not in a git repository"
   exit 1
 fi
-HOOKS_DIR="$REPO_ROOT/skills/story-setup/references/templates/hooks"
+HOOKS_DIR="$REPO_ROOT/skills/moshu-setup/references/templates/hooks"
 
 echo "Hook locale-safety Guard"
 echo "========================"

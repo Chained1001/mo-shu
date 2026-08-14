@@ -6,7 +6,7 @@
 # 超了就红，逼作者要么删等量旧文本，要么显式在 scripts/doc-budget.json 里调高预算。
 #
 # 度量：去掉所有空白后的字符数。中英文都算，改标点/换行/缩进不影响读数。
-# 冷路径（story-setup 部署、UPGRADING、拆文库模板）不登记，不受限。
+# 冷路径（moshu-setup 部署、UPGRADING、拆文库模板）不登记，不受限。
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

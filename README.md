@@ -31,7 +31,7 @@ flowchart LR
     entry_i{{"已有小说"}}:::entry
 
     subgraph S0 ["  环境部署"]
-        setup["/story-setup"]:::phase
+        setup["/moshu-setup"]:::phase
     end
 
     subgraph S1 ["  扫榜选材"]
@@ -71,40 +71,40 @@ flowchart LR
 git clone https://gitee.com/chianed1001/mo-shu.git
 ```
 
-克隆到本地后，在写作项目根目录运行 `/story-setup` 部署。更新时在仓库目录执行 `git pull` 即可。
+克隆到本地后，在写作项目根目录运行 `/moshu-setup` 部署。更新时在仓库目录执行 `git pull` 即可。
 
-升级后如果项目里已经跑过 `/story-setup`，建议在项目根重跑一次 `/story-setup`，同步 hooks / agents / references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://gitee.com/chianed1001/mo-shu/releases)。
+升级后如果项目里已经跑过 `/moshu-setup`，建议在项目根重跑一次 `/moshu-setup`，同步 hooks / agents / references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://gitee.com/chianed1001/mo-shu/releases)。
 
-**多 agent 协作要先部署再新开会话：** 7 个专业 agent（story-architect、narrative-writer、consistency-checker 等）由 `/story-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/story-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
+**多 agent 协作要先部署再新开会话：** 7 个专业 agent（story-architect、narrative-writer、consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 
-**导入续写顺序：** 推荐先在写作项目根运行 `/story-setup`（部署 hooks/agents），新开/刷新会话后运行 `/story-import` 导入已有小说，再用 `/story-long-write 日更` 或 `/story-long-write 写第N章` 续写。也可以直接运行 `/story-import`；它会先检测是否已 setup，未部署时让你选择先去 setup 或继续串行导入。
+**导入续写顺序：** 推荐先在写作项目根运行 `/moshu-setup`（部署 hooks/agents），新开/刷新会话后运行 `/moshu-import` 导入已有小说，再用 `/moshu-write 日更` 或 `/moshu-write 写第N章` 续写。也可以直接运行 `/moshu-import`；它会先检测是否已 setup，未部署时让你选择先去 setup 或继续串行导入。
 
 ## Skills
 
 | Skill | 触发 | 说明 |
 |:------|:-----|:-----|
-| `story-setup` | `/story-setup` `/准备写书` | 环境部署 · Claude Code（已有配置安全合并） |
-| `story` | `/story` `/story dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
-| `story-long-write` | `/story-long-write` `/写长篇` | 长篇写作 · 大纲搭建、人物设定、正文输出 |
-| `story-long-analyze` | `/story-long-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
-| `story-long-scan` | `/story-long-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
-| `story-deslop` | `/story-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
-| `story-import` | `/story-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
-| `story-review` | `/story-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
-| `browser-cdp` | `/browser-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
+| `moshu-setup` | `/moshu-setup` `/准备写书` | 环境部署 · Claude Code（已有配置安全合并） |
+| `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
+| `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 大纲搭建、人物设定、正文输出 |
+| `moshu-analyze` | `/moshu-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
+| `moshu-scan` | `/moshu-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
+| `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
+| `moshu-import` | `/moshu-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
+| `moshu-review` | `/moshu-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
+| `moshu-cdp` | `/moshu-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
 
-> `story-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
+> `moshu-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
 
 自然语言同样触发：
-- 「帮我开书」→ `story-long-write`
-- 「这篇太 AI 了」→ `story-deslop`
-- 「把我的书导进来」→ `story-import`
-- 「打开工作台」→ `story dashboard`（本机浏览拆文库与写作项目，可轻量编辑）
+- 「帮我开书」→ `moshu-write`
+- 「这篇太 AI 了」→ `moshu-deslop`
+- 「把我的书导进来」→ `moshu-import`
+- 「打开工作台」→ `moshu dashboard`（本机浏览拆文库与写作项目，可轻量编辑）
 - 「沈栀现在什么状态」→ 自动 spawn `story-explorer` agent
 
 ### Story Dashboard
 
-运行 `/story dashboard` 打开本地写作工作台，浏览拆文库与
+运行 `/moshu dashboard` 打开本地写作工作台，浏览拆文库与
 长篇项目文件树，并完成搜索、Markdown 预览、文本编辑、冲突保护保存和确认删除。
 服务仅监听 `127.0.0.1`，小说内容不会上传。
 
@@ -113,7 +113,7 @@ git clone https://gitee.com/chianed1001/mo-shu.git
 <details>
 <summary>拆文 demo — 盘龙</summary>
 
-使用 `/story-long-analyze` 完整拆解管道分析《盘龙》前23章的完整输出：
+使用 `/moshu-analyze` 完整拆解管道分析《盘龙》前23章的完整输出：
 
 ```
 demo/拆文库/盘龙/
@@ -153,7 +153,7 @@ demo/拆文库/盘龙/
 <details>
 <summary>导入 demo — 让你管账号，你高燃混剪炸全网（长篇续写工程）</summary>
 
-推荐先 `/story-setup` 部署写作项目，再使用 `/story-import` 把作者已发布的前 20 章（约 3.7 万字）逆向重建为可续写的写作工程，最后接 `/story-long-write 日更` 或 `/story-long-write 写第21章` 续写：
+推荐先 `/moshu-setup` 部署写作项目，再使用 `/moshu-import` 把作者已发布的前 20 章（约 3.7 万字）逆向重建为可续写的写作工程，最后接 `/moshu-write 日更` 或 `/moshu-write 写第21章` 续写：
 
 ```
 demo/长篇/让你管账号，你高燃混剪炸全网/
@@ -186,7 +186,7 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 
 ## 自动化 Hooks
 
-`/story-setup` 为 Claude Code 部署 8 个自动化 hook：
+`/moshu-setup` 为 Claude Code 部署 8 个自动化 hook：
 
 | Hook | 触发时机 | 功能 |
 |:-----|:---------|:-----|
@@ -270,7 +270,7 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 | 拆文方法 | 黄金三章 · 情绪曲线 · 结构拆解 | long-analyze |
 | 读者画像 | 9 维画像 · 目标读者分析 | long-scan |
 | 市场数据 | 题材趋势 · 平台特性 · 采集格式 · 投稿指南 | long-scan |
-| 多视角审稿 | 多视角审稿 · 评分标准 · 毒点排查 | story-review |
+| 多视角审稿 | 多视角审稿 · 评分标准 · 毒点排查 | moshu-review |
 
 </details>
 

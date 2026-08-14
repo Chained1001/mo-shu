@@ -10,7 +10,7 @@ const { spawn, spawnSync } = require("child_process");
 const repoRoot = path.resolve(__dirname, "..");
 const longUtilsPath = path.join(
   repoRoot,
-  "skills/story-long-scan/scripts/cdp-utils.js"
+  "skills/moshu-scan/scripts/cdp-utils.js"
 );
 
 function makeFakeAgentBrowser(tmpDir) {
@@ -358,9 +358,9 @@ function testWindowsInvocationBuilder(modulePath) {
 function listScraperPaths() {
   return [
     ...fs
-      .readdirSync(path.join(repoRoot, "skills/story-long-scan/scripts"))
+      .readdirSync(path.join(repoRoot, "skills/moshu-scan/scripts"))
       .filter((name) => name.endsWith("-scraper.js"))
-      .map((name) => path.join(repoRoot, "skills/story-long-scan/scripts", name)),
+      .map((name) => path.join(repoRoot, "skills/moshu-scan/scripts", name)),
   ].sort();
 }
 
@@ -485,7 +485,7 @@ function testScraperFilenameDatesAreLocal() {
 function testJjwxcDetailFailureIsolation() {
   const scraper = path.join(
     repoRoot,
-    "skills/story-long-scan/scripts/jjwxc-rank-scraper.js"
+    "skills/moshu-scan/scripts/jjwxc-rank-scraper.js"
   );
   const run = runScraper(scraper, ["--type", "all"], {
     SCAN_FAKE_FAIL_DETAIL: "1",
@@ -530,7 +530,7 @@ function testJjwxcDetailFailureIsolation() {
 function testQidianRankIsolation() {
   const scraper = path.join(
     repoRoot,
-    "skills/story-long-scan/scripts/qidian-rank-scraper.js"
+    "skills/moshu-scan/scripts/qidian-rank-scraper.js"
   );
   const run = runScraper(scraper, ["--type", "all", "--mode", "cdp"], {
     SCAN_FAKE_FAIL_OPEN: "hotsales",
@@ -566,7 +566,7 @@ function testQidianRankIsolation() {
 function testQidianFieldContractAndDescriptionLimit() {
   const scraperPath = path.join(
     repoRoot,
-    "skills/story-long-scan/scripts/qidian-rank-scraper.js"
+    "skills/moshu-scan/scripts/qidian-rank-scraper.js"
   );
   const qidian = loadFresh(scraperPath);
   assert.strictEqual(typeof qidian.cleanDesc, "function");
@@ -622,7 +622,7 @@ function testQidianFieldContractAndDescriptionLimit() {
 function testQimaoPeriodPlan() {
   const scraperPath = path.join(
     repoRoot,
-    "skills/story-long-scan/scripts/qimao-rank-scraper.js"
+    "skills/moshu-scan/scripts/qimao-rank-scraper.js"
   );
   const qimao = loadFresh(scraperPath);
   assert.strictEqual(typeof qimao.buildTargets, "function");
@@ -730,7 +730,7 @@ function testQimaoPeriodPlan() {
 
 function testQimaoPartialTargetStatus() {
   const run = runScraper(
-    path.join(repoRoot, "skills/story-long-scan/scripts/qimao-rank-scraper.js"),
+    path.join(repoRoot, "skills/moshu-scan/scripts/qimao-rank-scraper.js"),
     ["--channel", "male", "--type", "hot", "--period", "all"],
     { SCAN_FAKE_HOST: "www.qimao.com", SCAN_FAKE_FAIL_OPEN: "/month/" }
   );
@@ -746,7 +746,7 @@ function testQimaoPartialTargetStatus() {
 // 番茄解码/格式化纯函数：模板文本剥离、100 字截断、万 格式化、状态映射
 function testFanqiePureFunctions() {
   const fanqie = loadFresh(
-    path.join(repoRoot, "skills/story-long-scan/scripts/fanqie-rank-scraper.js")
+    path.join(repoRoot, "skills/moshu-scan/scripts/fanqie-rank-scraper.js")
   );
   assert.strictEqual(
     fanqie.cleanDesc("番茄小说提供《某书》完整版在线免费阅读，快来追更吧。"),
@@ -783,7 +783,7 @@ function testLongScanArgumentValidation() {
 
   for (const [name, args, message] of cases) {
     const run = runScraper(
-      path.join(repoRoot, "skills/story-long-scan/scripts", name),
+      path.join(repoRoot, "skills/moshu-scan/scripts", name),
       args,
       {}
     );
@@ -940,7 +940,7 @@ for (const a of process.argv) {
 spawn(
   process.execPath,
   [path.join(__dirname, "fake-cdp.js"), "--remote-debugging-port=" + port,
-   "--id", "child-browser-cdp", "--stopfile", process.env.H_STOPFILE_NEW],
+   "--id", "child-moshu-cdp", "--stopfile", process.env.H_STOPFILE_NEW],
   { stdio: "ignore" }
 );
 setInterval(() => { if (fs.existsSync(process.env.H_STOPFILE_NEW)) process.exit(0); }, 50);
@@ -1005,7 +1005,7 @@ cp.execSync = function (cmd, opts) {
 function runSetupCdp(scenario) {
   const setup = path.join(
     repoRoot,
-    "skills/browser-cdp/scripts/setup-cdp-chrome.js"
+    "skills/moshu-cdp/scripts/setup-cdp-chrome.js"
   );
   const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "story-cdp-reset-"));
   let oldCdp = null;
@@ -1353,7 +1353,7 @@ function testCdpAcceptsPortHeldByLaunchedChildProcess() {
     `端口由本次启动拉起的子进程持有，必须算成功:\n${run.stdout}\n${run.stderr}`
   );
   assert.match(run.stdout, /已成功以 CDP 模式启动/);
-  assert(run.stdout.includes("child-browser-cdp"), run.stdout);
+  assert(run.stdout.includes("child-moshu-cdp"), run.stdout);
   assert(
     !/CDP_OWNER_|CDP_PORT_NOT_OURS|CDP_IDENTITY_UNVERIFIABLE/.test(run.stderr),
     `进程树里更深一层的持有者不许被误杀:\n${run.stderr}`
@@ -1389,7 +1389,7 @@ function testCdpRejectsUnverifiableIdentity() {
 // 于是「端口还活着」被误判成「没人应答」——这种假阴性会直接骗过端口闸门。
 function testCdpProbeUsesFreshSocket() {
   const src = fs.readFileSync(
-    path.join(repoRoot, "skills/browser-cdp/scripts/setup-cdp-chrome.js"),
+    path.join(repoRoot, "skills/moshu-cdp/scripts/setup-cdp-chrome.js"),
     "utf8"
   );
   const call = src.match(/http\.get\([^)]*\)/);
@@ -1402,7 +1402,7 @@ function testCdpProbeUsesFreshSocket() {
 
 function testCdpWindowsListenerParsingIsLocaleIndependent() {
   const src = fs.readFileSync(
-    path.join(repoRoot, "skills/browser-cdp/scripts/setup-cdp-chrome.js"),
+    path.join(repoRoot, "skills/moshu-cdp/scripts/setup-cdp-chrome.js"),
     "utf8"
   );
   const block = src.match(

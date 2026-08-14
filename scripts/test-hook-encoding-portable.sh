@@ -20,7 +20,7 @@ if [ -z "$REPO_ROOT" ]; then
   echo "Error: not in a git repository"
   exit 1
 fi
-HOOKS_DIR="$REPO_ROOT/skills/story-setup/references/templates/hooks"
+HOOKS_DIR="$REPO_ROOT/skills/moshu-setup/references/templates/hooks"
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT

@@ -8,7 +8,7 @@ if [ -z "$REPO_ROOT" ]; then
   exit 1
 fi
 
-SCRIPT="$REPO_ROOT/skills/story-deslop/scripts/check-degeneration.js"
+SCRIPT="$REPO_ROOT/skills/moshu-deslop/scripts/check-degeneration.js"
 TMP_DIR="$(mktemp -d)"
 cleanup() { rm -rf "$TMP_DIR"; }
 trap cleanup EXIT

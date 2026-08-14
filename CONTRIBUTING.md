@@ -6,15 +6,15 @@
 
 ```
 skills/
-├── story/                   # 工具箱路由
-├── story-setup/             # 环境部署
-├── story-import/            # 逆向导入
-├── story-long-write/        # 长篇写作
-├── story-long-analyze/      # 长篇拆文
-├── story-long-scan/         # 长篇扫榜
-├── story-deslop/            # 去AI味
-├── story-review/            # 多视角审查
-└── browser-cdp/             # 浏览器操控
+├── moshu/                   # 工具箱路由
+├── moshu-setup/             # 环境部署
+├── moshu-import/            # 逆向导入
+├── moshu-write/        # 长篇写作
+├── moshu-analyze/      # 长篇拆文
+├── moshu-scan/         # 长篇扫榜
+├── moshu-deslop/            # 去AI味
+├── moshu-review/            # 多视角审查
+└── moshu-cdp/             # 浏览器操控
 scripts/                       # 开发守卫 / 测试 / 代码生成（完整索引见 scripts/README.md）
 ```
 
@@ -54,14 +54,14 @@ description: "一句话描述。触发方式：/skill-name、触发词1、触发
 
 PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以下检查（全部强制）：
 
-- `scripts/static-check.sh` — 结构化解析 frontmatter、精确 Markdown 路径/锚点、Agent 引用与 references 可达性；除基础组件 `browser-cdp` 外禁止跨 Skill 文件引用
+- `scripts/static-check.sh` — 结构化解析 frontmatter、精确 Markdown 路径/锚点、Agent 引用与 references 可达性；除基础组件 `moshu-cdp` 外禁止跨 Skill 文件引用
 - `python3 scripts/skill-numbering.py check` — 工作流编号连续性、引用可绑定性及小数标签守卫
 - `scripts/check-current-skill-contracts.sh` — 按 `scripts/current-contract.json` 校验当前版本 / Phase / schema / 主产物 / 细纲契约，并拦截历史路径与静默兼容分支
 - `python3 scripts/test-current-skill-contracts.py` — current-contract manifest 与主产物 fail-fast 语义回归
 - `scripts/check-doc-budget.sh` — 热路径 SKILL/references/agent 模板的字数预算（按 `scripts/doc-budget.json`），防每次会话都要付的规则文本无声膨胀
 - `scripts/check-hook-regex-sync.sh` — hook 伏笔状态检测行为
 - `scripts/check-shared-files.sh` — 共享 runtime 资产清单 + 跨 skill reference 副本一致性
-- `scripts/check-story-setup-deployment.sh` — story-setup 部署完整性
+- `scripts/check-moshu-setup-deployment.sh` — moshu-setup 部署完整性
 - `scripts/check-claude-adapter.sh` — Claude marketplace 与 skill 映射检查
 - 采集脚本 `node --check` 语法校验
 
@@ -88,7 +88,7 @@ bash scripts/test-ai-patterns.sh
 bash scripts/test-degeneration.sh
 bash scripts/test-prose-backstop-hook.sh
 bash scripts/test-story-continuity.sh
-bash scripts/check-story-setup-deployment.sh
+bash scripts/check-moshu-setup-deployment.sh
 bash scripts/check-claude-adapter.sh
 bash scripts/check-python-invocation.sh
 bash scripts/check-hook-locale-safety.sh

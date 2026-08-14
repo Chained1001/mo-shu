@@ -8,15 +8,15 @@ if [ -z "$REPO_ROOT" ]; then
   exit 1
 fi
 
-SCRIPT="$REPO_ROOT/skills/story-long-write/scripts/check-outline-copy.js"
+SCRIPT="$REPO_ROOT/skills/moshu-write/scripts/check-outline-copy.js"
 DETECTOR_COPIES=(
-  "$REPO_ROOT/skills/story-long-write/scripts/check-outline-copy.js"
-  "$REPO_ROOT/skills/story-deslop/scripts/check-outline-copy.js"
+  "$REPO_ROOT/skills/moshu-write/scripts/check-outline-copy.js"
+  "$REPO_ROOT/skills/moshu-deslop/scripts/check-outline-copy.js"
 )
 for detector_copy in "${DETECTOR_COPIES[@]}"; do
   node --check "$detector_copy" >/dev/null
   cmp -s "$SCRIPT" "$detector_copy" || {
-    echo "FAIL: detector copy drifted from story-long-write source: $detector_copy" >&2
+    echo "FAIL: detector copy drifted from moshu-write source: $detector_copy" >&2
     exit 1
   }
 done

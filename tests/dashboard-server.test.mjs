@@ -13,7 +13,7 @@ import {
   resolveWorkspacePath,
   scanWorkspace,
   searchWorkspace,
-} from "../skills/story/scripts/dashboard-server.mjs";
+} from "../skills/moshu/scripts/dashboard-server.mjs";
 
 const temporaryDirectories = [];
 const runningServers = [];

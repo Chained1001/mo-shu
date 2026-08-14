@@ -156,7 +156,7 @@ def test_bad_fallbacks_fail() -> None:
 2. 任一主产物缺失时：
    - 使用 `章节/*_摘要.md` 代替。
 """,
-        "structured gap story fallback": "- `rhythm_missing: true` 时改用 `故事线.md` 补足节奏。",
+        "structured gap moshu fallback": "- `rhythm_missing: true` 时改用 `故事线.md` 补足节奏。",
     }
     for label, text in bad_cases.items():
         findings = semantic_findings(text)
@@ -286,10 +286,10 @@ def test_progress_schema_pins_are_repo_wide() -> None:
         manifest_with(progress_schema_version=current + 1), "progress-schema-version"
     )
     for relative in (
-        "skills/story-long-analyze/references/pipeline-ops.md",
-        "skills/story-long-analyze/SKILL.md",
-        "skills/story-import/SKILL.md",
-        "skills/story-setup/UPGRADING.md",
+        "skills/moshu-analyze/references/pipeline-ops.md",
+        "skills/moshu-analyze/SKILL.md",
+        "skills/moshu-import/SKILL.md",
+        "skills/moshu-setup/UPGRADING.md",
         "demo/拆文库/盘龙/_progress.md",
     ):
         require(
@@ -305,7 +305,7 @@ def test_progress_schema_pins_are_repo_wide() -> None:
 
 
 def test_stale_scan_phase_reference_accepts_backticks() -> None:
-    """房子风格 `story-long-scan` Phase N 与裸 token 写法都要被 stale 引用扫描抓到。"""
+    """房子风格 `moshu-scan` Phase N 与裸 token 写法都要被 stale 引用扫描抓到。"""
     current = repository_manifest().topic_decision_phase
     stale = flagged_paths(
         manifest_with(topic_decision_phase=current + 1),
@@ -313,8 +313,8 @@ def test_stale_scan_phase_reference_accepts_backticks() -> None:
     )
     # 长篇「先查选题决策」随 Phase 1 搬进 workflow-setup.md（#269），扫描目标跟着内容走。
     for relative in (
-        "skills/story-long-write/references/workflow-setup.md",
-        "skills/story-long-analyze/SKILL.md",
+        "skills/moshu-write/references/workflow-setup.md",
+        "skills/moshu-analyze/SKILL.md",
     ):
         require(
             relative in stale,
@@ -357,7 +357,7 @@ agents_version: {agents_version}
 setup_skill_version: {setup_skill_version}
 target_cli: claude-code
 resolver_strategy: project-first
-references_dir: .claude/skills/story-setup/references/agent-references
+references_dir: .claude/skills/moshu-setup/references/agent-references
 ```
 """.format(
         agents_version=manifest.agents_version,
@@ -495,7 +495,7 @@ def test_old_artifact_prose_silent_only() -> None:
     ]
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        skills = root / "skills" / "story-long-write"
+        skills = root / "skills" / "moshu-write"
         skills.mkdir(parents=True)
         (skills / "keep-c.md").write_text("\n".join(flagged) + "\n", encoding="utf-8")
         require(
@@ -514,21 +514,21 @@ def test_old_artifact_prose_silent_only() -> None:
 
 def test_story_import_keeps_self_out_of_benchmarks() -> None:
     cases = {
-        "story-import-self-main-benchmark": "主对标书: {书名}\n导入当前书时至少登记自身为 `主`。\n",
-        "story-import-self-benchmark-copy": (
+        "moshu-import-self-main-benchmark": "主对标书: {书名}\n导入当前书时至少登记自身为 `主`。\n",
+        "moshu-import-self-benchmark-copy": (
             "把 `拆文库/{书名}/` 复制到 `{项目}/对标/{书名}/`。\n"
         ),
-        "story-import-self-benchmark-summary": "## 对标摘要：{原书名}\n",
-        "story-import-self-benchmark-fields": (
+        "moshu-import-self-benchmark-summary": "## 对标摘要：{原书名}\n",
+        "moshu-import-self-benchmark-fields": (
             "把 `拆文报告.md` 的故事核/题材/对标字段映射进本书设定。\n"
         ),
-        "story-import-import-title-benchmark-target": (
+        "moshu-import-import-title-benchmark-target": (
             "将 `拆文库/{导入书名}/` 整体复制到项目 `对标/`。\n"
         ),
     }
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        target = root / "skills" / "story-import" / "fixture.md"
+        target = root / "skills" / "moshu-import" / "fixture.md"
         target.parent.mkdir(parents=True)
         for code, content in cases.items():
             target.write_text(content, encoding="utf-8")
@@ -539,7 +539,7 @@ def test_story_import_keeps_self_out_of_benchmarks() -> None:
         guard_rule = next(
             r
             for r in VALIDATOR.LEGACY_RULES
-            if r.code == "story-import-import-title-benchmark-target"
+            if r.code == "moshu-import-import-title-benchmark-target"
         )
         target.write_text(
             "不得把 `拆文库/{导入书名}/` 整体复制进 `对标/`。\n",
@@ -560,7 +560,7 @@ def test_spawn_preflight_uses_agents_version_not_file_existence() -> None:
   agents_version: {stale}
 """.format(stale=stale)
     found = VALIDATOR.spawn_preflight_findings(
-        existence_only, manifest, Path("story-import-fixture.md")
+        existence_only, manifest, Path("moshu-import-fixture.md")
     )
     require(
         "spawn-agents-version-preflight" in finding_codes(found),
@@ -570,7 +570,7 @@ def test_spawn_preflight_uses_agents_version_not_file_existence() -> None:
     current = manifest.agents_version
     current_contract = """
 读取 `.story-deployed` 的 `agents_version: {current}`；不一致时照常按文件存在性检查并 spawn，
-报告 `Notice: agents bundle 版本不匹配（项目 {{N}}，本版 {current}）` 并提示重跑 `/story-setup`。
+报告 `Notice: agents bundle 版本不匹配（项目 {{N}}，本版 {current}）` 并提示重跑 `/moshu-setup`。
 大于 {current} 时额外提示先更新 mo-shu。
 只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 """.format(current=current)
@@ -620,12 +620,12 @@ def test_p1_deletion_guards() -> None:
     rules = {rule.code: rule for rule in VALIDATOR.LEGACY_RULES}
     cases = {
         "static-long-word-floor": (
-            "skills/story-long-write/SKILL.md",
+            "skills/moshu-write/SKILL.md",
             "**默认最低字数：3000 字/章。**\n",
             "长篇按细纲字数目标验收；实际字数低于目标 90% 时阻断。\n",
         ),
         "broad-chrome-cleanup-doc": (
-            "skills/browser-cdp/SKILL.md",
+            "skills/moshu-cdp/SKILL.md",
             "卡死时执行 `pkill -9 -x 'Google Chrome'`。\n",
             "卡死时关闭已确认属于 debug profile 的 Chrome 窗口；不要终止普通 Chrome。\n",
         ),
@@ -660,7 +660,7 @@ def test_analyze_portability_guards() -> None:
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        path = root / "skills/story-long-analyze/references/style-profile-generator.md"
+        path = root / "skills/moshu-analyze/references/style-profile-generator.md"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("把 3 段拼接写入 `/tmp/style-sample.txt`。\n", encoding="utf-8")
         require(
@@ -718,8 +718,8 @@ def test_rubric_parity_guard() -> None:
     embedded = "通用网文内容 rubric：\n- 核心卖点：x\n- 标点节奏：y\n\nAI 味 fallback：\n"
 
     def build(root: Path, rubric_body: str, skill_body: str) -> None:
-        r = root / "skills/story-review/references/quality-rubric.md"
-        s = root / "skills/story-review/SKILL.md"
+        r = root / "skills/moshu-review/references/quality-rubric.md"
+        s = root / "skills/moshu-review/SKILL.md"
         r.parent.mkdir(parents=True, exist_ok=True)
         r.write_text(rubric_body, encoding="utf-8")
         s.write_text(skill_body, encoding="utf-8")
@@ -761,11 +761,11 @@ def test_rubric_parity_guard() -> None:
 def test_issue_315_333_343_prompt_contracts() -> None:
     """写作引号、Stage 6 切片真值、跨批 review 持久化必须有单一明确契约。"""
 
-    anti_ai = (REPO_ROOT / "skills/story-long-write/references/anti-ai-writing.md").read_text(
+    anti_ai = (REPO_ROOT / "skills/moshu-write/references/anti-ai-writing.md").read_text(
         encoding="utf-8"
     )
     writer = (
-        REPO_ROOT / "skills/story-setup/references/templates/agents/narrative-writer.md"
+        REPO_ROOT / "skills/moshu-setup/references/templates/agents/narrative-writer.md"
     ).read_text(encoding="utf-8")
     require(
         "普通名词" in anti_ai and "引号强调" in anti_ai,
@@ -777,7 +777,7 @@ def test_issue_315_333_343_prompt_contracts() -> None:
     )
 
     style = (
-        REPO_ROOT / "skills/story-long-analyze/references/style-profile-generator.md"
+        REPO_ROOT / "skills/moshu-analyze/references/style-profile-generator.md"
     ).read_text(encoding="utf-8")
     require(
         "只读 `_progress.md`" in style and "章节边界" in style,
@@ -786,9 +786,9 @@ def test_issue_315_333_343_prompt_contracts() -> None:
     for stale in ("正确 Grep 模式", "相应调整 regex", "拿到 grep 的", "用 Step 4 grep"):
         require(stale not in style, f"#333: Stage 6 still instructs a second slice via: {stale}")
 
-    review = (REPO_ROOT / "skills/story-review/SKILL.md").read_text(encoding="utf-8")
+    review = (REPO_ROOT / "skills/moshu-review/SKILL.md").read_text(encoding="utf-8")
     for anchor in (
-        ".story-review/state.md",
+        ".moshu-review/state.md",
         "上一批未解决 findings 摘要",
         "先读取 state.md",
         "原子重写 state.md",

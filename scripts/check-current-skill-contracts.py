@@ -102,7 +102,7 @@ LEGACY_RULES = (
         "removed-hook-alias",
         "removed hook alias stays removed",
         r"discover_book_dir\s*\(",
-        ("skills/story-setup/references/templates/hooks",),
+        ("skills/moshu-setup/references/templates/hooks",),
     ),
     AbsentRule(
         "dotted-demo-workflow-label",
@@ -114,68 +114,68 @@ LEGACY_RULES = (
         "obsolete-topic-decision-acceptance",
         "long analyze does not silently accept obsolete topic-decision contracts",
         r"旧模板或文件坏了|直接跳过，不提示",
-        ("skills/story-long-analyze",),
+        ("skills/moshu-analyze",),
     ),
     AbsentRule(
         "duplicate-adapter-reference-fallback",
-        "story-setup deploys one canonical reference path per adapter",
+        "moshu-setup deploys one canonical reference path per adapter",
         r"同步复制到\s*`skills/[^`]+`\s*作为 fallback",
-        ("skills/story-setup/SKILL.md",),
+        ("skills/moshu-setup/SKILL.md",),
     ),
     AbsentRule(
-        "story-import-self-main-benchmark",
-        "story-import never registers the imported work itself as a benchmark",
+        "moshu-import-self-main-benchmark",
+        "moshu-import never registers the imported work itself as a benchmark",
         r"导入当前书时至少登记自身|主对标书:\s*\{书名\}",
-        ("skills/story-import",),
+        ("skills/moshu-import",),
     ),
     AbsentRule(
-        "story-import-self-benchmark-copy",
-        "story-import keeps imported-work analysis out of benchmark views",
+        "moshu-import-self-benchmark-copy",
+        "moshu-import keeps imported-work analysis out of benchmark views",
         r"\{项目\}/对标/\{书名\}|\{标题\}/对标/\{书名\}|对标/\{书名\}/剧情",
-        ("skills/story-import",),
+        ("skills/moshu-import",),
     ),
     AbsentRule(
-        "story-import-import-title-benchmark-target",
-        "story-import never copies imported-work analysis into a benchmark target",
+        "moshu-import-import-title-benchmark-target",
+        "moshu-import never copies imported-work analysis into a benchmark target",
         r"拆文库/\{导入书名\}[^\n]{0,160}(?:复制|同步|迁移)[^\n]{0,120}对标|对标/\{导入书名\}",
-        ("skills/story-import",),
+        ("skills/moshu-import",),
         exempt_when=r"不得|禁止|严禁|未被|不复制|不属于|不是对标",
     ),
     AbsentRule(
-        "story-import-self-benchmark-summary",
-        "story-import does not label the imported work's own analysis as a benchmark summary",
+        "moshu-import-self-benchmark-summary",
+        "moshu-import does not label the imported work's own analysis as a benchmark summary",
         r"对标摘要：\{原书名\}",
-        ("skills/story-import",),
+        ("skills/moshu-import",),
     ),
     AbsentRule(
-        "story-import-self-benchmark-fields",
-        "story-import does not map self-benchmark fields into the imported project's settings",
+        "moshu-import-self-benchmark-fields",
+        "moshu-import does not map self-benchmark fields into the imported project's settings",
         r"拆文报告\.md`?\s*的故事核/题材/对标字段",
-        ("skills/story-import",),
+        ("skills/moshu-import",),
     ),
     AbsentRule(
         "benchmark-primary-nonblocking-wording",
         "missing benchmark primary artifacts never use a nonblocking fallback",
         r"缺失按原流程，不阻塞",
-        ("skills/story-long-write",),
+        ("skills/moshu-write",),
     ),
     AbsentRule(
         "no-benchmark-skips-genre-card",
         "no-benchmark writing still generates the project genre prose card",
         r"无对标[^\n]{0,160}跳过[^\n]{0,80}对标模块/节奏/题材卡/文风召回",
-        ("skills/story-long-write",),
+        ("skills/moshu-write",),
     ),
     AbsentRule(
         "style-profile-all-inputs-required",
         "Stage 6 prerequisites follow the explicit degradation matrix",
         r"前置依赖：[^\n]*齐全",
-        ("skills/story-long-analyze/references/style-profile-generator.md",),
+        ("skills/moshu-analyze/references/style-profile-generator.md",),
     ),
     AbsentRule(
         "context-missing-skips-all",
         "single-chapter context follows item-specific missing-file decisions",
         r"按需加载，缺失则跳过",
-        ("skills/story-long-write/SKILL.md",),
+        ("skills/moshu-write/SKILL.md",),
     ),
     AbsentRule(
         "static-long-word-floor",
@@ -184,8 +184,8 @@ LEGACY_RULES = (
         r"长篇写作以章为验证粒度[^\n]*(?:2000|3000)\s*字|"
         r"(?:高速推进|正常节奏|舒缓铺垫|高潮爆发)\s*\|\s*≥\s*(?:2000|3000)\s*字/章",
         (
-            "skills/story-long-write/SKILL.md",
-            "skills/story-setup/references/templates/agents/narrative-writer.md",
+            "skills/moshu-write/SKILL.md",
+            "skills/moshu-setup/references/templates/agents/narrative-writer.md",
         ),
     ),
     AbsentRule(
@@ -193,24 +193,24 @@ LEGACY_RULES = (
         "browser cleanup docs must not bypass consent with executable-name kills",
         r"pkill[^\n]*(?:Google Chrome|google-chrome|chrome)|"
         r"taskkill[^\n]*/IM\s+chrome\.exe",
-        ("skills/browser-cdp/SKILL.md",),
+        ("skills/moshu-cdp/SKILL.md",),
     ),
     AbsentRule(
         "analyze-posix-tmp-sample-path",
         "style sampling stays on a project-relative path Windows python can open",
         r"/tmp/style-sample",
-        ("skills/story-long-analyze",),
+        ("skills/moshu-analyze",),
     ),
 )
 
 
 SPAWN_CAPABLE_SKILLS = (
-    "skills/story/SKILL.md",
-    "skills/story-deslop/SKILL.md",
-    "skills/story-import/SKILL.md",
-    "skills/story-long-analyze/SKILL.md",
-    "skills/story-long-write/SKILL.md",
-    "skills/story-review/SKILL.md",
+    "skills/moshu/SKILL.md",
+    "skills/moshu-deslop/SKILL.md",
+    "skills/moshu-import/SKILL.md",
+    "skills/moshu-analyze/SKILL.md",
+    "skills/moshu-write/SKILL.md",
+    "skills/moshu-review/SKILL.md",
 )
 
 
@@ -683,7 +683,7 @@ def rubric_dimension_names(repo_root: Path) -> Tuple[List[str], List[str]]:
     """取 quality-rubric.md「核心维度」表与 SKILL.md 内置 fallback 的维度名。"""
 
     table: List[str] = []
-    rubric_text = read_text(repo_root / "skills/story-review/references/quality-rubric.md") or ""
+    rubric_text = read_text(repo_root / "skills/moshu-review/references/quality-rubric.md") or ""
     in_table = False
     for line in rubric_text.splitlines():
         if line.startswith("| 维度 |"):
@@ -698,7 +698,7 @@ def rubric_dimension_names(repo_root: Path) -> Tuple[List[str], List[str]]:
             table.append(cell)
 
     embedded: List[str] = []
-    skill_text = read_text(repo_root / "skills/story-review/SKILL.md") or ""
+    skill_text = read_text(repo_root / "skills/moshu-review/SKILL.md") or ""
     if "通用网文内容 rubric：" in skill_text:
         block = skill_text.split("通用网文内容 rubric：", 1)[1]
         for line in block.splitlines():
@@ -719,7 +719,7 @@ def rubric_parity_findings(repo_root: Path) -> List[Finding]:
     """
 
     table, embedded = rubric_dimension_names(repo_root)
-    path = repo_root / "skills/story-review/SKILL.md"
+    path = repo_root / "skills/moshu-review/SKILL.md"
     if not table or not embedded:
         return [
             Finding(
@@ -1022,7 +1022,7 @@ def progress_schema_pin_findings(repo_root: Path, expected: int) -> List[Finding
         paths.extend(path for path in iter_files(root) if path.suffix.lower() == ".md")
     # iter_files 按名字跳过 UPGRADING.md（历史章节不该被当前值约束），但 `## v21 当前契约`
     # 段里的续跑契约陈述与 agents_version 同理，bump 时必须跟着改。
-    paths.append(repo_root / "skills/story-setup/UPGRADING.md")
+    paths.append(repo_root / "skills/moshu-setup/UPGRADING.md")
     for path in paths:
         text = read_text(path)
         if text is None:
@@ -1059,7 +1059,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
     for rule in LEGACY_RULES:
         findings.extend(check_absent_rule(repo_root, rule))
 
-    pipeline = repo_root / "skills/story-long-analyze/references/pipeline-ops.md"
+    pipeline = repo_root / "skills/moshu-analyze/references/pipeline-ops.md"
     pipeline_text = read_text(pipeline) or ""
     if not SCHEMA_VERSION_PIN_RE.search(pipeline_text):
         findings.append(
@@ -1076,13 +1076,13 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
     )
     findings.extend(require_pattern(pipeline, r"章节边界", "chapter-boundary-table", "progress must keep the canonical chapter-boundary table"))
 
-    setup_skill = repo_root / "skills/story-setup/SKILL.md"
+    setup_skill = repo_root / "skills/moshu-setup/SKILL.md"
     actual_setup_version = parse_frontmatter_version(setup_skill)
     if actual_setup_version != manifest.setup_skill_version:
         findings.append(
             Finding(
                 "setup-frontmatter-version",
-                "story-setup frontmatter version must be {}, got {!r}".format(
+                "moshu-setup frontmatter version must be {}, got {!r}".format(
                     manifest.setup_skill_version, actual_setup_version
                 ),
                 setup_skill,
@@ -1099,11 +1099,11 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
             )
         )
 
-    upgrading = repo_root / "skills/story-setup/UPGRADING.md"
+    upgrading = repo_root / "skills/moshu-setup/UPGRADING.md"
     upgrading_text = read_text(upgrading) or ""
     findings.extend(upgrading_version_findings(upgrading_text, manifest, upgrading))
 
-    topic_file = repo_root / "skills/story-long-scan/references/topic-decision.md"
+    topic_file = repo_root / "skills/moshu-scan/references/topic-decision.md"
     topic_text = read_text(topic_file) or ""
     topic_match = re.search(r"Phase\s+([0-9]+)[^\n]*产出\s*`选题决策\.md`", topic_text)
     if not topic_match or int(topic_match.group(1)) != manifest.topic_decision_phase:
@@ -1117,13 +1117,13 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
                 topic_file,
             )
         )
-    scan_skill = repo_root / "skills/story-long-scan/SKILL.md"
+    scan_skill = repo_root / "skills/moshu-scan/SKILL.md"
     findings.extend(
         require_pattern(
             scan_skill,
             r"^#{{2,6}}\s+Phase\s+{}[：:]\s*选题决策\s*$".format(manifest.topic_decision_phase),
             "topic-decision-phase-heading",
-            "story-long-scan must expose topic decision as Phase {}".format(manifest.topic_decision_phase),
+            "moshu-scan must expose topic decision as Phase {}".format(manifest.topic_decision_phase),
         )
     )
     for path in iter_files(repo_root / "skills"):
@@ -1133,10 +1133,10 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
         for line_number, line_text in enumerate(text.splitlines(), start=1):
             if "选题决策" not in line_text:
                 continue
-            # 技能名在本包的房子风格是反引号包裹（`story-long-scan` Phase 5），裸 token 匹配
+            # 技能名在本包的房子风格是反引号包裹（`moshu-scan` Phase 5），裸 token 匹配
             # 跨不过反引号，会漏掉一半引用；两种写法都要拦。
             for match in re.finditer(
-                r"`?story-long-scan`?[\s`]*Phase\s+([0-9]+)", line_text
+                r"`?moshu-scan`?[\s`]*Phase\s+([0-9]+)", line_text
             ):
                 value = int(match.group(1))
                 if value == manifest.topic_decision_phase:
@@ -1144,7 +1144,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
                 findings.append(
                     Finding(
                         "stale-topic-decision-phase-reference",
-                        "story-long-scan topic-decision references must use Phase {}".format(
+                        "moshu-scan topic-decision references must use Phase {}".format(
                             manifest.topic_decision_phase
                         ),
                         path,
@@ -1155,17 +1155,17 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
 
     findings.extend(rubric_parity_findings(repo_root))
 
-    long_analyze = repo_root / "skills/story-long-analyze/SKILL.md"
+    long_analyze = repo_root / "skills/moshu-analyze/SKILL.md"
     findings.extend(require_pattern(long_analyze, r"invalid_topic_decision_contract", "invalid-topic-contract", "invalid topic-decision artifacts must fail explicitly"))
     # 章节边界表是 Stage 1/2/6 的唯一切片真值：原文开头的目录块会让每个章号命中两次，
     # 不剔就一路错到底。剔除步骤和落表前的连续性校验都必须留在 Stage 0。
     findings.extend(require_pattern(long_analyze, r"先剔掉目录块", "stage0-toc-block-removal", "Stage 0 must drop the leading table-of-contents block before building the chapter table"))
     findings.extend(require_pattern(long_analyze, r"落表前校验章号连续", "stage0-chapter-table-validation", "Stage 0 must validate chapter numbers before writing the boundary table"))
-    explorer = repo_root / "skills/story-setup/references/templates/agents/story-explorer.md"
+    explorer = repo_root / "skills/moshu-setup/references/templates/agents/story-explorer.md"
     findings.extend(require_pattern(explorer, r"missing_primary_contract", "explorer-primary-failure", "story-explorer must fail closed on missing current benchmark artifacts"))
     findings.extend(require_pattern(explorer, r"repair_action", "explorer-repair-action", "story-explorer must return an explicit repair action"))
 
-    long_write = repo_root / "skills/story-long-write/SKILL.md"
+    long_write = repo_root / "skills/moshu-write/SKILL.md"
     for artifact in manifest.primary_benchmark_artifacts:
         findings.extend(
             require_pattern(
@@ -1177,32 +1177,32 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
         )
 
     for relative in (
-        "skills/story-import/SKILL.md",
-        "skills/story-import/references/structure-mapping-long.md",
+        "skills/moshu-import/SKILL.md",
+        "skills/moshu-import/references/structure-mapping-long.md",
     ):
         import_contract = repo_root / relative
         findings.extend(
             require_pattern(
                 import_contract,
                 r"\{导入书名\}",
-                "story-import-import-title-boundary",
-                "story-import must name the imported work independently",
+                "moshu-import-import-title-boundary",
+                "moshu-import must name the imported work independently",
             )
         )
         findings.extend(
             require_pattern(
                 import_contract,
                 r"\{对标书名\}",
-                "story-import-benchmark-title-boundary",
-                "story-import must name external benchmarks independently",
+                "moshu-import-benchmark-title-boundary",
+                "moshu-import must name external benchmarks independently",
             )
         )
 
     # 长篇的「对标发现」随 Phase 1-3 从 SKILL.md 搬进 workflow-setup.md（#269 减无条件加载），
     # 断言跟着内容走。
     for relative in (
-        "skills/story-long-write/references/workflow-setup.md",
-            "skills/story-long-write/references/cross-book-recall.md",
+        "skills/moshu-write/references/workflow-setup.md",
+            "skills/moshu-write/references/cross-book-recall.md",
         ):
         benchmark_discovery = repo_root / relative
         findings.extend(
@@ -1214,7 +1214,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
             )
         )
 
-    explorer_template = repo_root / "skills/story-setup/references/templates/agents/story-explorer.md"
+    explorer_template = repo_root / "skills/moshu-setup/references/templates/agents/story-explorer.md"
     findings.extend(
         require_pattern(
             explorer_template,
@@ -1224,7 +1224,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
         )
     )
 
-    outline_rule = repo_root / "skills/story-setup/references/templates/rules/story-outline.md"
+    outline_rule = repo_root / "skills/moshu-setup/references/templates/rules/story-outline.md"
     outline_rule_text = read_text(outline_rule) or ""
     findings.extend(
         outline_rule_contract_findings(outline_rule_text, manifest, outline_rule)

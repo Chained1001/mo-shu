@@ -14,7 +14,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOL = ROOT / "skills/story-long-write/scripts/tracking_commit.py"
+TOOL = ROOT / "skills/moshu-write/scripts/tracking_commit.py"
 
 
 def position(*, volume: str = "第一卷·军宣整顿", start: int = 1) -> dict[str, object]:

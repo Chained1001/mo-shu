@@ -32,12 +32,12 @@ def run(root: Path) -> subprocess.CompletedProcess[str]:
 
 def build_agent_catalog(root: Path) -> None:
     write(
-        root / "skills/story-setup/references/templates/agents/helper.md",
+        root / "skills/moshu-setup/references/templates/agents/helper.md",
         "---\nname: helper\ndescription: helper\n---\n",
     )
     write(
-        root / "skills/story-setup/SKILL.md",
-        "---\nname: story-setup\ndescription: setup\n---\n# Setup\n"
+        root / "skills/moshu-setup/SKILL.md",
+        "---\nname: moshu-setup\ndescription: setup\n---\n# Setup\n"
         "Use `references/templates/agents/`.\n",
     )
 
@@ -242,15 +242,15 @@ def test_cross_skill_paths_in_runtime_scripts_fail() -> None:
         write(
             root / "skills/demo/references/guide.md",
             "# Guide\n\nRead [other][foreign].\n\n"
-            "[foreign]: ../../story-setup/SKILL.md\n",
+            "[foreign]: ../../moshu-setup/SKILL.md\n",
         )
         write(
             root / "skills/demo/scripts/runner.js",
-            "// Never invoke story-setup/scripts/helper.py from this skill.\n",
+            "// Never invoke moshu-setup/scripts/helper.py from this skill.\n",
         )
         write(
             root / "skills/demo/scripts/runner.cmd",
-            "@copy skills\\story-setup\\SKILL.md out.md\r\n",
+            "@copy skills\\moshu-setup\\SKILL.md out.md\r\n",
         )
 
         result = run(root)
@@ -265,18 +265,18 @@ def test_foundation_browser_cdp_reference_passes() -> None:
         root = Path(tmp)
         build_agent_catalog(root)
         write(
-            root / "skills/browser-cdp/SKILL.md",
-            "---\nname: browser-cdp\ndescription: Browser infrastructure\n---\n"
+            root / "skills/moshu-cdp/SKILL.md",
+            "---\nname: moshu-cdp\ndescription: Browser infrastructure\n---\n"
             "# Browser CDP\n",
         )
         write(
-            root / "skills/browser-cdp/scripts/setup-cdp-chrome.js",
+            root / "skills/moshu-cdp/scripts/setup-cdp-chrome.js",
             "console.log('setup');\n",
         )
         write(
             root / "skills/demo/SKILL.md",
             "---\nname: demo\ndescription: Demo\n---\n# Demo\n\n"
-            "Run `browser-cdp/scripts/setup-cdp-chrome.js` first.\n",
+            "Run `moshu-cdp/scripts/setup-cdp-chrome.js` first.\n",
         )
 
         result = run(root)
@@ -291,17 +291,17 @@ def test_external_urls_are_not_cross_skill_paths() -> None:
         write(
             root / "skills/demo/SKILL.md",
             "---\nname: demo\ndescription: Demo\n---\n# Demo\n\n"
-            "See [remote docs](https://example.test/repo/skills/story-setup/SKILL.md), "
-            "[uppercase HTTPS](HTTPS://example.test/repo/skills/story-setup/SKILL.md), "
-            "and [FTP](FTP://example.test/repo/skills/story-setup/SKILL.md).\n\n"
-            "源码见 https://example.test/repo/skills/story-setup/references/agent-references/craft.md\n\n"
+            "See [remote docs](https://example.test/repo/skills/moshu-setup/SKILL.md), "
+            "[uppercase HTTPS](HTTPS://example.test/repo/skills/moshu-setup/SKILL.md), "
+            "and [FTP](FTP://example.test/repo/skills/moshu-setup/SKILL.md).\n\n"
+            "源码见 https://example.test/repo/skills/moshu-setup/references/agent-references/craft.md\n\n"
             "参考 <https://example.test/docs/references/guide.md> 的说明。\n\n"
             "命令 `curl https://example.test/docs/references/guide.md`，"
             "文档 `https://example.test/docs/guide.md`。\n",
         )
         write(
             root / "skills/demo/scripts/runner.js",
-            "const docs = 'https://example.test/repo/story-setup/scripts/helper.js';\n",
+            "const docs = 'https://example.test/repo/moshu-setup/scripts/helper.js';\n",
         )
 
         result = run(root)
@@ -346,19 +346,19 @@ def test_templates_and_web_assets_are_scanned_for_cross_skill_paths() -> None:
         )
         write(
             root / "skills/demo/references/CLAUDE.md.tmpl",
-            "# 项目约定\n\n必读：story-setup/references/agent-references/craft.md。\n",
+            "# 项目约定\n\n必读：moshu-setup/references/agent-references/craft.md。\n",
         )
         write(
             root / "skills/demo/references/settings-hooks.json.patch",
-            "+  \"instructions\": \"story-setup/references/templates/CLAUDE.md.tmpl\"\n",
+            "+  \"instructions\": \"moshu-setup/references/templates/CLAUDE.md.tmpl\"\n",
         )
         write(
             root / "skills/demo/assets/index.html",
-            "<!-- see story-setup/references/templates/agents/helper.md -->\n",
+            "<!-- see moshu-setup/references/templates/agents/helper.md -->\n",
         )
         write(
             root / "skills/demo/assets/styles.css",
-            "/* derived from story-setup/assets/base.css */\n",
+            "/* derived from moshu-setup/assets/base.css */\n",
         )
 
         result = run(root)

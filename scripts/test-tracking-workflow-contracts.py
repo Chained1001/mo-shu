@@ -25,15 +25,15 @@ def require_all(text: str, needles: tuple[str, ...], label: str) -> None:
 
 def test_transaction_is_the_only_tracking_writer() -> None:
     for path in (
-        "skills/story-long-write/SKILL.md",
-        "skills/story-long-write/references/workflow-daily.md",
-        "skills/story-long-write/references/workflow-revision.md",
-        "skills/story-import/SKILL.md",
-        "skills/story-review/SKILL.md",
+        "skills/moshu-write/SKILL.md",
+        "skills/moshu-write/references/workflow-daily.md",
+        "skills/moshu-write/references/workflow-revision.md",
+        "skills/moshu-import/SKILL.md",
+        "skills/moshu-review/SKILL.md",
     ):
         require("tracking_commit.py" in read(path), f"{path} must route writes through tracking_commit.py")
 
-    protocol = read("skills/story-long-write/references/tracking-transaction.md")
+    protocol = read("skills/moshu-write/references/tracking-transaction.md")
     require_all(
         protocol,
         (
@@ -51,7 +51,7 @@ def test_transaction_is_the_only_tracking_writer() -> None:
 
 
 def test_authority_model_matches_the_implementation() -> None:
-    protocol = read("skills/story-long-write/references/tracking-transaction.md")
+    protocol = read("skills/moshu-write/references/tracking-transaction.md")
     require_all(
         protocol,
         (
@@ -67,15 +67,15 @@ def test_authority_model_matches_the_implementation() -> None:
     )
     require("基线_截至第N章.md" not in protocol, "tracking protocol still creates a redundant baseline file")
     for path in (
-        "skills/story-long-write/references/state-tracking.md",
-        "skills/story-import/references/state-tracking.md",
-        "skills/story-long-write/references/workflow-daily.md",
+        "skills/moshu-write/references/state-tracking.md",
+        "skills/moshu-import/references/state-tracking.md",
+        "skills/moshu-write/references/workflow-daily.md",
     ):
         require("core: true" not in read(path), f"{path} still instructs callers to use the removed core field")
 
 
 def test_failed_commit_retries_the_same_external_transaction() -> None:
-    protocol = read("skills/story-long-write/references/tracking-transaction.md")
+    protocol = read("skills/moshu-write/references/tracking-transaction.md")
     require_all(
         protocol,
         (
@@ -88,7 +88,7 @@ def test_failed_commit_retries_the_same_external_transaction() -> None:
 
 
 def test_state_card_and_compact_delta_limits_are_explicit() -> None:
-    protocol = read("skills/story-long-write/references/tracking-transaction.md")
+    protocol = read("skills/moshu-write/references/tracking-transaction.md")
     require_all(
         protocol,
         (
@@ -109,7 +109,7 @@ def test_state_card_and_compact_delta_limits_are_explicit() -> None:
 
 
 def test_import_records_a_cutoff_without_fabricated_old_deltas() -> None:
-    text = read("skills/story-import/SKILL.md")
+    text = read("skills/moshu-import/SKILL.md")
     require_all(
         text,
         (
@@ -120,18 +120,18 @@ def test_import_records_a_cutoff_without_fabricated_old_deltas() -> None:
             "时间线/读者已知.md",
             "tracking_commit.py init",
         ),
-        "story-import tracking",
+        "moshu-import tracking",
     )
     # 迁移可以描述，但只能「存档旧结构后按当前协议重建」，不得声称解析/转换旧追踪文件。
-    require("_旧追踪存档" in text, "story-import migration must archive the old tracking structure")
+    require("_旧追踪存档" in text, "moshu-import migration must archive the old tracking structure")
     require(
         "解析旧" not in text and "兼容层" not in text,
-        "story-import must not claim to parse or convert old tracking structures",
+        "moshu-import must not claim to parse or convert old tracking structures",
     )
 
 
 def test_reader_timeline_is_kept_separate_from_author_truth() -> None:
-    explorer = read("skills/story-setup/references/templates/agents/story-explorer.md")
+    explorer = read("skills/moshu-setup/references/templates/agents/story-explorer.md")
     require_all(
         explorer,
         (
@@ -142,7 +142,7 @@ def test_reader_timeline_is_kept_separate_from_author_truth() -> None:
         ),
         "story-explorer timeline",
     )
-    checker = read("skills/story-setup/references/templates/agents/consistency-checker.md")
+    checker = read("skills/moshu-setup/references/templates/agents/consistency-checker.md")
     require_all(
         checker,
         (
@@ -155,7 +155,7 @@ def test_reader_timeline_is_kept_separate_from_author_truth() -> None:
 
 
 def test_review_mutations_are_transactional_and_scoped() -> None:
-    text = read("skills/story-review/SKILL.md")
+    text = read("skills/moshu-review/SKILL.md")
     require_all(
         text,
         (
@@ -166,7 +166,7 @@ def test_review_mutations_are_transactional_and_scoped() -> None:
             "逐章记录规范且未超限",
             "tracking_commit.py check",
         ),
-        "story-review tracking maintenance",
+        "moshu-review tracking maintenance",
     )
 
 
@@ -174,16 +174,16 @@ def test_retired_tracking_architecture_is_absent() -> None:
     paths = (
         "README.md",
         "README_EN.md",
-        "skills/story-long-write/SKILL.md",
-        "skills/story-long-write/references/artifact-protocols.md",
-        "skills/story-long-write/references/workflow-daily.md",
-        "skills/story-long-write/references/workflow-revision.md",
-        "skills/story-import/SKILL.md",
-        "skills/story-import/references/structure-mapping-long.md",
-        "skills/story-review/SKILL.md",
-        "skills/story-setup/references/templates/CLAUDE.md.tmpl",
-        "skills/story-setup/references/templates/agents/story-explorer.md",
-        "skills/story-setup/references/templates/rules/story-consistency.md",
+        "skills/moshu-write/SKILL.md",
+        "skills/moshu-write/references/artifact-protocols.md",
+        "skills/moshu-write/references/workflow-daily.md",
+        "skills/moshu-write/references/workflow-revision.md",
+        "skills/moshu-import/SKILL.md",
+        "skills/moshu-import/references/structure-mapping-long.md",
+        "skills/moshu-review/SKILL.md",
+        "skills/moshu-setup/references/templates/CLAUDE.md.tmpl",
+        "skills/moshu-setup/references/templates/agents/story-explorer.md",
+        "skills/moshu-setup/references/templates/rules/story-consistency.md",
     )
     retired = (
         "追踪/阶段摘要.md",
@@ -204,34 +204,34 @@ def test_retired_tracking_architecture_is_absent() -> None:
         require(not found, f"{path} still contains retired tracking architecture: {found}")
 
     require(
-        not (ROOT / "skills/story-setup/references/templates/上下文.md.tmpl").exists(),
+        not (ROOT / "skills/moshu-setup/references/templates/上下文.md.tmpl").exists(),
         "manual context template must be deleted; the transaction tool renders the hot cache",
     )
 
 
 def test_no_tracking_fallback_or_context_style_fingerprint_remains() -> None:
-    long_write = read("skills/story-long-write/SKILL.md")
+    long_write = read("skills/moshu-write/SKILL.md")
     for forbidden in (
         "角色状态文件缺失** → 从角色设定文件和前文推断当前状态",
         "伏笔/时间线文件缺失** → 不检查",
     ):
-        require(forbidden not in long_write, f"story-long-write still has tracking fallback: {forbidden}")
+        require(forbidden not in long_write, f"moshu-write still has tracking fallback: {forbidden}")
     require_all(
         long_write,
         (
             "视为当前语义检查点损坏",
-            "已有正文但 `_tracking-state.json` 缺失时重新 `/story-import`",
+            "已有正文但 `_tracking-state.json` 缺失时重新 `/moshu-import`",
         ),
         "fail-closed tracking reads",
     )
-    writer = read("skills/story-setup/references/templates/agents/narrative-writer.md")
+    writer = read("skills/moshu-setup/references/templates/agents/narrative-writer.md")
     require("`上下文.md` 文风指纹" not in writer, "narrative-writer still reads a removed context style fingerprint")
     require("追踪/上下文.md`「文风指纹」" not in writer, "narrative-writer still treats context as style storage")
     require("续写状态卡不存文风" in writer, "narrative-writer must keep style out of tracking context")
 
 
 def test_hooks_fail_closed_on_invalid_tracking_checkpoints() -> None:
-    js = read("skills/story-setup/references/templates/hooks/story_hook_core.js")
+    js = read("skills/moshu-setup/references/templates/hooks/story_hook_core.js")
     require_all(
         js,
         (
@@ -239,7 +239,7 @@ def test_hooks_fail_closed_on_invalid_tracking_checkpoints() -> None:
             "schema_version=4",
             "state_revision",
             "mode=revision 事务重建派生视图",
-            "重新 /story-import",
+            "重新 /moshu-import",
             "last_committed_chapter",
             "必须先提交",
         ),
@@ -248,7 +248,7 @@ def test_hooks_fail_closed_on_invalid_tracking_checkpoints() -> None:
 
 
 def test_daily_quality_repairs_close_tracking_before_batch_finish() -> None:
-    text = read("skills/story-long-write/references/workflow-daily.md")
+    text = read("skills/moshu-write/references/workflow-daily.md")
     revision = text.index("若本步修文改变了会影响后续的事实")
     step_four = text.index("## Step 4：批末收尾")
     require(revision < step_four, "quality repair revision invariant must appear before Step 4")
@@ -257,11 +257,11 @@ def test_daily_quality_repairs_close_tracking_before_batch_finish() -> None:
 
 def test_tracking_examples_use_the_demo_novel() -> None:
     paths = (
-        "skills/story-long-write/references/tracking-transaction.md",
-        "skills/story-import/SKILL.md",
-        "skills/story-import/references/character-state-reverse.md",
-        "skills/story-review/SKILL.md",
-        "skills/story-setup/references/templates/rules/story-consistency.md",
+        "skills/moshu-write/references/tracking-transaction.md",
+        "skills/moshu-import/SKILL.md",
+        "skills/moshu-import/references/character-state-reverse.md",
+        "skills/moshu-review/SKILL.md",
+        "skills/moshu-setup/references/templates/rules/story-consistency.md",
     )
     for path in paths:
         text = read(path)
@@ -271,7 +271,7 @@ def test_tracking_examples_use_the_demo_novel() -> None:
 
 
 def test_context_retirement_must_be_declared_not_silent() -> None:
-    protocol = read("skills/story-long-write/references/tracking-transaction.md")
+    protocol = read("skills/moshu-write/references/tracking-transaction.md")
     require_all(
         protocol,
         (
@@ -282,7 +282,7 @@ def test_context_retirement_must_be_declared_not_silent() -> None:
         ),
         "explicit context retirement",
     )
-    daily = read("skills/story-long-write/references/workflow-daily.md")
+    daily = read("skills/moshu-write/references/workflow-daily.md")
     require_all(
         daily,
         ("delta.retired_context_items", "delta.retired_characters", "每章整份提交"),
@@ -291,17 +291,17 @@ def test_context_retirement_must_be_declared_not_silent() -> None:
 
 
 def test_init_archives_a_pre_protocol_tracking_directory() -> None:
-    protocol = read("skills/story-long-write/references/tracking-transaction.md")
+    protocol = read("skills/moshu-write/references/tracking-transaction.md")
     require_all(
         protocol,
         ("追踪/_旧追踪存档/", "校验失败的 `init` 不移动任何文件", "不参与解析"),
         "init archive contract",
     )
     require(
-        "追踪/_旧追踪存档/" in read("skills/story-long-write/references/workflow-daily.md"),
+        "追踪/_旧追踪存档/" in read("skills/moshu-write/references/workflow-daily.md"),
         "workflow-daily must state where a pre-protocol tracking directory goes",
     )
-    tool = read("skills/story-long-write/scripts/tracking_commit.py")
+    tool = read("skills/moshu-write/scripts/tracking_commit.py")
     require(
         'RETIRED_ARCHIVE_DIR = "_旧追踪存档"' in tool,
         "tracking_commit.py must define the archive directory used by the documented contract",

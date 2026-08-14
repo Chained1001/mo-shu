@@ -1,6 +1,6 @@
 # scripts/ —— 仓库开发脚本索引
 
-这些是开发本仓库（skill 套件本体）用的**守卫 / 测试 / 代码生成**脚本，**不是** skill 运行时脚本（运行时脚本在各 skill 自己的 `scripts/` 下，如 `story-deslop/scripts/check-ai-patterns.js`，跨 skill 字节同步）。
+这些是开发本仓库（skill 套件本体）用的**守卫 / 测试 / 代码生成**脚本，**不是** skill 运行时脚本（运行时脚本在各 skill 自己的 `scripts/` 下，如 `moshu-deslop/scripts/check-ai-patterns.js`，跨 skill 字节同步）。
 
 - 绝大多数由 CI 自动跑（`.github/workflows/cross-platform.yml`）。提交前本地一把梭的完整命令见 [CONTRIBUTING.md](../CONTRIBUTING.md)「CI 检查」。
 - **改名 / 移动任一脚本**，要同步改 `.github/workflows/*.yml`、`CONTRIBUTING.md`、本文件，以及调用它的兄弟脚本（见下方「何时跑」里的调用关系）。
@@ -9,11 +9,11 @@
 
 | 脚本 | 检查什么 | 何时跑 |
 |---|---|---|
-| `static-check.sh` + `static-check.py` | 结构化验证 frontmatter、Markdown 路径/锚点、Agent 引用、references 可达性；除基础组件 `browser-cdp` 外禁止跨 Skill 文件引用 | CI |
+| `static-check.sh` + `static-check.py` | 结构化验证 frontmatter、Markdown 路径/锚点、Agent 引用、references 可达性；除基础组件 `moshu-cdp` 外禁止跨 Skill 文件引用 | CI |
 | `skill-numbering.py check` | 工作流 Step/Phase/Stage 编号策略、引用绑定、SKILL.md 裸编号/子步骤小数守卫 | CI；改工作流结构后 |
 | `check-current-skill-contracts.sh` + `.py` + `current-contract.json` | 从结构化 manifest 校验当前版本、Phase、schema、主产物与细纲契约；保留 legacy/path 守卫并拦截缺主产物后的静默替代 | CI |
 | `check-shared-files.sh` | 调 `sync-shared-assets.py check` 验 runtime 副本，再验 58 组共享 reference 字节一致 | CI |
-| `check-story-setup-deployment.sh` | story-setup 部署/运行时回归（慢，>2min） | CI |
+| `check-moshu-setup-deployment.sh` | moshu-setup 部署/运行时回归（慢，>2min） | CI |
 | `check-doc-budget.sh` + `doc-budget.json` | 热路径 SKILL/references/agent 模板的去空白字数预算与路径合计上限；超了要么删等量旧文本，要么显式调高 budget | CI；增删热路径正文后 |
 | `check-hook-regex-sync.sh` | `detect-story-gaps.sh` 伏笔状态检测行为 | CI |
 | `check-hook-locale-safety.sh` | 部署 hook 在 Windows 中文 GBK 区域的字节安全 | CI |
@@ -65,4 +65,4 @@ bash scripts/test-skill-numbering.sh              # 隔离 fixture 回归
 - 标题改号会改变 GitHub Markdown anchor；只要仓库内存在指向旧 anchor 的同文件或跨文件链接，`fix` 就在写入前 fail-closed，并报告每个 fragment，要求先显式更新链接后再重试。局部路径模式同样扫描仓库内入站链接。
 - `Step N.M` / `Phase N.M` / `Stage N.M`、直接 `skills/*/SKILL.md` 中的裸小数标题及 bullet 小数子步骤由 `check` 报错，但不做猜测式自动修改。
 - `references/` 手册本身的 `3.1` 章节/列表编号不属于工作流标签，不检查、不改写。如果管道 ID 需要插入中间阶段，使用语义名称或 `Stage 2A`，不用小数。
-- 可在命令末尾传文件或目录做局部审计，例如 `... audit skills/story-long-write/SKILL.md`；合入前仍须跑默认全量 `check`。
+- 可在命令末尾传文件或目录做局部审计，例如 `... audit skills/moshu-write/SKILL.md`；合入前仍须跑默认全量 `check`。

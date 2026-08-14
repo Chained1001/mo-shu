@@ -54,8 +54,8 @@ jobs:
         run: python3 scripts/test-tracking-workflow-contracts.py
       - name: Tracking transaction behavior regression
         run: python3 scripts/test-tracking-commit.py
-      - name: Check story-setup deployment
-        run: bash scripts/check-story-setup-deployment.sh
+      - name: Check moshu-setup deployment
+        run: bash scripts/check-moshu-setup-deployment.sh
       - name: Check Claude Code adapter
         run: bash scripts/check-claude-adapter.sh
       - name: Guard against bare python3 invocations
@@ -124,11 +124,11 @@ jobs:
         with:
           chrome-version: stable
       - name: Verify cdp-utils loads
-        run: node -e "const u = require('./skills/story-long-scan/scripts/cdp-utils.js'); console.log('exports:', Object.keys(u));"
+        run: node -e "const u = require('./skills/moshu-scan/scripts/cdp-utils.js'); console.log('exports:', Object.keys(u));"
       - name: Verify sleep works
-        run: node -e "const { sleep } = require('./skills/story-long-scan/scripts/cdp-utils.js'); const t0 = Date.now(); sleep(100); console.log('slept', Date.now()-t0, 'ms');"
+        run: node -e "const { sleep } = require('./skills/moshu-scan/scripts/cdp-utils.js'); const t0 = Date.now(); sleep(100); console.log('slept', Date.now()-t0, 'ms');"
       - name: Verify setup script dry-run
-        run: node skills/browser-cdp/scripts/setup-cdp-chrome.js 9222 --dry-run
+        run: node skills/moshu-cdp/scripts/setup-cdp-chrome.js 9222 --dry-run
       # Run under Git Bash (shell: bash on windows-latest), matching how Claude Code
       # executes its Bash tool on Windows — this is where the python3 exit-49 bug bites.
       - name: Portable char-count (real interpreter)
@@ -180,11 +180,11 @@ jobs:
         with:
           chrome-version: stable
       - name: Verify cdp-utils loads
-        run: node -e "const u = require('./skills/story-long-scan/scripts/cdp-utils.js'); console.log('exports:', Object.keys(u));"
+        run: node -e "const u = require('./skills/moshu-scan/scripts/cdp-utils.js'); console.log('exports:', Object.keys(u));"
       - name: Verify sleep works
-        run: node -e "const { sleep } = require('./skills/story-long-scan/scripts/cdp-utils.js'); const t0 = Date.now(); sleep(100); console.log('slept', Date.now()-t0, 'ms');"
+        run: node -e "const { sleep } = require('./skills/moshu-scan/scripts/cdp-utils.js'); const t0 = Date.now(); sleep(100); console.log('slept', Date.now()-t0, 'ms');"
       - name: Verify setup script dry-run
-        run: node skills/browser-cdp/scripts/setup-cdp-chrome.js 9222 --dry-run
+        run: node skills/moshu-cdp/scripts/setup-cdp-chrome.js 9222 --dry-run
       - name: Portable char-count (real interpreter)
         run: bash scripts/test-charcount-portable.sh
       - name: Portable char-count (simulated Windows Store stub)

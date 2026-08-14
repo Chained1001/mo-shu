@@ -9,8 +9,8 @@
   },
   "plugins": [
     {
-      "name": "story",
-      "description": "网络小说工具箱主入口。自动路由扫榜、拆文与写作工具，并可通过 /story dashboard 启动本地写作工作台。",
+      "name": "moshu",
+      "description": "网络小说工具箱主入口。自动路由扫榜、拆文与写作工具，并可通过 /moshu dashboard 启动本地写作工作台。",
       "source": "./",
       "strict": false,
       "version": "1.0.0",
@@ -24,11 +24,11 @@
         "网文"
       ],
       "skills": [
-        "./skills/story"
+        "./skills/moshu"
       ]
     },
     {
-      "name": "story-long-scan",
+      "name": "moshu-scan",
       "description": "长篇网文扫榜。分析起点、番茄、晋江等平台排行榜数据，提炼市场趋势与热门题材。",
       "source": "./",
       "strict": false,
@@ -45,11 +45,11 @@
         "chinese"
       ],
       "skills": [
-        "./skills/story-long-scan"
+        "./skills/moshu-scan"
       ]
     },
     {
-      "name": "story-long-analyze",
+      "name": "moshu-analyze",
       "description": "长篇网文拆文。深度拆解爆款长篇小说的黄金三章、人设架构、爽点设计、节奏控制。",
       "source": "./",
       "strict": false,
@@ -64,11 +64,11 @@
         "chinese"
       ],
       "skills": [
-        "./skills/story-long-analyze"
+        "./skills/moshu-analyze"
       ]
     },
     {
-      "name": "story-long-write",
+      "name": "moshu-write",
       "description": "长篇网文写作。从大纲到正文，辅助长篇网络小说的创作，包括世界观、人物、情节线管理。",
       "source": "./",
       "strict": false,
@@ -83,11 +83,11 @@
         "chinese"
       ],
       "skills": [
-        "./skills/story-long-write"
+        "./skills/moshu-write"
       ]
     },
     {
-      "name": "story-deslop",
+      "name": "moshu-deslop",
       "description": "网文去AI味。检测并清除文本中的AI写作痕迹，让文字回归自然。覆盖禁用词替换、句式去套路、心理外化、节奏打碎。",
       "source": "./",
       "strict": false,
@@ -103,11 +103,11 @@
         "chinese"
       ],
       "skills": [
-        "./skills/story-deslop"
+        "./skills/moshu-deslop"
       ]
     },
     {
-      "name": "browser-cdp",
+      "name": "moshu-cdp",
       "description": "浏览器操控。通过 CDP 协议控制 Chrome，复用已有登录态，执行浏览器自动化操作。",
       "source": "./",
       "strict": false,
@@ -123,11 +123,11 @@
         "automation"
       ],
       "skills": [
-        "./skills/browser-cdp"
+        "./skills/moshu-cdp"
       ]
     },
     {
-      "name": "story-setup",
+      "name": "moshu-setup",
       "description": "网文写作环境部署。一键部署 hooks、rules、agents、CLAUDE.md 到写作项目，提供会话恢复、一致性检查、提交验证等自动化基础设施。",
       "source": "./",
       "strict": false,
@@ -144,11 +144,11 @@
         "chinese"
       ],
       "skills": [
-        "./skills/story-setup"
+        "./skills/moshu-setup"
       ]
     },
     {
-      "name": "story-review",
+      "name": "moshu-review",
       "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；agents 缺失、异常、过旧或启动失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。内置番茄/起点两平台评分标准。",
       "source": "./",
       "strict": false,
@@ -166,11 +166,11 @@
         "chinese"
       ],
       "skills": [
-        "./skills/story-review"
+        "./skills/moshu-review"
       ]
     },
     {
-      "name": "story-import",
+      "name": "moshu-import",
       "description": "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容后续写作流程。",
       "source": "./",
       "strict": false,
@@ -185,7 +185,7 @@
         "chinese"
       ],
       "skills": [
-        "./skills/story-import"
+        "./skills/moshu-import"
       ]
     }
   ]

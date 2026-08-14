@@ -59,10 +59,10 @@ UNLINKED_SECTION_RE = re.compile(
 )
 EXTERNAL_SCHEMES = ("http://", "https://", "ftp://", "mailto:", "data:", "tel:")
 DEPLOYED_RUNTIME_PREFIXES = (".claude/",)
-# browser-cdp is the repository's explicit infrastructure skill.  Business
+# moshu-cdp is the repository's explicit infrastructure skill.  Business
 # skills may reference its launcher; every other cross-skill file path remains
 # forbidden so domain workflows stay self-contained.
-FOUNDATION_SKILL_REFERENCES = frozenset({"browser-cdp"})
+FOUNDATION_SKILL_REFERENCES = frozenset({"moshu-cdp"})
 # 变更日志按定义记录历史状态：其内联路径是「当时」的引用（含已删/已移动/跨 skill 的旧文件），
 # 不是当前运行时依赖，不作跨 skill / 死链校验（与 check-current-skill-contracts.py 的跳过一致）。
 CHANGELOG_DOCS = frozenset({"UPGRADING.md", "CHANGELOG.md"})
@@ -72,7 +72,7 @@ EXTERNAL_URL_RE = re.compile(
 # 花括号枚举（含逗号）是「逐个点名」，可以展开成具体路径；`{题材}` 这种单占位符不是枚举。
 BRACE_LIST_RE = re.compile(r"\{([^{}/]*,[^{}/]*)\}")
 # 跨 skill 扫描覆盖全部文本资产。模板（*.md.tmpl / *.json.patch）与前端资产同样会被
-# story-setup 部署进作者项目，漏扫等于把「skill 自包含」这条红线在部署面上放空。
+# moshu-setup 部署进作者项目，漏扫等于把「skill 自包含」这条红线在部署面上放空。
 SKILL_TEXT_SUFFIXES = {
     ".cmd",
     ".css",
@@ -632,7 +632,7 @@ def main() -> int:
         print(f"ERROR: skills/ not found at {skills_dir}", file=sys.stderr)
         return 2
 
-    agent_dir = skills_dir / "story-setup/references/templates/agents"
+    agent_dir = skills_dir / "moshu-setup/references/templates/agents"
     agent_names = {path.stem for path in agent_dir.glob("*.md")} if agent_dir.is_dir() else set()
     skill_dirs = sorted(path for path in skills_dir.iterdir() if (path / "SKILL.md").is_file())
     if not skill_dirs:

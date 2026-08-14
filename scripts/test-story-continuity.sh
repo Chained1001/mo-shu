@@ -8,7 +8,7 @@ set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"
 [ -z "$REPO_ROOT" ] && { echo "Error: not in a git repository" >&2; exit 1; }
-HOOK="$REPO_ROOT/skills/story-setup/references/templates/hooks/detect-story-gaps.sh"
+HOOK="$REPO_ROOT/skills/moshu-setup/references/templates/hooks/detect-story-gaps.sh"
 [ -f "$HOOK" ] || { echo "FAIL: hook not found: $HOOK" >&2; exit 1; }
 bash -n "$HOOK" || { echo "FAIL: hook has syntax errors" >&2; exit 1; }
 

@@ -50,7 +50,7 @@ echo
 #   sys.stdout.buffer.write(value.encode("utf-8"))
 # `print(` 不会误命中 `printf `（无括号）；`sys.stdout.write(` 不会命中允许的
 # `sys.stdout.buffer.write(`（中间多了 .buffer）。
-HOOKS_DIR="$REPO_ROOT/skills/story-setup/references/templates/hooks"
+HOOKS_DIR="$REPO_ROOT/skills/moshu-setup/references/templates/hooks"
 TEXT_STDOUT='print\(|sys\.stdout\.write\('
 
 echo "Hook stdout-encoding Guard"

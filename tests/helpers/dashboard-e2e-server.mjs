@@ -1,7 +1,7 @@
 import { cp, mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { resolve } from "node:path";
-import { createDashboardServer } from "../../skills/story/scripts/dashboard-server.mjs";
+import { createDashboardServer } from "../../skills/moshu/scripts/dashboard-server.mjs";
 
 const portIndex = process.argv.indexOf("--port");
 const port = portIndex >= 0 ? Number(process.argv[portIndex + 1]) : 43139;

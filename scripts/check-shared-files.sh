@@ -19,8 +19,8 @@ fi
 # Known intentional differences (basename): these files are expected to differ across skills.
 # After the short-form skills were removed, some entries below are harmless no-ops (single
 # copy or no copy at all) kept to avoid churn in the guard config.
-# - output-templates.md / material-decomposition.md: single-copy (story-long-analyze).
-# - quality-checklist.md: story-long-write (writer) copy differs from story-review and
+# - output-templates.md / material-decomposition.md: single-copy (moshu-analyze).
+# - quality-checklist.md: moshu-write (writer) copy differs from moshu-review and
 #   agent-references (reviewer) copies — intentionally skill-specific.
 # - genre-catalog.md / genre-core-mechanics.md / genre-readers.md: historically carried an
 #   analyst-lens fork; wholesale-ignored to avoid false mismatches.
@@ -35,10 +35,10 @@ AGENTS.md.tmpl hooks.json"
 # the remaining prose-card copies must stay byte-identical.
 GENRE_STYLE_DIVERGENT_NAMES="双男主.md"
 
-# Longform-divergent (basename): story-long-write's copy carries a long-form-only
+# Longform-divergent (basename): moshu-write's copy carries a long-form-only
 # section (长篇单元情绪引擎) that references reader-contract-and-progression.md, which
-# exists only under story-long-write; syncing it to the agent-references copy would create
-# a dangling reference. Drop the story-long-write copy from the comparison.
+# exists only under moshu-write; syncing it to the agent-references copy would create
+# a dangling reference. Drop the moshu-write copy from the comparison.
 LONGFORM_DIVERGENT_NAMES="emotional-methods.md"
 
 mismatches=0
@@ -122,14 +122,14 @@ for base in $dup_names; do
       ;;
   esac
 
-  # Longform-divergent basenames: drop the story-long-write copy (intentional
+  # Longform-divergent basenames: drop the moshu-write copy (intentional
   # long-form-only fork); the remaining copies must still be byte-identical.
   case " $LONGFORM_DIVERGENT_NAMES " in
     *" $base "*)
       filtered=()
       for p in ${paths[@]+"${paths[@]}"}; do
         case "$p" in
-          */story-long-write/*) ;;
+          */moshu-write/*) ;;
           *) filtered+=("$p") ;;
         esac
       done

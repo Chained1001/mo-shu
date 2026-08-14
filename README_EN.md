@@ -33,7 +33,7 @@ flowchart LR
     entry_i{{"Existing Novel"}}:::entry
 
     subgraph S0 ["  Setup"]
-        setup["/story-setup"]:::phase
+        setup["/moshu-setup"]:::phase
     end
 
     subgraph S1 ["  Trend Scanning"]
@@ -73,45 +73,45 @@ flowchart LR
 git clone https://gitee.com/chianed1001/mo-shu.git
 ```
 
-After cloning, run `/story-setup` from your writing project root to deploy. To update, run `git pull` inside the repository directory.
+After cloning, run `/moshu-setup` from your writing project root to deploy. To update, run `git pull` inside the repository directory.
 
-After updating, if a project has already run `/story-setup`, re-run `/story-setup` from the project root to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://gitee.com/chianed1001/mo-shu/releases).
+After updating, if a project has already run `/moshu-setup`, re-run `/moshu-setup` from the project root to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://gitee.com/chianed1001/mo-shu/releases).
 
-**Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (story-architect, narrative-writer, consistency-checker, etc.) are written into your project's `.claude/agents/` by `/story-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/story-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
+**Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (story-architect, narrative-writer, consistency-checker, etc.) are written into your project's `.claude/agents/` by `/moshu-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/moshu-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
 
-**Import and continuation order:** run `/story-setup` from the writing-project root first to deploy hooks and agents; start or refresh the session, then run `/story-import` for the existing novel and continue with `/story-long-write 日更` or `/story-long-write 写第N章`. You can also run `/story-import` directly; if setup is missing, it offers to run setup first or continue with a serial import.
+**Import and continuation order:** run `/moshu-setup` from the writing-project root first to deploy hooks and agents; start or refresh the session, then run `/moshu-import` for the existing novel and continue with `/moshu-write 日更` or `/moshu-write 写第N章`. You can also run `/moshu-import` directly; if setup is missing, it offers to run setup first or continue with a serial import.
 
 ## Skills
 
 | Skill | Trigger | Description |
 |:------|:--------|:------------|
-| `story-setup` | `/story-setup` | Environment setup — Claude Code (safe merge) |
-| `story` | `/story` / `/story dashboard` | Toolbox router plus a local deconstruction/project dashboard |
-| `story-long-write` | `/story-long-write` | Long-form writing — outline building, character design, prose output |
-| `story-long-analyze` | `/story-long-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
-| `story-long-scan` | `/story-long-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
-| `story-deslop` | `/story-deslop` | De-AI-ify — detect and remove AI writing traces |
-| `story-import` | `/story-import` | Reverse import — parse existing novels into standard project structure |
-| `story-review` | `/story-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian scoring rubrics |
-| `browser-cdp` | `/browser-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
+| `moshu-setup` | `/moshu-setup` | Environment setup — Claude Code (safe merge) |
+| `moshu` | `/moshu` / `/moshu dashboard` | Toolbox router plus a local deconstruction/project dashboard |
+| `moshu-write` | `/moshu-write` | Long-form writing — outline building, character design, prose output |
+| `moshu-analyze` | `/moshu-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
+| `moshu-scan` | `/moshu-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
+| `moshu-deslop` | `/moshu-deslop` | De-AI-ify — detect and remove AI writing traces |
+| `moshu-import` | `/moshu-import` | Reverse import — parse existing novels into standard project structure |
+| `moshu-review` | `/moshu-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian scoring rubrics |
+| `moshu-cdp` | `/moshu-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
 
-> `story-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
+> `moshu-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
 
-Natural language also triggers: `帮我开书` ("help me start writing") → `story-long-write`, `这篇太AI了` ("this is too AI-ish") → `story-deslop`, `把我的书导进来` ("import my book") → `story-import`, `打开工作台` ("open the dashboard") → `story dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `story-explorer`.
+Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-write`, `这篇太AI了` ("this is too AI-ish") → `moshu-deslop`, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `story-explorer`.
 
 ### Story Dashboard
 
-Run `/story dashboard` to open the local writing desk. Browse
+Run `/moshu dashboard` to open the local writing desk. Browse
 deconstruction libraries and long project trees, then search, preview Markdown, edit text,
 save with conflict protection, or confirm a file deletion. It listens only on `127.0.0.1` and never
-uploads story content.
+uploads moshu content.
 
 ![OH STORY local writing desk](demo/story-dashboard.png)
 
 <details>
 <summary>Deconstruction demo — Coiling Dragon</summary>
 
-Full output from `/story-long-analyze` on the first 23 chapters of *Coiling Dragon*:
+Full output from `/moshu-analyze` on the first 23 chapters of *Coiling Dragon*:
 
 ```
 demo/拆文库/盘龙/
@@ -151,7 +151,7 @@ Long-form deconstruction also produces `文风.md`, plus `剧情/节奏.md` (pac
 <details>
 <summary>Import demo — 让你管账号，你高燃混剪炸全网 (long-form continuation project)</summary>
 
-Run `/story-setup` first, then use `/story-import` to reverse-build the author's already-published first 20 chapters (~37k Chinese chars) into a continuation-ready writing project. Continue with `/story-long-write 日更` or `/story-long-write 写第21章`:
+Run `/moshu-setup` first, then use `/moshu-import` to reverse-build the author's already-published first 20 chapters (~37k Chinese chars) into a continuation-ready writing project. Continue with `/moshu-write 日更` or `/moshu-write 写第21章`:
 
 ```
 demo/长篇/让你管账号，你高燃混剪炸全网/
@@ -184,7 +184,7 @@ Agents load writing theory from `references/` on demand (character design, dialo
 
 ## Automation Hooks
 
-`/story-setup` deploys 8 automation hooks for Claude Code:
+`/moshu-setup` deploys 8 automation hooks for Claude Code:
 
 | Hook | Trigger | Function |
 |:-----|:---------|:---------|
@@ -268,7 +268,7 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 | Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown | long-analyze |
 | Reader Profiles | 9-dimension profiles · Target reader analysis | long-scan |
 | Market Data | Genre trends · Platform characteristics · Collection formats · Submission guides | long-scan |
-| Adversarial Review | Multi-perspective review · Scoring rubrics · Toxic trope detection | story-review |
+| Adversarial Review | Multi-perspective review · Scoring rubrics · Toxic trope detection | moshu-review |
 
 </details>
 

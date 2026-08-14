@@ -9,9 +9,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-HOOK_FILE="$REPO_ROOT/skills/story-setup/references/templates/hooks/detect-story-gaps.sh"
-COMMON_FILE="$REPO_ROOT/skills/story-setup/references/templates/hooks/lib/common.sh"
-PROTOCOL_FILE="$REPO_ROOT/skills/story-long-write/scripts/tracking_commit.py"
+HOOK_FILE="$REPO_ROOT/skills/moshu-setup/references/templates/hooks/detect-story-gaps.sh"
+COMMON_FILE="$REPO_ROOT/skills/moshu-setup/references/templates/hooks/lib/common.sh"
+PROTOCOL_FILE="$REPO_ROOT/skills/moshu-write/scripts/tracking_commit.py"
 
 for file in "$HOOK_FILE" "$COMMON_FILE" "$PROTOCOL_FILE"; do
   if [ ! -f "$file" ]; then
