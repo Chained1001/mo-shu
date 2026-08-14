@@ -4,7 +4,6 @@ on:
   push:
     branches: [main]
     paths:
-      - "demo/**"
       - "skills/moshu/SKILL.md"
       - "skills/moshu/assets/**"
       - "skills/moshu/scripts/dashboard-server.mjs"
@@ -17,7 +16,6 @@ on:
       - ".github/workflows/dashboard.yml"
   pull_request:
     paths:
-      - "demo/**"
       - "skills/moshu/SKILL.md"
       - "skills/moshu/assets/**"
       - "skills/moshu/scripts/dashboard-server.mjs"

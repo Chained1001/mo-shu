@@ -108,66 +108,6 @@ deconstruction libraries and long project trees, then search, preview Markdown, 
 save with conflict protection, or confirm a file deletion. It listens only on `127.0.0.1` and never
 uploads moshu content.
 
-![OH STORY local writing desk](demo/story-dashboard.png)
-
-<details>
-<summary>Deconstruction demo — Coiling Dragon</summary>
-
-Full output from `/moshu-analyze` on the first 23 chapters of *Coiling Dragon*:
-
-```
-demo/拆文库/盘龙/
-├── 概要.md              # Novel overview + chapter index
-├── 拆文报告.md           # 5-dimension scoring + payoff density + takeaways
-├── 文风.md              # Sentence rhythm, punctuation, dialogue subtext, emotion pacing + anchors
-├── 章节/
-│   ├── 第1章_深度拆解.md … 第3章_深度拆解.md  # One deep analysis per Golden-3 chapter
-│   └── 第1章_摘要.md … 第23章_摘要.md          # One summary file per chapter
-├── 角色/
-│   ├── 林雷.md           # Protagonist full profile
-│   ├── 霍格.md           # Core supporting
-│   ├── 希尔曼.md         # Core supporting
-│   ├── 希里.md           # Functional character
-│   ├── 德林柯沃特.md      # Core supporting
-│   ├── 沃顿.md           # Functional character
-│   └── 角色关系.md        # Relationship network
-├── 剧情/
-│   ├── 故事线.md          # Framework recognition + 4 plotlines + single main thread
-│   ├── 强者过境与魔法启蒙.md etc.  # Four scene-level plot units
-│   ├── 节奏.md            # Pacing + key-info progression + emotional trigger eruption rhythm
-│   └── 情绪模块.md        # Reader needs + emotional engine + reusable writing modules
-└── 设定/
-    ├── 世界观/
-    │   ├── 背景设定.md    # Core rules + special settings
-    │   ├── 力量体系.md    # Battle qi + magic + ranks
-    │   ├── 地理.md        # Andaluxia + Yulan Continent
-    │   └── 金手指.md      # Panlong Ring + Delin Cowort
-    └── 势力/
-        └── 巴鲁克家族.md  # Baluk family (dragon-blood lineage)
-```
-
-Long-form deconstruction also produces `文风.md`, plus `剧情/节奏.md` (pacing, key-info progression, emotional trigger eruption rhythm) and `剧情/情绪模块.md` (reader needs, emotional engine, reusable writing modules); daily writing consumes these through `对标/{书名}/剧情/` to keep voice, pacing, and emotion modules close to the benchmark.
-
-</details>
-
-<details>
-<summary>Import demo — 让你管账号，你高燃混剪炸全网 (long-form continuation project)</summary>
-
-Run `/moshu-setup` first, then use `/moshu-import` to reverse-build the author's already-published first 20 chapters (~37k Chinese chars) into a continuation-ready writing project. Continue with `/moshu-write 日更` or `/moshu-write 写第21章`:
-
-```
-demo/长篇/让你管账号，你高燃混剪炸全网/
-├── 正文/        Chapters 001–020 (published source text)
-├── 大纲/        大纲.md · 卷纲_第1卷.md · 细纲_第001–020章.md (one file per chapter)
-├── 设定/        角色/ (6 character files) · 世界观/{background · cheat-system}
-│                关系.md · 题材定位.md · 文风.md
-└── 追踪/        _tracking-state.json · 上下文.md · 伏笔.md · 角色状态/{角色名}.md · 时间线/{作者真相.md · 读者已知.md}
-```
-
-Per-chapter extraction (events / characters / settings / foreshadowing / timeline) is reverse-engineered into a continuation bible, so the author seamlessly continues from chapter 21.
-
-</details>
-
 ## Agent System
 
 Writing skills internally coordinate 7 specialized agents:
@@ -277,8 +217,6 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 ## Supported Platforms
 
 **Long-form** Qidian (起点中文网) · Fanqie Novels (番茄小说) · Jinjiang (晋江文学城) · Qimao (七猫小说) · Ciweimao (刺猬猫)
-
-Real output samples are in [demo/](demo/): long-form deconstruction 《盘龙》 · long-form continuation project 《让你管账号，你高燃混剪炸全网》
 
 I built this skill pack to help me through a job-hunting transition :joy:, and I hope it can help others too.
 

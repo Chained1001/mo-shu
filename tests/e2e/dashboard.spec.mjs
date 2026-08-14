@@ -2,7 +2,7 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { expect, test } from "@playwright/test";
 
-test("用现有 demo 浏览拆文库、搜索项目并编辑保存", async ({ page, request }) => {
+test("用内置 fixture 浏览拆文库、搜索项目并编辑保存", async ({ page, request }) => {
   const consoleErrors = [];
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());

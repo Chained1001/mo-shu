@@ -6,7 +6,7 @@ import { createDashboardServer } from "../../skills/moshu/scripts/dashboard-serv
 const portIndex = process.argv.indexOf("--port");
 const port = portIndex >= 0 ? Number(process.argv[portIndex + 1]) : 43139;
 const fixtureRoot = await mkdtemp(resolve(tmpdir(), "mo-shu-dashboard-e2e-"));
-await cp(resolve("demo"), fixtureRoot, { recursive: true });
+await cp(resolve("tests/fixtures/dashboard"), fixtureRoot, { recursive: true });
 
 const server = createDashboardServer({ root: fixtureRoot });
 await new Promise((accept, reject) => {

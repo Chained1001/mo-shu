@@ -153,7 +153,7 @@ describe("workspace scanning", () => {
   });
 
   test("discovers roots without recursively serializing every manuscript", async () => {
-    const workspace = await scanWorkspace(resolve("demo"));
+    const workspace = await scanWorkspace(resolve("tests/fixtures/dashboard"));
     assert.deepEqual(
       workspace.libraries.map((entry) => entry.path),
       ["拆文库/盘龙"],
@@ -168,7 +168,7 @@ describe("workspace scanning", () => {
     assert.equal(workspace.stats.onDemand, true);
     assert.ok(workspace.libraries.every((entry) => entry.loaded === false));
     assert.ok(workspace.projects.every((entry) => entry.children.length === 0));
-    assert.doesNotMatch(JSON.stringify(workspace), /第020章_老兵的礼物/);
+    assert.doesNotMatch(JSON.stringify(workspace), /第001章\.md/);
     assert.equal(workspace.limits.truncated, false);
     assert.equal(workspace.limits.directoryPageSize, 200);
   });
