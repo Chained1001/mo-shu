@@ -801,6 +801,10 @@ function matchToxicSentence(line) {
   return null
 }
 
+function codePointSlice(value, start, end) {
+  return Array.from(value).slice(start, end).join("")
+}
+
 function toxicPhraseFindings(text) {
   const findings = []
   const content = []
@@ -815,7 +819,7 @@ function toxicPhraseFindings(text) {
   })
   for (const [lineNo, masked] of content) {
     const hit = matchToxicSentence(masked)
-    if (hit) findings.push(`第${lineNo}行 毒句式[${hit[0]}]：『${hit[2].slice(0, 20)}』——${hit[1]}`)
+    if (hit) findings.push(`第${lineNo}行 毒句式[${hit[0]}]：『${codePointSlice(hit[2], 0, 20)}』——${hit[1]}`)
   }
   // trailer-ending 只扫文末 600 字窗口（引号占位后按行累计，边界行整行计入）。
   let acc = 0
@@ -827,9 +831,9 @@ function toxicPhraseFindings(text) {
   for (let i = cut; i < content.length; i++) {
     const [lineNo, masked] = content[i]
     const match = masked.match(TOXIC_TRAILER_PATTERN)
-    if (match) findings.push(`第${lineNo}行 毒句式[trailer-ending]：『${match[0].slice(0, 20)}』——删章尾预告腔，用正在发生的动作或画面收章。`)
+    if (match) findings.push(`第${lineNo}行 毒句式[trailer-ending]：『${codePointSlice(match[0], 0, 20)}』——删章尾预告腔，用正在发生的动作或画面收章。`)
     const summary = masked.match(TOXIC_TRAILER_SUMMARY_PATTERN)
-    if (summary) findings.push(`第${lineNo}行 毒句式[trailer-summary]：『${summary[0].slice(0, 20)}』——删章尾状态总结句，收束状态是细纲的规划口径，正文落到具体动作、画面或台词上。`)
+    if (summary) findings.push(`第${lineNo}行 毒句式[trailer-summary]：『${codePointSlice(summary[0], 0, 20)}』——删章尾状态总结句，收束状态是细纲的规划口径，正文落到具体动作、画面或台词上。`)
   }
   if (findings.length) findings.push("毒句式是确定性 AI 指纹：本章须清零后再继续。完整扫描：node <skill>/scripts/check-ai-patterns.js --check <正文文件>")
   return findings
@@ -848,7 +852,7 @@ function proseNetFindings(text) {
       for (const [regex, label] of SOFT_PATTERNS) {
         const match = line.match(regex)
         if (match) {
-          findings.push(`第${lineNo}行 元信息泄漏（${label}）：「${match[0].slice(0, 20)}」`)
+          findings.push(`第${lineNo}行 元信息泄漏（${label}）：「${codePointSlice(match[0], 0, 20)}」`)
           hit = true
           break
         }
@@ -858,7 +862,7 @@ function proseNetFindings(text) {
     for (const [regex, label] of HARD_PATTERNS) {
       const match = line.match(regex)
       if (match) {
-        findings.push(`第${lineNo}行 ${label}：「${match[0].slice(0, 20)}」`)
+        findings.push(`第${lineNo}行 ${label}：「${codePointSlice(match[0], 0, 20)}」`)
         break
       }
     }
@@ -866,7 +870,8 @@ function proseNetFindings(text) {
   for (let i = 1; i < content.length; i++) {
     const previous = content[i - 1][1]
     const [lineNo, current] = content[i]
-    if (previous === current && current.length >= 8) findings.push(`第${lineNo}行 紧邻复读：整行与上一行完全相同「${current.slice(0, 20)}」`)
+    const characters = Array.from(current)
+    if (previous === current && characters.length >= 8) findings.push(`第${lineNo}行 紧邻复读：整行与上一行完全相同「${characters.slice(0, 20).join("")}」`)
   }
   if (content.length) {
     const [lineNo, last] = content[content.length - 1]
