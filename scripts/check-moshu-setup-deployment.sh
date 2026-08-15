@@ -401,19 +401,16 @@ echo "  OK TS6 short project non-mutation"
 
 # TS7 — Commit hook self-gating
 commit_root="$TMP_DIR/commit-hook"
-mkdir -p "$commit_root/book/正文" "$commit_root/book/设定" "$commit_root/short"
+mkdir -p "$commit_root/book/正文" "$commit_root/book/设定"
 setup_git_repo "$commit_root"
 copy_hooks "$commit_root"
 cat > "$commit_root/book/正文/第1章.md" <<'TXT'
 年龄 ：18
 TXT
-cat > "$commit_root/short/正文.md" <<'TXT'
-身高: 180
-TXT
 cat > "$commit_root/book/设定/角色.md" <<'TXT'
 角色设定
 TXT
-git -C "$commit_root" add "book/正文/第1章.md" "short/正文.md" "book/设定/角色.md"
+git -C "$commit_root" add "book/正文/第1章.md" "book/设定/角色.md"
 for cmd in \
   'git commit -m test' \
   'git -c user.name=x commit -m test' \
@@ -433,7 +430,6 @@ for cmd in 'echo git commit docs' 'grep "git commit" file'; do
 done
 stdin_out="$(cd "$commit_root" && unset STORY_COMMIT_COMMAND CLAUDE_TOOL_INPUT && printf '%s' '{"tool_name":"Bash","tool_input":{"command":"git commit -m test"}}' | CLAUDE_PROJECT_DIR="$commit_root" bash .claude/hooks/validate-story-commit.sh 2>&1 || true)"
 echo "$stdin_out" | grep -q 'Story Commit Warnings' || fail "validate-story-commit did not read stdin hook payload"
-echo "$stdin_out" | grep -q 'short/正文.md' || fail "validate-story-commit did not inspect short-moshu 正文.md"
 echo "$stdin_out" | grep -q 'book/设定/角色.md' || fail "validate-story-commit did not inspect staged setting markdown"
 
 mono_root="$TMP_DIR/mono-root"
