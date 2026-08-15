@@ -147,6 +147,7 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 ## 重新部署
 
+- 重部署时已部署项目以 sentinel 里的值为准：`target_cli`、`resolver_strategy`、`references_dir` 沿用 `.story-deployed` 里已有的值，不重新询问、不覆盖为不同值
 - `.story-deployed` 不存在 → 全新安装，Phase 2 全部执行
 - `.story-deployed` 存在且 `agents_version: 25` → 提示已部署，AskUserQuestion 确认是否重新部署；提示里写明重新部署只用当前本地 skill 包刷新项目文件，skill 本身的更新走 `git pull` 或 marketplace
 - `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `25` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / settings.local.json 走合并策略
