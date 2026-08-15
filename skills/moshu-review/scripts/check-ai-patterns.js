@@ -28,9 +28,13 @@ Detect high-risk AI-flavor prose patterns that need human rewrite:
   - 预告式总结收尾 (文末窗口 没人知道/才刚刚开始/正朝着…压了过去, 实战漏网句式)
   - 章尾状态总结体 (文末窗口 这一夜注定/这一切都结束了/新的人生才刚刚开始/命运的齿轮)
   - 引号强调滥用 (叙述里 1-4 字短词加引号强调，密度型)
+  - 翻案腔变体 (与其说…不如说 / 看似…实则 / 你以为…其实 / X不重要重要的是Y, 引号外叙述, advisory)
+  - 模型路标词 (说白了 / 值得注意的是 / 还有一层 等洞察路标, 引号外叙述, advisory)
+  - 动词名词化 (完成了对…的优化 / 起到了…作用, 引号外叙述, advisory)
+  - 提示性冒号 (一句话总结：/ 核心是：, 引号外叙述, advisory)
 
 Each finding carries severity: blocking by default for generation/deslop cleanup (not-is-comparison / em-dash / voice-contrast / negation-parade / reverse-not-is / trailer-ending / trailer-summary). This is a local style/readability gate, not an AIGC detector score; functional human text can be marked for review instead of hard-edited for a detector.
-或 advisory (period-stutter / long-paragraph / micro-action-tic / action-list-tic / abstract-summary-tic / cliche-density-tic / metaphor-density-tic / reasoning-chain-tic / system-notice-formality-tic / overcompressed-prose-tic / low-connective-density-tic / quote-emphasis-tic / formulaic-parallelism，是提示，justified 的长推理/氛围段可保留)。
+或 advisory (period-stutter / long-paragraph / micro-action-tic / action-list-tic / abstract-summary-tic / cliche-density-tic / metaphor-density-tic / reasoning-chain-tic / system-notice-formality-tic / overcompressed-prose-tic / low-connective-density-tic / quote-emphasis-tic / formulaic-parallelism / rhetoric-flip-variant / model-roadmark / nominalization / hint-colon，是提示，justified 的长推理/氛围段可保留)。
 --fail-on=blocking 只在出现 blocking finding 时退出 1；默认 --fail-on=all 有任何 finding 即退出 1。
 
 The script reports findings only. It never rewrites text, because the safe fix is
@@ -230,6 +234,23 @@ const TRAILER_ENDING_WINDOW_CHARS = 600;
 // 分别命中 1.345% / 6.602%——本规则误报面显著小于已上线的同窗口规则，两个总体分别报数。
 const TRAILER_SUMMARY_PATTERN = /这一(?:夜|天|刻|战|年|局|役)[，,]?[^。！？!?，,\n]{0,6}(?<!命中)(?<!是)注定[^。！？!?\n]{0,8}[。！]|就这样[，,][^。！？!?，,\n]{0,8}(?:一切|全部)[^。！？!?，,\n]{0,4}(?:结束了|落幕|收场)[。！]|这一切[，,]?[^。！？!?，,\n]{0,6}(?:都)?(?:说明|意味着|结束了)(?!的)(?:(?!什么)[^。！？!?\n]){0,6}[。！]|(?:新的篇章|新的旅程|崭新的篇章|新的人生)[^。！？!?\n]{0,6}(?:开始|拉开|展开)|命运[^。！？!?\n]{0,6}齿轮/g;
 
+// 翻案腔变体 / 模型路标 / 动词名词化 / 提示性冒号（借鉴 human-writing MIT 的负面清单；
+// 引号外叙述，advisory 只提示不阻断——真人语料（尤其对话）存在少量合法命中，且 demo
+// 基线已删无法复校，因此不升 blocking。修法统一：判断从正面直接下，删掉否定铺垫/路标。
+const RHETORIC_FLIP_VARIANT_PATTERNS = [
+  { re: /与其说[^。！？!?\n]{1,24}[，,]?\s*(?:不如说|毋宁说|倒不如)/g, label: '与其说X不如说Y' },
+  { re: /看似[^。！？!?\n，,]{1,24}[，,]?\s*(?:实则|其实|却是)/g, label: '看似X实则Y' },
+  { re: /表面(?:上|看)?[^。！？!?\n，,]{1,24}[，,]?\s*(?:实际|其实|却)/g, label: '表面X实际Y' },
+  { re: /你以为[^。！？!?\n]{1,24}[，,]?\s*(?:其实|但|然而)/g, label: '你以为X其实Y' },
+  { re: /(?:回头|后来)才发现/g, label: '回头才发现' },
+  { re: /答案(?:恰恰|恰好)相反/g, label: '答案恰恰相反' },
+  { re: /不重要[，,][^。！？!?\n，,]{0,20}[，,]?\s*重要的是/g, label: 'X不重要，重要的是Y' },
+  { re: /真正的[^。！？!?\n，,]{0,16}(?:从来)?(?:不是|并非)[^。！？!?\n，,]{1,12}|真正[^。！？!?\n，,]{0,16}的(?:从来)?(?:不是|并非)[^。！？!?\n，,]{1,12}/g, label: '真正X的不是Y' },
+];
+const MODEL_ROADMARK_PATTERN = /说白了|说穿了|先说结论|说到底|更微妙的是|还有一层|只说对了一半|值得注意的是|需要指出的是|从某种意义上说/g;
+const NOMINALIZATION_PATTERN = /(?:完成了对|实现了)[^。！？!?\n，,]{1,16}的(?:优化|提升|改进|完善|增强|提高|转变|突破|调整|升级)|起到了[^。！？!?\n，,]{1,12}(?:作用|效果)|具有(?:里程碑|重要)?意义/g;
+const HINT_COLON_PATTERN = /(?:一句话总结|总结|核心是|重点是|关键是)[：:]/g;
+
 // 引号强调滥用（实战漏网 E，advisory 密度型，风格照 metaphor-density-tic）：
 // 叙述里短词加引号强调（他是被请来"把关"的）。只数叙述层 1-4 字成对引号片段；
 // 排除项：【】系统面板载体、引语动词（说|道|问|喊|答|念|叫|回|吼|嘀咕，加细 骂|写|读|唱）
@@ -403,6 +424,7 @@ function scanProsePatterns(proseLines) {
   findings.push(...findReverseNotIs(proseLines));
   findings.push(...findTrailerEnding(proseLines));
   findings.push(...findQuoteEmphasisTic(proseLines));
+  findings.push(...findModelRhetoricTics(proseLines));
   findings.push(...findPeriodStutter(proseLines));
   findings.push(...findMicroActionTic(proseLines));
   findings.push(...findActionListTic(proseLines));
@@ -661,6 +683,74 @@ function findQuoteEmphasisTic(proseLines) {
     message: `引号强调滥用：叙述里 1-4 字短词加引号强调 ${hits} 处；只留真正反讽/转述必要的一两处，其余去掉引号直接写，或换成具体动作让读者自己品。`,
     excerpt: compact(samples.join(' ')),
   }];
+}
+
+// 翻案腔变体 / 模型路标 / 名词化 / 提示性冒号：逐处 advisory，引号外叙述（maskQuoted
+// 等长占位保偏移）。全是抬价/路标类腔调，删掉否定铺垫或路标词，把判断正面说出来。
+function findModelRhetoricTics(proseLines) {
+  const findings = [];
+
+  for (const { text, lineNo } of proseLines) {
+    const trimmed = text.trim();
+    if (!trimmed || isDivider(trimmed) || isStructural(trimmed)) continue;
+    const masked = maskQuoted(text);
+
+    for (const { re, label } of RHETORIC_FLIP_VARIANT_PATTERNS) {
+      re.lastIndex = 0;
+      let match;
+      while ((match = re.exec(masked)) !== null) {
+        findings.push({
+          line: lineNo,
+          column: match.index + 1,
+          type: 'rhetoric-flip-variant',
+          severity: 'advisory',
+          message: `翻案腔变体「${label}」：先立误解再推翻的抬价句式；删掉否定铺垫，判断从正面直接说。`,
+          excerpt: compact(text.slice(match.index, match.index + match[0].length)),
+        });
+      }
+    }
+
+    MODEL_ROADMARK_PATTERN.lastIndex = 0;
+    let road;
+    while ((road = MODEL_ROADMARK_PATTERN.exec(masked)) !== null) {
+      findings.push({
+        line: lineNo,
+        column: road.index + 1,
+        type: 'model-roadmark',
+        severity: 'advisory',
+        message: `模型路标词「${road[0]}」：洞察/抬价路标；删掉路标词，把判断或事实直接接进上下文。`,
+        excerpt: compact(text.slice(road.index, road.index + road[0].length)),
+      });
+    }
+
+    NOMINALIZATION_PATTERN.lastIndex = 0;
+    let nom;
+    while ((nom = NOMINALIZATION_PATTERN.exec(masked)) !== null) {
+      findings.push({
+        line: lineNo,
+        column: nom.index + 1,
+        type: 'nominalization',
+        severity: 'advisory',
+        message: '动词名词化：「完成了对…的优化」类公文腔；写回直接动词（把…改顺了 / 快了多少）。',
+        excerpt: compact(text.slice(nom.index, nom.index + nom[0].length)),
+      });
+    }
+
+    HINT_COLON_PATTERN.lastIndex = 0;
+    let colon;
+    while ((colon = HINT_COLON_PATTERN.exec(masked)) !== null) {
+      findings.push({
+        line: lineNo,
+        column: colon.index + 1,
+        type: 'hint-colon',
+        severity: 'advisory',
+        message: '提示性冒号：冒号只保留引出人物直接原话的用法；提示性冒号删掉或改逗号。',
+        excerpt: compact(text.slice(colon.index, colon.index + colon[0].length)),
+      });
+    }
+  }
+
+  return findings;
 }
 
 // 微动作复读：统计引号外叙述里「了X量词」轻量补语的密度。次数与每千字密度双门槛，
