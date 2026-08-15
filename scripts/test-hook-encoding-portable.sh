@@ -45,7 +45,7 @@ echo "interpreter: $PYBIN"
 # ===== Part 1：python stdout cp936（PYTHONIOENCODING=gbk）=====
 echo "--- Part 1: python stdout cp936 simulation (PYTHONIOENCODING=gbk) ---"
 P1="$WORK/p1"; deploy "$P1"
-mkdir -p "$P1/book/正文" "$P1/book/大纲" "$P1/book/追踪" "$P1/short"
+mkdir -p "$P1/book/正文" "$P1/book/大纲" "$P1/book/追踪"
 # 本节测的是编码/区域下的路径与 glob 行为，不是追踪门。落一份有效 state，让细纲门成为唯一
 # 变量；没有它，写第 1 章会先被 issue #305 起新增的追踪检查点拦下（state 缺失即拦）。
 printf '{"schema_version":4,"state_revision":0,"last_committed_chapter":0}\n' > "$P1/book/追踪/_tracking-state.json"
@@ -59,15 +59,13 @@ run_guard_py() { # $1 mode(default|gbk)  $2 file_path -> exit code
       >/dev/null 2>&1 || ec=$?
   printf '%s' "$ec"
 }
+# 短篇断言已随短篇 skill 移除（5c8309f）同步删除：guard 与 JS 核自 f819ae0 起只守卫
+# 长篇 正文/第N章_*.md，不再识别 正文.md + 小节大纲.md 的短篇结构。
 for MODE in default gbk; do
   rm -f "$P1/book/大纲/细纲_第1章.md"
   [ "$(run_guard_py "$MODE" 'book/正文/第1章_开端.md')" = 2 ] && pass "[$MODE] long blocked, 细纲 missing" || bad "[$MODE] long should block when 细纲 missing"
   : > "$P1/book/大纲/细纲_第1章.md"
   [ "$(run_guard_py "$MODE" 'book/正文/第1章_开端.md')" = 0 ] && pass "[$MODE] long allowed, 细纲 present" || bad "[$MODE] long should allow when 细纲 present"
-  : > "$P1/short/设定.md"; rm -f "$P1/short/小节大纲.md"
-  [ "$(run_guard_py "$MODE" 'short/正文.md')" = 2 ] && pass "[$MODE] short blocked, 小节大纲 missing" || bad "[$MODE] short should block when 小节大纲 missing"
-  : > "$P1/short/小节大纲.md"
-  [ "$(run_guard_py "$MODE" 'short/正文.md')" = 0 ] && pass "[$MODE] short allowed, 小节大纲 present" || bad "[$MODE] short should allow when 小节大纲 present"
 done
 
 # ===== Part 1b：Windows 盘符绝对路径分类（issue #184，任何平台可跑）=====
