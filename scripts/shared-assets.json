@@ -1,69 +1,215 @@
 {
-  "version": 1,
-  "groups": [
-    {
-      "name": "prose-ai-pattern-detector",
-      "source": "skills/moshu-deslop/scripts/check-ai-patterns.js",
-      "targets": [
-        "skills/moshu-write/scripts/check-ai-patterns.js",
-        "skills/moshu-review/scripts/check-ai-patterns.js"
-      ]
-    },
-    {
-      "name": "prose-outline-copy-detector",
-      "source": "skills/moshu-write/scripts/check-outline-copy.js",
-      "targets": [
-        "skills/moshu-deslop/scripts/check-outline-copy.js"
-      ]
-    },
-    {
-      "name": "prose-degeneration-detector",
-      "source": "skills/moshu-deslop/scripts/check-degeneration.js",
-      "targets": [
-        "skills/moshu-write/scripts/check-degeneration.js",
-        "skills/moshu-review/scripts/check-degeneration.js"
-      ]
-    },
-    {
-      "name": "prose-punctuation-normalizer",
-      "source": "skills/moshu-deslop/scripts/normalize-punctuation.js",
-      "targets": [
-        "skills/moshu-write/scripts/normalize-punctuation.js",
-        "skills/moshu-review/scripts/normalize-punctuation.js"
-      ]
-    },
-    {
-      "name": "story-tracking-transaction",
-      "source": "skills/moshu-write/scripts/tracking_commit.py",
-      "targets": [
-        "skills/moshu-import/scripts/tracking_commit.py",
-        "skills/moshu-review/scripts/tracking_commit.py"
-      ]
-    },
-    {
-      "name": "story-tracking-transaction-reference",
-      "source": "skills/moshu-write/references/tracking-transaction.md",
-      "targets": [
-        "skills/moshu-import/references/tracking-transaction.md",
-        "skills/moshu-review/references/tracking-transaction.md"
-      ]
-    },
-    {
-      "name": "banned-words-reference",
-      "source": "skills/moshu-deslop/references/banned-words.md",
-      "targets": [
-        "skills/moshu-write/references/banned-words.md",
-        "skills/moshu-review/references/banned-words.md",
-        "skills/moshu-setup/references/agent-references/banned-words.md"
-      ]
-    },
-    {
-      "name": "quality-checklist-reference",
-      "source": "skills/moshu-write/references/quality-checklist.md",
-      "targets": [
-        "skills/moshu-review/references/quality-checklist.md",
-        "skills/moshu-setup/references/agent-references/quality-checklist.md"
-      ]
-    }
-  ]
+    "version":  1,
+    "groups":  [
+                   {
+                       "name":  "prose-ai-pattern-detector",
+                       "source":  "skills/moshu-deslop/scripts/check-ai-patterns.js",
+                       "targets":  [
+                                       "skills/moshu-write/scripts/check-ai-patterns.js",
+                                       "skills/moshu-review/scripts/check-ai-patterns.js"
+                                   ]
+                   },
+                   {
+                       "name":  "prose-outline-copy-detector",
+                       "source":  "skills/moshu-write/scripts/check-outline-copy.js",
+                       "targets":  [
+                                       "skills/moshu-deslop/scripts/check-outline-copy.js"
+                                   ]
+                   },
+                   {
+                       "name":  "prose-degeneration-detector",
+                       "source":  "skills/moshu-deslop/scripts/check-degeneration.js",
+                       "targets":  [
+                                       "skills/moshu-write/scripts/check-degeneration.js",
+                                       "skills/moshu-review/scripts/check-degeneration.js"
+                                   ]
+                   },
+                   {
+                       "name":  "prose-punctuation-normalizer",
+                       "source":  "skills/moshu-deslop/scripts/normalize-punctuation.js",
+                       "targets":  [
+                                       "skills/moshu-write/scripts/normalize-punctuation.js",
+                                       "skills/moshu-review/scripts/normalize-punctuation.js"
+                                   ]
+                   },
+                   {
+                       "name":  "story-tracking-transaction",
+                       "source":  "skills/moshu-write/scripts/tracking_commit.py",
+                       "targets":  [
+                                       "skills/moshu-import/scripts/tracking_commit.py",
+                                       "skills/moshu-review/scripts/tracking_commit.py"
+                                   ]
+                   },
+                   {
+                       "name":  "story-tracking-transaction-reference",
+                       "source":  "skills/moshu-write/references/tracking-transaction.md",
+                       "targets":  [
+                                       "skills/moshu-import/references/tracking-transaction.md",
+                                       "skills/moshu-review/references/tracking-transaction.md"
+                                   ]
+                   },
+                   {
+                       "name":  "banned-words-reference",
+                       "source":  "skills/moshu-deslop/references/banned-words.md",
+                       "targets":  [
+                                       "skills/moshu-write/references/banned-words.md",
+                                       "skills/moshu-review/references/banned-words.md",
+                                       "skills/moshu-setup/references/agent-references/banned-words.md"
+                                   ]
+                   },
+                   {
+                       "name":  "quality-checklist-reference",
+                       "source":  "skills/moshu-write/references/quality-checklist.md",
+                       "targets":  [
+                                       "skills/moshu-review/references/quality-checklist.md",
+                                       "skills/moshu-setup/references/agent-references/quality-checklist.md"
+                                   ]
+                   },
+                   {
+                       "name":  "anti-ai-writing-reference",
+                       "source":  "skills/moshu-deslop/references/anti-ai-writing.md",
+                       "targets":  [
+                                       "skills/moshu-review/references/anti-ai-writing.md",
+                                       "skills/moshu-setup/references/agent-references/anti-ai-writing.md",
+                                       "skills/moshu-write/references/anti-ai-writing.md"
+                                   ]
+                   },
+                   {
+                       "name":  "dialogue-mastery-reference",
+                       "source":  "skills/moshu-write/references/dialogue-mastery.md",
+                       "targets":  [
+                                       "skills/moshu-review/references/dialogue-mastery.md",
+                                       "skills/moshu-setup/references/agent-references/dialogue-mastery.md"
+                                   ]
+                   },
+                   {
+                       "name":  "plot-core-methods-reference",
+                       "source":  "skills/moshu-write/references/plot-core-methods.md",
+                       "targets":  [
+                                       "skills/moshu-review/references/plot-core-methods.md",
+                                       "skills/moshu-setup/references/agent-references/plot-core-methods.md"
+                                   ]
+                   },
+                   {
+                       "name":  "character-relations-reference",
+                       "source":  "skills/moshu-write/references/character-relations.md",
+                       "targets":  [
+                                       "skills/moshu-review/references/character-relations.md",
+                                       "skills/moshu-setup/references/agent-references/character-relations.md"
+                                   ]
+                   },
+                   {
+                       "name":  "character-design-methods-reference",
+                       "source":  "skills/moshu-write/references/character-design-methods.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/character-design-methods.md"
+                                   ]
+                   },
+                   {
+                       "name":  "character-basics-reference",
+                       "source":  "skills/moshu-write/references/character-basics.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/character-basics.md"
+                                   ]
+                   },
+                   {
+                       "name":  "state-tracking-reference",
+                       "source":  "skills/moshu-write/references/state-tracking.md",
+                       "targets":  [
+                                       "skills/moshu-import/references/state-tracking.md"
+                                   ]
+                   },
+                   {
+                       "name":  "emotional-arc-design-reference",
+                       "source":  "skills/moshu-write/references/emotional-arc-design.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/emotional-arc-design.md"
+                                   ]
+                   },
+                   {
+                       "name":  "format-and-structure-reference",
+                       "source":  "skills/moshu-write/references/format-and-structure.md",
+                       "targets":  [
+                                       "skills/moshu-import/references/format-and-structure.md",
+                                       "skills/moshu-setup/references/agent-references/format-and-structure.md"
+                                   ]
+                   },
+                   {
+                       "name":  "opening-design-reference",
+                       "source":  "skills/moshu-write/references/opening-design.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/opening-design.md"
+                                   ]
+                   },
+                   {
+                       "name":  "hooks-chapter-reference",
+                       "source":  "skills/moshu-write/references/hooks-chapter.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/hooks-chapter.md"
+                                   ]
+                   },
+                   {
+                       "name":  "hooks-suspense-reference",
+                       "source":  "skills/moshu-write/references/hooks-suspense.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/hooks-suspense.md"
+                                   ]
+                   },
+                   {
+                       "name":  "reversal-toolkit-reference",
+                       "source":  "skills/moshu-write/references/reversal-toolkit.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/reversal-toolkit.md"
+                                   ]
+                   },
+                   {
+                       "name":  "outline-methods-reference",
+                       "source":  "skills/moshu-write/references/outline-methods.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/outline-methods.md"
+                                   ]
+                   },
+                   {
+                       "name":  "outline-rhythm-reference",
+                       "source":  "skills/moshu-write/references/outline-rhythm.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/outline-rhythm.md"
+                                   ]
+                   },
+                   {
+                       "name":  "outline-conflict-reference",
+                       "source":  "skills/moshu-write/references/outline-conflict.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/outline-conflict.md"
+                                   ]
+                   },
+                   {
+                       "name":  "genre-writing-formulas-reference",
+                       "source":  "skills/moshu-write/references/genre-writing-formulas.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/genre-writing-formulas.md"
+                                   ]
+                   },
+                   {
+                       "name":  "style-genre-modules-reference",
+                       "source":  "skills/moshu-write/references/style-genre-modules.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/style-genre-modules.md"
+                                   ]
+                   },
+                   {
+                       "name":  "style-combat-face-reference",
+                       "source":  "skills/moshu-write/references/style-combat-face.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/style-combat-face.md"
+                                   ]
+                   },
+                   {
+                       "name":  "writing-craft-reference",
+                       "source":  "skills/moshu-write/references/writing-craft.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/writing-craft.md"
+                                   ]
+                   }
+               ]
 }
