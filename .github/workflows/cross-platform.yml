@@ -58,6 +58,10 @@ jobs:
         run: bash scripts/check-moshu-setup-deployment.sh
       - name: Check Claude Code adapter
         run: bash scripts/check-claude-adapter.sh
+      - name: Check behavior contracts
+        run: bash scripts/check-behavior-contracts.sh
+      - name: Behavior-contract regression
+        run: python3 scripts/test-behavior-contracts.py
       - name: Guard against bare python3 invocations
         run: bash scripts/check-python-invocation.sh
       - name: Guard hook locale safety (LC_ALL=C + no full-width char classes)
