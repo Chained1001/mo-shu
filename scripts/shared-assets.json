@@ -56,6 +56,14 @@
         "skills/moshu-review/references/banned-words.md",
         "skills/moshu-setup/references/agent-references/banned-words.md"
       ]
+    },
+    {
+      "name": "quality-checklist-reference",
+      "source": "skills/moshu-write/references/quality-checklist.md",
+      "targets": [
+        "skills/moshu-review/references/quality-checklist.md",
+        "skills/moshu-setup/references/agent-references/quality-checklist.md"
+      ]
     }
   ]
 }
