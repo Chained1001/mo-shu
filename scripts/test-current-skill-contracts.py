@@ -287,8 +287,8 @@ def test_progress_schema_pins_are_repo_wide() -> None:
     )
     for relative in (
         "skills/moshu-analyze/references/pipeline-ops.md",
-        "skills/moshu-analyze/SKILL.md",
-        # 拆分后导入流程承载在 references/import-workflow.md
+        # 拆分后拆解流程承载在 references/analyze-workflow.md
+        "skills/moshu-analyze/references/analyze-workflow.md",
         "skills/moshu-import/references/import-workflow.md",
         "skills/moshu-setup/UPGRADING.md",
     ):
@@ -314,7 +314,8 @@ def test_stale_scan_phase_reference_accepts_backticks() -> None:
     # 长篇「先查选题决策」随 Phase 1 搬进 workflow-setup.md（#269），扫描目标跟着内容走。
     for relative in (
         "skills/moshu-write/references/workflow-setup.md",
-        "skills/moshu-analyze/SKILL.md",
+        # 拆分后拆解流程承载在 references/analyze-workflow.md
+        "skills/moshu-analyze/references/analyze-workflow.md",
     ):
         require(
             relative in stale,

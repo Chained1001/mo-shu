@@ -1130,7 +1130,8 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
 
     findings.extend(rubric_parity_findings(repo_root))
 
-    long_analyze = repo_root / "skills/moshu-analyze/SKILL.md"
+    # 拆分后拆解流程承载在 references/analyze-workflow.md；SKILL.md 只留索引
+    long_analyze = repo_root / "skills/moshu-analyze/references/analyze-workflow.md"
     findings.extend(require_pattern(long_analyze, r"invalid_topic_decision_contract", "invalid-topic-contract", "invalid topic-decision artifacts must fail explicitly"))
     # 章节边界表是 Stage 1/2/6 的唯一切片真值：原文开头的目录块会让每个章号命中两次，
     # 不剔就一路错到底。剔除步骤和落表前的连续性校验都必须留在 Stage 0。
