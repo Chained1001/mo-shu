@@ -5,7 +5,7 @@ permissions:
   contents: read
 
 jobs:
-  static-check:
+  static-guards:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -36,6 +36,38 @@ jobs:
         run: bash scripts/check-shared-files.sh
       - name: Shared-asset manifest regression
         run: python3 scripts/test-shared-assets.py
+      - name: Check behavior contracts
+        run: bash scripts/check-behavior-contracts.sh
+      - name: Behavior-contract regression
+        run: python3 scripts/test-behavior-contracts.py
+      - name: Check agents-version sync
+        run: bash scripts/check-agents-version-sync.sh
+      - name: Agents-version-sync regression
+        run: python3 scripts/test-agents-version-sync.py
+      - name: Check Claude Code adapter
+        run: bash scripts/check-claude-adapter.sh
+      - name: Guard against bare python3 invocations
+        run: bash scripts/check-python-invocation.sh
+      - name: Guard hook locale safety (LC_ALL=C + no full-width char classes)
+        run: bash scripts/check-hook-locale-safety.sh
+      - name: Syntax-check collection scripts
+        run: |
+          for f in $(find skills -name '*-scraper.js' -o -name 'cdp-utils.js' -o -name 'setup-cdp-chrome.js'); do
+            echo "node --check $f"
+            node --check "$f"
+          done
+
+  runtime-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
       - name: Punctuation normalizer regression
         run: node scripts/test-normalize-punctuation.js
       - name: Scan runtime regression
@@ -54,22 +86,6 @@ jobs:
         run: python3 scripts/test-tracking-workflow-contracts.py
       - name: Tracking transaction behavior regression
         run: python3 scripts/test-tracking-commit.py
-      - name: Check moshu-setup deployment
-        run: bash scripts/check-moshu-setup-deployment.sh
-      - name: Check Claude Code adapter
-        run: bash scripts/check-claude-adapter.sh
-      - name: Check behavior contracts
-        run: bash scripts/check-behavior-contracts.sh
-      - name: Behavior-contract regression
-        run: python3 scripts/test-behavior-contracts.py
-      - name: Check agents-version sync
-        run: bash scripts/check-agents-version-sync.sh
-      - name: Agents-version-sync regression
-        run: python3 scripts/test-agents-version-sync.py
-      - name: Guard against bare python3 invocations
-        run: bash scripts/check-python-invocation.sh
-      - name: Guard hook locale safety (LC_ALL=C + no full-width char classes)
-        run: bash scripts/check-hook-locale-safety.sh
       # Generate a GBK-class locale so the hook test's Part 2 runs end-to-end here,
       # not just on macOS. Best-effort: if it fails the test self-skips Part 2.
       - name: Generate zh_CN.GBK locale (Chinese Windows simulation)
@@ -80,12 +96,20 @@ jobs:
         run: bash scripts/test-charcount-portable.sh
       - name: Portable char-count (simulated Windows Store stub)
         run: bash scripts/test-charcount-portable.sh --stub
-      - name: Syntax-check collection scripts
-        run: |
-          for f in $(find skills -name '*-scraper.js' -o -name 'cdp-utils.js' -o -name 'setup-cdp-chrome.js'); do
-            echo "node --check $f"
-            node --check "$f"
-          done
+
+  deploy-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check moshu-setup deployment
+        run: bash scripts/check-moshu-setup-deployment.sh
 
   windows:
     runs-on: windows-latest
