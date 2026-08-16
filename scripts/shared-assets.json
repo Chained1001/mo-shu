@@ -218,6 +218,13 @@
                                        "skills/moshu-review/references/reader-contract-and-progression.md",
                                        "skills/moshu-setup/references/agent-references/reader-contract-and-progression.md"
                                    ]
+                   },
+                   {
+                       "name":  "genre-core-mechanics-reference",
+                       "source":  "skills/moshu-write/references/genre-core-mechanics.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/genre-core-mechanics.md"
+                                   ]
                    }
                ]
 }
