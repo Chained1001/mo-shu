@@ -176,6 +176,25 @@ function getArg(args, name) {
 }
 
 /**
+ * 解析 --xxx 整数参数并校验范围；非法值时打印错误并退出。
+ * 防止传 `--top abc` 或 `--port 99999` 时静默产出空结果/错误端口。
+ * @param {string} name - 参数名（不含 --）
+ * @param {string|null|undefined} raw - getArg 的原始返回值
+ * @param {number} def - 缺省值（raw 为空时）
+ * @param {number} min - 最小值（含）
+ * @param {number} max - 最大值（含）
+ * @returns {number}
+ */
+function requireIntArg(name, raw, def, min, max) {
+  const value = raw === null || raw === undefined || raw === "" ? def : Number(raw);
+  if (!Number.isInteger(value) || value < min || value > max) {
+    console.error(`错误：--${name} 必须是 ${min}-${max} 的整数，收到「${raw ?? "(空)"}」`);
+    process.exit(1);
+  }
+  return value;
+}
+
+/**
  * 输出文件名用的日期戳（YYYYMMDD），一律取**本地日历日**。
  * 不能用 new Date().toISOString().slice(0,10)：那是 UTC 日期，比 UTC+8 晚 8 小时。
  * 文件名是各采集脚本唯一的去重键（一个榜单一天一份），北京时间 00:00-08:00 之间的采集
@@ -250,6 +269,7 @@ module.exports = {
   safeStr,
   scrollLoad,
   getArg,
+  requireIntArg,
   localDateStamp,
   localTimestamp,
   runCli,

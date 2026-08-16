@@ -19,7 +19,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSONBase64, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const RANK_URL = "https://www.qimao.com/paihang";
 
@@ -275,7 +275,7 @@ function renderMarkdown(ch, rt, period, url, books, rawCount, now = localTimesta
 // ---------------------------------------------------------------------------
 
 const args = process.argv.slice(2);
-const PORT = parseInt(getArg(args, "--port") || "9222", 10);
+const PORT = requireIntArg("port", getArg(args, "--port"), 9222, 1, 65535);
 const OUTDIR = getArg(args, "--outdir") || ".";
 const CHANNEL = getArg(args, "--channel") || "male";
 const RANKTYPE = getArg(args, "--type") || "hot";

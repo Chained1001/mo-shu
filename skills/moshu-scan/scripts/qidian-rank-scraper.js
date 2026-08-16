@@ -29,7 +29,7 @@
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
-const { ab, sleep, evalJSON, scrollLoad, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSON, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const PC_BASE_URL = "https://www.qidian.com/rank";
 const MOBILE_BASE_URL = "https://m.qidian.com";
@@ -456,7 +456,7 @@ async function scrapeRankMobile(rankTypeId) {
 // ---------------------------------------------------------------------------
 
 const args = process.argv.slice(2);
-const PORT = parseInt(getArg(args, "--port") || "9222", 10);
+const PORT = requireIntArg("port", getArg(args, "--port"), 9222, 1, 65535);
 const OUTDIR = getArg(args, "--outdir") || ".";
 const RANKTYPE = getArg(args, "--type") || "hotsales";
 const SCRAPE_MODE = getArg(args, "--mode") || "auto"; // auto | mobile | cdp

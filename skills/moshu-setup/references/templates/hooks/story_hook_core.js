@@ -187,7 +187,7 @@ function continuityFindings(root) {
     // （git checkout/拷贝也可能触发，仅提醒；state 缺失/损坏时 checkpointIssue 已报，不再叠加）。
     if (lastCommitted !== null && chapters.length && fs.existsSync(context) && maxChapter <= lastCommitted) {
       try {
-        const newest = Math.max(...chapters.map((file) => fs.statSync(file).mtimeMs))
+        const newest = chapters.reduce((max, file) => Math.max(max, fs.statSync(file).mtimeMs), 0)
         const contextTime = fs.statSync(context).mtimeMs
         if (newest > contextTime + 1000) {
           const latest = chapters.reduce((left, right) => fs.statSync(left).mtimeMs > fs.statSync(right).mtimeMs ? left : right)

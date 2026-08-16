@@ -24,7 +24,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSONBase64, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const BASE_URL = "https://www.jjwxc.net/topten.php";
 
@@ -171,12 +171,12 @@ function fmtWan(s, unit) {
 // ---------------------------------------------------------------------------
 
 const args = process.argv.slice(2);
-const PORT = parseInt(getArg(args, "--port") || "9222", 10);
+const PORT = requireIntArg("port", getArg(args, "--port"), 9222, 1, 65535);
 const OUTDIR = getArg(args, "--outdir") || ".";
 const RANKTYPE = getArg(args, "--type") || "12";
 const CHANNEL = getArg(args, "--channel") || "0";
-const TOP = parseInt(getArg(args, "--top") || "10", 10);
-const DETAIL_LIMIT = parseInt(getArg(args, "--detail-limit") || "100", 10);
+const TOP = requireIntArg("top", getArg(args, "--top"), 10, 1, 100);
+const DETAIL_LIMIT = requireIntArg("detail-limit", getArg(args, "--detail-limit"), 100, 1, 1000);
 const LIST_ONLY = args.includes("--list-only");
 
 function scrapeRank(port, rankTypeId, channelId) {

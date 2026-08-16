@@ -201,12 +201,12 @@ function findRepetition(content) {
     for (const sentence of stripQuoted(trimmed).split(/[。！？!?]/)) {
       const s = sentence.trim();
       if (visibleLength(s) < REPEAT_MIN_LEN) continue;
-      const entry = counts.get(s) || { count: 0, firstLine: null };
+      const entry = counts.get(s) || { count: 0 };
       entry.count += 1;
       counts.set(s, entry);
     }
   }
-  // record first line for repeated sentences
+  // 复读句按首次出现位置报告（见下方 flagged 循环）
   const flagged = new Set();
   for (const [s, entry] of counts) {
     if (entry.count >= REPEAT_MIN_COUNT) flagged.add(s);

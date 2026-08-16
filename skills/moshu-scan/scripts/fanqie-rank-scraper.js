@@ -20,7 +20,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, scrollLoad, getArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, evalJSONBase64, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 // 一次详情请求的并发批大小。番茄详情页用同步 XHR 拉取，批太大会撞上
 // cdp-utils 里 ab() 的 20s 超时；超时会显式失败，这里分批是为了避免整个题材被中断。
@@ -224,11 +224,11 @@ function cleanDesc(raw) {
 // ---------------------------------------------------------------------------
 
 const args = process.argv.slice(2);
-const PORT = parseInt(getArg(args, "--port") || "9222", 10);
+const PORT = requireIntArg("port", getArg(args, "--port"), 9222, 1, 65535);
 const OUTDIR = getArg(args, "--outdir") || ".";
 const CHANNEL = getArg(args, "--channel") || "1";
 const TYPE = getArg(args, "--type") || "2";
-const TOP = parseInt(getArg(args, "--top") || "20", 10);
+const TOP = requireIntArg("top", getArg(args, "--top"), 20, 1, 100);
 
 function channelLabel(ch) {
   return ch === "1" ? "男频" : "女频";
