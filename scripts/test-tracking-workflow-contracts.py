@@ -28,7 +28,8 @@ def test_transaction_is_the_only_tracking_writer() -> None:
         "skills/moshu-write/SKILL.md",
         "skills/moshu-write/references/workflow-daily.md",
         "skills/moshu-write/references/workflow-revision.md",
-        "skills/moshu-import/SKILL.md",
+        # 拆分后导入的追踪契约承载在 references/import-workflow.md
+        "skills/moshu-import/references/import-workflow.md",
         "skills/moshu-review/SKILL.md",
     ):
         require("tracking_commit.py" in read(path), f"{path} must route writes through tracking_commit.py")
@@ -109,7 +110,8 @@ def test_state_card_and_compact_delta_limits_are_explicit() -> None:
 
 
 def test_import_records_a_cutoff_without_fabricated_old_deltas() -> None:
-    text = read("skills/moshu-import/SKILL.md")
+    # 导入追踪契约自 import 拆分后位于 references/import-workflow.md；SKILL.md 只留索引。
+    text = read("skills/moshu-import/SKILL.md") + read("skills/moshu-import/references/import-workflow.md")
     require_all(
         text,
         (
@@ -259,7 +261,8 @@ def test_daily_quality_repairs_close_tracking_before_batch_finish() -> None:
 def test_tracking_examples_use_the_demo_novel() -> None:
     paths = (
         "skills/moshu-write/references/tracking-transaction.md",
-        "skills/moshu-import/SKILL.md",
+        # 导入的 demo 示例随流程拆分位于 references/import-workflow.md
+        "skills/moshu-import/references/import-workflow.md",
         "skills/moshu-import/references/character-state-reverse.md",
         # 审查的 demo 示例随流程拆分位于 references/review-workflow.md
         "skills/moshu-review/references/review-workflow.md",

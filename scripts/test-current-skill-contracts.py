@@ -288,7 +288,8 @@ def test_progress_schema_pins_are_repo_wide() -> None:
     for relative in (
         "skills/moshu-analyze/references/pipeline-ops.md",
         "skills/moshu-analyze/SKILL.md",
-        "skills/moshu-import/SKILL.md",
+        # 拆分后导入流程承载在 references/import-workflow.md
+        "skills/moshu-import/references/import-workflow.md",
         "skills/moshu-setup/UPGRADING.md",
     ):
         require(
