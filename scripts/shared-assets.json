@@ -210,6 +210,14 @@
                        "targets":  [
                                        "skills/moshu-setup/references/agent-references/writing-craft.md"
                                    ]
+                   },
+                   {
+                       "name":  "reader-contract-reference",
+                       "source":  "skills/moshu-write/references/reader-contract-and-progression.md",
+                       "targets":  [
+                                       "skills/moshu-review/references/reader-contract-and-progression.md",
+                                       "skills/moshu-setup/references/agent-references/reader-contract-and-progression.md"
+                                   ]
                    }
                ]
 }
