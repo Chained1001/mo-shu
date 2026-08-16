@@ -716,3 +716,89 @@ describe("HTTP API", () => {
     }
   });
 });
+
+describe("network-mode write authorization", () => {
+  async function startNetworkServer(token = "secret-token") {
+    const root = await createWorkspace();
+    const server = createDashboardServer({ root, allowNetwork: true, token });
+    await new Promise((accept, reject) => {
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", accept);
+    });
+    runningServers.push(server);
+    const { port } = server.address();
+    return { root, baseUrl: `http://127.0.0.1:${port}` };
+  }
+
+  const putPayload = (path, content, expectedVersion = 1) =>
+    JSON.stringify({ path, content, expectedVersion });
+
+  async function loadVersion(baseUrl, path) {
+    const response = await fetch(`${baseUrl}/api/file?path=${encodeURIComponent(path)}`);
+    assert.equal(response.status, 200);
+    return (await response.json()).version;
+  }
+
+  test("rejects PUT without token (401)", async () => {
+    const { baseUrl } = await startNetworkServer();
+    const version = await loadVersion(baseUrl, "长篇/示例书/大纲/总纲.md");
+    const response = await fetch(`${baseUrl}/api/file`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: putPayload("长篇/示例书/大纲/总纲.md", "改写", version),
+    });
+    assert.equal(response.status, 401);
+    const payload = await response.json();
+    assert.equal(payload.error.code, "unauthorized");
+  });
+
+  test("rejects PUT with wrong token (401)", async () => {
+    const { baseUrl } = await startNetworkServer("secret-token");
+    const version = await loadVersion(baseUrl, "长篇/示例书/大纲/总纲.md");
+    const response = await fetch(`${baseUrl}/api/file`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Dashboard-Token": "wrong" },
+      body: putPayload("长篇/示例书/大纲/总纲.md", "改写", version),
+    });
+    assert.equal(response.status, 401);
+  });
+
+  test("accepts PUT with X-Dashboard-Token (200)", async () => {
+    const { root, baseUrl } = await startNetworkServer("secret-token");
+    const version = await loadVersion(baseUrl, "长篇/示例书/大纲/总纲.md");
+    const response = await fetch(`${baseUrl}/api/file`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "X-Dashboard-Token": "secret-token" },
+      body: putPayload("长篇/示例书/大纲/总纲.md", "改写后的总纲", version),
+    });
+    assert.equal(response.status, 200);
+    assert.match(await readFile(resolve(root, "长篇", "示例书", "大纲", "总纲.md"), "utf8"), /改写后的总纲/);
+  });
+
+  test("accepts PUT with Authorization: Bearer (200)", async () => {
+    const { baseUrl } = await startNetworkServer("secret-token");
+    const version = await loadVersion(baseUrl, "长篇/示例书/大纲/总纲.md");
+    const response = await fetch(`${baseUrl}/api/file`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: "Bearer secret-token" },
+      body: putPayload("长篇/示例书/大纲/总纲.md", "bearer 改写", version),
+    });
+    assert.equal(response.status, 200);
+  });
+
+  test("allows GET without token (read remains open in network mode)", async () => {
+    const { baseUrl } = await startNetworkServer();
+    const response = await fetch(`${baseUrl}/api/workspace`);
+    assert.equal(response.status, 200);
+  });
+
+  test("rejects DELETE without token (401)", async () => {
+    const { baseUrl } = await startNetworkServer("secret-token");
+    const response = await fetch(`${baseUrl}/api/file`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: putPayload("长篇/示例书/大纲/总纲.md", ""),
+    });
+    assert.equal(response.status, 401);
+  });
+});

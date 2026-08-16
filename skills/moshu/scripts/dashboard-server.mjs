@@ -17,7 +17,7 @@ import {
 } from "node:fs/promises";
 import { extname, basename, dirname, isAbsolute, relative, resolve, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 
 const MODULE_PATH = fileURLToPath(import.meta.url);
 const ASSET_DIR = fileURLToPath(new URL("../assets/", import.meta.url));
@@ -744,8 +744,32 @@ function normalizedOriginHostname(origin) {
   }
 }
 
-function assertLocalRequest(request, allowNetwork) {
-  if (allowNetwork) return;
+function tokenMatches(provided, expected) {
+  if (typeof provided !== "string" || typeof expected !== "string" || !expected) return false;
+  const providedBuffer = Buffer.from(provided);
+  const expectedBuffer = Buffer.from(expected);
+  if (providedBuffer.length !== expectedBuffer.length) return false;
+  return timingSafeEqual(providedBuffer, expectedBuffer);
+}
+
+function requestToken(request) {
+  const header = request.headers["x-dashboard-token"];
+  if (typeof header === "string" && header) return header;
+  const authorization = request.headers.authorization;
+  if (typeof authorization === "string" && authorization.startsWith("Bearer ")) {
+    return authorization.slice("Bearer ".length).trim();
+  }
+  return "";
+}
+
+function assertRequestAuthorized(request, { allowNetwork, token }) {
+  if (allowNetwork) {
+    // 网络模式：写入必须携带与启动时一致的 token（读取仍开放，但启动已显式知情暴露面）。
+    if (["PUT", "DELETE"].includes(request.method) && !tokenMatches(requestToken(request), token)) {
+      throw new DashboardError(401, "unauthorized", "网络模式写入需要正确的 token（--token 或 X-Dashboard-Token / Authorization: Bearer）");
+    }
+    return;
+  }
   const hostname = normalizedHostname(request.headers.host);
   if (!LOOPBACK_HOSTS.has(hostname)) {
     throw new DashboardError(403, "invalid_host", "Dashboard 只接受本机回环地址请求");
@@ -758,11 +782,11 @@ function assertLocalRequest(request, allowNetwork) {
   }
 }
 
-export function createDashboardServer({ root, allowNetwork = false }) {
+export function createDashboardServer({ root, allowNetwork = false, token = "" }) {
   const workspaceRoot = resolve(root);
   return createServer(async (request, response) => {
     try {
-      assertLocalRequest(request, allowNetwork);
+      assertRequestAuthorized(request, { allowNetwork, token });
       const url = new URL(request.url || "/", "http://127.0.0.1");
       if (request.method === "GET" && url.pathname === "/health") {
         sendJson(response, 200, { ok: true });
@@ -837,6 +861,7 @@ function parseCliArguments(argv) {
     port: Number(process.env.STORY_DASHBOARD_PORT || 43110),
     open: false,
     allowNetwork: false,
+    token: process.env.STORY_DASHBOARD_TOKEN || "",
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -851,6 +876,8 @@ function parseCliArguments(argv) {
       options.open = true;
     } else if (value === "--allow-network") {
       options.allowNetwork = true;
+    } else if (value === "--token") {
+      options.token = argv[++index] || "";
     } else if (value === "--help" || value === "-h") {
       options.help = true;
     } else {
@@ -869,6 +896,13 @@ function parseCliArguments(argv) {
       400,
       "network_binding_requires_opt_in",
       "非本机地址需要显式增加 --allow-network；通常不应把写作文件暴露到局域网",
+    );
+  }
+  if (options.allowNetwork && !options.token) {
+    throw new DashboardError(
+      400,
+      "network_requires_token",
+      "--allow-network 必须同时提供 --token（或设置 STORY_DASHBOARD_TOKEN），防止局域网内任意写入",
     );
   }
   return options;
@@ -938,7 +972,8 @@ Options:
   --host <host>      监听地址，默认 127.0.0.1
   --port <port>      首选端口，默认 43110；0 表示随机端口
   --open             启动后用系统默认浏览器打开
-  --allow-network    显式允许绑定非回环地址（不推荐）
+  --allow-network    显式允许绑定非回环地址（不推荐；必须同时提供 --token）
+  --token <token>    网络模式写入鉴权令牌（也可用环境变量 STORY_DASHBOARD_TOKEN）
 `);
 }
 
@@ -950,7 +985,11 @@ async function main() {
   }
 
   const workspace = await existingRealRoot(options.root);
-  const server = createDashboardServer({ root: workspace, allowNetwork: options.allowNetwork });
+  const server = createDashboardServer({
+    root: workspace,
+    allowNetwork: options.allowNetwork,
+    token: options.token,
+  });
   const port = await listen(server, options.host, options.port);
   const displayHost = options.host === "::1" ? "[::1]" : options.host;
   const url = `http://${displayHost}:${port}`;
