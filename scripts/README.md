@@ -19,6 +19,7 @@
 | `check-hook-locale-safety.sh` | 部署 hook 在 Windows 中文 GBK 区域的字节安全 | CI |
 | `check-python-invocation.sh` | 技能文档禁止裸调 `python3`（须 python3→python→py 探测） | CI |
 | `check-claude-adapter.sh` | Claude marketplace 与 9 个 skill 的一一映射；可选真实 CLI strict validate | CI（静态）；`CLAUDE_REAL_CHECK=1`（真实 CLI） |
+| `check-behavior-contracts.sh` + `behavior-contracts.json` + `check-behavior-contracts.py` | 关键行为约束静态守卫：契约清单里的约束文本必须存在于对应文档（裸调用停靠 / 细纲优先 / S1-S2 过桥 / 追踪事务等），防止 skill 迭代丢约束导致行为漂移 | CI；改动 SKILL.md / workflow-*.md / tracking-transaction.md 后 |
 
 ## 测试回归（test-*）
 
@@ -38,6 +39,7 @@
 | `test-charcount-portable.sh` | 跨平台字符统计命令在三平台 + Windows 的正确性 | CI（调 check-python-invocation） |
 | `test-hook-encoding-portable.sh` | 部署 hook 在 Windows 中文系统的编码健壮性 | CI |
 | `test-skill-numbering.sh` | Step 重排级联安全、锚点 fail-closed、代码块引用、验证零写入/提交回滚、dry-run/write/幂等性 | Linux / Windows Git Bash / macOS CI |
+| `test-behavior-contracts.py` | 行为契约守卫回归：正向（真仓库 8 条约束在位）+ 反向（fixture 删约束必须失败且指向契约 id） | CI（调 check-behavior-contracts） |
 
 ## 代码生成 / 同步
 
