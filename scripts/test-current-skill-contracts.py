@@ -770,7 +770,11 @@ def test_issue_315_333_343_prompt_contracts() -> None:
     for stale in ("正确 Grep 模式", "相应调整 regex", "拿到 grep 的", "用 Step 4 grep"):
         require(stale not in style, f"#333: Stage 6 still instructs a second slice via: {stale}")
 
-    review = (REPO_ROOT / "skills/moshu-review/SKILL.md").read_text(encoding="utf-8")
+    # 跨批审查契约自 review 拆分后位于 references/review-workflow.md；SKILL.md 只留索引。
+    review = (
+        (REPO_ROOT / "skills/moshu-review/SKILL.md").read_text(encoding="utf-8")
+        + (REPO_ROOT / "skills/moshu-review/references/review-workflow.md").read_text(encoding="utf-8")
+    )
     for anchor in (
         ".moshu-review/state.md",
         "上一批未解决 findings 摘要",

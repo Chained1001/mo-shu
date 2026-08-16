@@ -681,7 +681,13 @@ def rubric_dimension_names(repo_root: Path) -> Tuple[List[str], List[str]]:
             table.append(cell)
 
     embedded: List[str] = []
-    skill_text = read_text(repo_root / "skills/moshu-review/SKILL.md") or ""
+    # 内置 fallback rubric 自 review 拆分后位于 references/review-workflow.md；
+    # 兼容旧布局：SKILL.md 与 workflow 文件都检查，任一处命中即用。
+    skill_text = (
+        read_text(repo_root / "skills/moshu-review/SKILL.md") or ""
+    ) + (
+        read_text(repo_root / "skills/moshu-review/references/review-workflow.md") or ""
+    )
     if "通用网文内容 rubric：" in skill_text:
         block = skill_text.split("通用网文内容 rubric：", 1)[1]
         for line in block.splitlines():

@@ -155,7 +155,8 @@ def test_reader_timeline_is_kept_separate_from_author_truth() -> None:
 
 
 def test_review_mutations_are_transactional_and_scoped() -> None:
-    text = read("skills/moshu-review/SKILL.md")
+    # 追踪维护契约自 review 拆分后位于 references/review-workflow.md；SKILL.md 只留索引。
+    text = read("skills/moshu-review/SKILL.md") + read("skills/moshu-review/references/review-workflow.md")
     require_all(
         text,
         (
@@ -260,7 +261,8 @@ def test_tracking_examples_use_the_demo_novel() -> None:
         "skills/moshu-write/references/tracking-transaction.md",
         "skills/moshu-import/SKILL.md",
         "skills/moshu-import/references/character-state-reverse.md",
-        "skills/moshu-review/SKILL.md",
+        # 审查的 demo 示例随流程拆分位于 references/review-workflow.md
+        "skills/moshu-review/references/review-workflow.md",
         "skills/moshu-setup/references/templates/rules/story-consistency.md",
     )
     for path in paths:
