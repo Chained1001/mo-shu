@@ -795,7 +795,7 @@ async function main() {
       step("⚠️ 无用户 profile，将以空 profile 启动");
     }
     step("清理 SingletonLock / SingletonCookie / SingletonSocket");
-    step("启动 Chrome（含 --remote-allow-origins=*, --no-first-run 等）");
+    step("启动 Chrome（含 --remote-allow-origins 本地白名单、--no-first-run 等）");
     step(
       `验证 http://127.0.0.1:${CDP_PORT}/json/version 来自本次启动的实例` +
         "（身份取得到且已变 + 进程存活 + 端口的 LISTEN 持有者就在这棵进程树里）"
@@ -916,7 +916,9 @@ async function main() {
   const chromeArgs = [
     `--remote-debugging-port=${CDP_PORT}`,
     `--user-data-dir=${debugProfile}`,
-    "--remote-allow-origins=*",
+    // 只放行本地回环 origin，禁止任意网页驱动调试器（debug profile 里带登录态 Cookie）。
+    // Node/CLI 客户端默认不带 Origin 不受此限制；DevTools 前端走 http://localhost:<port>。
+    `--remote-allow-origins=http://localhost:${CDP_PORT},http://127.0.0.1:${CDP_PORT}`,
     "--no-first-run",
     "--no-default-browser-check",
     "--disable-features=ChromeWhatsNewUI",
