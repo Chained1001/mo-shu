@@ -2,19 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
-## 未发布（v1.0.0 之后）
+## v1.0.1（2026-08-16）
 
-> 本轮为审计驱动的工程加固与瘦身，功能与方法论零裁剪，全部经静态零丢失比对 + 行为走查（隔离 LLM 完整版 vs 骨架版决策点一致）+ 全量回归验证。
+> 审计驱动的工程加固与瘦身 + 借鉴笔枢的方法论增强。功能与方法论零裁剪，全部经静态零丢失比对 + 行为走查（隔离 LLM 与真实 Claude Code 端到端）+ 全量回归验证。**版本变更：`agents_version` 25 → 26**（agent-references 内容更新，已部署项目重跑 `/moshu-setup` 后新开会话生效）；各 skill 版本推进（moshu/moshu-write/moshu-import/moshu-deslop/moshu-analyze/moshu-scan/moshu-cdp → 1.0.1，moshu-review → 1.1.2，moshu-setup → 1.2.8）。
 
 ### 审计修复（一致性 / 安全 / 维护）
 
-- **P0 一致性**：quality-checklist 三版本统一为权威版并纳入共享校验（此前 writer/reviewer/agent 用不同标准打分）；`reader-contract-and-progression.md` 补齐到 review/agent-references 消除悬空引用；20 个高频方法论 reference 纳入 shared-assets manifest sync（29 组 44 副本）；agents_version 一致性守卫（7 处声明以 moshu-setup 为权威，防升级漏改）。
+- **P0 一致性**：quality-checklist 三版本统一为权威版并纳入共享校验（此前 writer/reviewer/agent 用不同标准打分）；`reader-contract-and-progression.md` 补齐到 review/agent-references 消除悬空引用；20 个高频方法论 reference 纳入 shared-assets manifest sync（30 组 45 副本）；agents_version 一致性守卫（7 处声明以 moshu-setup 为权威，防升级漏改）。
 - **P1 安全**：CDP 调试器 `--remote-allow-origins=*` → 本地回环白名单（防任意网页驱动带登录态调试器）；dashboard `--allow-network` 强制 `--token`（PUT/DELETE 校验，timingSafeEqual）。
-- **P2 维护**：路由表显式声明仅支持长篇；导入触发词收窄（去单字"导入"）；check-degeneration 死字段清理；5 个 scraper 参数校验（`requireIntArg`）；`Math.max` 展开爆栈改 reduce；CI job 拆分（guards/regressions/deploy，首败不再遮蔽）。
+- **P2 维护**：路由表显式声明仅支持长篇；导入触发词收窄（去单字"导入"）；check-degeneration 死字段清理；5 个 scraper 参数校验（`requireIntArg`）；`Math.max` 展开爆栈改 reduce；CI job 拆分（guards/regressions/deploy，首败不再遮蔽）；cli-compat 触发分支修正（main→master，真实 Claude CLI 验证恢复生效）。
 
 ### 技能瘦身（P-A：入口骨架化）
 
-触发型 skill 的 SKILL.md 从"全量入口"重构为"入口骨架 + references 按需加载"（与 moshu-write 既有模式统一），规则文本逐字搬运零改写：
+触发型 skill 的 SKILL.md 从"全量入口"重构为"入口骨架 + references 按需加载"（与 moshu-write 既有模式统一），规则文本逐字搬运零改写，行为经真实 Claude Code 端到端验证等价：
 
 | Skill | SKILL.md | 流程承载 |
 |:--|:--|:--|
@@ -23,14 +23,15 @@ All notable changes to this project will be documented in this file.
 | moshu-deslop | 29KB → 7KB | `references/deslop-workflow.md` |
 | moshu-analyze | 30KB → 4.6KB | `references/analyze-workflow.md` |
 
-每次触发省约 1-1.5 万 token 固定上下文成本；4 个入口已纳入 doc-budget 防再膨胀。
+每次触发省约 1-1.5 万 token 固定上下文成本；4 个入口已纳入 doc-budget 防再膨胀；workflow-daily 同步瘦身释放预算余量（退役/初始化规则下沉权威文件）。
 
 ### 方法论增强（借鉴笔枢后的有机融合）
 
 - 角色深层动机：表层目标/深层欲望分离 + 核心信念作者视角（对/错/待揭示）。
 - 世界信息生态检查项（信息速度/知识载体/信息壁垒/传播失真，可选）。
 - 去AI味两句自检（句子可追问 + 句级信息增量）。
-- 连续性检测确定性化（正文最大章号 vs 追踪状态替代 mtime 猜测）+ 伏笔超期提醒；S1/S2 冲突显式落盘；世界级意图分流。
+- 连续性检测确定性化（正文最大章号 vs 追踪状态替代 mtime 猜测）+ 伏笔超期提醒；S1/S2 冲突显式落盘；世界级意图分流 + 事件因果链要求。
+- 核心梗定调句规范（≤50 字/专有名词/具体不空泛）；时间推进→暗线进展预期表；叙事债务记法（角色间承诺 vs 伏笔区分）。
 - 行为契约静态守卫（8 条关键写作约束防漂移）。
 
 ## v1.0.0
