@@ -2,7 +2,7 @@ name: Claude Code compatibility
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - '.claude-plugin/**'
       - '.github/workflows/cli-compat.yml'
