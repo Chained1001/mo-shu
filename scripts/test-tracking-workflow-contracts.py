@@ -287,7 +287,8 @@ def test_context_retirement_must_be_declared_not_silent() -> None:
         ),
         "explicit context retirement",
     )
-    daily = read("skills/moshu-write/references/workflow-daily.md")
+    # 退役规则压缩后权威在 tracking-transaction.md；workflow-daily 指向它，故拼接检查
+    daily = read("skills/moshu-write/references/workflow-daily.md") + read("skills/moshu-write/references/tracking-transaction.md")
     require_all(
         daily,
         ("delta.retired_context_items", "delta.retired_characters", "每章整份提交"),
