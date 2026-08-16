@@ -128,6 +128,8 @@ advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界�
 
 质量检查阶段，如果项目已部署 moshu-consistency-checker agent（检查 `.claude/agents/moshu-consistency-checker.md` 是否存在），spawn `Agent(subagent_type: "moshu-consistency-checker", prompt: "项目目录：{dir}\n检查范围：{本次写作的章节}\n检查类型：事实冲突+伏笔断线+角色属性不一致")` 执行一致性检查，获取 S1-S4 分级报告。如 agent 不可用，由主线程参照 quality-checklist.md 直接检查。
 
+**S1/S2 必须显式过桥**：报告中的每条 S1/S2 冲突必须当场显式判定并落盘其一——①已修复（改正文/细纲后复核该冲突不再成立，必要时重跑检查确认）；②进 `continuity_risks`（跨章风险，下章起持续核对）；③进 `next_chapter_commitments`（下一章必须修）。未判定的冲突不得进入下一章；S3/S4 按需记录，不强制。
+
 ### Agent 调用：moshu-narrative-writer（去AI味审查）
 
 质量检查阶段，如果项目已部署 moshu-narrative-writer agent（检查 `.claude/agents/moshu-narrative-writer.md` 是否存在），可 spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: "项目目录：{dir}\n任务描述：审查+去AI味\n检查范围：{本次写作的章节}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/必要信息的直接删，会丢才润色（删除受比例上限与字数下限约束，跌破下限改降AI重写）\n检查项按你自己的 7 Gate、禁止事项与写完后对话自检全量执行，其中否定翻转句式和台词里的工整否定清单不因脚本豁免台词而跳过")` 执行文字质量审查和去AI味检查。如 agent 不可用，由主线程直接执行，检查项对照 `references/anti-ai-writing.md` 与 `references/banned-words.md`。

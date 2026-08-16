@@ -145,6 +145,14 @@ function trackingCheckpointIssue(book, requireState = false, expectedLastCommitt
   return null
 }
 
+function readTrackingDocument(book) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(book, "追踪", "_tracking-state.json"), "utf8"))
+  } catch {
+    return null
+  }
+}
+
 function continuityFindings(root) {
   const messages = []
   for (const book of discoverAllBooks(root)) {
@@ -161,15 +169,47 @@ function continuityFindings(root) {
     if (checkpointIssue) {
       messages.push(`[continuity] ${safeRelative(root, book)}：${checkpointIssue}。`)
     }
-    if (chapters.length && fs.existsSync(context)) {
+    // 确定性 staleness：正文最大章号超过追踪已提交章号 = 写了章没提交事务（替代 mtime 猜测）。
+    const stateDoc = readTrackingDocument(book)
+    const lastCommitted =
+      stateDoc && Number.isInteger(stateDoc.last_committed_chapter) ? stateDoc.last_committed_chapter : null
+    let maxChapter = 0
+    for (const file of chapters) {
+      const match = path.basename(file).match(/^第(\d+)章/)
+      if (match) maxChapter = Math.max(maxChapter, parseInt(match[1], 10))
+    }
+    if (lastCommitted !== null && maxChapter > lastCommitted) {
+      messages.push(
+        `[continuity] ${safeRelative(root, book)}：正文已写到第${maxChapter}章，但追踪只提交到第${lastCommitted}章——为该章提交 tracking_commit.py 事务、check 通过后再续写，禁止分别手改 上下文.md/伏笔.md。`
+      )
+    }
+    // 同章号改写/回炉提醒：state 可解析且章号未超追踪时，正文 mtime 新于续写状态卡
+    // （git checkout/拷贝也可能触发，仅提醒；state 缺失/损坏时 checkpointIssue 已报，不再叠加）。
+    if (lastCommitted !== null && chapters.length && fs.existsSync(context) && maxChapter <= lastCommitted) {
       try {
         const newest = Math.max(...chapters.map((file) => fs.statSync(file).mtimeMs))
         const contextTime = fs.statSync(context).mtimeMs
         if (newest > contextTime + 1000) {
           const latest = chapters.reduce((left, right) => fs.statSync(left).mtimeMs > fs.statSync(right).mtimeMs ? left : right)
-          messages.push(`[continuity] ${safeRelative(root, book)}：正文已更新到「${path.basename(latest)}」但续写状态卡更早——为该章提交 tracking_commit.py 事务、check 通过后再续写，禁止分别手改 上下文.md/伏笔.md。`)
+          messages.push(`[continuity] ${safeRelative(root, book)}：正文「${path.basename(latest)}」比续写状态卡新——若刚改写/回炉该章，为它提交 tracking_commit.py 的 mode=revision 事务并 check 通过后再续写；git checkout 等操作也可能触发此提醒。`)
         }
       } catch {}
+    }
+
+    // 伏笔超期：已埋且超过 50 章未回收（与 consistency-checker 的 S4 阈值一致，非硬性）。
+    if (lastCommitted !== null && stateDoc && stateDoc.foreshadow) {
+      for (const [identifier, row] of Object.entries(stateDoc.foreshadow)) {
+        if (
+          row &&
+          row.status === "已埋" &&
+          Number.isInteger(row.planted_chapter) &&
+          lastCommitted - row.planted_chapter > 50
+        ) {
+          messages.push(
+            `[continuity] ${safeRelative(root, book)}：伏笔 ${identifier} 埋于第${row.planted_chapter}章，已 ${lastCommitted - row.planted_chapter} 章未回收（超 50 章，非硬性）——必要时规划回收或显式更新状态。`
+          )
+        }
+      }
     }
 
     // 续写状态卡预算：上下文.md 由事务工具整份重建，硬上限 12288 字节。
