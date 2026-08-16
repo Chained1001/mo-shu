@@ -62,6 +62,10 @@ jobs:
         run: bash scripts/check-behavior-contracts.sh
       - name: Behavior-contract regression
         run: python3 scripts/test-behavior-contracts.py
+      - name: Check agents-version sync
+        run: bash scripts/check-agents-version-sync.sh
+      - name: Agents-version-sync regression
+        run: python3 scripts/test-agents-version-sync.py
       - name: Guard against bare python3 invocations
         run: bash scripts/check-python-invocation.sh
       - name: Guard hook locale safety (LC_ALL=C + no full-width char classes)
