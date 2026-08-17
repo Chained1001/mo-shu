@@ -121,7 +121,11 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
    - 列出所有已部署的文件
    - 列出需要注意的事项（如已有配置已合并）
    - **⚠️ 重启提示（必须醒目输出）**：本次部署写入了 `.claude/agents/`，但这些 custom agent 只在「会话启动」时才会被 Claude Code 注册成 `subagent_type`。**请新开一个 Claude Code 会话再开始写作**，否则当前会话里 moshu-review / moshu-write 等想 spawn `moshu-architect`、`moshu-narrative-writer` 等时会拿到「subagent_type 不可用」并降级 solo（单视角，失去多 agent 协作）。判断是否生效：新会话里跑 `/moshu-review`，报告头若是 `Effective Mode: full/lean` 即注册成功；若是 `Fallback: ... -> solo` 说明还在旧会话或未注册。
-   - 重启后即可使用 `/moshu-write`
+   - 重启后即可使用。**新项目下一步推荐（按最优路径，可跳步）**：
+     1. 还没想好写什么 → 先 `/moshu-scan` 扫榜定选题方向（可选但推荐）
+     2. 有方向、想学爆款写法 → `/moshu-analyze` 拆对标书（可选；拆到 Stage 3 才有情绪模块/节奏主产物，只想试水可只拆黄金三章）
+     3. 直接开书 → `/moshu-write`（无对标也能开书，写正文前才需要主产物）
+     已有小说要导入 → `/moshu-import`（不走扫榜/拆文）
 
 ---
 
@@ -169,6 +173,8 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 部署完成，开始写作 | moshu-write | `/moshu-write` |
+| 新项目·先扫榜定选题（可选） | moshu-scan | `/moshu-scan` |
+| 新项目·拆对标学写法（可选） | moshu-analyze | `/moshu-analyze` |
+| 部署完成，直接开书 | moshu-write | `/moshu-write` |
 | 导入已有小说做拆解 | moshu-import | `/moshu-import` |
 | 需要浏览器登录态（扫榜/拆文取原文） | moshu-cdp | `/moshu-cdp` |
