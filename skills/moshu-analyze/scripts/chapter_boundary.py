@@ -3,7 +3,7 @@
 """章节边界解析器（moshu-analyze Stage 0 标准工具）
 
 把原文解析为章节边界表（章号/标题/起始行/字数），做连续性校验，
-落盘 章节边界.md 并组装 _progress.md 骨架。AI 拆书时直接调用本脚本，
+组装 _progress.md 骨架（含「章节边界」节，唯一真值）。AI 拆书时直接调用本脚本，
 禁止临时手写解析脚本（中文数字转换易踩坑）。
 
 用法（按仓库解释器探测形态调用，Windows 禁止裸 python3）:
@@ -12,9 +12,9 @@
                              [--author {作者}] [--encoding utf-8] [--dry-run]
 
 输出:
-  - stdout: 统计报告（章数/卷数/总字数去空白/平均每章/重复/跳号/格式）
-  - {outdir}/章节边界.md:   边界表（章号|标题|起始行|字数，精确字符数去空白）
-  - {outdir}/_progress.md:  骨架（不存在时生成；存在时不动，由 AI 按 pipeline-ops 更新）
+  - stdout: 统计报告（章数/卷数/总字数去空白/平均每章/重复/跳号/格式/卷段）
+  - {outdir}/_progress.md:  骨架（含「章节边界」节，唯一切片真值；不存在时生成，存在时不动，
+                             由 AI 按 pipeline-ops 更新规范维护）
   - --dry-run 只打印报告不写文件
 """
 import argparse
@@ -162,14 +162,12 @@ def main():
 
     os.makedirs(args.outdir, exist_ok=True)
 
-    # 边界表（4 列，精确字数）
+    # 边界表（4 列，精确字数）——唯一真值落盘于 _progress.md「章节边界」节，
+    # 不再生成独立 章节边界.md（避免双真值漂移，pipeline-ops 以 _progress.md 为准）
     tbl = ['| 章号 | 标题 | 起始行 | 字数 |', '|------|------|--------|------|']
     for num, title, start, chars in rows:
         title_esc = title.replace('|', '\\|')
         tbl.append(f'| {num} | {title_esc} | {start} | {chars} |')
-    with io.open(os.path.join(args.outdir, '章节边界.md'), 'w', encoding='utf-8') as f:
-        f.write('# 章节边界（唯一切片真值）\n\n' + '\n'.join(tbl) + '\n')
-    print(f'已写入: {os.path.join(args.outdir, "章节边界.md")} ({len(rows)} 行)')
 
     # _progress.md 骨架（仅当不存在）
     prog_path = os.path.join(args.outdir, '_progress.md')
