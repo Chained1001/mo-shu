@@ -24,6 +24,14 @@ import re
 import sys
 from datetime import date
 
+# 强制 UTF-8 输出：Windows 控制台 GBK 代码页会把中文输出变乱码，
+# Claude Code/管道按 UTF-8 解码时读到乱码字节（2026-08 实测）。
+try:
+    sys.stdout.reconfigure(encoding='utf-8')
+    sys.stderr.reconfigure(encoding='utf-8')
+except Exception:
+    pass
+
 CHAP_RE = re.compile(r'^第\s*([0-9]+|[一二三四五六七八九十百千零两]+)\s*章\s*(.*)$')
 VOL_RE = re.compile(r'^第\s*([0-9]+|[一二三四五六七八九十百千零两]+)\s*卷\s*(.*)$')
 WS_RE = re.compile(r'\s')
