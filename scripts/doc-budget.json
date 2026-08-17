@@ -27,8 +27,8 @@
                   },
                   {
                       "path":  "skills/moshu-write/references/workflow-setup.md",
-                      "budget":  12300,
-                      "why":  "开书/补纲路径加载"
+                      "budget":  12400,
+                      "why":  "开书/补纲路径加载。预算 12300→12400：首批细纲批次边界改为默认 5 章（原 10 章封顶，实测痛点：一次性 10 章费 token 且正文变化导致后文细纲老化），批次规则值得每个开书会话付"
                   },
                   {
                       "path":  "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
