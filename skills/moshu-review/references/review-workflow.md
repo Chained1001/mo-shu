@@ -406,6 +406,9 @@ Rubric Source: file | embedded fallback
 
 ### 继承到下一批
 {仅分批审查填写：逐条列 location、issue、预计核查/兑现范围；无则写“无”}
+
+### 作者裁决（必须输出）
+{全部接受 / 修改后接受 / 打回重写（打回需指明从哪章重写）；用户未裁决前不得把审查发现视作已处理。solo 不写追踪：写作建议仍进 `.moshu-review/review-log`；S1/S2 由作者决定后续处理（重跑 full/lean 审查或手动修复），不落追踪}
 ```
 
 ---
