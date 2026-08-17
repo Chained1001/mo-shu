@@ -2,7 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
-## v1.0.1（2026-08-16）
+## v1.0.2（未发布）
+
+> 审计驱动的第二轮：热路径入口成本工程化 + 借鉴笔枢的执行力三步（强制/度量/恢复）。规则文本零裁剪（静态零丢失 87 行验证 + 真实 Claude Code 走查），全量回归 + CI 三平台验证。
+
+### 入口成本工程化
+
+- **moshu-write 入口下沉**（26.2KB → 8.9KB）：Phase 4 契约块按"付费频率"下沉——结构树/产物映射表 → `references/artifact-protocols.md`；缺失文件处理/对标分析权威优先级/追踪文件体积 → `references/workflow-chapter.md`「写前准备契约」节（写章必读，路由/开书不再付）；删除与结构树重复的文件组织原则 5 条。预算显式调整：SKILL 13200→9000、chapter 11850→14000、日更路径 36400→33500、开书 25500→22000。
+- **moshu-scan 骨架化回退**：16KB 紧凑流水线入口骨架化后全读开销 +6%、无逐节收益（不满足"入口臃肿"前提），恢复原版并删除 scan-workflow.md；CONTRIBUTING.md 沉淀「入口瘦身（骨架化）规范」（>25KB / 逐节收益 / 真实走查，三前提缺一不可）+「大文件设计指南」（付费频率/信息密度/原子性/显式背书四判据）。
+
+### 执行力三步（借鉴笔枢）
+
+- **强制（hooks 扩面）**：写前守卫新增主产物门——有对标项目（对标/ 视图非空或拆文库/ 含 剧情/）时情绪模块/节奏缺失即拦截并提示 repair_action，写前 fail-fast 从 agent 遵从变为环境必然；无对标项目放行；纯 bash 不依赖 node。
+- **度量（evals）**：新增 `evals/` 端到端质量评测——基准样本对（AI 味缺陷 vs 干净）× 全部确定性检测器，断言缺陷命中 > 干净且干净 blocking=0；已入 CI runtime-regressions。
+- **恢复（恢复协议）**：新增 `references/recovery-protocol.md`——散落 7 处的恢复规则按 A 环境/B 状态/C 主产物/D 模型四类归位（判定表 + 恢复动作 + 不做什么边界），workflow-chapter/daily/revision 挂引用。
+
+### 审计修复
+
+- 日更事务新增暗线进展核对（按 story_time 对照时间推进表，防世界观"冻住"）；anti-ai-writing 标题 10→12 种（模式 11/12 早已存在，4 副本同步）。
+- CI 追踪契约回归读取范围跟随契约下沉（workflow-chapter.md）；本地回归清单补齐 3 项与 CI 完全对齐（此前本地漏跑 test-outline-copy/test-tracking-workflow-contracts/test-tracking-commit，导致本地全绿 CI 红）。
+
+
 
 > 审计驱动的工程加固与瘦身 + 借鉴笔枢的方法论增强。功能与方法论零裁剪，全部经静态零丢失比对 + 行为走查（隔离 LLM 与真实 Claude Code 端到端）+ 全量回归验证。**版本变更：`agents_version` 25 → 26**（agent-references 内容更新，已部署项目重跑 `/moshu-setup` 后新开会话生效）；各 skill 版本推进（moshu/moshu-write/moshu-import/moshu-deslop/moshu-analyze/moshu-scan/moshu-cdp → 1.0.1，moshu-review → 1.1.2，moshu-setup → 1.2.8）。
 

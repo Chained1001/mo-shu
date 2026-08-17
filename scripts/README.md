@@ -27,7 +27,9 @@
 | 脚本 | 测什么 | 何时跑 |
 |---|---|---|
 | `test-ai-patterns.sh` | 确定性 AI 句式检测器 `check-ai-patterns.js` 回归 | CI |
+| `test-outline-copy.sh` | 细纲照搬检测器 `check-outline-copy.js` 回归 | CI |
 | `test-degeneration.sh` | 模型退化检测器 `check-degeneration.js` 回归 | CI |
+| `eval-prose-quality.sh` | 端到端正文质量评测：整篇基准样本 × 全部确定性检测器，断言缺陷样本命中 > 干净样本且干净 blocking=0（`evals/`） | CI（runtime-regressions）；检测器/方法论改动后 |
 | `test-prose-backstop-hook.sh` | `check-prose-after-write.sh` 回归 | CI |
 | `test-story-continuity.sh` | `detect-story-gaps.sh` 跨批连续性兜底回归 | CI |
 | `test-tracking-workflow-contracts.py` | 文件优先追踪契约：唯一事务写入口、续写状态卡（固定 7 栏）、导入基线、作者/读者时间线隔离、旧结构清零 | CI |

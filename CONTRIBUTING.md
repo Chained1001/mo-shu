@@ -126,6 +126,7 @@ node scripts/test-scan-runtime.js
 bash scripts/test-ai-patterns.sh
 bash scripts/test-outline-copy.sh
 bash scripts/test-degeneration.sh
+bash scripts/eval-prose-quality.sh
 bash scripts/test-prose-backstop-hook.sh
 bash scripts/test-story-continuity.sh
 python3 scripts/test-tracking-workflow-contracts.py

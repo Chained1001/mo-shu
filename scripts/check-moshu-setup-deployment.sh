@@ -579,6 +579,11 @@ mv "$guard_root/book/追踪/_state.bak" "$guard_root/book/追踪/_tracking-state
 # 主产物门：对标视图有书但情绪模块/节奏缺失 → 拦截；补齐 → 放行；拆文库回退路径 → 放行
 mkdir -p "$guard_root/book/对标/某书/剧情"
 [ "$(run_guard 'book/正文/第1章_开端.md')" = "2" ] || fail "guard did not BLOCK long prose when benchmark view lacks emotion module"
+# 已存在正文（deslop 去AI味 / workflow-revision 回炉路径）→ 主产物门放行，不误伤改稿
+: > "$guard_root/book/正文/第1章_开端.md"
+[ "$(run_guard 'book/正文/第1章_开端.md')" = "0" ] || fail "guard wrongly blocked EXISTING prose when benchmark artifacts missing (deslop/revision path)"
+rm "$guard_root/book/正文/第1章_开端.md"
+[ "$(run_guard 'book/正文/第1章_开端.md')" = "2" ] || fail "guard did not BLOCK long prose when benchmark view lacks emotion module (re-check after delete)"
 : > "$guard_root/book/对标/某书/剧情/情绪模块.md"
 [ "$(run_guard 'book/正文/第1章_开端.md')" = "2" ] || fail "guard did not BLOCK long prose when benchmark view lacks rhythm"
 : > "$guard_root/book/对标/某书/剧情/节奏.md"

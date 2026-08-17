@@ -82,6 +82,8 @@ jobs:
         run: bash scripts/test-prose-backstop-hook.sh
       - name: Story continuity backstop regression
         run: bash scripts/test-story-continuity.sh
+      - name: End-to-end prose quality eval (benchmark samples)
+        run: bash scripts/eval-prose-quality.sh
       - name: Tracking workflow contract regression
         run: python3 scripts/test-tracking-workflow-contracts.py
       - name: Tracking transaction behavior regression
