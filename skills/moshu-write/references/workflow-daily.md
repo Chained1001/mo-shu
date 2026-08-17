@@ -22,6 +22,8 @@
 
 ## Step 1：快速上下文加载
 
+**审查记录**：`.moshu-review/review-log`（如有）读最新未解决写作建议，转为本批约束。
+
 **可选：使用 moshu-explorer agent 批量加载上下文**。如果项目已部署 moshu-explorer agent（检查 `.claude/agents/moshu-explorer.md` 是否存在），可以用 `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={上一步 check 的值}，state_revision={上一步 check 的值}")` 执行 `context_load` 查询，一次获取全部写作上下文。spawn 返回后直接使用其 results，跳过下方手动加载步骤。如果 agent 不可用或返回不完整，回退到下方手动加载。
 
 手动加载（默认方式）：
