@@ -498,7 +498,8 @@ assert_grep '剧情/节奏\.md.*missing_primary_contract|missing_primary_contrac
 assert_no_grep 'legacy_deconstruction|contract_version.*legacy|pre-v12' "$SKILL_DIR/references/templates/agents/moshu-explorer.md" "moshu-explorer must not keep legacy benchmark branches"
 assert_grep 'missing_primary_contract: true|missing_primary_contract": true' "$SKILL_DIR/references/templates/agents/moshu-explorer.md" "moshu-explorer must emit missing_primary_contract for broken canonical artifacts"
 assert_grep 'repair_action.*Stage 3|Stage 3.*repair_action|重跑 /moshu-analyze Stage 3' "$SKILL_DIR/references/templates/agents/moshu-explorer.md" "moshu-explorer must provide a repair action instead of silent fallback"
-assert_grep 'missing_primary_contract' "$REPO_ROOT/skills/moshu-write/SKILL.md" "moshu-write must not silently fallback for missing primary artifacts"
+grep -Eq 'missing_primary_contract' "$REPO_ROOT/skills/moshu-write/SKILL.md" "$REPO_ROOT/skills/moshu-write/references/workflow-chapter.md" \
+  || fail "moshu-write must not silently fallback for missing primary artifacts (SKILL.md / workflow-chapter.md)"
 assert_grep '内容概括（五段式）|情节安排（多线）|人物关系和出场顺序|结尾设定和钩子' "$SKILL_DIR/references/templates/agents/moshu-architect.md" "moshu-architect must output v13 chapter blueprint fields"
 assert_grep '逻辑线|人物关系变化|行动成本（可无）/收益归属|结尾设定' "$SKILL_DIR/references/templates/agents/moshu-consistency-checker.md" "moshu-consistency-checker must consume current outline blueprint fields"
 assert_grep '语气标点谱系' "$SKILL_DIR/references/templates/agents/moshu-narrative-writer.md" "moshu-narrative-writer must enforce v13 tone punctuation"
