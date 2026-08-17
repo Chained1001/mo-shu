@@ -75,7 +75,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 `-g` installs globally (available in every directory); drop `-g` to install only into the current directory. Re-run the same command to update.
 
-After installing, run `/moshu-setup` from your writing project root to deploy. After updating, re-run `/moshu-setup` to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/Chained1001/mo-shu/releases).
+**Open a new Claude Code session after installing** (skills are loaded at session start; a session that was open before the install may not be able to trigger `/moshu-setup`), then run `/moshu-setup` from your writing project root to deploy. Open yet another fresh session before writing (see the agents note below). After updating, re-run `/moshu-setup` to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/Chained1001/mo-shu/releases).
 
 **Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (moshu-architect, moshu-narrative-writer, moshu-consistency-checker, etc.) are written into your project's `.claude/agents/` by `/moshu-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/moshu-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
 
