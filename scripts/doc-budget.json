@@ -27,7 +27,7 @@
                   },
                   {
                       "path":  "skills/moshu-write/references/workflow-setup.md",
-                      "budget":  13200,
+                      "budget":  13250,
                       "why":  "开书/补纲路径加载。预算 12300→12400：首批细纲批次边界改为默认 5 章（原 10 章封顶，实测痛点：一次性 10 章费 token 且正文变化导致后文细纲老化），批次规则值得每个开书会话付；→12500：开新卷衔接卷复盘候选（全面升级）；→12900：方法论补强（细纲时间锚点/世界观可选模块/信息差 INF 引用/创意约束对照，开书路径付）；→13100：批末交叉核对（卷纲↔细纲埋设章/时间口径/钩子衔接，实测抓到产物矛盾）"
                   },
                   {
@@ -83,7 +83,7 @@
                   },
                   {
                       "label":  "长篇开书",
-                      "budget":  22100,
+                      "budget":  22150,
                       "files":  [
                                     "skills/moshu-write/SKILL.md",
                                     "skills/moshu-write/references/workflow-setup.md"
