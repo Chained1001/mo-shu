@@ -544,14 +544,18 @@ async function scrapeRank(rankTypeId) {
 
 async function main() {
   // 参数错误是配置问题，不是单个榜单的瞬时失败：先于 per-榜单隔离快速失败
-  if (RANKTYPE !== "all" && !RANK_TYPES.some((rank) => rank.id === RANKTYPE)) {
-    throw new Error(`未知 --type: ${RANKTYPE}`);
+  const rankTypeList = RANKTYPE === "all"
+    ? RANK_TYPES.map((r) => r.id)
+    : RANKTYPE.split(",").map((s) => s.trim()).filter(Boolean);
+  const unknown = rankTypeList.filter((id) => !RANK_TYPES.some((r) => r.id === id));
+  if (unknown.length > 0) {
+    throw new Error(`未知 --type: ${unknown.join(",")}`);
   }
   if (!["auto", "mobile", "cdp"].includes(SCRAPE_MODE)) {
     throw new Error(`未知 --mode: ${SCRAPE_MODE}（可选 auto/mobile/cdp）`);
   }
 
-  const rankTypes = RANKTYPE === "all" ? RANK_TYPES.map((r) => r.id) : [RANKTYPE];
+  const rankTypes = rankTypeList;
   let written = 0;
   let failed = 0;
   const partialReasons = [];

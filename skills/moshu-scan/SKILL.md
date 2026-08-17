@@ -63,7 +63,7 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 
 **输出规范**：详见 [references/scan-output-format.md](references/scan-output-format.md)，包含各平台字段定义、输出模板。
 
-**起点采集目标**（优先运行 `node scripts/qidian-rank-scraper.js --type {榜单} --outdir {输出目录}`；默认 `--mode auto` 会先用 `https://m.qidian.com` 移动端 SSR，PC/CDP 只作回退）：
+**起点采集目标**（优先运行 `node scripts/qidian-rank-scraper.js --type {榜单} --outdir {输出目录}`；**多榜单用逗号分隔一次采集**，如 `--type hotsales,yuepiao,signnewbook`，避免逐榜多次调用；默认 `--mode auto` 会先用 `https://m.qidian.com` 移动端 SSR，PC/CDP 只作回退）：
 
 | 榜单 | URL | 核心字段 |
 |------|-----|----------|
@@ -179,6 +179,8 @@ node scripts/jjwxc-rank-scraper.js --type 12 --list-only                 # 只�
 ---
 
 ### Phase 3：数据分析
+
+**优先运行 `node scripts/scan-analyze.js --dir {扫榜目录} [--genre {题材}] [--dup] [--full]`** 做确定性提取（题材分布 / 指定题材条目 / 跨榜重复样本 / 完整简介），**禁止临时写内联解析脚本**（2026-08 实测：AI 手写 grep 会把「玄幻·东方玄幻」重复计数，脚本按条目计数口径更准）。脚本输出直接作为分析输入。
 
 根据用户选择的平台，结合已获取的数据做以下分析：
 
