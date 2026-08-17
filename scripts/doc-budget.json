@@ -1,103 +1,103 @@
 {
-    "_comment":  [
-                     "热路径文档预算。度量 = 去掉所有空白后的字符数（中英文都算，改标点/换行不影响）。",
-                     "只登记「每次会话或每章都会进模型上下文」的文件；冷路径（moshu-setup 部署、UPGRADING、",
-                     "拆文库模板）不在此表，按需增长不受限。",
-                     "",
-                     "预算超了怎么办：先删等量的旧文本，删不动再在本文件里调高 budget 并在 PR 里说明为什么",
-                     "这段新规则值得每个用户每次会话都付。调 budget 是允许的，但必须是一次显式决定。",
-                     "",
-                     "新增热路径文件时把它加进来，否则它不受任何约束。"
-                 ],
-    "files":  [
-                  {
-                      "path":  "skills/moshu-write/SKILL.md",
-                      "budget":  9000,
-                      "why":  "长篇任一场景都无条件加载。预算 13200→9000：Phase 4 契约块（结构树/产物映射表→artifact-protocols.md，缺失处理/权威优先级/追踪体积→workflow-chapter.md 写前准备契约）下沉，入口只留路由与索引（P-A 审计）"
-                  },
-                  {
-                      "path":  "skills/moshu-write/references/workflow-daily.md",
-                      "budget":  10900,
-                      "why":  "日更每次会话加载，且与 SKILL.md 叠加。预算 10800→10900：新增审查记录消费点与卷复盘触发（v7 学习落地，日更路径每次会话付）"
-                  },
-                  {
-                      "path":  "skills/moshu-write/references/workflow-chapter.md",
-                      "budget":  14100,
-                      "why":  "单章正文与质量检查，日更/单章路径都加载。含 spawn prompt 的正文形状层约束——细纲边界只传「不许自造」半边时，子代理会一条情节点一段平推（#255 的复发路径），形状半边必须随 prompt 传达；预算 11850→14000：承接入口下沉的缺失文件处理/对标分析权威优先级/追踪文件体积契约（写章路径才付，路由/开书不再付）；→14100：方法论补强（写前信息差登记核对项，写章路径付）"
-                  },
-                  {
-                      "path":  "skills/moshu-write/references/workflow-setup.md",
-                      "budget":  13250,
-                      "why":  "开书/补纲路径加载。预算 12300→12400：首批细纲批次边界改为默认 5 章（原 10 章封顶，实测痛点：一次性 10 章费 token 且正文变化导致后文细纲老化），批次规则值得每个开书会话付；→12500：开新卷衔接卷复盘候选（全面升级）；→12900：方法论补强（细纲时间锚点/世界观可选模块/信息差 INF 引用/创意约束对照，开书路径付）；→13100：批末交叉核对（卷纲↔细纲埋设章/时间口径/钩子衔接，实测抓到产物矛盾）"
-                  },
-                  {
-                      "path":  "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
-                      "budget":  13150,
-                      "why":  "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则"
-                  },
-                  {
-                      "path":  "skills/moshu-write/references/writing-craft.md",
-                      "budget":  8300,
-                      "why":  "moshu-narrative-writer 每章写作时读"
-                  },
-                  {
-                      "path":  "skills/moshu-write/references/anti-ai-writing.md",
-                      "budget":  14300,
-                      "why":  "去AI味每章读。预算 13900→14300：新增模式 11 悖论句式/模式 12 物化结尾（高频 AI 味，每章检测时付）"
-                  },
-                  {
-                      "path":  "skills/moshu-write/references/banned-words.md",
-                      "budget":  4000,
-                      "why":  "禁用词扫描每章读。预算 3800→4000：新增翻案腔变体/模型路标词/名词化/提示性冒号清单（借鉴 human-writing MIT），每章禁用词扫描要付，且完整规则由 check-ai-patterns.js 承载、此表只留提纲"
-                  },
-                  {
-                      "path":  "skills/moshu-review/SKILL.md",
-                      "budget":  4000,
-                      "why":  "触发 /moshu-review 时入口全量进上下文（P-A 骨架化后约 2.6K 去空白；预算防重新膨胀到 30KB 级，详细流程在 references/review-workflow.md 按需加载）"
-                  },
-                  {
-                      "path":  "skills/moshu-import/SKILL.md",
-                      "budget":  3500,
-                      "why":  "触发 /moshu-import 时入口全量进上下文（P-A 骨架化后约 2.5K 去空白；防膨胀，流程在 references/import-workflow.md）"
-                  },
-                  {
-                      "path":  "skills/moshu-deslop/SKILL.md",
-                      "budget":  4500,
-                      "why":  "触发 /moshu-deslop 时入口全量进上下文（P-A 骨架化后约 3.4K 去空白；防膨胀，流程在 references/deslop-workflow.md）"
-                  },
-                  {
-                      "path":  "skills/moshu-analyze/SKILL.md",
-                      "budget":  3500,
-                      "why":  "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）"
-                  }
-              ],
-    "paths":  [
-                  {
-                      "label":  "长篇日更主会话",
-                      "budget":  33900,
-                      "files":  [
-                                    "skills/moshu-write/SKILL.md",
-                                    "skills/moshu-write/references/workflow-daily.md",
-                                    "skills/moshu-write/references/workflow-chapter.md"
-                                ]
-                  },
-                  {
-                      "label":  "长篇开书",
-                      "budget":  22150,
-                      "files":  [
-                                    "skills/moshu-write/SKILL.md",
-                                    "skills/moshu-write/references/workflow-setup.md"
-                                ]
-                  },
-                  {
-                      "label":  "正文 agent 上下文",
-                      "budget":  39400,
-                      "files":  [
-                                    "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
-                                    "skills/moshu-write/references/writing-craft.md",
-                                    "skills/moshu-write/references/anti-ai-writing.md",
-                                    "skills/moshu-write/references/banned-words.md"
-                                ]
-                  }
-              ]
+    "_comment": [
+        "热路径文档预算。度量 = 去掉所有空白后的字符数（中英文都算，改标点/换行不影响）。",
+        "只登记「每次会话或每章都会进模型上下文」的文件；冷路径（moshu-setup 部署、UPGRADING、",
+        "拆文库模板）不在此表，按需增长不受限。",
+        "",
+        "预算超了怎么办：先删等量的旧文本，删不动再在本文件里调高 budget 并在 PR 里说明为什么",
+        "这段新规则值得每个用户每次会话都付。调 budget 是允许的，但必须是一次显式决定。",
+        "",
+        "新增热路径文件时把它加进来，否则它不受任何约束。"
+    ],
+    "files": [
+        {
+            "path": "skills/moshu-write/SKILL.md",
+            "budget": 9000,
+            "why": "长篇任一场景都无条件加载。预算 13200→9000：Phase 4 契约块（结构树/产物映射表→artifact-protocols.md，缺失处理/权威优先级/追踪体积→workflow-chapter.md 写前准备契约）下沉，入口只留路由与索引（P-A 审计）"
+        },
+        {
+            "path": "skills/moshu-write/references/workflow-daily.md",
+            "budget": 11000,
+            "why": "日更每次会话加载，且与 SKILL.md 叠加。预算 10800→10900：新增审查记录消费点与卷复盘触发（v7 学习落地，日更路径每次会话付）；→11000：设定转正规则（故事对象两阶段）"
+        },
+        {
+            "path": "skills/moshu-write/references/workflow-chapter.md",
+            "budget": 14100,
+            "why": "单章正文与质量检查，日更/单章路径都加载。含 spawn prompt 的正文形状层约束——细纲边界只传「不许自造」半边时，子代理会一条情节点一段平推（#255 的复发路径），形状半边必须随 prompt 传达；预算 11850→14000：承接入口下沉的缺失文件处理/对标分析权威优先级/追踪文件体积契约（写章路径才付，路由/开书不再付）；→14100：方法论补强（写前信息差登记核对项，写章路径付）"
+        },
+        {
+            "path": "skills/moshu-write/references/workflow-setup.md",
+            "budget": 13300,
+            "why": "开书/补纲路径加载。预算 12300→12400：首批细纲批次边界改为默认 5 章（原 10 章封顶，实测痛点：一次性 10 章费 token 且正文变化导致后文细纲老化），批次规则值得每个开书会话付；→12500：开新卷衔接卷复盘候选（全面升级）；→12900：方法论补强（细纲时间锚点/世界观可选模块/信息差 INF 引用/创意约束对照，开书路径付）；→13100：批末交叉核对（卷纲↔细纲埋设章/时间口径/钩子衔接，实测抓到产物矛盾）；→13300：设定建档标计划状态"
+        },
+        {
+            "path": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
+            "budget": 13150,
+            "why": "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则"
+        },
+        {
+            "path": "skills/moshu-write/references/writing-craft.md",
+            "budget": 8300,
+            "why": "moshu-narrative-writer 每章写作时读"
+        },
+        {
+            "path": "skills/moshu-write/references/anti-ai-writing.md",
+            "budget": 14300,
+            "why": "去AI味每章读。预算 13900→14300：新增模式 11 悖论句式/模式 12 物化结尾（高频 AI 味，每章检测时付）"
+        },
+        {
+            "path": "skills/moshu-write/references/banned-words.md",
+            "budget": 4000,
+            "why": "禁用词扫描每章读。预算 3800→4000：新增翻案腔变体/模型路标词/名词化/提示性冒号清单（借鉴 human-writing MIT），每章禁用词扫描要付，且完整规则由 check-ai-patterns.js 承载、此表只留提纲"
+        },
+        {
+            "path": "skills/moshu-review/SKILL.md",
+            "budget": 4000,
+            "why": "触发 /moshu-review 时入口全量进上下文（P-A 骨架化后约 2.6K 去空白；预算防重新膨胀到 30KB 级，详细流程在 references/review-workflow.md 按需加载）"
+        },
+        {
+            "path": "skills/moshu-import/SKILL.md",
+            "budget": 3500,
+            "why": "触发 /moshu-import 时入口全量进上下文（P-A 骨架化后约 2.5K 去空白；防膨胀，流程在 references/import-workflow.md）"
+        },
+        {
+            "path": "skills/moshu-deslop/SKILL.md",
+            "budget": 4500,
+            "why": "触发 /moshu-deslop 时入口全量进上下文（P-A 骨架化后约 3.4K 去空白；防膨胀，流程在 references/deslop-workflow.md）"
+        },
+        {
+            "path": "skills/moshu-analyze/SKILL.md",
+            "budget": 3500,
+            "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）"
+        }
+    ],
+    "paths": [
+        {
+            "label": "长篇日更主会话",
+            "budget": 34000,
+            "files": [
+                "skills/moshu-write/SKILL.md",
+                "skills/moshu-write/references/workflow-daily.md",
+                "skills/moshu-write/references/workflow-chapter.md"
+            ]
+        },
+        {
+            "label": "长篇开书",
+            "budget": 22200,
+            "files": [
+                "skills/moshu-write/SKILL.md",
+                "skills/moshu-write/references/workflow-setup.md"
+            ]
+        },
+        {
+            "label": "正文 agent 上下文",
+            "budget": 39400,
+            "files": [
+                "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
+                "skills/moshu-write/references/writing-craft.md",
+                "skills/moshu-write/references/anti-ai-writing.md",
+                "skills/moshu-write/references/banned-words.md"
+            ]
+        }
+    ]
 }
