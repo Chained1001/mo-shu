@@ -6,8 +6,9 @@
 落盘 章节边界.md 并组装 _progress.md 骨架。AI 拆书时直接调用本脚本，
 禁止临时手写解析脚本（中文数字转换易踩坑）。
 
-用法:
-  python3 chapter-boundary.py --input {原文路径} --outdir {拆文库/{书}/} --book {书名}
+用法（按仓库解释器探测形态调用，Windows 禁止裸 python3）:
+  for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
+  "$PYBIN" chapter_boundary.py --input {原文路径} --outdir {拆文库/{书}/} --book {书名}
                              [--author {作者}] [--encoding utf-8] [--dry-run]
 
 输出:
@@ -143,6 +144,8 @@ def main():
     # 报告
     print(f'章节数: {len(rows)}')
     print(f'卷数: {len(vols)}')
+    for vname, vf, vl, vc in vol_rows:
+        print(f'  卷[{vname}] 第{vf}-{vl}章 {vc / 10000:.1f}万')
     print(f'总字数(去空白): {total}')
     print(f'平均每章: {avg}')
     print(f'章号格式: {"、".join(sorted(formats))}')
@@ -172,9 +175,6 @@ def main():
     prog_path = os.path.join(args.outdir, '_progress.md')
     if not os.path.exists(prog_path):
         book = args.book or os.path.basename(os.path.normpath(args.outdir))
-        vol_lines = '\n'.join(
-            f'| {vname} | 第{f}-{l}章 | {l - f + 1} | {c / 10000:.1f}万 |'
-            for vname, f, l, c in vol_rows) or '| 无卷标题 | 1-N | 全部 | — |'
         skeleton = f"""# 深度拆解进度：{book}
 - 小说：{book}{" | 作者：" + args.author if args.author else ""} | 总章数：{len(rows)} | 输出目录：{args.outdir} | 开始：{date.today().isoformat()}
 - 最终状态：pending
@@ -189,10 +189,6 @@ def main():
 | 4 设定+关系 | pending | — | 4a/4b/4c |
 | 5 汇总报告 | pending | — | 拆文报告.md + 概要全量版 |
 | 6 文风 | pending | — | 文风.md |
-## 卷段
-| 卷名 | 章节范围 | 章数 | 预估字数 |
-|------|----------|------|----------|
-{vol_lines}
 ## 章节边界（Stage 0 章节边界子步骤产物，唯一权威）
 {chr(10).join(tbl)}
 ## 分块进度
