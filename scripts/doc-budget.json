@@ -47,8 +47,8 @@
         },
         {
             "path": "skills/moshu-write/references/banned-words.md",
-            "budget": 4000,
-            "why": "禁用词扫描每章读。预算 3800→4000：新增翻案腔变体/模型路标词/名词化/提示性冒号清单（借鉴 human-writing MIT），每章禁用词扫描要付，且完整规则由 check-ai-patterns.js 承载、此表只留提纲"
+            "budget": 4200,
+            "why": "禁用词扫描每章读。预算 3800→4000：新增翻案腔变体/模型路标词/名词化/提示性冒号清单（借鉴 human-writing MIT），每章禁用词扫描要付，且完整规则由 check-ai-patterns.js 承载、此表只留提纲；→4200：笔枢补学句级硬约束 3 条（名词性独语句/群像反应/“了一下”句），每章禁用词扫描要付"
         },
         {
             "path": "skills/moshu-review/SKILL.md",
@@ -91,7 +91,7 @@
         },
         {
             "label": "正文 agent 上下文",
-            "budget": 40200,
+            "budget": 40600,
             "files": [
                 "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
                 "skills/moshu-write/references/writing-craft.md",
