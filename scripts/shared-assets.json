@@ -260,6 +260,13 @@
             "targets": [
                 "skills/moshu-setup/references/agent-references/naming-cards.md"
             ]
+        },
+        {
+            "name": "scene-cards-reference",
+            "source": "skills/moshu-write/references/scene-cards.md",
+            "targets": [
+                "skills/moshu-setup/references/agent-references/scene-cards.md"
+            ]
         }
     ]
 }
