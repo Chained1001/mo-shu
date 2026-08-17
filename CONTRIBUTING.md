@@ -35,6 +35,23 @@ description: "一句话描述。触发方式：/skill-name、触发词1、触发
 
 `references/` 中的文件由 skill 按需加载，不会全部塞进上下文。
 
+## 入口瘦身（骨架化）规范
+
+对 SKILL.md 做骨架化（把流程细节移到 `references/*-workflow.md`，入口只留 frontmatter / 定位 / 路由 / Phase 索引）时，必须同时满足以下前提，缺一不可：
+
+1. **入口确实臃肿**：原 SKILL.md 超过约 25KB。实测 16KB 的紧凑流水线型入口（如 moshu-scan）骨架化后反而增加 6% 全读开销，已回退。
+2. **逐节读取有真实收益**：流程必须按 Phase/节 分段、且 agent 执行时天然只读当前节（如 review/import/deslop/analyze）。连续执行整条管线的流水线型流程（如 scan 的 Phase 2-5 连跑）没有逐节收益，禁止骨架化。
+3. **真实走查验证**：仅静态零丢失对比不够，必须用真实 Claude Code CLI 走查确认 agent 按索引逐节读取 `references/*-workflow.md`，而不是全读。
+
+骨架化的收益边界：入口固定开销下降是确定性收益（每次触发必读）；若 agent 全读 workflow 文件，实测为负收益（+3%~+6%），因此索引措辞必须引导按节读取。
+
+实现要求：
+
+- 流程细节逐字搬迁（静态零丢失 + 模拟走查 + 真实 CLI 三验证），不允许借瘦身改写/删减规则。
+- `references/*-workflow.md` 内部互链去掉 `references/` 前缀（该目录内相对解析）。
+- 入口保留完整 Phase 索引与「执行前先读 [references/X](...) 的「Y」节」指示。
+- 新增/修改骨架时，同步更新 `scripts/doc-budget.json` 中该 skill 的预算与路径总额。
+
 ## 如何贡献
 
 ### 改进现有 skill
