@@ -152,7 +152,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 
 | 场景 | 加载文件 |
 |------|---------|
-| 搭建大纲 | `references/outline-methods.md` |
+| 搭建大纲 | `references/outline-methods.md`（**大纲方法论总入口**，按任务路由到全部大纲文件） |
 | 设计矛盾与结构 | `references/outline-conflict.md` |
 | 深度结构设计 | `references/outline-structure-theory.md` |
 | 节奏与升级感 | `references/outline-rhythm.md` |
