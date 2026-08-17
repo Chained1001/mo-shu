@@ -49,6 +49,12 @@
       "path": "skills/moshu-write/references/tracking-transaction.md",
       "must_contain": "模型只提交一份语义 JSON",
       "rationale": "追踪唯一写入口：模型只交语义 JSON，不分别手改派生文件"
+    },
+    {
+      "id": "three-tier-division",
+      "path": "skills/moshu-write/SKILL.md",
+      "must_contain": "脚本做确定性的",
+      "rationale": "三层分工宪法：脚本做确定性/ AI 做语义/ 作者做品味，防越权与遗漏"
     }
   ]
 }
