@@ -303,6 +303,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 `.claude/agents/moshu-researcher.md` 已部署时，才可额外 spawn `moshu-researcher` 搜索验证；`solo`、missing/malformed/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
 4. **分歧呈现**：如果 reviewer 间有冲突意见，明确呈现分歧让用户裁决；不要自动妥协。
 5. 输出综合审查报告。报告必须列出实际模式、fallback 原因、使用的 rubric、Rubric Source、审查范围和证据不足项。
+6. **作者裁决点（必须输出）**：报告末尾列出作者三项裁决——**全部接受 / 修改后接受 / 打回重写**（打回需指明从哪章重写）。用户未当场裁决前不得把审查发现视作已处理；裁决结果同步进 `.moshu-review/review-log`（写作建议）与追踪事务（S1/S2）。
 
 ---
 

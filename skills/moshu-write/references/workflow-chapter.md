@@ -147,6 +147,8 @@
 **退化防护**：正文落盘后运行 `node scripts/check-degeneration.js --check 正文/第XXX章_*.md`。blocking（复读、截断、拒绝语、tier1 工程词泄漏）只重写受影响章节，最多 2 次；仍失败就报告证据让用户定夺。
 advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界面用语、弹幕刷屏、重复台词等有功能则保留。
 
+**机检修复预算（统一阀门，防 token 失控）**：本章所有机检项（字数不达标、check-ai-patterns blocking、check-degeneration blocking、check-outline-copy 细纲照搬、标点异常）共享**同一份自动修复预算 = 2 轮**：命中后主线程自动修复并复扫，同一草稿每项最多 2 轮（同一内容重复检查幂等、不重复消耗预算）；2 轮后仍失败的项**停止自动修复**，把证据（命中项 + 已尝试的修复）报告给用户定夺，不得无限自动消耗写稿 token。advisory 与细纲重合逐条人工判定，不消耗预算；用户显式豁免（`<!-- 去味:跳过 -->`）的章不消耗预算。
+
 ### Agent 调用：moshu-consistency-checker
 
 质量检查阶段，如果项目已部署 moshu-consistency-checker agent（检查 `.claude/agents/moshu-consistency-checker.md` 是否存在），spawn `Agent(subagent_type: "moshu-consistency-checker", prompt: "项目目录：{dir}\n检查范围：{本次写作的章节}\n检查类型：事实冲突+伏笔断线+角色属性不一致")` 执行一致性检查，获取 S1-S4 分级报告。如 agent 不可用，由主线程参照 quality-checklist.md 直接检查。
