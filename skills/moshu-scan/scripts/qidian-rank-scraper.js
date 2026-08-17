@@ -527,6 +527,9 @@ async function scrapeRank(rankTypeId) {
       if (content || SCRAPE_MODE === "mobile") return content;
     } catch (e) {
       console.log(`  ⚠ 移动端 SSR 采集失败: ${e.message}`);
+      if (/404|Not Found/i.test(e.message)) {
+        console.log("  （提示：该榜单在移动端可能已下线；可先跑 /moshu-cdp 启动 Chrome，再 --mode cdp 重试）");
+      }
       if (SCRAPE_MODE === "mobile") return null;
     }
   }
