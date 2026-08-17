@@ -134,6 +134,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 | 场景 | 加载文件 |
 |------|---------|
 | 确定题材类型 | `references/genre-catalog.md` |
+| 只有模糊灵感（画面/脑洞，没方向没选题） | `references/idea-seed.md`（灵感种子七条，开书前置可选） |
 | 判断市场方向 | `references/genre-readers.md` |
 | 特殊题材考量 | `references/plot-special-topics.md` |
 | 女频长篇（题材/文案/平台/感情线） | `references/female-audience-writing.md` |
@@ -173,6 +174,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 | 段落级钩子 | `references/hooks-paragraph.md` |
 | 题材正文提示卡 / 题材分类卡 | `references/genre-prose-cards.md` 索引 + `references/genre-prose-cards/` 单题材卡目录（按题材分类优先） + `references/style-genre-modules.md`（通用流派补充） |
 | 打斗/装逼 | `references/style-combat-face.md` |
+| 高频场景（团战/谈判/揭露/重逢/宴会/审讯） | `references/scene-cards.md`（SC-001~006，冷路径） |
 | 写作技法 | `references/style-craft.md` |
 | 商业创作核心方法 | `references/commercial-core-methods.md` |
 | 对话 | `references/dialogue-mastery.md` |
@@ -210,6 +212,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 | 去AI味 | **`references/anti-ai-writing.md`**（AI指纹/核心规则/Show Don't Tell） | `references/banned-words.md`（禁用词扫描）· `references/quality-checklist.md`（成稿检查） |
 | 失败恢复 | **`references/recovery-protocol.md`**（A 环境/B 状态/C 主产物/D 模型四类失败分类与恢复动作） | `references/tracking-transaction.md`（事务重试语义）· `/moshu-import`（旧追踪迁移）· `/moshu-analyze`（拆解管道恢复机制） |
 | 卷复盘 | **`references/volume-review.md`**（卷末四步：伏笔清账/卷摘要/下卷规划/契约修订候选） | `workflow-setup.md`（开新卷增量流程）· `追踪/伏笔.md`（清账数据源）· `设定/题材定位.md`（终局储备与契约） |
+| 起名 | **`references/naming-cards.md`**（NC-001~005：书名/章节名/卷名/角色名/绰号，冷路径） | — |
 
 ---
 

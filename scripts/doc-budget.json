@@ -12,8 +12,8 @@
     "files": [
         {
             "path": "skills/moshu-write/SKILL.md",
-            "budget": 9000,
-            "why": "长篇任一场景都无条件加载。预算 13200→9000：Phase 4 契约块（结构树/产物映射表→artifact-protocols.md，缺失处理/权威优先级/追踪体积→workflow-chapter.md 写前准备契约）下沉，入口只留路由与索引（P-A 审计）"
+            "budget": 9200,
+            "why": "长篇任一场景都无条件加载。预算 13200→9000：Phase 4 契约块（结构树/产物映射表→artifact-protocols.md，缺失处理/权威优先级/追踪体积→workflow-chapter.md 写前准备契约）下沉，入口只留路由与索引（P-A 审计）；→9200：参考索引登记 3 个冷路径文件（idea-seed/naming-cards/scene-cards），主入口可发现性，索引本身按需加载"
         },
         {
             "path": "skills/moshu-write/references/workflow-daily.md",
@@ -74,7 +74,7 @@
     "paths": [
         {
             "label": "长篇日更主会话",
-            "budget": 34550,
+            "budget": 34750,
             "files": [
                 "skills/moshu-write/SKILL.md",
                 "skills/moshu-write/references/workflow-daily.md",
@@ -83,7 +83,7 @@
         },
         {
             "label": "长篇开书",
-            "budget": 22500,
+            "budget": 22700,
             "files": [
                 "skills/moshu-write/SKILL.md",
                 "skills/moshu-write/references/workflow-setup.md"
