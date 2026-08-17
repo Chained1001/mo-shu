@@ -62,7 +62,7 @@
 3. **时间与读者认知**：为受影响事件提交客观事实、读者截至 M 章的当前认知、实际揭示状态/章节；删掉的事件用 `action=delete`。未来揭示计划仍留大纲。工具把事件合并进 `_tracking-state.json` 并重建作者/读者视图，禁止分别手改。
 4. **角色当前快照**：对受影响核心角色从 X 检查到 M，按身份、位置、目标、能力资源、关系对象、已知信息、未结事项分别重算，提交一份截至 M 的完整快照；不得用最后一条单维度变化覆盖其它维度。
 5. **导入截止范围**：若 X ≤ `_tracking-state.json.imported_through_chapter`，事务为第 X 章新增覆盖记录；导入截止章不变，当前结构化状态按修订结果更新。
-6. **提交与重试**：把修订开始时 `tracking_commit.py check` 返回的 `state_revision` 写入 `expected_state_revision`，再执行 `tracking_commit.py commit`；若期间状态已变化，重新读取当前状态并重构事务。任一步骤失败时保留原事务 JSON，修正写入环境后重跑同一 `commit`；成功并通过 `check` 前禁止继续修下一章或写新章。
+6. **提交与重试**：把修订开始时 `tracking_commit.py check` 返回的 `state_revision` 写入 `expected_state_revision`，再执行 `tracking_commit.py commit`；若期间状态已变化，重新读取当前状态并重构事务。任一步骤失败时保留原事务 JSON，修正写入环境后重跑同一 `commit`；成功并通过 `check` 前禁止继续修下一章或写新章。失败分类与恢复动作见 [recovery-protocol.md](recovery-protocol.md)。
 7. **后续影响**：如果修改改变了角色状态/关系/世界观设定，扫描后续章节正文标记受影响项：
 
 ```

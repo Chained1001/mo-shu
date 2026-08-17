@@ -576,6 +576,22 @@ mv "$guard_root/book/追踪/_state.bak" "$guard_root/book/追踪/_tracking-state
 : > "$guard_root/book/正文/第9章_x.md"
 [ "$(run_guard 'book/正文/第9章_x.md')" = "0" ] || fail "guard wrongly blocked rewrite of an existing prose file"
 [ "$(run_guard 'impbook/正文/第1章_x.md')" = "0" ] || fail "guard wrongly blocked moshu-import LONG prose migration (拆文库 source present)"
+# 主产物门：对标视图有书但情绪模块/节奏缺失 → 拦截；补齐 → 放行；拆文库回退路径 → 放行
+mkdir -p "$guard_root/book/对标/某书/剧情"
+[ "$(run_guard 'book/正文/第1章_开端.md')" = "2" ] || fail "guard did not BLOCK long prose when benchmark view lacks emotion module"
+: > "$guard_root/book/对标/某书/剧情/情绪模块.md"
+[ "$(run_guard 'book/正文/第1章_开端.md')" = "2" ] || fail "guard did not BLOCK long prose when benchmark view lacks rhythm"
+: > "$guard_root/book/对标/某书/剧情/节奏.md"
+[ "$(run_guard 'book/正文/第1章_开端.md')" = "0" ] || fail "guard wrongly blocked long prose when benchmark view complete"
+rm -rf "$guard_root/book/对标"
+mkdir -p "$guard_root/拆文库/某书/剧情"
+: > "$guard_root/拆文库/某书/剧情/情绪模块.md"
+: > "$guard_root/拆文库/某书/剧情/节奏.md"
+[ "$(run_guard 'book/正文/第1章_开端.md')" = "0" ] || fail "guard wrongly blocked long prose when 拆文库 fallback has primary artifacts"
+rm "$guard_root/拆文库/某书/剧情/节奏.md"
+[ "$(run_guard 'book/正文/第1章_开端.md')" = "2" ] || fail "guard did not BLOCK long prose when 拆文库 fallback lacks rhythm"
+# 清理主产物门夹具，避免污染后续 TS11b/TS11c（拆文库 残留的 剧情/ 会让无 node 场景误判有对标）
+rm -rf "$guard_root/拆文库/某书"
 # Bash 命令面：真正写正文才拦；只提及正文路径不得误伤。第8章无细纲，故写入应阻断。
 if command -v node >/dev/null 2>&1; then
   [ "$(run_bash_guard 'cat draft.md > book/正文/第8章_x.md')" = "2" ] \

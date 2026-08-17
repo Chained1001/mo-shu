@@ -207,6 +207,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 | 人物 | **`references/character-basics.md`**（主角/配角/反派/动机模板速填） | `references/character-design-methods.md`（三层标签反差/九维深化）· `references/character-relations.md`（关系类型/感情线） |
 | 女频写作 | **`references/female-audience-writing.md`**（女频长篇：核心原则/文案/题材/感情线长线/平台） | `references/genre-readers.md`（读者心理/平台差异）· `references/character-relations.md`（感情线总框架） |
 | 去AI味 | **`references/anti-ai-writing.md`**（AI指纹/核心规则/Show Don't Tell） | `references/banned-words.md`（禁用词扫描）· `references/quality-checklist.md`（成稿检查） |
+| 失败恢复 | **`references/recovery-protocol.md`**（A 环境/B 状态/C 主产物/D 模型四类失败分类与恢复动作） | `references/tracking-transaction.md`（事务重试语义）· `/moshu-import`（旧追踪迁移）· `/moshu-analyze`（拆解管道恢复机制） |
 
 ---
 

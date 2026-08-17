@@ -160,6 +160,42 @@ case "$BASE" in
         exit 2
       fi
     fi
+    # 主产物门（首建与续写都判，与追踪门同序）：有对标项目时，情绪模块/节奏
+    # 任一缺失即拦（与文档写前准备 fail-fast 一致；情绪/节奏轴不豁免自定义文风）。
+    # 对标判定：① 对标/ 视图下有非空书目录（强信号：用户显式建立对标视图）；
+    #           ② 拆文库/ 下有含 剧情/ 的书目录（弱信号：analyze Stage 2+ 产物）。
+    # 两处都没有 → 无对标项目，放行（无对标项目合法）。情绪模块/节奏按「对标书
+    # 路径查找」规则（对标/ 优先，回退 拆文库/）检查。纯 bash 文件存在性检查，
+    # 不依赖 node；glob 无匹配时原样返回字面量，[ -e ] 自然为假，安全。
+    HAS_BENCH=0
+    if [ -d "$BOOK_DIR/对标" ]; then
+      for bd in "$BOOK_DIR"/对标/*/; do
+        [ -d "$bd" ] || continue
+        if [ -n "$(ls -A "$bd" 2>/dev/null)" ]; then HAS_BENCH=1; break; fi
+      done
+    fi
+    if [ "$HAS_BENCH" = "0" ] && [ -d "$ROOT/拆文库" ]; then
+      for bd in "$ROOT"/拆文库/*/; do
+        [ -d "$bd/剧情" ] || continue
+        HAS_BENCH=1
+        break
+      done
+    fi
+    if [ "$HAS_BENCH" = "1" ]; then
+      EM_FOUND=0
+      RC_FOUND=0
+      for bd in "$BOOK_DIR"/对标/*/ "$ROOT"/拆文库/*/; do
+        [ -d "$bd" ] || continue
+        [ -f "$bd/剧情/情绪模块.md" ] && EM_FOUND=1
+        [ -f "$bd/剧情/节奏.md" ] && RC_FOUND=1
+      done
+      if [ "$EM_FOUND" = "0" ] || [ "$RC_FOUND" = "0" ]; then
+        printf '%s\n' "⛔ 写正文被拦截：有对标项目但缺少对标权威主产物（剧情/情绪模块.md、剧情/节奏.md）。" >&2
+        printf '%s\n' "   请先重跑 /moshu-analyze Stage 3+ 生成情绪模块与节奏，再 /moshu-import 同步到项目；" >&2
+        printf '%s\n' "   不得用拆文报告、章节摘要或故事线代替。" >&2
+        exit 2
+      fi
+    fi
     # 正文已存在的到此为止：欠账门只针对首建新章。
     [ -n "$EXISTS" ] && exit 0
     # 欠账门（无状态）：写第 N 章（首建）前，上一章有未清毒句式且未标「去味:跳过」豁免时先清再写。
