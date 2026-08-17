@@ -13,7 +13,7 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 ## Phase 1：检测项目状态
 
-**先自检参考目录**：以正在执行的本 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对 `agent-references`、`templates` 两个名字是否都在**且都非空**；同级 `scripts/merge-claude-settings.py` 也必须存在（Claude hooks 合并算法依赖它）。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」和「目录为空」，并给修复指令：「moshu-setup 参考资料包不完整，缺 {目录名}。按你的安装方式重装 mo-shu（git clone 装的在仓库目录 `git pull`，marketplace 装的在面板里重装），再执行 /moshu-setup。」
+**先自检参考目录**：以正在执行的本 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对 `agent-references`、`templates` 两个名字是否都在**且都非空**；同级 `scripts/merge-claude-settings.py` 也必须存在（Claude hooks 合并算法依赖它）。**用一条命令完成自检**（如 `ls references/ scripts/` 并核对输出），不要分多轮 Bash 逐步探索。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」和「目录为空」，并给修复指令：「moshu-setup 参考资料包不完整，缺 {目录名}。按你的安装方式重装 mo-shu（git clone 装的在仓库目录 `git pull`，marketplace 装的在面板里重装），再执行 /moshu-setup。」
 
 1. 检查当前目录是否已部署过（存在 `.story-deployed`）
    - `agents_version` 缺失、非整数或小于 `26` → 标记为待更新，继续执行当前部署
@@ -77,6 +77,7 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 #### 部署 Agent References
 
 - 将 `skills/moshu-setup/references/agent-references/` 下所有 `.md` 复制到项目内 `.claude/skills/moshu-setup/references/agent-references/`
+- **符号链接安装（`npx skills add` 项目级安装时 `.claude/skills/moshu-setup` 是指向 `.agents/skills/moshu-setup` 的链接）先做同路径检测**：源与目标解析为同一目录时跳过复制（自复制无意义且 `cp` 会报 "same file" 混淆日志），仅做校验（references 文件在位、agent 引用可解析）
 - 校验：凡 agent 或 reference 中出现 `moshu-setup/references/agent-references/<file>.md`，源包与目标包都必须存在 `<file>.md`
 
 ### Step 6：合并 Hooks 注册到 settings.local.json
@@ -130,10 +131,8 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 |--------|----------|------|
 | `{项目名}` | 用户项目名称或目录名 | 《剑来》、《暗卫》 |
 | `{书名}` | 书名目录名（与目录一致） | 与 `{项目名}` 相同，或用户自定义 |
-| `{目标平台}` | 目标发布平台 | 起点、番茄、晋江 |
-| `{作者名}` | 用户笔名或昵称 | 未指定时用「作者」 |
 
-替换时去掉花括号。如果用户未指定项目名，用当前目录名。未指定的占位符保留原样不替换。
+替换时去掉花括号。**只问模板实际出现的占位符**（当前模板只有 `{项目名}` 与 `{书名}`；`{目标平台}` / `{作者名}` 不在模板中——目标平台由开书（`moshu-write` Phase 2）与导入（`moshu-import` Phase 1）各自采集并写入 `设定/题材定位.md` 权威字段，不在部署阶段重复提问）。如果用户未指定项目名，用当前目录名；书名未指定时与项目名相同。未指定的占位符保留原样不替换。
 
 ## CLAUDE.md 合并策略
 
