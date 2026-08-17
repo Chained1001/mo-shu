@@ -99,6 +99,15 @@ function ab(port, ...args) {
     const stderr = error && error.stderr ? String(error.stderr).trim() : "";
     const stdout = error && error.stdout ? String(error.stdout).trim() : "";
     const detail = stderr || stdout || (error && error.message) || "unknown error";
+    // ENOENT = agent-browser 未安装，或 Windows 上 npm 因文件占用留下 .DELETE 残留
+    // （真实 exe 缺失）。给出可执行修复路径，避免调用方（采集脚本/agent）自行猜。
+    if (error && (error.code === "ENOENT" || error.errno === "ENOENT")) {
+      const hint =
+        process.platform === "win32"
+          ? "agent-browser 可执行文件缺失（常见原因：npm 在 Windows 文件占用时留下 .DELETE 残留）。修复：先确认无 agent-browser 进程占用（tasklist | findstr agent-browser），再 npm uninstall -g agent-browser && npm install -g agent-browser"
+          : "agent-browser 未安装或不在 PATH。修复：npm install -g agent-browser";
+      throw new Error(`agent-browser failed: ${detail}\n${hint}`, { cause: error });
+    }
     throw new Error(`agent-browser failed: ${detail}`, { cause: error });
   }
 }

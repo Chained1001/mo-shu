@@ -355,6 +355,52 @@ function testWindowsInvocationBuilder(modulePath) {
   }
 }
 
+function testAgentBrowserEnOentHint(modulePath) {
+  const utils = loadFresh(modulePath);
+  assert.strictEqual(typeof utils.ab, "function");
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "story-scan-enoent-"));
+  const oldPath = process.env.PATH;
+  try {
+    if (process.platform === "win32") {
+      // npm shim 指向不存在的原生 exe（Windows 文件占用残留的典型形态）
+      // → execFileSync ENOENT，报错必须带可执行修复路径，而不是让调用方猜。
+      fs.writeFileSync(
+        path.join(tmpDir, "agent-browser.cmd"),
+        `@ECHO off\r\n"%~dp0missing-agent-browser-win32-x64.exe" %*\r\n`,
+        "utf8"
+      );
+    }
+    // POSIX：PATH 前置空目录，找不到 agent-browser 即 ENOENT（CI 不装 agent-browser）。
+    process.env.PATH = `${tmpDir}${path.delimiter}${oldPath}`;
+    const msg = "agent-browser failed:";
+    const err = (() => {
+      try {
+        utils.ab(9222, "open", "https://example.com");
+      } catch (e) {
+        return e;
+      }
+      return null;
+    })();
+    assert(err, "ab() 应因 agent-browser 缺失抛错");
+    assert(err.message.includes(msg), `报错应保留 agent-browser failed 前缀: ${err.message}`);
+    assert(
+      /ENOENT/.test(err.message),
+      `ENOENT 场景应报出 ENOENT 细节: ${err.message}`
+    );
+    const hint =
+      process.platform === "win32"
+        ? /npm uninstall -g agent-browser && npm install -g agent-browser/
+        : /npm install -g agent-browser/;
+    assert(
+      hint.test(err.message),
+      `ENOENT 报错应包含 agent-browser 重装修复指引: ${err.message}`
+    );
+  } finally {
+    process.env.PATH = oldPath;
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
+}
+
 function listScraperPaths() {
   return [
     ...fs
@@ -1421,6 +1467,7 @@ function testCdpWindowsListenerParsingIsLocaleIndependent() {
 
 testCdpUtils(longUtilsPath);
 testWindowsInvocationBuilder(longUtilsPath);
+testAgentBrowserEnOentHint(longUtilsPath);
 testLocalDateStamp(longUtilsPath);
 testScraperFilenameDatesAreLocal();
 testScraperImports();
