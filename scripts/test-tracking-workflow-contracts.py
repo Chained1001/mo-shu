@@ -25,7 +25,8 @@ def require_all(text: str, needles: tuple[str, ...], label: str) -> None:
 
 def test_transaction_is_the_only_tracking_writer() -> None:
     for path in (
-        "skills/moshu-write/SKILL.md",
+        # 追踪体积/写入契约自入口下沉后位于 workflow-chapter.md「写前准备契约」节
+        "skills/moshu-write/references/workflow-chapter.md",
         "skills/moshu-write/references/workflow-daily.md",
         "skills/moshu-write/references/workflow-revision.md",
         # 拆分后导入的追踪契约承载在 references/import-workflow.md
@@ -213,7 +214,8 @@ def test_retired_tracking_architecture_is_absent() -> None:
 
 
 def test_no_tracking_fallback_or_context_style_fingerprint_remains() -> None:
-    long_write = read("skills/moshu-write/SKILL.md")
+    # 缺失文件处理契约自入口下沉后位于 workflow-chapter.md「写前准备契约」节
+    long_write = read("skills/moshu-write/SKILL.md") + read("skills/moshu-write/references/workflow-chapter.md")
     for forbidden in (
         "角色状态文件缺失** → 从角色设定文件和前文推断当前状态",
         "伏笔/时间线文件缺失** → 不检查",

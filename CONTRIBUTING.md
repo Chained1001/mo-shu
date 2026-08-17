@@ -124,9 +124,12 @@ python3 scripts/test-shared-assets.py
 node scripts/test-normalize-punctuation.js
 node scripts/test-scan-runtime.js
 bash scripts/test-ai-patterns.sh
+bash scripts/test-outline-copy.sh
 bash scripts/test-degeneration.sh
 bash scripts/test-prose-backstop-hook.sh
 bash scripts/test-story-continuity.sh
+python3 scripts/test-tracking-workflow-contracts.py
+python3 scripts/test-tracking-commit.py
 bash scripts/check-moshu-setup-deployment.sh
 bash scripts/check-claude-adapter.sh
 bash scripts/check-behavior-contracts.sh
