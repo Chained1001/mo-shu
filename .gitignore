@@ -13,3 +13,4 @@ docs/plans/
 __pycache__/
 *.pyc
 TestA/
+testProject/
