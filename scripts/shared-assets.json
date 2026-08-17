@@ -246,6 +246,13 @@
       "targets": [
         "skills/moshu-setup/references/agent-references/beat-cards.md"
       ]
+    },
+    {
+      "name": "craft-cards-reference",
+      "source": "skills/moshu-write/references/craft-cards.md",
+      "targets": [
+        "skills/moshu-setup/references/agent-references/craft-cards.md"
+      ]
     }
   ]
 }

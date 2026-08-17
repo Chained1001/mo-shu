@@ -22,8 +22,8 @@
         },
         {
             "path": "skills/moshu-write/references/workflow-chapter.md",
-            "budget": 14100,
-            "why": "单章正文与质量检查，日更/单章路径都加载。含 spawn prompt 的正文形状层约束——细纲边界只传「不许自造」半边时，子代理会一条情节点一段平推（#255 的复发路径），形状半边必须随 prompt 传达；预算 11850→14000：承接入口下沉的缺失文件处理/对标分析权威优先级/追踪文件体积契约（写章路径才付，路由/开书不再付）；→14100：方法论补强（写前信息差登记核对项，写章路径付）"
+            "budget": 14200,
+            "why": "单章正文与质量检查，日更/单章路径都加载。含 spawn prompt 的正文形状层约束——细纲边界只传「不许自造」半边时，子代理会一条情节点一段平推（#255 的复发路径），形状半边必须随 prompt 传达；预算 11850→14000：承接入口下沉的缺失文件处理/对标分析权威优先级/追踪文件体积契约（写章路径才付，路由/开书不再付）；→14100：方法论补强（写前信息差登记核对项，写章路径付）；→14200：写章技法路由引用"
         },
         {
             "path": "skills/moshu-write/references/workflow-setup.md",
@@ -37,8 +37,8 @@
         },
         {
             "path": "skills/moshu-write/references/writing-craft.md",
-            "budget": 8300,
-            "why": "moshu-narrative-writer 每章写作时读"
+            "budget": 9300,
+            "why": "moshu-narrative-writer 每章写作时读；→9300：写作技法总路由（每章写作付入口，技法卡已移出至冷路径 craft-cards.md）"
         },
         {
             "path": "skills/moshu-write/references/anti-ai-writing.md",
@@ -74,7 +74,7 @@
     "paths": [
         {
             "label": "长篇日更主会话",
-            "budget": 34000,
+            "budget": 34100,
             "files": [
                 "skills/moshu-write/SKILL.md",
                 "skills/moshu-write/references/workflow-daily.md",
@@ -91,7 +91,7 @@
         },
         {
             "label": "正文 agent 上下文",
-            "budget": 39400,
+            "budget": 40200,
             "files": [
                 "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
                 "skills/moshu-write/references/writing-craft.md",

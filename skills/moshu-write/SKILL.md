@@ -178,7 +178,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 | 对话 | `references/dialogue-mastery.md` |
 | 人物深化 | `references/character-design-methods.md` |
 | 情绪技法 + 叙事单元 | `references/plot-emotion-system.md` + `references/emotional-methods.md` |
-| 写作技法全程参考 | `references/writing-craft.md` |
+| 写作技法全程参考 | `references/writing-craft.md`（**写作技法总入口**，按任务路由 + 6 张技法卡） |
 | 格式与结构规范 | `references/format-and-structure.md`（仅对话/段落格式适用长篇） |
 | 状态追踪协议 | `references/state-tracking.md` |
 | 当前剧情单元与契约校准 | `references/reader-contract-and-progression.md` |
