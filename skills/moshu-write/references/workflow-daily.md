@@ -84,7 +84,7 @@
    - 每章写完后**立即提交一次追踪事务**：
      1. 从刚落盘的正文、细纲和上一版续写状态卡提取 `result / character_changes / foreshadow_changes / timeline_events / constraints / next_chapter_commitments`。只记录会影响未来章节的变化；过程日志、质检计数、参照章和去 AI 味统计全部排除。
      2. 需要长期复用的核心角色，把完整动态快照放进 `character_snapshots`，并在 `character_changes` 写对应变化；一次性路人只写变化、不交快照。已有动态快照的核心角色再次变化时必须提交新快照。静态人设继续以 `设定/角色/{名}.md` 为准。
-     3. `context.long_term_constraints`、当前卷/故事时间/场景、活跃核心角色名、连贯性风险提交当前完整值；活跃伏笔、近三章速记和下一章承诺由工具从当前视图/本章增量派生，不重复手填。
+     3. `context.long_term_constraints`、当前卷/故事时间/场景、活跃核心角色名、连贯性风险提交当前完整值；故事时间取本章细纲「时间锚点」；活跃伏笔、近三章速记和下一章承诺由工具从当前视图/本章增量派生，不重复手填。
      4. 把最近一次 `tracking_commit.py check` 返回的 `state_revision` 写入事务 `expected_state_revision`，再把 JSON 写到临时文件并执行 `tracking_commit.py commit`。成功并复检后删除临时 JSON；脚本返回新的 `state_revision` 才能进入下一章。
      5. 失败时 `_tracking-state.json` 尚未推进；保留临时 JSON，修正写入环境后重跑同一 `commit`。不得另写下一章、不得手工补派生视图、不得忽略返回码。失败分类与恢复动作见 [recovery-protocol.md](recovery-protocol.md)。
      6. **暗线进展核对**：按本章事务的 `story_time` 推进量，对照 [state-tracking.md](state-tracking.md) 的「时间推进与暗线进展预期」表核对暗线/势力动态是否该有进展：长时间跳过后暗线全无变化 = 世界观「冻住」信号，补世界事件或显式写「无进展」。暗线记录在 `foreshadow`（已埋未回收）与 `timeline_events`（世界事件/势力变化）中，不另设文件。
