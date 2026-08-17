@@ -225,6 +225,20 @@
                        "targets":  [
                                        "skills/moshu-setup/references/agent-references/genre-core-mechanics.md"
                                    ]
+                   },
+                   {
+                       "name":  "genre-catalog-reference",
+                       "source":  "skills/moshu-write/references/genre-catalog.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/genre-catalog.md"
+                                   ]
+                   },
+                   {
+                       "name":  "genre-readers-reference",
+                       "source":  "skills/moshu-write/references/genre-readers.md",
+                       "targets":  [
+                                       "skills/moshu-setup/references/agent-references/genre-readers.md"
+                                   ]
                    }
                ]
 }

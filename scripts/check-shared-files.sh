@@ -20,16 +20,13 @@ fi
 # After the short-form skills were removed, some entries below are harmless no-ops (single
 # copy or no copy at all) kept to avoid churn in the guard config.
 # - output-templates.md / material-decomposition.md: single-copy (moshu-analyze).
-# - genre-catalog.md / genre-readers.md: historically carried an
-#   analyst-lens fork; wholesale-ignored to avoid false mismatches.
-# - genre-core-mechanics.md: previously ignored for the same historical fork;
-#   copies are now byte-identical and registered in shared-assets.json — no longer ignored.
+# - genre-catalog.md / genre-readers.md: previously ignored for a historical analyst-lens
+#   fork; copies are now byte-identical and registered in shared-assets.json — no longer ignored.
 # - genre-writing-techniques.md: no longer present in the repo — no-op.
 # - AGENTS.md.tmpl / hooks.json: removed together with the non-Claude CLI adapters — no-op.
 # - quality-checklist.md: previously split writer/reviewer copies; since audit P0 it is a
 #   single canonical copy (moshu-write) registered in shared-assets.json — no longer ignored.
 IGNORE_NAMES="output-templates.md material-decomposition.md \
-genre-catalog.md genre-readers.md \
 genre-writing-techniques.md \
 AGENTS.md.tmpl hooks.json"
 

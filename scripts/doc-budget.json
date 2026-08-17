@@ -74,7 +74,7 @@
     "paths":  [
                   {
                       "label":  "长篇日更主会话",
-                      "budget":  36200,
+                      "budget":  36400,
                       "files":  [
                                     "skills/moshu-write/SKILL.md",
                                     "skills/moshu-write/references/workflow-daily.md",
@@ -91,7 +91,7 @@
                   },
                   {
                       "label":  "正文 agent 上下文",
-                      "budget":  38960,
+                      "budget":  39400,
                       "files":  [
                                     "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
                                     "skills/moshu-write/references/writing-craft.md",
