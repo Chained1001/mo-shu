@@ -68,6 +68,12 @@ const ACTION_LIST_VERB_PATTERN = /伸手|抬手|探手|拿起|拿过|取出|取�
 const ACTION_LIST_MIN_HITS = 5;
 const ACTION_LIST_MIN_SEPARATORS = 4;
 
+// 群像反应（笔枢补学）：「全场震惊」「所有人都倒吸一口凉气」「在场的人面面相觑」——
+// AI 用集体动作替代个体反应，读者看不见任何一张具体的脸。只收「群像标签+统一反应/表情」
+// 的模板组合；不收分散动作（「众人纷纷抬头」是正常场面调度）。只做 advisory：
+// 修法是挑一两个具体角色写个体反应，不写集体动作。
+const CROWD_REACTION_PATTERN = /(?:全场|在场所有人|在场的人|在场众人|所有人|满座|众人)(?:都|皆|顿时|一下子|同时)?(?:震惊|惊呆了|愣住了|傻眼了|倒吸一口凉气|鸦雀无声|屏住呼吸|面面相觑|哗然|噤声)/g;
+
 // 抽象总结复读：模板化段落常把角色当下经历拔成「命运/棋局/
 // 这一刻终于明白/才刚刚开始」的作者总结。单个词可能服务题材；高密度聚集才报。
 const ABSTRACT_SUMMARY_PATTERNS = [
@@ -428,6 +434,7 @@ function scanProsePatterns(proseLines) {
   findings.push(...findPeriodStutter(proseLines));
   findings.push(...findMicroActionTic(proseLines));
   findings.push(...findActionListTic(proseLines));
+  findings.push(...findCrowdReaction(proseLines));
   findings.push(...findAbstractSummaryTic(proseLines));
   findings.push(...findClicheDensityTic(proseLines));
   findings.push(...findMetaphorDensityTic(proseLines));
@@ -817,6 +824,32 @@ function findActionListTic(proseLines) {
       message: `监控摄像头式动作清单：同段连续动作动词 ${verbs.length} 个、分隔符 ${separators} 个；合并琐碎步骤，只保留有情绪/情节功能的动作，必要时用角色犹豫、误判或环境反馈做缓冲。`,
       excerpt: compact(verbs.slice(0, 8).join(' ')),
     });
+  }
+
+  return findings;
+}
+
+// 群像反应：逐处 advisory。掩码引号内台词（角色转述「全场震惊」是正常表达），
+// 只扫叙述。命中即提示挑个体反应。
+function findCrowdReaction(proseLines) {
+  const findings = [];
+
+  for (const { text, lineNo } of proseLines) {
+    const trimmed = text.trim();
+    if (!trimmed || isDivider(trimmed) || isStructural(trimmed)) continue;
+    const masked = maskQuoted(text);
+    CROWD_REACTION_PATTERN.lastIndex = 0;
+    let match;
+    while ((match = CROWD_REACTION_PATTERN.exec(masked)) !== null) {
+      findings.push({
+        line: lineNo,
+        column: match.index + 1,
+        type: 'crowd-reaction',
+        severity: 'advisory',
+        message: '群像反应（AI 腔）：集体动作替代了个体反应。挑一两个具体角色写个体反应（谁的手僵住、谁先别开脸、谁的烟烫了裤子），不写集体动作。',
+        excerpt: compact(text.slice(match.index, match.index + match[0].length)),
+      });
+    }
   }
 
   return findings;
