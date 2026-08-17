@@ -33,6 +33,13 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 使用 AskUserQuestion 确认部署位置后，依次执行。
 
+**优先一键执行（三层分工：脚本做确定性的）**：确定性步骤全部由 `scripts/deploy.py` 完成——
+`deploy.py deploy --project {项目目录} --name {项目名} [--book {书名}]` 一次完成 hooks 复制+chmod、
+rules/agents 复制、agent-references 同路径检测、CLAUDE.md 生成/section 合并、
+settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记；`deploy.py verify --project {项目}` 完成 Phase 3 机械验证。
+脚本输出 CONFLICT（CLAUDE.md 无 `##` section 的用户自定义文件）或 FAIL 时，按下方对应 Step 人工处理；脚本成功则直接进入 Phase 3。
+下方 Step 2-7 保留为脚本不可用/冲突时的兜底指引与处理规则，正常路径不逐条手写执行。
+
 整个 Phase 2 幂等：目录复制、文件写入和合并算法重复执行结果一致。因环境原因（工具不可用、权限被拒、网络失败）中途失败时，直接从头重跑本 Phase，不需要先清理半成品；`create only if absent` 的用户状态文件（见下表 Owner class）不会被二次覆盖。
 
 ### Step 1：部署清单（机械可检查）
@@ -103,6 +110,8 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 - 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `26`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `26` 时已在 Phase 1 停止，不得降级覆盖
 
 ## Phase 3：验证安装
+
+**优先运行 `deploy.py verify --project {项目}`**（结构化 PASS/FAIL 输出，覆盖下方 1-5 项与 sentinel 字段）；脚本不可用时按下方逐项验证。
 
 1. 验证 hooks 注册：
    - 检查 `.claude/settings.local.json` 中的 hooks 字段是否正确
