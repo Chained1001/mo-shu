@@ -52,6 +52,26 @@ description: "一句话描述。触发方式：/skill-name、触发词1、触发
 - 入口保留完整 Phase 索引与「执行前先读 [references/X](...) 的「Y」节」指示。
 - 新增/修改骨架时，同步更新 `scripts/doc-budget.json` 中该 skill 的预算与路径总额。
 
+## 大文件设计指南
+
+**文件大不等于问题。** 判断标准不是字节数，而是这笔成本付给谁、多久付一次、内容可否压缩。按以下四条评估：
+
+1. **付费频率**：每次会话 / 每章 / 每次 spawn 必付 = 热路径，需预算约束；按需读取 = 冷路径，大是知识储备，禁止为瘦身拆碎
+2. **信息密度**：规则 / 清单 / 约束（原子性内容，不可压缩）vs 流程叙述 / 示例（可搬移、可骨架化）
+3. **原子性**：规则是否必须一次读取同时在场（拆开会丢约束，如 anti-ai-writing 模式清单、banned-words 词表）
+4. **显式背书**：是否登记 `scripts/doc-budget.json` 且有 `why` 说明——登记了、在预算内 = 设计决定；调预算必须显式说明理由
+
+仓库内四类"大"及其处理方式：
+
+| 类型 | 示例 | 性质 | 处理 |
+|---|---|---|---|
+| 冷路径知识库 | output-templates、material-decomposition、plot-frameworks、style-genre-modules 等 | 按需加载，大是价值 | 保持现状，禁止拆碎 |
+| 骨架化 workflow 库 | review/import/deslop/analyze-workflow.md | 逐节读取（真实 CLI 验证过）才成立 | 索引必须精确引导按节读取 |
+| 规则原子文件 | anti-ai-writing（×4 副本）、banned-words、moshu-narrative-writer | 检测/比对时必须在场整体在场 | 预算背书，只增不减内容 |
+| 热路径入口 | SKILL.md、agent 模板 | 每次触发必付，唯一需要警惕的"大" | 路由+全场景指令是设计，历史堆积是膨胀 |
+
+**膨胀信号**（出现即处理）：预算反复超支却无 `why` 更新；同一 skill 内内容重复；迁移说明堆在热路径（应移冷路径如 UPGRADING.md）；巨型 reference 无入口索引（agent 不知道何时读它）。
+
 ## 如何贡献
 
 ### 改进现有 skill
