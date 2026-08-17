@@ -8,7 +8,7 @@
 
 用法（按仓库解释器探测形态调用，Windows 禁止裸 python3）:
   for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
-  "$PYBIN" check_chapter_summary.py --dir {拆文库/{书}/章节/} [--file {单个文件}]
+  "$PYBIN" check_chapter_summary.py --dir {拆文库/{书}/章节/} [--file {单个文件}] [--deep]
 
 检查项:
   1. 情节点数一致: ^P 行数 == 基调：行数 == 白描行数
@@ -17,6 +17,10 @@
   3. 基调枚举 ⊆ {紧张,轻松,悲伤,热血,爽,甜,温馨,恐怖,压抑,其他}
   4. 主题标签枚举 ⊆ {爱情,亲情,友情,权力,金钱,成长,复仇,悬念,搞笑,热血,日常,其他}
      (出现「主题标签：」带冒号或值为基调词均判失败)
+  --deep: 额外检查 第*章_深度拆解.md 的必含字段（Stage 1 轻检查）
+
+⚠️ 枚举单一权威: 基调/主题标签/类型枚举以本脚本为唯一权威——
+   改动枚举必须先改本脚本, 再同步 agent 模板与文档, 防跨文档漂移误报。
 
 退出码: 全部 PASS = 0; 任一 FAIL = 1
 """
@@ -40,6 +44,8 @@ TOPIC_TAGS = {'爱情', '亲情', '友情', '权力', '金钱', '成长', '复�
 # 基调/标签值到换行即止（值后是换行或下一字段，绝不跨行）
 TONE_VAL = re.compile(r'基调：([^ |\n]+)')
 TAG_LINE = re.compile(r'主题标签([：:]?)([^ |\n]+)')
+# Stage 1 深度拆解必含字段（--deep）
+DEEP_FIELDS = ['开篇钩子', '人物出场', '世界观铺设', '结构拆解', '爽点分析', '章尾钩子', '可借鉴要素']
 
 
 def check_file(path: Path) -> list[str]:
@@ -78,10 +84,18 @@ def check_file(path: Path) -> list[str]:
     return fails
 
 
+def check_deep(path: Path) -> list[str]:
+    """Stage 1 深度拆解必含字段轻检查"""
+    text = path.read_text(encoding='utf-8', errors='replace')
+    missing = [f for f in DEEP_FIELDS if f'**{f}**' not in text]
+    return [] if not missing else [f'深度拆解缺字段: {missing}']
+
+
 def main():
     ap = argparse.ArgumentParser(description='章节摘要硬检查器')
     ap.add_argument('--dir', help='章节目录（拆文库/{书}/章节/）')
     ap.add_argument('--file', help='单文件检查（与 --dir 二选一）')
+    ap.add_argument('--deep', action='store_true', help='额外检查 第*章_深度拆解.md 必含字段')
     args = ap.parse_args()
 
     if args.file:
@@ -102,6 +116,17 @@ def main():
         if fails:
             total_fail += 1
         print(f'{f.name}: {status}' + ('' if not fails else ' | ' + '; '.join(fails)))
+
+    if args.deep:
+        deep_files = sorted(Path(args.file).parent.glob('第*章_深度拆解.md')) if args.file \
+            else sorted(Path(args.dir).glob('第*章_深度拆解.md'))
+        for f in deep_files:
+            fails = check_deep(f)
+            if fails:
+                total_fail += 1
+            print(f'{f.name}: {"FAIL" if fails else "PASS"}' + ('' if not fails else ' | ' + '; '.join(fails)))
+        if not deep_files:
+            print('(无 第*章_深度拆解.md 可检查)')
 
     # 枚举总览（跨文件汇总）
     all_text = '\n'.join(f.read_text(encoding='utf-8', errors='replace') for f in files)
