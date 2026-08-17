@@ -14,6 +14,7 @@ Phase 3 建大纲时加载。包含大纲创建法、结构分级、节点设计
 | 卷内节奏 / 升级感 | outline-rhythm.md「升级感三步设计法」「桥段与节奏的结构化设计」「高潮分类与反推」 |
 | 矛盾 / 冲突 / 对抗设计 | outline-conflict.md「矛盾设计方法」「冲突设计」「对抗设计」 |
 | 感情线 / 关系线 | outline-conflict.md「感情线设计」+ character-relations.md |
+| 人物 / 角色设计（含人物主题卡） | character-design-methods.md「九维人设框架」「深层动机与核心信念」+ **「人物主题卡」8 张**（镜像宿敌/伤口回避/价值自洽反派/导师旧债/守护底线/利益盟友/关系信息差/身份冲突）+ character-basics.md（模板速填） |
 | 叙事框架选择（双线/RPG/构型） | plot-frameworks.md「双线法与信息差」「RPG结构与奖励设计」「故事构型与套路运用」 |
 | 卡文 / 小纲 / 高潮逆推 | plot-core-methods.md「小纲四步法」「卡文对策与剧情循环设计」「高潮逆推法与AB粗纲」「高潮构建公式」 |
 | 情绪弧线 / 期待感 | emotional-arc-design.md「六种弧线速查」「期待感管理六法则」「中段加压四手段」 |
