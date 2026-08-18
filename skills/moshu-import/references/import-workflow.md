@@ -361,7 +361,7 @@ moshu-analyze 在 Stage 0+1（黄金三章）后会**自动停靠**并用 AskUse
 
 **缺失处理**：
 
-- 拆文库没有文风文件（analyze 未跑 Stage 6）→ 导入报告提示用户重跑 `/moshu-analyze` 后再同步；日更前文风缺失会被 fail-fast 拦截
+- 拆文库没有文风文件（analyze 未跑 Stage 1 停靠点/Stage 6）→ 导入报告提示用户重跑 `/moshu-analyze` 生成表达层文风（Stage 1 停靠点）或全量拆解补全后再同步；日更前文风缺失会被 fail-fast 拦截
 - 项目对标已有旧文风文件 → 覆盖（最新拆文产物优先），在导入报告告知
 
 ---

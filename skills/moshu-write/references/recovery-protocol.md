@@ -55,7 +55,7 @@
 | 子类型 | 判定 | 恢复 |
 |---|---|---|
 | `剧情/情绪模块.md` / `剧情/节奏.md` 缺失 | 写前准备/卷纲排节奏时按「对标书路径查找」两处皆缺 | 设置 `missing_primary_contract: true`，给出 `repair_action`：重跑 `/moshu-analyze` Stage 3+ 或重新 `/moshu-import`；停止写前准备/大纲排节奏 |
-| 有对标书但 `文风.md` 缺失 | 文风召回时 | 有 `设定/文风.md`（含实质内容）走自定义文风模式继续；否则 fail-fast，提示先运行 `/moshu-analyze` Stage 6 并 `/moshu-import` 同步。**完全无对标项目**则跳过文风召回、不阻塞 |
+| 有对标书但 `文风.md` 缺失 | 文风召回时 | 有 `设定/文风.md`（含实质内容）走自定义文风模式继续；否则 fail-fast，提示先运行 `/moshu-analyze` Stage 1 停靠点生成表达层文风（或全量拆解后 Stage 6 补全）并 `/moshu-import` 同步。**完全无对标项目**则跳过文风召回、不阻塞 |
 | `设定/题材正文提示卡.md` 缺失 | 写前召回 | 不阻塞；从 `设定/题材定位.md` 精确匹配 `genre-prose-cards.md` 索引生成，无命中用 `style-genre-modules.md` 兜底 |
 
 **注意**：情绪/节奏轴（`missing_primary_contract`）独立于文风轴，自定义文风模式**不豁免**其 fail-fast；补的是 `剧情/情绪模块.md` / `剧情/节奏.md`，不是写 `设定/文风.md`。

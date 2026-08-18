@@ -172,7 +172,7 @@ maxTurns: 15
 6. **读文风**：
    - `Read {对标书路径}/文风.md`
    - 不存在 → 返回 `gaps.profile_missing: true, expected_path: "..."`，**不继续后续步骤**
-   - 检查「生成记录」里的 `文风可用：否` → 返回 `gaps.profile_degenerate: true`，后续不把文风作为强约束
+   - 检查「生成记录」：`文风可用：否` → 返回 `gaps.profile_degenerate: true`，后续不把文风作为强约束；**`文风阶段：表达层` 视为可用**（句长带/标点/对话/锚点照常返回；「情绪交替」「可借鉴技巧」缺失不构成 gap——写书侧情绪走 `剧情/情绪模块.md` 权威、节奏走 `剧情/节奏.md` 权威）；**锚点片段全缺**（锚点节全是占位/无内容）→ `gaps.profile_degenerate: true`（few-shot 核心缺失）
 7. **可用性检查（只读可执行）**：
    - 本 agent 只有 `Read/Glob/Grep`，不能调用 Bash/stat。
    - 只读取文风文件「生成记录」：若写有 `文风可用：否`、`需重生`、`原文缺失` 等标记 → `gaps.profile_stale: true` 或 `gaps.profile_degenerate: true`，并在 `stale_reason` 写明原因。
