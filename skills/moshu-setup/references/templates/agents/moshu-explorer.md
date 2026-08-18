@@ -295,7 +295,7 @@ maxTurns: 15
   "query_type": "benchmark_style_load",
   "results": {
     "style_profile_path": "文风库/文风.md",
-    "style_profile_summary": "<≤200字 提取核心：标点习惯 + 对话技法 + 情绪交替模式>",
+    "style_profile_summary": "<≤200字 提取核心：标点习惯 + 对话技法 + 词汇指纹一句话（风格词3-5个 + 过度副词警告）>",
     "selected_emotion_module": "<从 剧情/情绪模块.md 选出的读者需求/触发器/戏剧单元/可复现骨架；缺失时为 null>",
     "rhythm_reference": "<从 剧情/节奏.md 选出的关键信息推进/情绪触动点/爆发节奏/冷却参考；缺失时为 null>",
     "module_source_path": "对标/{书名}/剧情/情绪模块.md",
