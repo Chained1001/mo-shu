@@ -11,7 +11,7 @@ const assert = require("node:assert");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const { detectPlatform, parseBlocks, adapt, parseDir } = require("../skills/moshu-scan/scripts/scan-analyze.js");
+const { detectPlatform, parseBlocks, adapt, parseDir, findDuplicates } = require("../skills/moshu-scan/scripts/scan-analyze.js");
 const FIXTURES = path.join(__dirname, "..", "tests", "fixtures", "scan");
 
 const read = (name) => fs.readFileSync(path.join(FIXTURES, name), "utf-8");
@@ -70,18 +70,54 @@ test("七猫：热度/字数/题材提取", () => {
   assert.strictEqual(b.genre, "科幻");
 });
 
-test("--dup 数据源：跨平台同名书可聚合", () => {
+test("块名提取：番茄/晋江分块标注，起点无块", () => {
+  const fanqie = parse("番茄男频阅读榜_20260818.md");
+  assert.strictEqual(fanqie[0].block, "科幻末世");
+  assert.strictEqual(fanqie[2].block, "都市脑洞");
+  const jj = parse("晋江月榜_20260818.md");
+  assert.strictEqual(jj[0].block, "古言");
+  const qd = parse("起点月票榜_20260818.md");
+  assert.strictEqual(qd[0].block, "");
+});
+
+test("--dup 联合键：同名不同作者不误报，同名同作者跨文件聚合", () => {
+  const data = {
+    "a.md": {
+      platform: "晋江",
+      items: [
+        { title: "惊悚", author: "悬疑", rank: 13, block: "多元", meta: "悬疑", platform: "晋江" },
+        { title: "惊悚", author: "白月光", rank: 74, block: "多元", meta: "白月光", platform: "晋江" },
+      ],
+    },
+    "b.md": {
+      platform: "起点",
+      items: [{ title: "惊悚", author: "悬疑", rank: 1, block: "", meta: "", platform: "起点" }],
+    },
+  };
+  const dups = findDuplicates(data);
+  assert.strictEqual(dups.length, 1, `应只有 1 组重复（惊悚||悬疑 跨文件），实际: ${JSON.stringify(dups)}`);
+  assert.strictEqual(dups[0].title, "惊悚");
+  const files = dups[0].occ.map((o) => o.file);
+  assert.ok(files.includes("a.md") && files.includes("b.md")); // 惊悚||悬疑 跨 a/b 聚合
+  // 惊悚||白月光 仅 a#74，不构成重复
+});
+
+test("--dup 联合键：author 缺失 [待补] 时退化仅 title", () => {
+  const data = {
+    "a.md": { platform: "晋江", items: [{ title: "惊悚", author: "[待补]", rank: 1, block: "", meta: "", platform: "晋江" }] },
+    "b.md": { platform: "晋江", items: [{ title: "惊悚", author: "[待补]", rank: 2, block: "", meta: "", platform: "晋江" }] },
+  };
+  const dups = findDuplicates(data);
+  assert.strictEqual(dups.length, 1); // 无 author 时仍按 title 聚合
+});
+
+test("--dup 数据源：跨平台同名同作者书可聚合", () => {
   const data = parseDir(FIXTURES);
-  const byTitle = {};
-  for (const { platform, items } of Object.values(data)) {
-    for (const it of items) {
-      if (!byTitle[it.title]) byTitle[it.title] = [];
-      byTitle[it.title].push(platform);
-    }
-  }
-  const dup = byTitle["星海征途"];
-  assert.ok(dup.includes("起点") && dup.includes("番茄") && dup.includes("七猫"), `跨平台聚合缺失: ${dup}`);
-  assert.ok(!byTitle["月落长安"] || byTitle["月落长安"].length === 1); // 单平台书不重复
+  const dups = findDuplicates(data);
+  const star = dups.find((d) => d.title === "星海征途");
+  assert.ok(star, "星海征途应出现在重复样本");
+  const plats = star.occ.map((o) => o.platform);
+  assert.ok(plats.includes("起点") && plats.includes("番茄") && plats.includes("七猫"), `跨平台聚合缺失: ${plats}`);
 });
 
 test("字段归一：无单位重复（万万 bug 回归）", () => {

@@ -37,17 +37,25 @@ function detectPlatform(text) {
   return m && PLATFORMS.includes(m[1]) ? m[1] : "起点";
 }
 
-// ---- 通用条目解析：`## #1 书名` / `### #1 书名` / `#1 书名` ----
+// ---- 通用条目解析：`## #1 书名` / `### #1 书名` / `#1 书名`，记录所在块（番茄/晋江的 `## 品类 — N 本`） ----
 const ITEM_RE = /^#{1,3} #(\d+)\s+(.+)$/;
+// 块头：`## 名称 — N 本`（排除起点条目 `## #1`；起点无块，block 为空）
+const BLOCK_RE = /^##\s+(?!#\d)(.+)$/;
 
 function parseBlocks(text) {
   const items = [];
   let cur = null;
+  let block = "";
   for (const raw of text.split(/\r?\n/)) {
+    const bm = raw.match(BLOCK_RE);
+    if (bm) {
+      block = bm[1].replace(/\s*—\s*\d+\s*本\s*$/, "").trim();
+      continue;
+    }
     const m = raw.match(ITEM_RE);
     if (m) {
       if (cur) items.push(cur);
-      cur = { rank: parseInt(m[1], 10), title: m[2].trim(), body: [] };
+      cur = { rank: parseInt(m[1], 10), title: m[2].trim(), block, body: [] };
     } else if (cur) {
       cur.body.push(raw);
     }
@@ -89,6 +97,7 @@ function adapt(platform, block) {
   const base = {
     rank: block.rank,
     title: block.title,
+    block: block.block,
     author: segs[0] || "[待补]",
     genre: "[待补]",
     words: "[待补]",
@@ -208,42 +217,39 @@ function main() {
     }
   }
 
-  // --- 指定题材条目 ---
+  // --- 指定题材条目（按块分组输出，避免番茄/晋江分块排名 #1 混淆） ---
   if (GENRE) {
     const kws = GENRE.split(",").map((s) => s.trim());
     console.log(`\n## ${GENRE} 条目`);
     for (const [f, { platform, items }] of Object.entries(data)) {
       const hit = items.filter((it) => kws.some((k) => it.meta.includes(k)));
       if (hit.length === 0) continue;
-      console.log(`\n### ${f.replace(/_2026\d{4}\.md/, "")}`);
-      for (const it of hit) {
-        let line = `#${it.rank} ${it.title} | ${it.meta} | 字数:${it.words} | 总推荐:${it.rec} | 签约:${it.sign} | ${it.price}`;
-        if (platform !== "起点") line += ` | ${it.metric}`;
-        if (FULL) {
-          console.log(line);
-          if (it.tags) console.log(`  标签: ${it.tags}`);
-          if (it.intro) console.log(`  简介: ${it.intro.slice(0, 120)}${it.intro.length > 120 ? "..." : ""}`);
-        } else {
-          console.log(line);
+      const byBlock = {};
+      for (const it of hit) (byBlock[it.block || ""] = byBlock[it.block || ""] || []).push(it);
+      for (const [block, list] of Object.entries(byBlock)) {
+        console.log(`\n### ${f.replace(/_2026\d{4}\.md/, "")}${block ? " · " + block : ""}`);
+        for (const it of list) {
+          let line = `#${it.rank} ${it.title} | ${it.meta} | 字数:${it.words} | 总推荐:${it.rec} | 签约:${it.sign} | ${it.price}`;
+          if (platform !== "起点") line += ` | ${it.metric}`;
+          if (FULL) {
+            console.log(line);
+            if (it.tags) console.log(`  标签: ${it.tags}`);
+            if (it.intro) console.log(`  简介: ${it.intro.slice(0, 120)}${it.intro.length > 120 ? "..." : ""}`);
+          } else {
+            console.log(line);
+          }
         }
       }
     }
   }
 
-  // --- 跨榜重复样本 ---
+  // --- 跨榜重复样本（title+author 联合键：同名不同书不误报；author 缺失时退化仅 title） ---
   if (DUP) {
-    const byTitle = {};
-    for (const [f, { platform, items }] of Object.entries(data)) {
-      for (const it of items) {
-        if (!byTitle[it.title]) byTitle[it.title] = [];
-        byTitle[it.title].push({ file: f.replace(/_2026\d{4}\.md/, ""), rank: it.rank, meta: it.meta, platform });
-      }
-    }
-    const dups = Object.entries(byTitle).filter(([, v]) => v.length > 1);
+    const dups = findDuplicates(data);
     if (dups.length > 0) {
       console.log(`\n## 跨榜重复样本（${dups.length} 本出现在多个榜单 = 交叉验证信号）`);
-      for (const [title, occ] of dups) {
-        const occStr = occ.map((o) => `${o.file}#${o.rank}`).join("、");
+      for (const { title, occ } of dups) {
+        const occStr = occ.map((o) => `${o.file}#${o.rank}${o.block ? "(" + o.block + ")" : ""}`).join("、");
         const platStr = [...new Set(occ.map((o) => o.platform))].join("+");
         console.log(`- **${title}**（${occ[0].meta}）：${occStr} [${platStr}]`);
       }
@@ -253,6 +259,28 @@ function main() {
   }
 }
 
+// ---- 跨榜重复聚合（导出供测试）：key = title||author，author [待补] 时退化仅 title ----
+function findDuplicates(data) {
+  const byKey = {};
+  for (const [f, { platform, items }] of Object.entries(data)) {
+    for (const it of items) {
+      const key = it.author && it.author !== "[待补]" ? `${it.title}||${it.author}` : it.title;
+      if (!byKey[key]) byKey[key] = [];
+      byKey[key].push({
+        title: it.title,
+        file: f.replace(/_2026\d{4}\.md/, ""),
+        rank: it.rank,
+        block: it.block,
+        meta: it.meta,
+        platform,
+      });
+    }
+  }
+  return Object.entries(byKey)
+    .filter(([, v]) => v.length > 1)
+    .map(([, occ]) => ({ title: occ[0].title, occ }));
+}
+
 if (require.main === module) main();
 
-module.exports = { detectPlatform, parseBlocks, adapt, parseDir, main };
+module.exports = { detectPlatform, parseBlocks, adapt, parseDir, findDuplicates, main };
