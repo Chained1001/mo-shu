@@ -55,7 +55,7 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 优先运行对应平台脚本直接采集结构化数据。起点使用移动端 SSR pageContext，默认不需要 Chrome/CDP；番茄等需要浏览器态的平台再使用 `/moshu-cdp` 启动 Chrome。
 
 **采集流程**：
-1. 选择平台脚本；起点直接运行 `scripts/qidian-rank-scraper.js`，番茄/七猫/晋江等按需启动 moshu-cdp
+1. 选择平台脚本；起点直接运行 `{SKILL_DIR}/scripts/qidian-rank-scraper.js`，番茄/七猫/晋江等按需启动 moshu-cdp
 2. 等待列表元素或 SSR 数据加载，逐条提取字段（排名、书名、作者、题材、字数、推荐/在读数等），判断翻页（起点通常单页50-100条，番茄按题材逐页cap≈20）
 3. 需要补充数据时（标签、简介、最新更新），进入详情页提取
 4. 按规范格式写入 Markdown 文件
@@ -63,7 +63,7 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 
 **输出规范**：详见 [references/scan-output-format.md](references/scan-output-format.md)，包含各平台字段定义、输出模板。
 
-**起点采集目标**（优先运行 `node scripts/qidian-rank-scraper.js --type {榜单} --outdir {输出目录}`；**多榜单用逗号分隔一次采集**，如 `--type hotsales,yuepiao,signnewbook`，避免逐榜多次调用；默认 `--mode auto` 会先用 `https://m.qidian.com` 移动端 SSR，PC/CDP 只作回退）：
+**起点采集目标**（优先运行 `node {SKILL_DIR}/scripts/qidian-rank-scraper.js --type {榜单} --outdir {输出目录}`；`{SKILL_DIR}` 指当前加载的 moshu-scan skill 根目录；**多榜单用逗号分隔一次采集**，如 `--type hotsales,yuepiao,signnewbook`，避免逐榜多次调用；默认 `--mode auto` 会先用 `https://m.qidian.com` 移动端 SSR，PC/CDP 只作回退）：
 
 | 榜单 | URL | 核心字段 |
 |------|-----|----------|
@@ -87,11 +87,11 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 | 男频新书榜 | fanqienovel.com/rank/1_1_{cat_id} | 新风向信号 |
 | 女频新书榜 | fanqienovel.com/rank/0_1_{cat_id} | 新风向信号 |
 
-URL 参数：`/rank/{channel}_{type}_{cat_id}`，channel 0=女频/1=男频，type 1=新书榜/2=阅读榜。番茄列表页有字体反爬，须用 `scripts/fanqie-rank-scraper.js` 从详情页多策略解码书名/作者/题材/标签/简介，配合 moshu-cdp 使用：
+URL 参数：`/rank/{channel}_{type}_{cat_id}`，channel 0=女频/1=男频，type 1=新书榜/2=阅读榜。番茄列表页有字体反爬，须用 `{SKILL_DIR}/scripts/fanqie-rank-scraper.js` 从详情页多策略解码书名/作者/题材/标签/简介，配合 moshu-cdp 使用：
 
 ```bash
-node scripts/fanqie-rank-scraper.js --channel 1 --type 2 --outdir {输出目录}   # 男频阅读榜
-node scripts/fanqie-rank-scraper.js --channel all --top 15 --outdir {输出目录}   # 男女频，每题材前 15 本
+node {SKILL_DIR}/scripts/fanqie-rank-scraper.js --channel 1 --type 2 --outdir {输出目录}   # 男频阅读榜
+node {SKILL_DIR}/scripts/fanqie-rank-scraper.js --channel all --top 15 --outdir {输出目录}   # 男女频，每题材前 15 本
 ```
 
 > **番茄采集后必查文件头 `数据质量`**，异常排查步骤见 [references/scan-output-format.md](references/scan-output-format.md)。
@@ -106,16 +106,16 @@ node scripts/fanqie-rank-scraper.js --channel all --top 15 --outdir {输出目�
 
 大热榜用 `--period day|month|all` 显式选择日榜、月榜或两者（默认 `day`）；周期会进入文件头与文件名。非大热榜不区分周期，`--period` 不会重复采集。
 
-**晋江采集目标**（`scripts/jjwxc-rank-scraper.js`，默认列表 + 详情两步走）：
+**晋江采集目标**（`{SKILL_DIR}/scripts/jjwxc-rank-scraper.js`，默认列表 + 详情两步走）：
 
 | 榜单 | URL | 核心字段 |
 |------|-----|----------|
 | 收入金榜 | jjwxc.net/topten.php?orderstr=12&t=0 | 收藏数、营养液、积分、字数、状态（详情页 `onebook.php` 补采） |
 
 ```bash
-node scripts/jjwxc-rank-scraper.js --type 12 --outdir {输出目录}        # 列表+详情（默认每频道前10，详情上限100）
-node scripts/jjwxc-rank-scraper.js --type 12 --top 15 --detail-limit 60  # 调整每频道本数/详情总量
-node scripts/jjwxc-rank-scraper.js --type 12 --list-only                 # 只采列表（快，无核心指标）
+node {SKILL_DIR}/scripts/jjwxc-rank-scraper.js --type 12 --outdir {输出目录}        # 列表+详情（默认每频道前10，详情上限100）
+node {SKILL_DIR}/scripts/jjwxc-rank-scraper.js --type 12 --top 15 --detail-limit 60  # 调整每频道本数/详情总量
+node {SKILL_DIR}/scripts/jjwxc-rank-scraper.js --type 12 --list-only                 # 只采列表（快，无核心指标）
 ```
 
 > **晋江硬性要求**：必须有详情页核心指标（收藏数/营养液/积分/字数），脚本默认已补采；采集要点见 [references/scan-output-format.md](references/scan-output-format.md)。
@@ -180,7 +180,7 @@ node scripts/jjwxc-rank-scraper.js --type 12 --list-only                 # 只�
 
 ### Phase 3：数据分析
 
-**优先运行 `node scripts/scan-analyze.js --dir {扫榜目录} [--genre {题材}] [--dup] [--full]`** 做确定性提取（题材分布 / 指定题材条目 / 跨榜重复样本 / 完整简介），**禁止临时写内联解析脚本**（2026-08 实测：AI 手写 grep 会把「玄幻·东方玄幻」重复计数，脚本按条目计数口径更准）。脚本输出直接作为分析输入。
+**优先运行 `node {SKILL_DIR}/scripts/scan-analyze.js --dir {扫榜目录} [--genre {题材}] [--dup] [--full]`** 做确定性提取（题材分布 / 指定题材条目 / 跨榜重复样本 / 完整简介），**禁止临时写内联解析脚本**（2026-08 实测：AI 手写 grep 会把「玄幻·东方玄幻」重复计数，脚本按条目计数口径更准）。脚本输出直接作为分析输入。**适用范围：目前只解析起点采集格式**；番茄/七猫/晋江/刺猬猫等非起点榜单按 `references/scan-output-format.md` 规范人工分析，脚本扩展另行推进。
 
 根据用户选择的平台，结合已获取的数据做以下分析：
 

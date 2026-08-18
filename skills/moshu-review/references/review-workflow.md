@@ -82,6 +82,8 @@ AI 味 / 禁用词 fallback 速查：
 
 full/lean 模式下，主会话必须把“审查基准包摘要”直接写进每个 Agent prompt。**不要要求子 Agent 必须读取 `moshu-review/references/*` 才能完成任务**；如需补充，只读取本 Skill 的 `moshu-review/references/*`，最终遵守注入的 rubric 摘要和统一 Findings Schema。
 
+**每个 spawn prompt 必须注入只读约束**：`本次审查只读：不得使用 Write/Edit 修改任何项目文件，发现需修复项以 finding 形式报告`。**{项目根}/.moshu-review/state.md** 与 **{项目根}/.moshu-review/review-log** 的写入仍按既有契约由主会话/指定维护流程执行。
+
 ### 跨批审查落盘契约（所有模式）
 
 只要多章/整卷/整本审查被拆成两批及以上，full、lean、solo 都维护 **{项目根}/.moshu-review/state.md**：
@@ -121,10 +123,11 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 5. **形成审查基准包摘要**：把已加载的文件内容或内置 fallback 摘要压缩为 5-12 条审查标准，后续 solo 和子 Agent 都必须使用这份摘要。摘要必须保留一条句长标准：叙述默认是逗号长句，碎句和电报体与 AI 腔同级处理，不因「短」放行。
 6. **确定性预检（只报告，不修改）**：当审查范围包含本地正文文件路径时，运行本 skill 自带脚本：
    ```bash
-   node scripts/normalize-punctuation.js --check <正文文件...>
-   node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
-   node scripts/check-degeneration.js --check <正文文件...>
+   node {SKILL_DIR}/scripts/normalize-punctuation.js --check <正文文件...>
+   node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
+   node {SKILL_DIR}/scripts/check-degeneration.js --check <正文文件...>
    ```
+   > `{SKILL_DIR}` 指当前加载的 moshu-review skill 根目录。
    - 将 `ellipsis`、`double-hyphen`、`markdown-divider` 结果作为 `format` findings 合并进报告。`em-dash` 破折号只采用 `check-ai-patterns.js` 的语义改写建议（见下条）；`normalize-punctuation.js` 报的同一位置 `em-dash` 在合并时去重丢弃，避免同处出现「机械替换」与「按功能改写」两条相互冲突的 finding。另外人工检查标点节奏是否通篇句号化或随机堆砌，脚本不替代语气判断。
    - `check-ai-patterns.js` 的 findings 合并进 `prose`：severity=blocking 的类别一律按 S2（当前为 `not-is-comparison` / `em-dash` / `voice-contrast` / `negation-parade` / `reverse-not-is` / `trailer-ending` / `trailer-summary`），修法直接采用检测器输出的建议（删否定铺垫/反差腔/排比否定/章尾预告腔/章尾状态总结句，直接写后项或具体动作；破折号按功能改成动作/短句/逗号/冒号）。
    - 其余 prose findings 统一按 S4：只指出读感风险，不替代人工判断；功能性写法标 `[需复核]` 并保留。完整类别和修法见 `anti-ai-writing.md`。

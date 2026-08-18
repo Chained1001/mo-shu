@@ -9,6 +9,11 @@
  *   --dup                      跨榜重复样本（同一书名出现在多个榜单）
  *   --dist                     题材分布统计（默认输出）
  * 输出 markdown，AI 直接消费。
+ *
+ * 适用范围：当前只解析起点采集格式（`#排名 书名` 行 + `**字数：**`/`**总推荐：**`/
+ * `**签约：**`/`**收费模式：**`/`**标签：**` 等字段）。番茄/七猫/晋江/刺猬猫的
+ * 输出字段不同，暂不适用；其他平台榜单请按 scan-output-format 规范人工分析，
+ * 脚本扩展另行推进。
  */
 const fs = require("fs");
 const path = require("path");
@@ -66,6 +71,16 @@ function parseFile(file) {
 
 const data = {};
 for (const f of files) data[f] = parseFile(f);
+
+// 起点格式字段缺失警告：非起点采集文件通常拿不到「字数」，结果不可信
+const suspicious = Object.entries(data).filter(
+  ([, items]) => items.length > 0 && items.every((it) => it.words === "[待补]"),
+);
+if (suspicious.length > 0) {
+  console.error(
+    `[警告] 以下文件疑似非起点采集格式（字数全为 [待补]），分析结果可能不可信: ${suspicious.map(([f]) => f).join(", ")}`,
+  );
+}
 
 // --- 题材分布 ---
 if (DIST) {

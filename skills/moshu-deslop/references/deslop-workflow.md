@@ -64,8 +64,9 @@
 **确定性句式预检（文件模式）**：当输入是本地正文文件路径时，「AI味扫描」必须先运行本 skill 自带脚本，只报告不修改：
 
 ```bash
-node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
+node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
 ```
+> `{SKILL_DIR}` 指当前加载的 moshu-deslop skill 根目录。
 
 - severity=blocking 的类别（`not-is-comparison` / `em-dash` / `voice-contrast` / `negation-parade` / `reverse-not-is` / `trailer-ending` / `trailer-summary`）按处理优先级并入 Gate B（em-dash 属 Gate D 标点节奏、trailer-ending/trailer-summary 属 Gate F 结尾去升华，此处仅指处理优先级）。
 - 其他 findings（碎句号、长段落、微动作、动作清单、抽象总结、套词、比喻密度、解释链、公文腔、过度精炼、低连接密度、引号强调滥用、`formulaic-parallelism` 工整并列）只作读感提示；完整类别和修法见 `anti-ai-writing.md`。其中工整并列会扫描台词，必须读语境判断，不能因为 hook 对台词低误报豁免就跳过。
@@ -300,10 +301,10 @@ AI写作的结尾特征：总想总结、升华、点题。
 当输入是正文文件路径，且「逐项清除」已落盘修改后，**先**做句式/段落复扫，**再**做机械标点兜底（破折号要按功能改写，故先于机械替换报出）：
 
 ```bash
-node scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
-node scripts/check-degeneration.js --check <正文文件...>
-node scripts/normalize-punctuation.js <正文文件...>
-node scripts/check-outline-copy.js <正文文件...>
+node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文文件...>
+node {SKILL_DIR}/scripts/check-degeneration.js --check <正文文件...>
+node {SKILL_DIR}/scripts/normalize-punctuation.js <正文文件...>
+node {SKILL_DIR}/scripts/check-outline-copy.js <正文文件...>
 ```
 
 作用边界：

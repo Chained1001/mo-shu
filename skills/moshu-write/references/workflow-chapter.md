@@ -146,10 +146,10 @@
 
 **写后同轮清零**：正文落盘不是汇报时机——每章落盘后必须在**同一轮**内跑完上方步骤 10-11 扫描、下方确定性收尾脚本与 moshu-narrative-writer 审查，blocking 清零才算本章完成；不得先汇报"已写完"再等指示。写后 hook 会对落盘正文自动扫描确定性毒句式并把命中推回——那是兜底网不是替代，hook 报出的命中当轮清零。**唯一豁免**：用户显式说"本章不去味/跳过检查"——豁免时在该章标题行下加一行 `<!-- 去味:跳过 -->`（写后 hook 的毒句式推回与写下一章前的欠账拦截都认这个标记；其余网照常）。
 
-**确定性收尾**：本批正文写完后，主会话对实际落盘文件运行 `node scripts/check-ai-patterns.js --check --fail-on=blocking 正文/第XXX章_*.md` 与 `node scripts/check-outline-copy.js 正文/第XXX章_*.md`（细纲照搬复扫）。blocking 命中先回正文改写并复扫；advisory 与细纲重合逐条读原文判断，确属问题才改，功能性写法标 `[需复核]`——每条都要有结论，不为归零机械改写；细纲重合里判定保留的补进细纲「复沓锚句」，下章起不再复报。其中 `formulaic-parallelism` 必须连同对话一起复核，不能因为 hook 不阻断台词就略过。
-随后运行 `node scripts/normalize-punctuation.js 正文/第XXX章_*.md`（默认 `--quote-mode keep`）清理无功能省略号、破折号、双连字符和独立分隔线；古言/日式的「」不受影响。moshu-narrative-writer agent 不运行这些脚本。
+**确定性收尾**：本批正文写完后，主会话对实际落盘文件运行 `node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking 正文/第XXX章_*.md` 与 `node {SKILL_DIR}/scripts/check-outline-copy.js 正文/第XXX章_*.md`（细纲照搬复扫；`{SKILL_DIR}` 指当前加载的 moshu-write skill 根目录）。blocking 命中先回正文改写并复扫；advisory 与细纲重合逐条读原文判断，确属问题才改，功能性写法标 `[需复核]`——每条都要有结论，不为归零机械改写；细纲重合里判定保留的补进细纲「复沓锚句」，下章起不再复报。其中 `formulaic-parallelism` 必须连同对话一起复核，不能因为 hook 不阻断台词就略过。
+随后运行 `node {SKILL_DIR}/scripts/normalize-punctuation.js 正文/第XXX章_*.md`（默认 `--quote-mode keep`）清理无功能省略号、破折号、双连字符和独立分隔线；古言/日式的「」不受影响。moshu-narrative-writer agent 不运行这些脚本。
 
-**退化防护**：正文落盘后运行 `node scripts/check-degeneration.js --check 正文/第XXX章_*.md`。blocking（复读、截断、拒绝语、tier1 工程词泄漏）只重写受影响章节，最多 2 次；仍失败就报告证据让用户定夺。
+**退化防护**：正文落盘后运行 `node {SKILL_DIR}/scripts/check-degeneration.js --check 正文/第XXX章_*.md`。blocking（复读、截断、拒绝语、tier1 工程词泄漏）只重写受影响章节，最多 2 次；仍失败就报告证据让用户定夺。
 advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界面用语、弹幕刷屏、重复台词等有功能则保留。
 
 **机检修复预算（统一阀门，防 token 失控）**：本章所有机检项（字数不达标、check-ai-patterns blocking、check-degeneration blocking、check-outline-copy 细纲照搬、标点异常）共享**同一份自动修复预算 = 2 轮**：命中后主线程自动修复并复扫，同一草稿每项最多 2 轮（同一内容重复检查幂等、不重复消耗预算）；2 轮后仍失败的项**停止自动修复**，把证据（命中项 + 已尝试的修复）报告给用户定夺，不得无限自动消耗写稿 token。advisory 与细纲重合逐条人工判定，不消耗预算；用户显式豁免（`<!-- 去味:跳过 -->`）的章不消耗预算。
