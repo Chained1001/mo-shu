@@ -90,6 +90,12 @@ def main():
         print(f'[错误] 无法按 {args.encoding} 解码（可用 --encoding gbk 重试）: {e}', file=sys.stderr)
         sys.exit(2)
 
+    # Windows 常见 UTF-8 BOM：\ufeff 会黏在首行行首，导致第一章匹配失败
+    bom_stripped = False
+    if lines and lines[0].startswith('\ufeff'):
+        lines[0] = lines[0][1:]
+        bom_stripped = True
+
     chapters = []  # (num, title, line_no)
     vols = []      # (name, line_no)
     for i, line in enumerate(lines, 1):
@@ -150,6 +156,8 @@ def main():
         vol_rows.append((vname, in_v[0][0], in_v[-1][0], v_chars))
 
     # 报告
+    if bom_stripped:
+        print('检测到 BOM 已剥离')
     print(f'章节数: {len(rows)}')
     print(f'卷数: {len(vols)}')
     for vname, vf, vl, vc in vol_rows:
