@@ -148,12 +148,15 @@ def main():
     if args.deep and not deep_files:
         print('(无 第*章_深度拆解.md 可检查)')
 
-    # 枚举总览（跨文件汇总；deep-only 时无摘要可汇总）
-    all_text = '\n'.join(f.read_text(encoding='utf-8', errors='replace') for f in files)
-    tones_all = sorted({m.group(1).strip() for m in TONE_VAL.finditer(all_text)})
-    tags_all = sorted({m.group(2).strip() for m in TAG_LINE.finditer(all_text) if not m.group(1)})
-    print(f'\n基调枚举: {tones_all}')
-    print(f'主题标签枚举: {tags_all}')
+    # 枚举总览（跨文件汇总；deep-only 时无摘要可汇总，不输出空数组）
+    if deep_only:
+        print('\n(无摘要可汇总，跳过基调/主题标签枚举)')
+    else:
+        all_text = '\n'.join(f.read_text(encoding='utf-8', errors='replace') for f in files)
+        tones_all = sorted({m.group(1).strip() for m in TONE_VAL.finditer(all_text)})
+        tags_all = sorted({m.group(2).strip() for m in TAG_LINE.finditer(all_text) if not m.group(1)})
+        print(f'\n基调枚举: {tones_all}')
+        print(f'主题标签枚举: {tags_all}')
 
     print(f'\nRESULT: {"ALL PASS" if total_fail == 0 else f"{total_fail}/{checked} FAIL"}')
     sys.exit(0 if total_fail == 0 else 1)
