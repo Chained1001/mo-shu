@@ -91,7 +91,11 @@ function extractRankData(port) {
     "    pendingTitle=line;expectTitle=false" +
     "  }else{" +
     "    if(pendingTitle){" +
-    "      channelBooks[curChannel].books.push({title:pendingTitle,author:line,novelid:idMap[pendingTitle]||''})" +
+    // 只收有 novelid 的书条目：无 anchor 的行是标签/栏目文本（如"多元"标签云
+    // —— -视角-/男主/惊悚 这类标签无 novelid，过滤掉，避免标签冒充书名）。
+    "      if(idMap[pendingTitle]){" +
+    "        channelBooks[curChannel].books.push({title:pendingTitle,author:line,novelid:idMap[pendingTitle]})" +
+    "      }" +
     "    }" +
     "    expectTitle=true;pendingTitle=''" +
     "  }" +
