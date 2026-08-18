@@ -716,6 +716,11 @@ async function deleteWorkspaceFile(root, payload) {
 }
 
 async function serveStaticFile(requestPath, response) {
+  if (requestPath === "/favicon.ico") {
+    response.writeHead(204);
+    response.end();
+    return;
+  }
   const assetName = requestPath === "/" ? "index.html" : requestPath.slice(1);
   if (!["index.html", "styles.css", "app.js"].includes(assetName)) {
     sendJson(response, 404, { error: { code: "not_found", message: "页面不存在" } });
