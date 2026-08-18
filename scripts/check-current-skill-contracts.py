@@ -1178,7 +1178,6 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
     # 断言跟着内容走。
     for relative in (
         "skills/moshu-write/references/workflow-setup.md",
-            "skills/moshu-write/references/cross-book-recall.md",
         ):
         benchmark_discovery = repo_root / relative
         findings.extend(

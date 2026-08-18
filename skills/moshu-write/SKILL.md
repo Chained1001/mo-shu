@@ -78,7 +78,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 
 ### Phase 1：确认选题方向
 
-消费 `选题决策.md`、确认题材方向、做对标发现并登记主/副对标书。
+消费 `选题决策.md`、确认题材方向、做对标发现并登记主对标书。
 
 **执行前先读 [references/workflow-setup.md](references/workflow-setup.md) 的「Phase 1：确认选题方向」节**，按其中步骤执行。只有模糊灵感、没方向没选题时，先灵感种子收敛（[idea-seed.md](references/idea-seed.md)）再提问。
 
