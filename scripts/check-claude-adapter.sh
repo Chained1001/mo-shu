@@ -6,7 +6,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 MARKETPLACE="$REPO_ROOT/.claude-plugin/marketplace.json"
-EXPECTED_COUNT=9
+# Derive the expected plugin count from the marketplace itself instead of
+# hard-coding it: adding/removing a skill must not require editing this script.
+EXPECTED_COUNT=$(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1], encoding='utf-8'))['plugins']))" "$MARKETPLACE")
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
 
@@ -74,7 +76,7 @@ if [ "${CLAUDE_REAL_CHECK:-0}" = "1" ]; then
 
   # Marketplace validation alone does not validate component frontmatter. Build
   # one synthetic plugin containing every skill so the official CLI parses all
-  # 9 SKILL.md files in a single strict validation pass.
+  # SKILL.md files in a single strict validation pass.
   mkdir -p "$TMP_DIR/plugin/.claude-plugin" "$TMP_DIR/home" "$TMP_DIR/config"
   cp -R "$REPO_ROOT/skills" "$TMP_DIR/plugin/skills"
   python3 - "$TMP_DIR/plugin" <<'PY'
