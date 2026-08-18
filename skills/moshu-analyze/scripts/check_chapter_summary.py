@@ -10,6 +10,9 @@
   for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
   "$PYBIN" check_chapter_summary.py --dir {拆文库/{书}/章节/} [--file {单个文件}] [--deep]
 
+  --file 也可直接传 第*章_深度拆解.md：此时只跑深度字段检查，不跑摘要 4 条。
+  --dir 下只有深度拆解文件且带 --deep 时，跳过摘要检查、仅做深度检查。
+
 检查项:
   1. 情节点数一致: ^P 行数 == 基调：行数 == 白描行数
      (白描: ^P[0-9]+ 后 类型段|白描段|涉及 三段齐全且白描段非空白)
@@ -94,48 +97,65 @@ def check_deep(path: Path) -> list[str]:
 def main():
     ap = argparse.ArgumentParser(description='章节摘要硬检查器')
     ap.add_argument('--dir', help='章节目录（拆文库/{书}/章节/）')
-    ap.add_argument('--file', help='单文件检查（与 --dir 二选一）')
+    ap.add_argument('--file', help='单文件检查（与 --dir 二选一；也可传 第*章_深度拆解.md）')
     ap.add_argument('--deep', action='store_true', help='额外检查 第*章_深度拆解.md 必含字段')
     args = ap.parse_args()
 
+    deep_only = False
     if args.file:
-        files = [Path(args.file)]
+        p = Path(args.file)
+        if '深度拆解' in p.name:
+            # --file 直接指向深度拆解文件：只跑深度字段检查
+            files = []
+            deep_files = [p]
+            deep_only = True
+        else:
+            files = [p]
+            deep_files = sorted(p.parent.glob('第*章_深度拆解.md')) if args.deep else []
     elif args.dir:
         d = Path(args.dir)
         files = sorted(d.glob('第*章_摘要.md'))
+        deep_files = sorted(d.glob('第*章_深度拆解.md')) if args.deep else []
         if not files:
-            print(f'[错误] {d} 下没有 第*章_摘要.md', file=sys.stderr)
-            sys.exit(2)
+            if args.deep:
+                # Stage 1 场景：目录只有深度拆解文件，允许仅深度检查
+                deep_only = True
+            else:
+                print(f'[错误] {d} 下没有 第*章_摘要.md', file=sys.stderr)
+                sys.exit(2)
     else:
         ap.error('需提供 --dir 或 --file')
 
     total_fail = 0
+    checked = 0
     for f in files:
+        checked += 1
         fails = check_file(f)
         status = 'PASS' if not fails else 'FAIL'
         if fails:
             total_fail += 1
         print(f'{f.name}: {status}' + ('' if not fails else ' | ' + '; '.join(fails)))
 
-    if args.deep:
-        deep_files = sorted(Path(args.file).parent.glob('第*章_深度拆解.md')) if args.file \
-            else sorted(Path(args.dir).glob('第*章_深度拆解.md'))
-        for f in deep_files:
-            fails = check_deep(f)
-            if fails:
-                total_fail += 1
-            print(f'{f.name}: {"FAIL" if fails else "PASS"}' + ('' if not fails else ' | ' + '; '.join(fails)))
-        if not deep_files:
-            print('(无 第*章_深度拆解.md 可检查)')
+    if deep_only:
+        print('(无摘要可检查，仅深度检查)')
 
-    # 枚举总览（跨文件汇总）
+    for f in deep_files:
+        checked += 1
+        fails = check_deep(f)
+        if fails:
+            total_fail += 1
+        print(f'{f.name}: {"FAIL" if fails else "PASS"}' + ('' if not fails else ' | ' + '; '.join(fails)))
+    if args.deep and not deep_files:
+        print('(无 第*章_深度拆解.md 可检查)')
+
+    # 枚举总览（跨文件汇总；deep-only 时无摘要可汇总）
     all_text = '\n'.join(f.read_text(encoding='utf-8', errors='replace') for f in files)
     tones_all = sorted({m.group(1).strip() for m in TONE_VAL.finditer(all_text)})
     tags_all = sorted({m.group(2).strip() for m in TAG_LINE.finditer(all_text) if not m.group(1)})
     print(f'\n基调枚举: {tones_all}')
     print(f'主题标签枚举: {tags_all}')
 
-    print(f'\nRESULT: {"ALL PASS" if total_fail == 0 else f"{total_fail}/{len(files)} FAIL"}')
+    print(f'\nRESULT: {"ALL PASS" if total_fail == 0 else f"{total_fail}/{checked} FAIL"}')
     sys.exit(0 if total_fail == 0 else 1)
 
 
