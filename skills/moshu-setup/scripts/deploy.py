@@ -51,6 +51,15 @@ MANAGED_SECTIONS = ('Skill 路由表', '文件结构', '协作规则', '作者�
                     'Compact 后恢复上下文')
 SECTION_RE = re.compile(r'^##\s+(.+?)\s*$', re.M)
 
+DEFAULT_AGENTS_VERSION = '27'
+DEFAULT_SETUP_VERSION = '1.2.10'
+SENTINEL_FIELDS = ('deployed_at', 'agents_version', 'setup_skill_version', 'target_cli',
+                   'resolver_strategy', 'references_dir')
+
+
+class DeployFatal(Exception):
+    """部署过程中不可继续的致命错误。"""
+
 
 def find_python():
     for cand in ('python3', 'python', 'py'):
@@ -102,8 +111,30 @@ def merge_claude_md(existing: str, template_rendered: str) -> str:
 
 
 def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
-           dry_run: bool) -> list[str]:
+           dry_run: bool) -> tuple[list[str], list[str]]:
     logs: list[str] = []
+    fatal: list[str] = []
+
+    # 版本门禁：禁止降级覆盖（与 moshu-setup SKILL.md Phase 1 口径一致）
+    sentinel = project / '.story-deployed'
+    if sentinel.exists():
+        try:
+            sentinel_text = sentinel.read_text(encoding='utf-8')
+        except OSError as e:
+            raise DeployFatal(f'无法读取已有 .story-deployed：{e}')
+        m = re.search(r'^agents_version:\s*(\d+)', sentinel_text, re.M)
+        if m:
+            existing_agents = int(m.group(1))
+            try:
+                current_agents = int(agents_ver)
+            except ValueError:
+                current_agents = -1
+            if existing_agents > current_agents:
+                raise DeployFatal(
+                    f'项目已部署 agents_version={existing_agents}，大于当前 {agents_ver}；'
+                    '请先更新 mo-shu，禁止降级覆盖。'
+                )
+
     hooks_src = TEMPLATES / 'hooks'
     hooks_dst = project / '.claude' / 'hooks'
     rules_src = TEMPLATES / 'rules'
@@ -113,31 +144,40 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
 
     # --- hooks（递归复制 + 顶层 *.sh chmod；lib 不要求执行位） ---
     if not dry_run:
-        shutil.copytree(hooks_src, hooks_dst, dirs_exist_ok=True)
-        for sh in hooks_dst.glob('*.sh'):
-            sh.chmod(sh.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        try:
+            shutil.copytree(hooks_src, hooks_dst, dirs_exist_ok=True)
+            for sh in hooks_dst.glob('*.sh'):
+                sh.chmod(sh.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
+        except OSError as e:
+            fatal.append(f'hooks 复制失败: {e}')
     logs.append(f'hooks: {len(list(hooks_dst.glob("*.sh")))} 脚本 + lib/ (chmod 顶层 *.sh)')
 
     # --- rules / agents（replace） ---
     if not dry_run:
-        rules_dst.mkdir(parents=True, exist_ok=True)
-        agents_dst.mkdir(parents=True, exist_ok=True)
-        for f in rules_src.glob('*.md'):
-            shutil.copy2(f, rules_dst / f.name)
-        for f in agents_src.glob('*.md'):
-            shutil.copy2(f, agents_dst / f.name)
+        try:
+            rules_dst.mkdir(parents=True, exist_ok=True)
+            agents_dst.mkdir(parents=True, exist_ok=True)
+            for f in rules_src.glob('*.md'):
+                shutil.copy2(f, rules_dst / f.name)
+            for f in agents_src.glob('*.md'):
+                shutil.copy2(f, agents_dst / f.name)
+        except OSError as e:
+            fatal.append(f'rules/agents 复制失败: {e}')
     logs.append(f'rules: {len(list(rules_src.glob("*.md")))} | agents: {len(list(agents_src.glob("*.md")))}')
 
     # --- agent-references（同路径检测；相同跳过复制仅校验） ---
     ref_dst = project / '.claude' / 'skills' / 'moshu-setup' / 'references' / 'agent-references'
     same_path = os.path.realpath(AGENT_REFS) == os.path.realpath(ref_dst)
     if not dry_run and not same_path:
-        ref_dst.mkdir(parents=True, exist_ok=True)
-        for f in AGENT_REFS.glob('*'):
-            if f.is_dir():
-                shutil.copytree(f, ref_dst / f.name, dirs_exist_ok=True)
-            else:
-                shutil.copy2(f, ref_dst / f.name)
+        try:
+            ref_dst.mkdir(parents=True, exist_ok=True)
+            for f in AGENT_REFS.glob('*'):
+                if f.is_dir():
+                    shutil.copytree(f, ref_dst / f.name, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(f, ref_dst / f.name)
+        except OSError as e:
+            fatal.append(f'agent-references 复制失败: {e}')
     missing = [f.name for f in AGENT_REFS.iterdir() if f.is_file() and not (ref_dst / f.name).exists()]
     logs.append(f'agent-references: {"同路径跳过复制" if same_path else "已复制"} {len(list(AGENT_REFS.iterdir()))} 项' +
                 (f' | 缺失: {missing}' if missing else ' | 全部在位'))
@@ -147,13 +187,23 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
     rendered = render_claude_md(name, book)
     if not md_path.exists():
         if not dry_run:
-            md_path.write_text(rendered, encoding='utf-8')
+            try:
+                md_path.write_text(rendered, encoding='utf-8')
+            except OSError as e:
+                fatal.append(f'CLAUDE.md 写入失败: {e}')
         logs.append('CLAUDE.md: 已生成（占位符替换）')
     else:
-        existing = md_path.read_text(encoding='utf-8')
+        try:
+            existing = md_path.read_text(encoding='utf-8')
+        except OSError as e:
+            fatal.append(f'CLAUDE.md 读取失败: {e}')
+            existing = ''
         if SECTION_RE.search(existing):
             if not dry_run:
-                md_path.write_text(merge_claude_md(existing, rendered), encoding='utf-8')
+                try:
+                    md_path.write_text(merge_claude_md(existing, rendered), encoding='utf-8')
+                except OSError as e:
+                    fatal.append(f'CLAUDE.md 写入失败: {e}')
             logs.append('CLAUDE.md: 已按 section 合并（模板覆盖同名，用户独有保留）')
         else:
             logs.append('CLAUDE.md: CONFLICT 无 ## section，未覆盖（交由 AI 按合并策略处理）')
@@ -163,26 +213,29 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
     if not dry_run:
         pybin = find_python()
         if pybin is None:
-            logs.append('settings: FAIL 未找到 python 解释器，跳过（不可手写简化）')
+            fatal.append('settings: FAIL 未找到 python 解释器，无法合并 hooks 配置')
         else:
             cmd = [pybin, str(MERGE_HELPER), '--existing', str(settings_path),
                    '--template', str(TEMPLATES / 'settings-hooks.json'),
                    '--output', str(settings_path)]
             r = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8')
             if r.returncode != 0:
-                logs.append(f'settings: FAIL merge helper exit={r.returncode} {r.stderr[-200:]}')
+                fatal.append(f'settings: FAIL merge helper exit={r.returncode} {r.stderr[-200:]}')
             else:
                 try:
                     json.loads(settings_path.read_text(encoding='utf-8'))
                     logs.append('settings: 已合并（merge-claude-settings.py），JSON 有效')
                 except json.JSONDecodeError as e:
-                    logs.append(f'settings: FAIL JSON 无效 {e}')
+                    fatal.append(f'settings: FAIL JSON 无效 {e}')
     else:
         logs.append('settings: (dry-run 不执行 merge)')
 
-    # --- sentinel + restart 标记 ---
+    # --- sentinel + restart 标记（仅全部必需步骤 PASS 后写入） ---
+    if fatal:
+        logs.append('部署未完成：存在 fatal 错误，未写入 sentinel/restart 标记')
+        return logs, fatal
+
     if not dry_run:
-        sentinel = project / '.story-deployed'
         now = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
         sentinel.write_text(
             f'deployed_at: {now}\n'
@@ -194,7 +247,7 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
             encoding='utf-8')
         (project / '.claude' / '.agents-pending-restart').touch()
     logs.append('sentinel + .agents-pending-restart: 已写入')
-    return logs
+    return logs, fatal
 
 
 def verify(project: Path) -> list[str]:
@@ -215,8 +268,9 @@ def verify(project: Path) -> list[str]:
                   'check-prose-after-write.sh', 'pre-compact.sh', 'post-compact.sh')))
     check('hooks lib 在位', (hooks / 'lib' / 'common.sh').is_file() and (hooks / 'lib' / 'sentinel.sh').is_file())
     rules = project / '.claude' / 'rules'
-    rules_ok = all(f.is_file() and 'paths:' in f.read_text(encoding='utf-8', errors='ignore')
-                   for f in rules.glob('*.md'))
+    rules_ok = rules.is_dir() and all(
+        f.is_file() and 'paths:' in f.read_text(encoding='utf-8', errors='ignore')
+        for f in rules.glob('*.md'))
     check('rules 含 paths frontmatter', rules_ok)
     agents = project / '.claude' / 'agents'
     check('agents 7 个', len(list(agents.glob('*.md'))) == 7)
@@ -224,20 +278,42 @@ def verify(project: Path) -> list[str]:
     same_path = os.path.realpath(AGENT_REFS) == os.path.realpath(ref_dst)
     ref_ok = same_path or all((ref_dst / f.name).exists() for f in AGENT_REFS.iterdir() if f.is_file())
     check('agent-references 在位', ref_ok)
+
+    # settings：JSON 有效 + 模板命令必须各一份
+    try:
+        tpl = json.loads((TEMPLATES / 'settings-hooks.json').read_text(encoding='utf-8'))
+        tpl_cmds = [hook.get('command', '') for blocks in tpl.get('hooks', {}).values()
+                    for b in blocks if isinstance(b, dict)
+                    for hook in b.get('hooks', []) if isinstance(hook, dict)]
+    except Exception as e:
+        tpl_cmds = []
+        check('settings 模板可读', False, str(e))
     settings = project / '.claude' / 'settings.local.json'
     try:
         d = json.loads(settings.read_text(encoding='utf-8'))
         cmds = [h.get('command', '') for evt, blocks in d.get('hooks', {}).items()
                 for b in blocks for h in b.get('hooks', [])]
         dup = {c for c in cmds if cmds.count(c) > 1}
-        check('settings JSON 有效且命令无重复', bool(d) and not dup)
+        missing = [c for c in tpl_cmds if c not in cmds]
+        check('settings JSON 有效且模板命令齐全、无重复', bool(d) and not dup and not missing,
+              f'缺失模板命令: {missing}' if missing else '')
     except Exception as e:
-        check('settings JSON 有效', False, str(e))
+        check('settings JSON 有效且模板命令齐全、无重复', False, str(e))
+
+    # sentinel：6 字段 + 版本值必须等于当前部署版本
     sentinel = project / '.story-deployed'
-    fields = ('deployed_at', 'agents_version', 'setup_skill_version', 'target_cli',
-              'resolver_strategy', 'references_dir')
-    check('sentinel 6 字段', sentinel.is_file() and all(
-        re.search(rf'^{k}:', sentinel.read_text(encoding='utf-8'), re.M) for k in fields))
+    if sentinel.is_file():
+        sentinel_text = sentinel.read_text(encoding='utf-8')
+        fields_ok = all(re.search(rf'^{k}:', sentinel_text, re.M) for k in SENTINEL_FIELDS)
+        agents_m = re.search(r'^agents_version:\s*(\S+)', sentinel_text, re.M)
+        setup_m = re.search(r'^setup_skill_version:\s*(\S+)', sentinel_text, re.M)
+        values_ok = bool(
+            agents_m and agents_m.group(1).strip() == DEFAULT_AGENTS_VERSION
+            and setup_m and setup_m.group(1).strip() == DEFAULT_SETUP_VERSION
+        )
+        check('sentinel 6 字段且版本值正确', fields_ok and values_ok)
+    else:
+        check('sentinel 6 字段且版本值正确', False)
     checks.append('RESULT: ' + ('ALL PASS' if ok else 'HAS FAILURE'))
     return checks
 
@@ -249,8 +325,8 @@ def main():
     d.add_argument('--project', required=True)
     d.add_argument('--name', required=True, help='项目名（CLAUDE.md 占位符）')
     d.add_argument('--book', default=None, help='书名（缺省=项目名）')
-    d.add_argument('--agents-version', default='27')
-    d.add_argument('--setup-version', default='1.2.10')
+    d.add_argument('--agents-version', default=DEFAULT_AGENTS_VERSION)
+    d.add_argument('--setup-version', default=DEFAULT_SETUP_VERSION)
     d.add_argument('--dry-run', action='store_true')
     v = sub.add_parser('verify', help='Phase 3 验证')
     v.add_argument('--project', required=True)
@@ -262,10 +338,24 @@ def main():
         sys.exit(2)
 
     if args.cmd == 'deploy':
-        logs = deploy(project, args.name, args.book or args.name,
-                      args.agents_version, args.setup_version, args.dry_run)
+        try:
+            logs, fatal = deploy(project, args.name, args.book or args.name,
+                                 args.agents_version, args.setup_version, args.dry_run)
+        except DeployFatal as e:
+            print(f'[错误] {e}', file=sys.stderr)
+            sys.exit(1)
         for line in logs:
             print(' -', line)
+        if fatal:
+            print('[错误] 部署未完成，存在以下 fatal 问题：', file=sys.stderr)
+            for line in fatal:
+                print(f'  - {line}', file=sys.stderr)
+            print('手动修复步骤：', file=sys.stderr)
+            print('  1. 按上方 fatal 信息修复对应文件/环境问题；', file=sys.stderr)
+            print('  2. settings 合并失败时，先检查 .claude/settings.local.json 是否为合法 JSON；', file=sys.stderr)
+            print('  3. 确认 Python 解释器可用（python3/python/py 任一）；', file=sys.stderr)
+            print('  4. 修复后重新运行 deploy.py deploy，成功前不会写入 .story-deployed。', file=sys.stderr)
+            sys.exit(1)
     else:
         for line in verify(project):
             print(line)
