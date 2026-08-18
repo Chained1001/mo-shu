@@ -107,6 +107,15 @@ const js =
   argv[idx + 1] === "-b"
     ? Buffer.from(argv[idx + 2] || "", "base64").toString("utf8")
     : argv[idx + 1] || "";
+// 导航失败注入（openWithRetry 用 eval location.href 导航）：URL 命中即失败
+if (process.env.SCAN_FAKE_FAIL_OPEN) {
+  const navMatch = js.match(/location\\.href="([^"]*)"/);
+  const navUrl = navMatch ? navMatch[1] : "";
+  if (navUrl && navUrl.indexOf(process.env.SCAN_FAKE_FAIL_OPEN) > -1) {
+    process.stderr.write("navigate timeout\\n");
+    process.exit(3);
+  }
+}
 if (js.indexOf("host:location.host") > -1) {
   out({ host: process.env.SCAN_FAKE_HOST || "www.jjwxc.net", len: 5000 });
 }
