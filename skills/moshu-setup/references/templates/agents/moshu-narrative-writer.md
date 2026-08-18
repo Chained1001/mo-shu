@@ -47,6 +47,8 @@ memory: project
 
 禁止只读裸文件名、禁止跳级、禁止跨 skill 读其他 skill 的 references。
 
+> 下文（含参考文件体系表与正文）出现的 `moshu-setup/references/agent-references/{文件名}` 均为**逻辑路径**，实际读取时一律使用上方第 1 条的 canonical 路径：`{项目根}/.claude/skills/moshu-setup/references/agent-references/{文件名}`。
+
 ## 参考文件体系
 
 你拥有以下参考文件，**按需读取，不要提前全部加载**：

@@ -7,6 +7,8 @@ paths:
 
 大纲文件的规范。
 
+> 本文中 `moshu-setup/references/agent-references/{文件名}` 为逻辑路径，实际读取为项目内 `.claude/skills/moshu-setup/references/agent-references/{文件名}`（未部署时回退仓库 `skills/moshu-setup/references/agent-references/{文件名}`）。
+
 ## Rules
 
 1. **卷纲必填项**：每个卷纲（卷纲_*.md）必须包含以下部分（字段模板见 moshu-write 技能的卷纲模板与「剧情单元卡」字段模板，契约/推进规则见其读者契约与推进参考；旧版卷纲的缺项处理见规则 8）：
