@@ -21,6 +21,7 @@ All notable changes to this project will be documented in this file.
 ### 维护
 
 - scripts/README 行为契约 8→9 条（与 behavior-contracts.json 对齐）；test-scan-runtime 导航失败注入适配 eval 导航。
+- **去除副对标机制**：删除 `cross-book-recall.md`（多对标跨书召回为未落地特性——上游与 mo-shu 执行层均无消费，且并列对标会制造写手指令矛盾）；对标收敛为**单一主对标**（结构权威：节奏/情绪引擎/文风），无对标仍走理论 references + 八节点自排；多对标语义残留（对标书列表/引用强度/副对标召回摘要）全量清理。
 
 ---
 
