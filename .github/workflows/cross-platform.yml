@@ -74,6 +74,8 @@ jobs:
         run: node scripts/test-scan-runtime.js
       - name: Scan-analyze multi-platform regression
         run: node scripts/test-scan-analyze.js
+      - name: Merge-chapter-summaries regression
+        run: node scripts/test-merge-summaries.js
       - name: AI-pattern detector regression
         run: bash scripts/test-ai-patterns.sh
       - name: Outline-copy detector regression

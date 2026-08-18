@@ -40,6 +40,7 @@
 | `test-normalize-punctuation.js` | 标点归一化的只读检查、frontmatter/fence、CRLF、引号模式与幂等性 | CI |
 | `test-scan-runtime.js` | CDP argv 边界/报错/JSON 契约与 5 个 scraper 无副作用 import | CI |
 | `test-scan-analyze.js` | scan-analyze 4 平台通用提取回归：平台识别/字段适配/晋江题材缺失/`--dup` 跨平台聚合/无单位重复 | CI（调 scan-analyze，fixture 在 `tests/fixtures/scan/`） |
+| `test-merge-summaries.js` | merge-chapter-summaries 回归：自然排序/拼接完整/无损校验失败删文件/空目录/CRLF 兼容 | CI（调 moshu-analyze 拼接脚本） |
 | `test-charcount-portable.sh` | 跨平台字符统计命令在三平台 + Windows 的正确性 | CI（调 check-python-invocation） |
 | `test-hook-encoding-portable.sh` | 部署 hook 在 Windows 中文系统的编码健壮性 | CI |
 | `test-skill-numbering.sh` | Step 重排级联安全、锚点 fail-closed、代码块引用、验证零写入/提交回滚、dry-run/write/幂等性 | Linux / Windows Git Bash / macOS CI |
