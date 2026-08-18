@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "description": "关键行为约束静态守卫——约束文本从文档中丢失即失败，防止 skill 迭代导致写作行为漂移。新增/修改契约时同步更新 scripts/README.md 与 test-behavior-contracts.py 的 fixture 前提。",
+  "contracts": [
+    {
+      "id": "bare-invocation-stops",
+      "path": "skills/moshu-write/SKILL.md",
+      "must_contain": "只做项目状态诊断并列出下一步选项",
+      "rationale": "裸调用防失控：无明确意图时只诊断列选项，不自动进入写作"
+    },
+    {
+      "id": "outline-first-boundary",
+      "path": "skills/moshu-write/references/workflow-chapter.md",
+      "must_contain": "正文只能展开本章细纲已有事件",
+      "rationale": "细纲优先边界：写手不自造新主线/角色/反转"
+    },
+    {
+      "id": "outline-missing-must-build",
+      "path": "skills/moshu-write/references/workflow-chapter.md",
+      "must_contain": "不允许跳过细纲直接写作",
+      "rationale": "缺细纲必须补建，禁止跳过直接写正文"
+    },
+    {
+      "id": "s1s2-bridge",
+      "path": "skills/moshu-write/references/workflow-chapter.md",
+      "must_contain": "S1/S2 必须显式过桥",
+      "rationale": "一致性冲突必须显式落盘（已修复/进 risks/进 commitments），未判定不进下一章"
+    },
+    {
+      "id": "daily-no-bare",
+      "path": "skills/moshu-write/references/workflow-daily.md",
+      "must_contain": "裸调用不进日更",
+      "rationale": "无明确意图不得进入日更流程"
+    },
+    {
+      "id": "daily-tracking-commit",
+      "path": "skills/moshu-write/references/workflow-daily.md",
+      "must_contain": "提交一次追踪事务",
+      "rationale": "每章结束必须提交一次追踪事务（状态纪律）"
+    },
+    {
+      "id": "serial-no-concurrent",
+      "path": "skills/moshu-write/references/workflow-daily.md",
+      "must_contain": "不得把多章同时交给多个子代理并发写",
+      "rationale": "长篇章节依赖上一章状态，必须串行写作"
+    },
+    {
+      "id": "model-single-writer-state",
+      "path": "skills/moshu-write/references/tracking-transaction.md",
+      "must_contain": "模型只提交一份语义 JSON",
+      "rationale": "追踪唯一写入口：模型只交语义 JSON，不分别手改派生文件"
+    },
+    {
+      "id": "three-tier-division",
+      "path": "skills/moshu-write/SKILL.md",
+      "must_contain": "脚本做确定性的",
+      "rationale": "三层分工宪法：脚本做确定性/ AI 做语义/ 作者做品味，防越权与遗漏"
+    }
+  ]
+}

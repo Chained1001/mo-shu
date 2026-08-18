@@ -1,0 +1,16 @@
+.DS_Store
+**/.omc/
+.claude/
+.codebuddy/
+.codewhale/
+node_modules/
+playwright-report/
+test-results/
+CLAUDE.md
+_archive/
+skills-lock.json
+docs/plans/
+__pycache__/
+*.pyc
+TestA/
+testProject/

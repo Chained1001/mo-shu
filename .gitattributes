@@ -1,0 +1,4 @@
+# 统一仓库文本行尾为 LF。
+# CRLF 会让 bash 把 `pipefail\r` 解析成非法选项，导致 Linux/macOS CI 的 shell 脚本
+# 在 `set -euo pipefail` 处报 "set: pipefail"。
+* text=auto eol=lf

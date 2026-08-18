@@ -1,0 +1,45 @@
+name: Claude Code compatibility
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.claude-plugin/**'
+      - '.github/workflows/cli-compat.yml'
+      - 'scripts/**'
+      - 'skills/**'
+  pull_request:
+    paths:
+      - '.claude-plugin/**'
+      - '.github/workflows/cli-compat.yml'
+      - 'scripts/**'
+      - 'skills/**'
+  schedule:
+    - cron: '23 9 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cli-compat-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  claude-code:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install current Claude Code CLI
+        run: npm install --global @anthropic-ai/claude-code@latest
+      - name: Run real Claude Code adapter check
+        env:
+          CLAUDE_REAL_CHECK: '1'
+        run: bash scripts/check-claude-adapter.sh

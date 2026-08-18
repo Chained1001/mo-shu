@@ -1,0 +1,21 @@
+{
+  "manifest_version": 1,
+  "setup_skill_version": "1.2.10",
+  "agents_version": 27,
+  "topic_decision_phase": 5,
+  "progress_schema_version": 2,
+  "primary_benchmark_artifacts": [
+    "剧情/情绪模块.md",
+    "剧情/节奏.md"
+  ],
+  "required_outline_sections": [
+    "阶段位置",
+    "结构公式",
+    "禁止提前释放",
+    "内容概括",
+    "情节安排",
+    "人物关系和出场顺序",
+    "情节细化",
+    "结尾设定和钩子"
+  ]
+}
