@@ -304,6 +304,44 @@
 | doc-budget | 无影响（文风/技法均为冷路径） |
 | skill-numbering | 新 SKILL.md 遵守 Step/Phase 编号规范 |
 
+## 六·六、改造风险评估（防改坏清单——2026-08-18 审核基线）
+
+> 审核时点基线：check-current-skill-contracts / static-check 9/9 / shared-assets 36 组 / behavior-contracts 9 条 / skill-numbering 198 文件 / test-scan-analyze / test-merge-summaries / test-scan-runtime 全部通过。
+
+### CI 必挂风险点（契约守卫 4 处——改造时优先同步，否则 CI 红）
+
+| # | 位置 | 断言内容 | 改造动作 |
+|---|---|---|---|
+| R1 | `check-current-skill-contracts.py:154-159` | `no-benchmark-skips-genre-card`：moshu-write 须含"无对标…跳过…对标模块/节奏/题材卡/文风召回"模式 | 改造后"文风召回"与对标解耦（文风库项目级）——断言模式文本更新为文风库语义（如"文风库缺失→交互提醒"） |
+| R2 | `check-current-skill-contracts.py:160-165` | `style-profile-all-inputs-required`：挂 `skills/moshu-analyze/references/style-profile-generator.md` 须含"前置依赖：…齐全" | 文件迁出拆书后路径失效——改挂 moshu-style 新 SOP 文件，或删除该断言（迁出后由 moshu-style 自身文档承载） |
+| R3 | `test-current-skill-contracts.py:583-584,649,766` | 反向 fixture 断言文本（"无对标时跳过…文风召回"）+ 两处直接引用 style-profile-generator.md 路径 | fixture 文本同步（同 R1）+ 路径改 moshu-style 新位置 |
+| R4 | `test-tracking-workflow-contracts.py:233-235` | narrative-writer 须保持"续写状态卡不存文风"（上下文文风指纹已移除的约束） | **零改动但必须守护**：改造 narrative-writer 模板时不得把文风塞回追踪上下文——此测试是护栏 |
+
+### 中性项确认（不会挂，但改造时保持）
+
+- shared-assets.json **不含** 拆书/style-profile 文件 → 迁出不动清单 ✅
+- behavior-contracts.json **不含** 文风 → 无影响 ✅
+- doc-budget.json **不含** 拆书 references → 无影响 ✅
+- static-check：拆书删除 style-profile-* 引用后跑一遍（跨 skill 引用禁止；moshu-style 自己的 references 独立不跨引用）
+
+### 功能链路保护（改造不破坏现有路径）
+
+| 链路 | 风险 | 保护 |
+|---|---|---|
+| 拆书全量路径 | Stage 1 移除表达层文风后停靠点仍产快速预览（逻辑独立） | 停靠点改造只增删"表达层文风"步骤，快速预览/深度拆解检查不动 |
+| **import 依赖 Stage 2-6 全套产物**（import-workflow:102"缺一不可"） | Stage 6 改名技法总结后，import 的产物检查点会误判"缺 Stage 6" | import 检查点同步为技法总结.md（改造清单 #7 已含）；实施时确认 import-workflow:102 的"全套产物"清单文本同步 |
+| explorer gaps 分支 | profile_missing 语义从"对标文风缺失"变"文风库缺失" | workflow-daily 75-82 行 gaps 分支同步（改造清单 #5） |
+| narrative-writer 自检 | 文风自检来源顺序变化 | 模板 66/200/202 行同步（改造清单 #4）；R4 护栏守护"不存追踪" |
+| 老项目 | 拆文库/对标 旧文风.md 不再被消费 | 四·五节迁移指引 |
+
+### 实施纪律（每步验证，防止"改坏了不知道"）
+
+1. 每完成一个文件组改造 → 跑 `check-current-skill-contracts.py`（R1/R2 立刻暴露）
+2. 拆书迁出完成后 → 跑 `static-check.py`（跨 skill 引用残留暴露）
+3. agent-references 三副本改完 → 跑 `sync-shared-assets.py check`（字节一致强制）
+4. narrative-writer 模板改完 → 跑 `test-tracking-workflow-contracts.py`（R4 护栏）
+5. 全部完成后 → 全量：contracts / static / shared / behavior / numbering / test-scan-analyze / test-merge-summaries / test-scan-runtime
+
 ## 六·五、拆书-写书整体流程与生产-消费关系（改造后全景）
 
 > 目的：明确每一步怎么用、谁生产、谁消费、何时消费、强度如何——避免"产物存在但没人消费"或"消费点找不到来源"。
