@@ -1,6 +1,6 @@
 ---
 name: moshu-setup
-version: 1.2.9
+version: 1.2.10
 description: "网文写作工具集基础设施部署。为 Claude Code 部署 hooks、agents、rules、CLAUDE.md 到写作项目。触发方式：/moshu-setup、「准备写书」「帮我搭一下环境」「配置写作项目」。"
 ---
 # moshu-setup：网文写作工具集基础设施部署
@@ -16,9 +16,9 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 **先自检参考目录**：以正在执行的本 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对 `agent-references`、`templates` 两个名字是否都在**且都非空**；同级 `scripts/merge-claude-settings.py` 也必须存在（Claude hooks 合并算法依赖它）。**用一条命令完成自检**（如 `ls references/ scripts/` 并核对输出），不要分多轮 Bash 逐步探索。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」和「目录为空」，并给修复指令：「moshu-setup 参考资料包不完整，缺 {目录名}。按你的安装方式重装 mo-shu（git clone 装的在仓库目录 `git pull`，marketplace 装的在面板里重装），再执行 /moshu-setup。」
 
 1. 检查当前目录是否已部署过（存在 `.story-deployed`）
-   - `agents_version` 缺失、非整数或小于 `26` → 标记为待更新，继续执行当前部署
-   - `agents_version: 26` → 使用 AskUserQuestion 确认是否重新部署；提示里写明重新部署只用**当前本地 skill 包**刷新项目文件，要拿 skill 本身的新版本得先更新 mo-shu（`git pull` 或 marketplace），再回来重跑
-   - `agents_version` 大于 `26` → 当前 moshu-setup 比项目部署旧；停止以避免降级覆盖，提示先更新 mo-shu，不写任何部署文件
+   - `agents_version` 缺失、非整数或小于 `27` → 标记为待更新，继续执行当前部署
+   - `agents_version: 27` → 使用 AskUserQuestion 确认是否重新部署；提示里写明重新部署只用**当前本地 skill 包**刷新项目文件，要拿 skill 本身的新版本得先更新 mo-shu（`git pull` 或 marketplace），再回来重跑
+   - `agents_version` 大于 `27` → 当前 moshu-setup 比项目部署旧；停止以避免降级覆盖，提示先更新 mo-shu，不写任何部署文件
 2. 检查是否有书名目录（包含 `追踪/` 子目录的目录，或用户自定义结构）
    - 有 → 识别为长篇项目，显示当前项目信息
    - 无 → 识别为新项目
@@ -99,15 +99,15 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
 - 写入以下字段（YAML `key: value` 格式，hook 用 `references/templates/hooks/lib/sentinel.sh` 读取）：
   ```
   deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
-  agents_version: 26
-  setup_skill_version: 1.2.9
+  agents_version: 27
+  setup_skill_version: 1.2.10
   target_cli: claude-code
   resolver_strategy: project-local-skill-reference
   references_dir: .claude/skills/moshu-setup/references/agent-references
   ```
 - 此文件供 session-start.sh 和写作 skill 检测部署状态，避免重复提示
 - 同时创建一次性标记文件 `.claude/.agents-pending-restart`（空文件即可）。session-start.sh 在下一个会话启动时据此确认 agents 已随新会话注册，并自动删除该标记——用来向用户确认「重启已生效」。
-- 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `26`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `26` 时已在 Phase 1 停止，不得降级覆盖
+- 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `27`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `27` 时已在 Phase 1 停止，不得降级覆盖
 
 ## Phase 3：验证安装
 
@@ -125,7 +125,7 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
    - 检查 `.claude/skills/moshu-setup/references/agent-references/` 下 reference 文件完整
    - 检查所有 `moshu-setup/references/agent-references/<file>.md` 都能解析到 deployed bundle
 5. 验证部署标记：
-   - 检查 `.story-deployed` 是否存在且包含时间戳、`agents_version: 26`、`setup_skill_version: 1.2.9`、`target_cli`、`resolver_strategy`、`references_dir`
+   - 检查 `.story-deployed` 是否存在且包含时间戳、`agents_version: 27`、`setup_skill_version: 1.2.10`、`target_cli`、`resolver_strategy`、`references_dir`
 6. 输出安装报告：
    - 列出所有已部署的文件
    - 列出需要注意的事项（如已有配置已合并）
@@ -161,9 +161,9 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
 
 - 重部署时已部署项目以 sentinel 里的值为准：`target_cli`、`resolver_strategy`、`references_dir` 沿用 `.story-deployed` 里已有的值，不重新询问、不覆盖为不同值
 - `.story-deployed` 不存在 → 全新安装，Phase 2 全部执行
-- `.story-deployed` 存在且 `agents_version: 26` → 提示已部署，AskUserQuestion 确认是否重新部署；提示里写明重新部署只用当前本地 skill 包刷新项目文件，skill 本身的更新走 `git pull` 或 marketplace
-- `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `26` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / settings.local.json 走合并策略
-- `.story-deployed` 存在且 `agents_version` 大于 `26` → 当前 skill 版本过旧，停止并提示先更新 mo-shu；不覆盖项目中的更新部署
+- `.story-deployed` 存在且 `agents_version: 27` → 提示已部署，AskUserQuestion 确认是否重新部署；提示里写明重新部署只用当前本地 skill 包刷新项目文件，skill 本身的更新走 `git pull` 或 marketplace
+- `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `27` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / settings.local.json 走合并策略
+- `.story-deployed` 存在且 `agents_version` 大于 `27` → 当前 skill 版本过旧，停止并提示先更新 mo-shu；不覆盖项目中的更新部署
 
 ---
 

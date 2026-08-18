@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.0.0):** this release targets Claude Code only — the OpenCode / Codex / ZCode / OpenClaw / Reasonix / generic adapters have been removed; the project is renamed to **mo-shu (墨枢)**. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.1.0):** methodology completion across the three reference projects (P0/P1 fully landed — 10 anti-AI hard constraints, chapter post-checks, naming/scene/craft cards, fact-verification discipline) plus deterministic tooling for deconstruction and rank sweeps, and one-command deployment. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 
@@ -120,7 +120,7 @@ Writing skills internally coordinate 7 specialized agents:
 | **moshu-explorer** | Haiku | Story query — read-only character/foreshadowing/setting/progress lookup, quick context loading |
 | **moshu-chapter-extractor** | Haiku | Chapter extraction — summaries, plot points, character mentions, parallel deconstruction unit |
 
-Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — 58 methodology files in the agent-references bundle, nearly 200 references across the repo), without reserving context window space.
+Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — 31 methodology files in the agent-references bundle, 189 references across the repo), without reserving context window space.
 
 ## Automation Hooks
 
@@ -193,21 +193,21 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 
 | Topic | Contents | Skill |
 |:------|:---------|:------|
-| Outline Layout | Five-step outline method · Story structure levels · Node design · Progression design | long-write |
-| Opening Design | Opening patterns · First 500 words · Golden First 3 Chapters | long-write |
-| Character Design | Character profiles · Character extraction · Relationship mapping · Motivation chains · Ensemble casts | long-write |
-| Hook Techniques | 13 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | long-write |
-| Emotion Design | 6 arc templates · Expectation management · Genre track strategies | long-write |
-| Genre Frameworks | Long-form 8-node · 8 genre opening templates | long-write |
-| Dialogue Techniques | Rhythm · Subtext · Information control · Dialogue pattern database | long-write |
-| Twist Toolbox | Types · Timing · Misdirection base paths | long-write |
-| Style Modules | Dialogue · Combat · Mind games · Cinematic writing · Face-slapping · Plain description | long-write |
-| Advanced Techniques | 4-step micro-outline · Climax reverse-engineering · Dual-thread structure · AB interweaving | long-write |
-| De-AI-ify | Prevention · 3-pass de-AI method · Rewrite examples · Banned word list | deslop / long-write |
-| Quality Checks | General · Long-form specific · Toxic trope detection | long-write |
-| Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown | long-analyze |
-| Reader Profiles | 9-dimension profiles · Target reader analysis | long-scan |
-| Market Data | Genre trends · Platform characteristics · Collection formats · Submission guides | long-scan |
+| Outline Layout | Five-step outline method · Story structure levels · Node design · Progression design | moshu-write |
+| Opening Design | Opening patterns · First 500 words · Golden First 3 Chapters | moshu-write |
+| Character Design | Character profiles · Character extraction · Relationship mapping · Motivation chains · Ensemble casts | moshu-write |
+| Hook Techniques | 13 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | moshu-write |
+| Emotion Design | 6 arc templates · Expectation management · Genre track strategies | moshu-write |
+| Genre Frameworks | Long-form 8-node · 8 genre opening templates | moshu-write |
+| Dialogue Techniques | Rhythm · Subtext · Information control · Dialogue pattern database | moshu-write |
+| Twist Toolbox | Types · Timing · Misdirection base paths | moshu-write |
+| Style Modules | Dialogue · Combat · Mind games · Cinematic writing · Face-slapping · Plain description | moshu-write |
+| Advanced Techniques | 4-step micro-outline · Climax reverse-engineering · Dual-thread structure · AB interweaving | moshu-write |
+| De-AI-ify | Prevention · 3-pass de-AI method · Rewrite examples · Banned word list | deslop / moshu-write |
+| Quality Checks | General · Long-form specific · Toxic trope detection | moshu-write |
+| Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown | moshu-analyze |
+| Reader Profiles | 9-dimension profiles · Target reader analysis | moshu-scan |
+| Market Data | Genre trends · Platform characteristics · Collection formats · Submission guides | moshu-scan |
 | Adversarial Review | Multi-perspective review · Scoring rubrics · Toxic trope detection | moshu-review |
 
 </details>

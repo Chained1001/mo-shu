@@ -67,7 +67,7 @@
 在进入 Phase 2 之前，先检测项目是否已部署 moshu-setup 基础设施：
 
 - 先读取 `.story-deployed` 并执行顶部 Spawn 版本门禁；旧版 `moshu-chapter-extractor` 文件即使仍在磁盘上也不可复用。
-- 只有 `agents_version: 25` 通过后，才按 `.claude/agents/moshu-chapter-extractor.md` 检查 Phase 2 长篇并行 agent。
+- 只有 `agents_version: 27` 通过后，才按 `.claude/agents/moshu-chapter-extractor.md` 检查 Phase 2 长篇并行 agent。
 
 **部署标记缺失、版本无效/过期，或当前端的 agent 不可用时**，提示用户：
 

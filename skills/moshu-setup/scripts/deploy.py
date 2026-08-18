@@ -9,7 +9,7 @@ AskUserQuestion 与结果报告，不再逐条手写 cp/chmod（三层分工：�
 用法（按仓库解释器探测形态调用，Windows 禁止裸 python3）:
   for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
   "$PYBIN" deploy.py --project {项目目录} --name {项目名} [--book {书名}]
-                     [--agents-version 26] [--setup-version 1.2.9] [--dry-run]
+                     [--agents-version 27] [--setup-version 1.2.10] [--dry-run]
   "$PYBIN" deploy.py --verify {项目目录}
 
 行为:
@@ -249,8 +249,8 @@ def main():
     d.add_argument('--project', required=True)
     d.add_argument('--name', required=True, help='项目名（CLAUDE.md 占位符）')
     d.add_argument('--book', default=None, help='书名（缺省=项目名）')
-    d.add_argument('--agents-version', default='26')
-    d.add_argument('--setup-version', default='1.2.9')
+    d.add_argument('--agents-version', default='27')
+    d.add_argument('--setup-version', default='1.2.10')
     d.add_argument('--dry-run', action='store_true')
     v = sub.add_parser('verify', help='Phase 3 验证')
     v.add_argument('--project', required=True)
