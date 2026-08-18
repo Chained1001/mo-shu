@@ -953,7 +953,7 @@ function wordcountFinding(absolute, text) {
     }
   } catch {}
   if (!target) return null
-  const actual = Array.from(text).length
+  const actual = Array.from(text.replace(/\r\n?/g, "\n")).length
   return actual < target * 0.9
     ? `字数：第${chapter}章 实际 ${actual} 字 < 目标 ${target} 的 90%（${Math.floor(target * 0.9)}）。对照细纲字数预算定位欠账的密点、一次性重写到配额，别挤牙膏回炉。`
     : null

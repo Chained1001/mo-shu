@@ -42,7 +42,7 @@
 | `test-charcount-portable.sh` | 跨平台字符统计命令在三平台 + Windows 的正确性 | CI（调 check-python-invocation） |
 | `test-hook-encoding-portable.sh` | 部署 hook 在 Windows 中文系统的编码健壮性 | CI |
 | `test-skill-numbering.sh` | Step 重排级联安全、锚点 fail-closed、代码块引用、验证零写入/提交回滚、dry-run/write/幂等性 | Linux / Windows Git Bash / macOS CI |
-| `test-behavior-contracts.py` | 行为契约守卫回归：正向（真仓库 8 条约束在位）+ 反向（fixture 删约束必须失败且指向契约 id） | CI（调 check-behavior-contracts） |
+| `test-behavior-contracts.py` | 行为契约守卫回归：正向（真仓库 9 条约束在位）+ 反向（fixture 删约束必须失败且指向契约 id） | CI（调 check-behavior-contracts） |
 | `test-agents-version-sync.py` | agents_version 守卫回归：正向（真仓库一致）+ 反向（fixture 改一处版本必须失败） | CI（调 check-agents-version-sync） |
 
 ## 代码生成 / 同步
