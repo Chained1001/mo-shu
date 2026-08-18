@@ -28,7 +28,7 @@ mid   = sum(1 for s in sents if 15 <= len(s) <= 30)
 lng30 = sum(1 for s in sents if len(s) > 30)
 lng50 = sum(1 for s in sents if len(s) >= 50)
 chars = max(sum(1 for c in text if not c.isspace()), 1)
-paras = [p for p in re.split(r'\n\s*\n', text) if p.strip()]
+paras = [l.strip() for l in text.split('\n') if l.strip()]
 para_avg = sum(len([s for s in re.split(r'[。！？]+', p) if s.strip()]) for p in paras) / max(len(paras), 1)
 puncts = re.findall(r'[，。！？；：、…—"\'\']', text)
 pt = max(len(puncts), 1)
@@ -43,6 +43,7 @@ PYEOF
 把数值直接填进模板「整体语感」——`confidence: high`（确定性测量，不是抽样估计）。
 
 **字段语义**：
+- **段落按行切分**（非空行 = 一段）：网文 txt 常见"一行一段"（行首缩进、无空行分隔），空行分隔格式同样兼容（折叠空行后按行计）——实测《大奉打更人》914 章样本段落均句数 ≈1.4，一行一段的典型值
 - `long_ge50`（≥50 字超长句占比）：与 `long_gt30` 一起看——30-50 是长句常规区，≥50 是超长句（疑似堆叠/流水账信号，写作时注意拆）
 - `para_avg_sents`（段落平均句数）：段落节奏的**统计底座**——配合人工归纳（单段单动作 vs 多动作堆叠、断行习惯）填「段落节奏」段
 - `comma/period/excl/ques/dash/ellipsis`（标点类型占比）：标点习惯的**统计底座**——配合人工归纳（高频用法+示例）填「标点习惯」段；**dash/ellipsis 占比高 → 文风标注「注意克制」**（banned-words 硬安全线禁破折号/省略号，写作时仍按 Gate 归一，统计只作理解）
