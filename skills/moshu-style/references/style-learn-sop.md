@@ -47,7 +47,7 @@ lng50 = sum(1 for s in sents if len(s) >= 50)
 chars = max(sum(1 for c in text if not c.isspace()), 1)
 paras = [l.strip() for l in text.split('\n') if l.strip()]
 para_avg = sum(len([s for s in re.split(r'[。！？]+', p) if s.strip()]) for p in paras) / max(len(paras), 1)
-puncts = re.findall(r'[，。！？；：、…—"\'\']', text)
+puncts = re.findall(r'[，。！？；：、…—“”‘’]', text)
 pt = max(len(puncts), 1)
 pc = Counter(puncts)
 print(f'sentences={total}; short_lt15={100*short//total}%; mid_15to30={100*mid//total}%; long_gt30={100*lng30//total}%; long_ge50={100*lng50//total}%; avg_len={sum(len(s) for s in sents)//total}; paras={len(paras)}; para_avg_sents={para_avg:.1f}; punct_density={100*len(puncts)//chars}%; comma={100*pc.get("，",0)//pt}%; period={100*pc.get("。",0)//pt}%; excl={100*pc.get("！",0)//pt}%; ques={100*pc.get("？",0)//pt}%; dash={100*(pc.get("—",0)+pc.get("……",0))//pt}%; ellipsis={100*pc.get("…",0)//pt}%')
