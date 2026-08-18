@@ -24,7 +24,7 @@ Rubric Source: file | embedded fallback
 1. `{项目根}/.claude/skills/{规范路径}`（Claude Code 项目内安装）
 2. 当前运行时加载本 skill 的目录，或其可访问的全局 skill 搜索路径中同名 `{skill-name}/...` 目录
 
-> 第 1 层不存在是正常的（本仓库开发环境或未部署的项目），不是部署损坏。`/moshu-setup` 把 references 整份部署进项目的 `.claude/skills/` 目录；本仓库开发环境通常命中第 2 层。
+> 第 1 层不存在是正常的（本仓库开发环境或未部署的项目），不是部署损坏。skill 以插件/`npx skills add` 安装后整包位于项目 `.claude/skills/{skill}/`（`/moshu-setup` 只额外部署它自己的 agent 参考资料供 agent 使用，不部署其他 skill 的 references）；本仓库开发环境通常命中第 2 层。
 
 规范路径如下；禁止只写裸文件名，禁止跨 skill 误读其他 skill 的 references：
 
@@ -40,6 +40,8 @@ Rubric Source: file | embedded fallback
 | 平台 rubric | `moshu-review/references/rubrics/{fanqie,qidian}.md` |
 | 标点预检脚本 | `moshu-review/scripts/normalize-punctuation.js` |
 | AI句式预检脚本 | `moshu-review/scripts/check-ai-patterns.js` |
+| 退化检测脚本 | `moshu-review/scripts/check-degeneration.js` |
+| 追踪事务工具 | `moshu-review/scripts/tracking_commit.py` |
 
 ### 内置审查基准包（路径不可读时必用）
 
@@ -253,7 +255,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   可选补充参考：本 Skill 的 `moshu-review/references/anti-ai-writing.md`、`moshu-review/references/banned-words.md`、`moshu-review/references/quality-checklist.md`；若不可读，不影响审查。
   检查项：
   1. 是否存在禁用词/套话/陈词滥调，或“像/好像/仿佛/如同”式比喻成片堆叠？
-  2. 是否出现 AI 写作指纹、10 种 AI 写作模式（含模式 8 解释腔/上帝视角/安排感）或章末总结体？
+  2. 是否出现 AI 写作指纹、12 种 AI 写作模式（含模式 8 解释腔/上帝视角/安排感）或章末总结体？
   3. 格式是否合规（按戏剧单元/镜头自然断段、无机械字数切分、无空行、对话独立成行、主语节奏自然）？
   4. 标点节奏是否匹配语气/人物声线：是否通篇句号化、随机堆砌问号/感叹号，或残留 `……`/`——` 硬造停顿？正文（含对话）里的破折号是否已清理？
   5. 是否出现“这五个字 / 短短四字 / 三个字一落 / 八个字砸下去”等正文内具体字数表达？若统计口径不明、未见机器核对结果或无叙事必要，标为问题并建议改成非具体数字表达。

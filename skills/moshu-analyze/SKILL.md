@@ -54,7 +54,7 @@ description: "长篇网文拆文。深度拆解爆款长篇小说的黄金三章
 | [references/material-decomposition.md](references/material-decomposition.md) | Stage 2-5：素材拆解方法论 + 质量阈值 + 分块策略；Stage 6 另见技法总结资料 |
 | [references/pipeline-ops.md](references/pipeline-ops.md) | 管道运维：_progress.md 模板、错误处理、恢复机制操作步骤 |
 | [references/deconstruction-notes.md](references/deconstruction-notes.md) | 拆书方法+影视拆解+抽象拆解法+题材实战 |
-| [references/technique-summary-sop.md](references/technique-summary-sop.md) | Stage 6：技法总结 SOP（情绪交替/可借鉴技巧/分层建议/不可模仿） |
+| [references/technique-summary-sop.md](references/technique-summary-sop.md) | Stage 6：技法总结 SOP（情绪交替/可借鉴技巧/分层学习路线/不可模仿） |
 
 ---
 

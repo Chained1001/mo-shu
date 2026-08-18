@@ -31,7 +31,7 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 
 ### Phase 1：确认平台和方向
 
-问用户：**「你想看哪个平台？（起点/番茄/晋江/其他）有没有关注的题材方向？」**
+问用户：**「你想看哪个平台？（起点/番茄/晋江/七猫/其他）有没有关注的题材方向？」**
 
 关键判断：
 - 用户已有方向 → 针对该方向做深度扫榜
@@ -106,11 +106,14 @@ node {SKILL_DIR}/scripts/fanqie-rank-scraper.js --channel all --top 15 --outdir 
 
 大热榜用 `--period day|month|all` 显式选择日榜、月榜或两者（默认 `day`）；周期会进入文件头与文件名。非大热榜不区分周期，`--period` 不会重复采集。
 
-**晋江采集目标**（`{SKILL_DIR}/scripts/jjwxc-rank-scraper.js`，默认列表 + 详情两步走）：
+**晋江采集目标**（`{SKILL_DIR}/scripts/jjwxc-rank-scraper.js`，默认列表 + 详情两步走；其余榜单类型见 [references/scan-output-format.md](references/scan-output-format.md) 榜单表）：
 
 | 榜单 | URL | 核心字段 |
 |------|-----|----------|
 | 收入金榜 | jjwxc.net/topten.php?orderstr=12&t=0 | 收藏数、营养液、积分、字数、状态（详情页 `onebook.php` 补采） |
+| 月榜 | jjwxc.net/topten.php?orderstr=7&t=0 | 同上 |
+| 完结金榜 | jjwxc.net/topten.php?orderstr=14&t=0 | 同上 |
+| 新手金榜 | jjwxc.net/topten.php?orderstr=15&t=0 | 同上 |
 
 ```bash
 node {SKILL_DIR}/scripts/jjwxc-rank-scraper.js --type 12 --outdir {输出目录}        # 列表+详情（默认每频道前10，详情上限100）
@@ -337,7 +340,7 @@ node {SKILL_DIR}/scripts/jjwxc-rank-scraper.js --type 12 --list-only            
 | [scripts/qidian-rank-scraper.js](scripts/qidian-rank-scraper.js) | 起点榜单采集（畅销/月票/新书等），默认移动端 SSR 提取，PC/CDP 回退 |
 | [scripts/qimao-rank-scraper.js](scripts/qimao-rank-scraper.js) | 七猫榜单采集（大热/新书/完结等），tab 切换（失败重试）+滚动加载，按 bookId 取书名回填作品页链接，带连通性自检+链接/热度命中率标注 |
 | [scripts/jjwxc-rank-scraper.js](scripts/jjwxc-rank-scraper.js) | 晋江榜单采集（收入金榜/月榜等），按频道分组 |
-| [scripts/ciweimao-rank-scraper.js](scripts/ciweimao-rank-scraper.js) | 刺猬猫榜单采集（点击/收藏/月票等），单页 9 榜提取，按 bookId 归一书名回填作品页链接，带连通性自检+空结果重试+链接命中率标注 |
+| [scripts/ciweimao-rank-scraper.js](scripts/ciweimao-rank-scraper.js) | 刺猬猫榜单采集（点击/收藏/月票等），单页 9 榜提取，按 bookId 归一书名回填作品页链接，带连通性自检+空结果重试+链接命中率标注。**预留工具：刺猬猫不在当前 4 平台（起点/番茄/晋江/七猫）分析范围，scan-analyze 不处理其输出** |
 
 ---
 
