@@ -1,6 +1,6 @@
 ---
 name: moshu
-version: 1.1.0
+version: 1.1.1
 description: "网络小说工具箱主入口。根据用户需求自动路由到对应 skill，并可启动本地 Dashboard 查看拆文库、写作项目和编辑文本。触发方式：/moshu、/moshu dashboard、/网文、「我想写小说」「打开工作台」「检查更新」。"
 ---
 # moshu：网文工具箱路由

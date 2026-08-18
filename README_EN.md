@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.1.0):** methodology completion across the three reference projects (P0/P1 fully landed — 10 anti-AI hard constraints, chapter post-checks, naming/scene/craft cards, fact-verification discipline) plus deterministic tooling for deconstruction and rank sweeps, and one-command deployment. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.1.1):** audit-fix release — deployment no longer marks failure as success, deconstruction scripts handle Windows BOM/deep-only checks, doc command paths unified, CI branch fixed, detector skips HTML comments and honors exemption markers. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 

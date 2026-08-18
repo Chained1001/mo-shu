@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.1.1（2026-08-18）
+
+> 审计修复版：P0 确定性脚本/部署/CI 修复 + P1 文档声明。每步经守卫验证 + 独立交叉走查。**版本变更**：7 个 skill 1.1.0→1.1.1，moshu-review 1.1.4→1.1.5，moshu-setup 1.2.10→1.2.11（`agents_version` 27 不变，未改 agent 模板/agent-references；已部署项目建议重跑 `/moshu-setup` 获取 deploy.py 语义修复）。
+
+### 修复
+
+- **deploy.py 失败语义**：settings 合并失败/JSON 无效/复制失败不再写 `.story-deployed` 假成功；版本降级拒绝；verify 修复 rules 目录缺失、模板命令齐全、sentinel 版本值三处假阳性。
+- **chapter_boundary.py UTF-8 BOM**：读取后剥离 BOM，Windows 文件不再丢第一章。
+- **check_chapter_summary.py --deep**：Stage 1 只有深度拆解文件时可仅深度检查；`--file` 传深度文件只跑 deep；deep-only 不再输出空枚举。
+- **analyze-workflow.md**：清理“落盘 章节边界.md”残留，统一为 `_progress.md` 边界表。
+- **文档命令路径统一**：所有 skill 运行时文档裸 `node scripts/...` 统一为 `node {SKILL_DIR}/scripts/...`，workflow-daily 补漏参。
+- **cli-compat.yml**：触发分支 master → main。
+- **check-ai-patterns.js**：跳过整行 HTML 注释；前 6 行 `<!-- 去味:跳过 -->` 豁免整文件；三副本同步。
+- **scan-analyze.js**：声明适用范围为起点采集格式；非起点格式输出不可信警告。
+- **review-workflow.md**：spawn prompt 强制注入“本次审查只读”。
+
+---
+
 ## v1.1.0（2026-08-18）
 
 > 三项目方法论补完（笔枢/引火/V7 的 P0/P1 改造计划全部落地）+ 拆文/扫榜确定性工程化 + 部署一键化。每步改动经守卫验证 + 真实 Claude Code 无头走查（拆文试跑/扫榜实测）。**版本变更**：7 个 skill 1.0.2→1.1.0，moshu-review 1.1.3→1.1.4，moshu-setup 1.2.9→1.2.10（`agents_version` 26 → **27**，agent-references 内容更新，已部署项目重跑 `/moshu-setup` 后新开会话生效）。

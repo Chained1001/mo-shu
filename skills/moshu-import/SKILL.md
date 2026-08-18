@@ -1,6 +1,6 @@
 ---
 name: moshu-import
-version: 1.1.0
+version: 1.1.1
 description: "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 moshu-write 后续写作流程；内部复用 moshu-analyze 的拆解管道。触发方式：/moshu-import、「导入小说」「导入书籍」「反向解析」「把我的书导进来」。"
 ---
 # moshu-import：逆向导入已有小说
