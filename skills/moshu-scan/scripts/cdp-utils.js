@@ -81,16 +81,27 @@ function buildAgentBrowserInvocation(port, args, platform = process.platform) {
  * @param {number} port - CDP 端口
  * @param  {...string} args - agent-browser 参数
  * @returns {string} stdout（trim 后）
+ *
+ * 注意：导航请用 openWithRetry（eval 导航），不要直接调 ab(port, "open", url)
+ * ——agent-browser 的 open 等待页面"稳定"，番茄等页面永不满足会挂起并阻塞
+ * daemon。此处 open 分支保留超时放宽仅为防御性（无调用方）。
  */
 function ab(port, ...args) {
   const invocation = buildAgentBrowserInvocation(port, args);
+  const isOpen = args[0] === "open";
   try {
     return execFileSync(
       invocation.file,
       invocation.args,
       {
         encoding: "utf-8",
-        timeout: 20000,
+        timeout: isOpen ? 40000 : 20000,
+        env: {
+          ...process.env,
+          AGENT_BROWSER_DEFAULT_TIMEOUT: isOpen
+            ? "30000"
+            : process.env.AGENT_BROWSER_DEFAULT_TIMEOUT || "25000",
+        },
         stdio: ["pipe", "pipe", "pipe"],
         windowsHide: true,
       }
@@ -115,6 +126,37 @@ function ab(port, ...args) {
 /** 等待 ms 毫秒（跨平台，不依赖系统 sleep 命令） */
 function sleep(ms) {
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
+/**
+ * 打开页面（导航）。
+ *
+ * 不用 agent-browser 的 open 命令：它会等待页面"稳定"（load + 无持续活动），
+ * 番茄等平台页面有轮询/埋点/字体加载，永不满足 → 命令挂起；且 agent-browser
+ * 有常驻 daemon，挂起的 open 会阻塞后续所有命令（实测：杀 CLI 不影响 daemon，
+ * 后续 eval 全部排队挂起，必须杀 daemon 才能恢复）。
+ * 改用 eval 导航（location.href 赋值）：立即返回、不等待页面——页面异步加载，
+ * 由调用方的 sleep + 页面状态检查（probePage 等）兜底。
+ * @param {number} port - CDP 端口
+ * @param {string} url - 目标 URL
+ * @param {number} [attempts=2] - 最大尝试次数（eval 失败率低，保留防御）
+ */
+function openWithRetry(port, url, attempts = 2) {
+  let lastError = null;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      return ab(port, "eval", `location.href=${JSON.stringify(url)}`);
+    } catch (error) {
+      lastError = error;
+      if (i < attempts) {
+        process.stderr.write(
+          `  ⚠ 导航第 ${i} 次失败，重试: ${String(error.message || error).split("\n")[0]}\n`,
+        );
+        sleep(1000);
+      }
+    }
+  }
+  throw lastError;
 }
 
 function parseJSONResult(raw) {
@@ -272,6 +314,7 @@ function runCli(main, label) {
 module.exports = {
   ab,
   sleep,
+  openWithRetry,
   evalJSON,
   evalJSONBase64,
   buildAgentBrowserInvocation,

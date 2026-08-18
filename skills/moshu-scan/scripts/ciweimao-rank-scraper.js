@@ -17,7 +17,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, openWithRetry, evalJSONBase64, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const RANK_URL = "https://www.ciweimao.com/rank-index";
 
@@ -131,7 +131,7 @@ function main() {
 
   let sections, urls;
   try {
-    ab(PORT, "open", RANK_URL);
+    openWithRetry(PORT, RANK_URL);
     sleep(4000);
 
     // 连通性自检：CDP 未起/被重定向时给可操作报错，而非误报"结构已变"

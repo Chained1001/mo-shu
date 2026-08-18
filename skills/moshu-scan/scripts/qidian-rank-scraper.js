@@ -29,7 +29,7 @@
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
-const { ab, sleep, evalJSON, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, openWithRetry, evalJSON, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const PC_BASE_URL = "https://www.qidian.com/rank";
 const MOBILE_BASE_URL = "https://m.qidian.com";
@@ -219,7 +219,7 @@ function isCaptchaPage(port) {
  */
 function openWithCaptchaHandling(port, url) {
   for (let attempt = 1; attempt <= MAX_CAPTCHA_RETRIES; attempt++) {
-    ab(port, "open", url);
+    openWithRetry(port, url);
     // 首次 3 秒，后续每次多等 2 秒
     sleep(3000 + (attempt - 1) * 2000);
 
@@ -240,7 +240,7 @@ function openWithCaptchaHandling(port, url) {
   while (Date.now() - startTime < MAX_CAPTCHA_WAIT_SEC * 1000) {
     sleep(CAPTCHA_POLL_INTERVAL);
     // 刷新页面检查验证码是否已解除
-    ab(port, "open", url);
+    openWithRetry(port, url);
     sleep(3000);
     const captcha = isCaptchaPage(port);
     if (!captcha) {
@@ -495,7 +495,7 @@ function scrapeRankCDP(port, rankTypeId) {
     for (let i = 0; i < Math.min(books.length, 20); i++) {
       const b = books[i];
       if (!b.url) continue;
-      ab(port, "open", b.url);
+      openWithRetry(port, b.url);
       sleep(1500);
       const detail = extractDetail(port);
       if (detail) {
@@ -509,7 +509,7 @@ function scrapeRankCDP(port, rankTypeId) {
       console.log(`    [${i + 1}/${books.length}] ${b.title}`);
     }
     // 返回榜单页
-    ab(port, "open", url);
+    openWithRetry(port, url);
     sleep(2000);
   }
 

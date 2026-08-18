@@ -24,7 +24,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, openWithRetry, evalJSONBase64, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 const BASE_URL = "https://www.jjwxc.net/topten.php";
 
@@ -197,7 +197,7 @@ function scrapeRank(port, rankTypeId, channelId) {
 
   let data;
   try {
-    ab(port, "open", url);
+    openWithRetry(port, url);
     sleep(4000);
 
     // 连通性自检：CDP 未起/被重定向时给可操作报错，而非误报"结构已变"

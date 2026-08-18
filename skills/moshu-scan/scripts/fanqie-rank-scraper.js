@@ -20,7 +20,7 @@
 
 const fs = require("fs");
 const path = require("path");
-const { ab, sleep, evalJSONBase64, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
+const { ab, sleep, openWithRetry, evalJSONBase64, scrollLoad, getArg, requireIntArg, localDateStamp, localTimestamp, runCli } = require("./cdp-utils");
 
 // 一次详情请求的并发批大小。番茄详情页用同步 XHR 拉取，批太大会撞上
 // cdp-utils 里 ab() 的 20s 超时；超时会显式失败，这里分批是为了避免整个题材被中断。
@@ -246,7 +246,7 @@ function scrapeChannel(ch, type) {
   // 用已知品类 ID 作为入口，确保菜单只显示当前频道/类型的品类
   const initCatId = ch === "1" ? "1141" : "1139"; // 男频:西方奇幻 / 女频:古风世情
   const initUrl = `https://fanqienovel.com/rank/${ch}_${type}_${initCatId}`;
-  ab(PORT, "open", initUrl);
+  openWithRetry(PORT, initUrl);
   sleep(3000);
 
   // 连通性自检：把"静默写出一堆 bookId"变成可操作的报错
@@ -303,7 +303,7 @@ function scrapeChannel(ch, type) {
     console.log(`  [${ci + 1}/${categories.length}] ${cat.name}`);
 
     try {
-      ab(PORT, "open", `https://fanqienovel.com${cat.href}`);
+      openWithRetry(PORT, `https://fanqienovel.com${cat.href}`);
       sleep(2500);
       scrollLoad(PORT, 2);
 
