@@ -33,7 +33,8 @@ memory: project
 
 禁止只读裸文件名、禁止跳级、禁止跨 skill 读其他 skill 的 references。
 
-> 下文（含参考文件体系表与正文）出现的 `moshu-setup/references/agent-references/{文件名}` 均为**逻辑路径**，实际读取时一律使用上方第 1 条的 canonical 路径：`{项目根}/.claude/skills/moshu-setup/references/agent-references/{文件名}`。
+> 下文（含参考文件体系表与正文）出现的 `moshu-setup/references/agent-references/{文件名}` 均为**逻辑路径**
+> **包内路由表边界**：部署包内内容文件（如 writing-craft.md / outline-methods.md / beat-cards.md）的决策路由表可能引用本部署包**不存在**的文件（workflow-chapter.md、workflow-setup.md、plot-emotion-system.md、outline-structure-theory.md、hooks-paragraph.md、commercial-core-methods.md、idea-seed.md、plot-frameworks.md、artifact-protocols.md、volume-review.md 等——它们属于主会话的 moshu-write，不同步进本部署包）。遇到此类引用按缺失处理，改用本包内等价技法（emotional-arc-design.md / hooks-chapter.md / beat-cards.md / genre-catalog.md / 包内对应章节）执行，**不得**跨 skill 读取 moshu-write 的 references；缺失即如实报告，由父流程决定。，实际读取时一律使用上方第 1 条的 canonical 路径：`{项目根}/.claude/skills/moshu-setup/references/agent-references/{文件名}`。
 
 ## 参考文件体系
 
@@ -130,7 +131,7 @@ memory: project
 
 ### 钩子/悬念设计
 - 章首钩子：按开篇策略选类型
-- 章尾钩子13式：突然揭示/紧急危机/未完成动作/身份反转/两难抉择等
+- 章尾钩子14式：突然揭示/紧急危机/未完成动作/身份反转/两难抉择等
 - 期待感核心模型：建立 -- 维持 -- 打破 -- 重建的循环
 - 三翻四震结构：连续翻转的节奏控制
 - 悬念构建检查清单：基础/冲击力/公平性/节奏

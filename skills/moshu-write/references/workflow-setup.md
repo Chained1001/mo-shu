@@ -276,7 +276,7 @@ moshu-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 - **大纲/卷纲_第X卷.md**：每卷的剧情单元+情绪弧线（含章节定位）+人物弧线+伏笔+反转+对标结构坐标（参考 outline-methods.md「大纲三层结构法」 + outline-structure-theory.md「章节定位与张弛 / 对标节奏迁移」 + emotional-arc-design.md「六种弧线速查」 + reversal-toolkit.md「反转类型」）
 - **追踪事务初始状态**：按 `references/tracking-transaction.md` 构造第 0 章初始化 JSON，执行 `scripts/tracking_commit.py init`，生成检查点、续写状态卡（固定 7 栏）、空的伏笔/时间线视图与目录；核心角色动态快照可在第一次正文事务中创建
 
-前 3 章细纲额外加载 [references/opening-design.md](opening-design.md)（黄金三章法则+六大标准）。
+前 3 章细纲额外加载 [references/opening-design.md](opening-design.md)（黄金一章检查清单 + 三大基点与核心模板）。
 
 #### Agent 调用：moshu-architect
 

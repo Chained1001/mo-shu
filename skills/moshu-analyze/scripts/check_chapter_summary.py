@@ -16,14 +16,15 @@
 检查项:
   1. 情节点数一致: ^P 行数 == 基调：行数 == 白描行数
      (白描: ^P[0-9]+ 后 类型段|白描段|涉及 三段齐全且白描段非空白)
-  2. 花括号残留: 文件中不得含 { 或 }
+  2. 花括号残留: 只作报告提示（不判 FAIL、不触发重跑——无下游消费方）
   3. 基调枚举 ⊆ {紧张,轻松,悲伤,热血,爽,甜,温馨,恐怖,压抑,其他}
   4. 主题标签枚举 ⊆ {爱情,亲情,友情,权力,金钱,成长,复仇,悬念,搞笑,热血,日常,其他}
      (出现「主题标签：」带冒号或值为基调词均判失败)
   --deep: 额外检查 第*章_深度拆解.md 的必含字段（Stage 1 轻检查）
 
-⚠️ 枚举单一权威: 基调/主题标签/类型枚举以本脚本为唯一权威——
+⚠️ 枚举单一权威: 基调/主题标签枚举以本脚本为唯一权威——
    改动枚举必须先改本脚本, 再同步 agent 模板与文档, 防跨文档漂移误报。
+   类型枚举以 moshu-chapter-extractor agent 模板为权威（脚本不检查类型）。
 
 退出码: 全部 PASS = 0; 任一 FAIL = 1
 """
@@ -51,9 +52,10 @@ TAG_LINE = re.compile(r'主题标签([：:]?)([^ |\n]+)')
 DEEP_FIELDS = ['开篇钩子', '人物出场', '世界观铺设', '结构拆解', '爽点分析', '章尾钩子', '可借鉴要素']
 
 
-def check_file(path: Path) -> list[str]:
-    """返回该文件的 FAIL 描述列表; 空 = PASS"""
+def check_file(path: Path) -> tuple[list[str], list[str]]:
+    """返回 (FAIL 描述列表, 提示列表); FAIL 空 = PASS"""
     fails: list[str] = []
+    warns: list[str] = []
     text = path.read_text(encoding='utf-8', errors='replace')
     lines = text.splitlines()
 
@@ -64,7 +66,7 @@ def check_file(path: Path) -> list[str]:
         fails.append(f'情节点数不一致: P={p_count} 基调={tone_count} 白描={desc_count}')
 
     if '{' in text or '}' in text:
-        fails.append('含花括号残留 { }')
+        warns.append('含花括号残留 { }（仅提示，不判 FAIL）')
 
     tones_used = set()
     for m in TONE_VAL.finditer(text):
@@ -84,7 +86,7 @@ def check_file(path: Path) -> list[str]:
     if bad_tags:
         fails.append(f'主题标签越界: {sorted(bad_tags)}')
 
-    return fails
+    return fails, warns
 
 
 def check_deep(path: Path) -> list[str]:
@@ -130,11 +132,14 @@ def main():
     checked = 0
     for f in files:
         checked += 1
-        fails = check_file(f)
+        fails, warns = check_file(f)
         status = 'PASS' if not fails else 'FAIL'
         if fails:
             total_fail += 1
-        print(f'{f.name}: {status}' + ('' if not fails else ' | ' + '; '.join(fails)))
+        line = f'{f.name}: {status}'
+        if warns:
+            line += ' | [提示] ' + '; '.join(warns)
+        print(line + ('' if not fails else ' | ' + '; '.join(fails)))
 
     if deep_only:
         print('(无摘要可检查，仅深度检查)')

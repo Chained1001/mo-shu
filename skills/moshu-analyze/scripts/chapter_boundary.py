@@ -127,7 +127,7 @@ def main():
             formats.add('digit' if m.group(1).isdigit() else 'cn')
     issue = None
     if dup:
-        issue = f'重复章号: {dup[:20]}{"…" if len(dup) > 20 else ""}（可能每卷重起，需人工确认或 --per-volume）'
+        issue = f'重复章号: {dup[:20]}{"…" if len(dup) > 20 else ""}（可能每卷重起——按 analyze-workflow「Stage 0 章节边界子步骤」处理：多卷书每卷从「第一章」重起是合法结构，标题列保留卷号消歧、章号列按全书连续序号重编）'
     elif missing:
         issue = f'1..{max(nums)} 跳号: {missing[:20]}{"…" if len(missing) > 20 else ""}'
     elif nums != list(range(1, max(nums) + 1)):
