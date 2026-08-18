@@ -45,7 +45,7 @@ description: "逆向导入已有小说。将已写好的小说（半成品或完
 
 ## Phase 3：结构迁移
 
-**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Phase 3」「Phase 3-L」节**——长篇统一走 3-L 迁移，完整步骤（骨架/正文标准化/角色/关系/设定/大纲/细纲/追踪初始化/题材定位/对标同步/文风）见同节与 `references/structure-mapping-long.md`。
+**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Phase 3」「Phase 3-L」节**——长篇统一走 3-L 迁移，完整步骤（骨架/正文标准化/角色/关系/设定/大纲/细纲/追踪初始化/题材定位/对标同步/技法总结）见同节与 `references/structure-mapping-long.md`。
 
 ## Phase 4：项目激活
 

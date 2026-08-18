@@ -187,6 +187,25 @@
       "skills": [
         "./skills/moshu-import"
       ]
+    },
+    {
+      "name": "moshu-style",
+      "description": "文风学习。从任意量原文（本地文件/粘贴文本）提取写作风格基准——句长/标点/段落节奏/对话技法/锚点片段，产出 文风库/文风.md 供写作每章文风召回。",
+      "source": "./",
+      "strict": false,
+      "version": "1.0.0",
+      "category": "novel-polish",
+      "keywords": [
+        "style",
+        "voice",
+        "writing-style",
+        "文风",
+        "风格",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/moshu-style"
+      ]
     }
   ]
 }

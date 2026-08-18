@@ -202,7 +202,7 @@ def main():
 | 3 聚合分析 | pending | — | 剧情/节奏/情绪模块 |
 | 4 设定+关系 | pending | — | 4a/4b/4c |
 | 5 汇总报告 | pending | — | 拆文报告.md + 概要全量版 |
-| 6 文风 | pending | — | 文风.md |
+| 6 技法总结 | pending | — | 技法总结.md |
 ## 章节边界（Stage 0 章节边界子步骤产物，唯一权威）
 {chr(10).join(tbl)}
 ## 分块进度

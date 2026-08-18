@@ -581,7 +581,7 @@ def test_reviewed_benchmark_wording_stays_removed() -> None:
     cases = {
         "benchmark-primary-nonblocking-wording": "缺失按原流程，不阻塞。\n",
         "no-benchmark-skips-genre-card": "无对标时跳过「对标模块/节奏/题材卡/文风召回」。\n",
-        "style-profile-all-inputs-required": "前置依赖：报告、摘要、原文齐全。\n",
+        "technique-summary-prereqs-required": "前置依赖：报告、摘要齐全。\n",
         "context-missing-skips-all": "读取上下文（按需加载，缺失则跳过）。\n",
     }
     with tempfile.TemporaryDirectory() as tmp:
@@ -646,7 +646,7 @@ def test_analyze_portability_guards() -> None:
     )
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
-        path = root / "skills/moshu-analyze/references/style-profile-generator.md"
+        path = root / "skills/moshu-analyze/references/technique-summary-sop.md"
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text("把 3 段拼接写入 `/tmp/style-sample.txt`。\n", encoding="utf-8")
         require(
@@ -763,11 +763,11 @@ def test_issue_315_333_343_prompt_contracts() -> None:
     )
 
     style = (
-        REPO_ROOT / "skills/moshu-analyze/references/style-profile-generator.md"
+        REPO_ROOT / "skills/moshu-analyze/references/technique-summary-sop.md"
     ).read_text(encoding="utf-8")
     require(
-        "只读 `_progress.md`" in style and "章节边界" in style,
-        "#333: Stage 6 must read the persisted chapter-boundary table",
+        "原文/原文.txt" not in style and "原文切片" not in style,
+        "#333: Stage 6 must not slice the original text (style sampling moved to moshu-style)",
     )
     for stale in ("正确 Grep 模式", "相应调整 regex", "拿到 grep 的", "用 Step 4 grep"):
         require(stale not in style, f"#333: Stage 6 still instructs a second slice via: {stale}")

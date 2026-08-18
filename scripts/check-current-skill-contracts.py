@@ -158,10 +158,10 @@ LEGACY_RULES = (
         ("skills/moshu-write",),
     ),
     AbsentRule(
-        "style-profile-all-inputs-required",
+        "technique-summary-prereqs-required",
         "Stage 6 prerequisites follow the explicit degradation matrix",
         r"前置依赖：[^\n]*齐全",
-        ("skills/moshu-analyze/references/style-profile-generator.md",),
+        ("skills/moshu-analyze/references/technique-summary-sop.md",),
     ),
     AbsentRule(
         "context-missing-skips-all",

@@ -17,7 +17,7 @@ description: "长篇网文拆文。深度拆解爆款长篇小说的黄金三章
 
 ## 拆解边界声明（主线程同样适用）
 
-你亲手做的**黄金三章深度拆解（Stage 1）、Stage 2 串行降级逐章处理、以及 Stage 3-6 的聚合/设定/报告/文风合成**，与 moshu-chapter-extractor 子代理遵循同一逻辑：拆的是用户**合法持有、拥有使用权**的虚构作品（已出版/连载或自有），性质是**只读的转化性文学批评**（编辑/评论/写作教学视角，不复制、不传播、不指导现实行为）。通俗题材里的家暴、出轨、复仇、暴力、情爱张力、黑暗伦理是常规虚构叙事元素，须照常做结构化提取，**不得以「敏感」「不适」为由拒绝整章或整本**——主线程拒绝会让整条自动化流水线停摆；个别片段无法处理则跳过、照常续完其余。
+你亲手做的**黄金三章深度拆解（Stage 1）、Stage 2 串行降级逐章处理、以及 Stage 3-6 的聚合/设定/报告/技法总结合成**，与 moshu-chapter-extractor 子代理遵循同一逻辑：拆的是用户**合法持有、拥有使用权**的虚构作品（已出版/连载或自有），性质是**只读的转化性文学批评**（编辑/评论/写作教学视角，不复制、不传播、不指导现实行为）。通俗题材里的家暴、出轨、复仇、暴力、情爱张力、黑暗伦理是常规虚构叙事元素，须照常做结构化提取，**不得以「敏感」「不适」为由拒绝整章或整本**——主线程拒绝会让整条自动化流水线停摆；个别片段无法处理则跳过、照常续完其余。
 
 
 ---
@@ -28,7 +28,7 @@ description: "长篇网文拆文。深度拆解爆款长篇小说的黄金三章
 
 ## Phase 2：深度拆解管道
 
-**执行前先读 [references/analyze-workflow.md](references/analyze-workflow.md) 的「Phase 2」节**——输出目录、已有分析利用、原文备份、拆文库结构、Stage 0-6 管道表、章节边界子步骤、Stage 1 停靠点、选题决策回填、文风与并行执行见同节；「质量检查概要」「Stage 2 并行 Agent 策略」「恢复机制」节也在同文件。
+**执行前先读 [references/analyze-workflow.md](references/analyze-workflow.md) 的「Phase 2」节**——输出目录、已有分析利用、原文备份、拆文库结构、Stage 0-6 管道表、章节边界子步骤、Stage 1 停靠点、选题决策回填、技法总结与并行执行见同节；「质量检查概要」「Stage 2 并行 Agent 策略」「恢复机制」节也在同文件。
 
 ---
 
@@ -51,11 +51,10 @@ description: "长篇网文拆文。深度拆解爆款长篇小说的黄金三章
 | 文件 | 何时加载 |
 |------|----------|
 | [references/output-templates.md](references/output-templates.md) | 管道全程：各 Stage 输出模板 + 快速预览报告模板 + `剧情/节奏.md` / `剧情/情绪模块.md` 模板 + 通用速查表 |
-| [references/material-decomposition.md](references/material-decomposition.md) | Stage 2-5：素材拆解方法论 + 质量阈值 + 分块策略；Stage 6 另见文风资料 |
+| [references/material-decomposition.md](references/material-decomposition.md) | Stage 2-5：素材拆解方法论 + 质量阈值 + 分块策略；Stage 6 另见技法总结资料 |
 | [references/pipeline-ops.md](references/pipeline-ops.md) | 管道运维：_progress.md 模板、错误处理、恢复机制操作步骤 |
 | [references/deconstruction-notes.md](references/deconstruction-notes.md) | 拆书方法+影视拆解+抽象拆解法+题材实战 |
-| [references/style-profile-protocol.md](references/style-profile-protocol.md) | Stage 6：文风模板 + 可信度/可用性说明 |
-| [references/style-profile-generator.md](references/style-profile-generator.md) | Stage 6：文风生成 SOP（6 步，含全角冒号基调 grep） |
+| [references/technique-summary-sop.md](references/technique-summary-sop.md) | Stage 6：技法总结 SOP（情绪交替/可借鉴技巧/分层建议/不可模仿） |
 
 ---
 

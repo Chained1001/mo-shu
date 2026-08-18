@@ -40,7 +40,7 @@ maxTurns: 15
 | `progress` | 查写作进度 | "现在写到哪了？" |
 | `relationship` | 查角色关系 | "江晨和钟嘉嘉现在什么关系？" |
 | `context_load` | 综合上下文加载 | "我要写第N章，给我上下文" |
-| `benchmark_style_load` | 加载对标文风资料 | "我要写第 N 章，帮我找对标文风和可参考片段" |
+| `benchmark_style_load` | 加载文风资料（文风库） | "我要写第 N 章，帮我找对标文风和可参考片段" |
 
 ---
 
@@ -73,7 +73,7 @@ maxTurns: 15
 │   │   └── 读者已知.md
 ├── 对标/
 │   └── {书名}/
-│       ├── 文风.md
+│       ├── 技法总结.md
 │       ├── 章节/第N章_摘要.md
 │       └── 剧情/
 │           ├── 情绪模块.md  # 读者需求 / 情绪引擎 + 可复现模块
@@ -149,7 +149,7 @@ maxTurns: 15
 
 ### benchmark_style_load 流程
 
-加载对标书的情绪模块 + 节奏索引 + 文风 + 按本章情绪/基调匹配可参考章节 + 原文锚点片段。
+加载对标书的情绪模块 + 节奏索引 + 文风库文风 + 按本章情绪/基调匹配可参考章节 + 原文锚点片段。
 
 1. **解析输入**：项目目录 + 本章情绪/基调 + （可选）本章爽点类型 + （可选）本章目标字数
 2. **主对标书选择**：
@@ -169,10 +169,9 @@ maxTurns: 15
    - 不存在 → 返回 `gaps.missing_primary_contract: true`、`gaps.rhythm_missing: true`、`gaps.repair_action: "重跑 /moshu-analyze Stage 3+ 或重新 /moshu-import，补齐 剧情/节奏.md"`；不要从摘要或故事线伪造权威节奏
    - 若任一权威文件缺失（`gaps.missing_primary_contract: true`），保留已读到的来源信息后直接返回结构化 JSON；调用方必须停止本章准备，不进入文风/章节匹配/正文写作。
    - 若两个权威文件都存在但对同一章节/模块的读者情绪或爆发点描述互相矛盾，保留两条原文摘要，并返回 `gaps.module_rhythm_conflict: true` 与 `gaps.conflict: "..."`；调用方按两个权威文件优先于 `拆文报告.md` / `故事线.md` 的规则处理，禁止自行改写
-6. **读文风**：
-   - `Read {对标书路径}/文风.md`
-   - 不存在 → 返回 `gaps.profile_missing: true, expected_path: "..."`，**不继续后续步骤**
-   - 检查「生成记录」：`文风可用：否` → 返回 `gaps.profile_degenerate: true`，后续不把文风作为强约束；**`文风阶段：表达层` 视为可用**（句长带/标点/对话/锚点照常返回；「情绪交替」「可借鉴技巧」缺失不构成 gap——写书侧情绪走 `剧情/情绪模块.md` 权威、节奏走 `剧情/节奏.md` 权威）；**锚点片段全缺**（锚点节全是占位/无内容）→ `gaps.profile_degenerate: true`（few-shot 核心缺失）
+6. **读文风**（唯一来源：项目根 `文风库/文风.md`，moshu-style 产出）：
+   - `Read 文风库/文风.md`；目录/文件不存在 → 返回 `gaps.profile_missing: true, expected_path: "文风库/文风.md"`，**不继续后续步骤**
+   - 检查「生成记录」：`文风可用：否` → 返回 `gaps.profile_degenerate: true`，后续不把文风作为强约束；**锚点片段全缺**（锚点节全是占位/无内容）→ `gaps.profile_degenerate: true`（few-shot 核心缺失）
 7. **可用性检查（只读可执行）**：
    - 本 agent 只有 `Read/Glob/Grep`，不能调用 Bash/stat。
    - 只读取文风文件「生成记录」：若写有 `文风可用：否`、`需重生`、`原文缺失` 等标记 → `gaps.profile_stale: true` 或 `gaps.profile_degenerate: true`，并在 `stale_reason` 写明原因。
@@ -295,7 +294,7 @@ maxTurns: 15
 {
   "query_type": "benchmark_style_load",
   "results": {
-    "style_profile_path": "对标/{书名}/文风.md",
+    "style_profile_path": "文风库/文风.md",
     "style_profile_summary": "<≤200字 提取核心：标点习惯 + 对话技法 + 情绪交替模式>",
     "selected_emotion_module": "<从 剧情/情绪模块.md 选出的读者需求/触发器/戏剧单元/可复现骨架；缺失时为 null>",
     "rhythm_reference": "<从 剧情/节奏.md 选出的关键信息推进/情绪触动点/爆发节奏/冷却参考；缺失时为 null>",
@@ -308,7 +307,7 @@ maxTurns: 15
       {"tone": "热血", "source": "第8章 第3段（行 401-465）", "demo_point": "爽点铺放比", "text": "<300-500字原文>"}
     ]
   },
-  "source_files": ["设定/题材定位.md", "对标/{书名}/剧情/情绪模块.md", "对标/{书名}/剧情/节奏.md", "对标/{书名}/文风.md", "对标/{书名}/拆文报告.md", "对标/{书名}/章节/第14章_深度拆解.md"],
+  "source_files": ["设定/题材定位.md", "文风库/文风.md", "对标/{书名}/剧情/情绪模块.md", "对标/{书名}/剧情/节奏.md", "对标/{书名}/拆文报告.md", "对标/{书名}/章节/第14章_深度拆解.md"],
   "gaps": {
     "no_benchmark": false,
     "module_missing": false,
