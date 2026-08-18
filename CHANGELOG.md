@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.1.2（2026-08-18，未发布）
+
+> 扫榜全链路加固 + 真实数据验证版：scan-analyze 4 平台通用提取、CDP 导航改 eval 方式、jjwxc 标签过滤、CRLF 字数修复。每步经真实采集验证（起点 40 本 / 番茄 190 本 / 七猫 20 本 / 晋江 432 本，CDP 真机 + 冷启动）。
+
+### 新增
+
+- **scan-analyze 4 平台通用提取**（起点/番茄/晋江/七猫，平台按文件头自动识别）：全平台提取排名/书名/作者；起点字段最全（字数/总推荐/签约/收费模式）；番茄提取字数/在读/题材/标签；晋江提取收藏/字数（题材平台固有缺失标 [待补]）；七猫提取热度/字数/题材。`--dup` 跨平台聚合同书并标注平台来源；逐文件字段缺失警告（替代原"疑似非起点"一刀切）；起点解析逐字节向后兼容；模块化导出（require.main 模式）+ `test-scan-analyze.js` 11 项回归 + 4 平台 fixture 入 CI。
+- **`--genre` 按块分组输出**：番茄/晋江分块排名（各品类 #1）不再混淆，块名标注（起点无块保持原样）。
+
+### 修复
+
+- **CDP 导航改 eval 方式**：agent-browser 的 open 等待页面"稳定"（load + 无持续活动），番茄等平台页面有轮询/埋点/字体加载永不满足 → 冷启动首次导航挂起，且常驻 daemon 卡在挂起的 open 上阻塞后续所有命令。改用 eval 导航（`location.href` 赋值）立即返回，页面异步加载由调用方 sleep + probe 兜底；9 处 open 调用点统一替换（fanqie/qimao/jjwxc/qidian/ciweimao）。
+- **jjwxc 过滤无 novelid 标签条目**：晋江收入金榜"多元"频道是标签聚合页（`-视角-`/`男主`/`惊悚` 等无 novelid anchor），解析只在 novelid 非空时收为书条目——实测 600 本 → 432 本真实书，作品页链接 432/432（100%）。
+- **`--dup` 联合键**：title+author 联合聚合，同名不同书不再误报（晋江《惊悚》#13/#74 假阳性消失）；author 缺失时退化仅 title。
+- **wordcountFinding 恢复 CRLF 归一化**：`\r\n` 先归一化再计数，Windows CRLF 正文不再每行多算 1 字符（2000 字章节约 +5% 误差）。
+
+### 维护
+
+- scripts/README 行为契约 8→9 条（与 behavior-contracts.json 对齐）；test-scan-runtime 导航失败注入适配 eval 导航。
+
+---
+
 ## v1.1.1（2026-08-18）
 
 > 审计修复版：P0 确定性脚本/部署/CI 修复 + P1 文档声明。每步经守卫验证 + 独立交叉走查。**版本变更**：7 个 skill 1.1.0→1.1.1，moshu-review 1.1.4→1.1.5，moshu-setup 1.2.10→1.2.11（`agents_version` 27 不变，未改 agent 模板/agent-references；已部署项目建议重跑 `/moshu-setup` 获取 deploy.py 语义修复）。
