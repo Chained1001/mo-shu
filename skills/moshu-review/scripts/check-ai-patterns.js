@@ -39,7 +39,10 @@ Each finding carries severity: blocking by default for generation/deslop cleanup
 
 The script reports findings only. It never rewrites text, because the safe fix is
 contextual: usually delete the negative setup, write the positive term directly,
-or show it via action/detail.`;
+or show it via action/detail.
+
+Whole-line HTML comments are ignored by the line scanner. A whole-line
+`<!-- 去味:跳过 -->` marker in the first 6 lines skips the entire file.`;
 
 const STOP_CHARS = new Set(['。', '！', '？', '!', '?', '\n']);
 const SOFT_SEPARATORS = new Set(['，', ',', '、', '；', ';', '：', ':']);
@@ -313,6 +316,11 @@ for (const file of options.files) {
     continue;
   }
 
+  if (hasExemptMarker(input)) {
+    if (!options.json) console.log(`${file}: 命中「去味:跳过」豁免标记，跳过扫描`);
+    continue;
+  }
+
   const findings = scanDocument(input).map((finding) => ({ file, ...finding }));
   allFindings.push(...findings);
 }
@@ -344,11 +352,17 @@ function die(message) {
   process.exit(2);
 }
 
+function hasExemptMarker(input) {
+  return input.split(/\r?\n/).slice(0, 6)
+    .some((line) => /^\s*<!--\s*去味(?:：|:)\s*跳过\s*-->/.test(line));
+}
+
 function scanDocument(input) {
   const lines = input.split(/\r?\n/);
   const findings = [];
   let fence = null;
   let inFrontMatter = hasYamlFrontMatter(lines);
+  let inHtmlComment = false;
   let block = [];
   const proseLines = [];
 
@@ -364,6 +378,25 @@ function scanDocument(input) {
 
     if (inFrontMatter) {
       if (index > 0 && trimmed === '---') inFrontMatter = false;
+      continue;
+    }
+
+    // 整行 HTML 注释：跳过，不进入正文/段落（半行内嵌注释不处理，宁可漏拦）
+    if (!inHtmlComment && trimmed.startsWith('<!--')) {
+      const closeIdx = trimmed.indexOf('-->');
+      if (closeIdx !== -1 && trimmed.slice(closeIdx + 3).trim() === '') {
+        flushBlock();
+        continue;
+      }
+      if (closeIdx === -1) {
+        inHtmlComment = true;
+        flushBlock();
+        continue;
+      }
+      // 行首注释后还有正文：按半行内嵌处理，不跳过
+    }
+    if (inHtmlComment) {
+      if (trimmed.includes('-->')) inHtmlComment = false;
       continue;
     }
 
