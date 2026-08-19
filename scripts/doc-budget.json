@@ -7,7 +7,8 @@
         "预算超了怎么办：先删等量的旧文本，删不动再在本文件里调高 budget 并在 PR 里说明为什么",
         "这段新规则值得每个用户每次会话都付。调 budget 是允许的，但必须是一次显式决定。",
         "",
-        "新增热路径文件时把它加进来，否则它不受任何约束。"
+        "新增热路径文件时把它加进来，否则它不受任何约束。",
+        "narrative-writer 新增逻辑路径映射 + 包内路由表边界说明（部署正确性规则：防 agent 按字面解析失败/跨 skill 读取，每章 spawn 付）40600→40900"
     ],
     "files": [
         {
@@ -91,7 +92,7 @@
         },
         {
             "label": "正文 agent 上下文",
-            "budget": 40600,
+            "budget": 40900,
             "files": [
                 "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
                 "skills/moshu-write/references/writing-craft.md",
