@@ -175,7 +175,6 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 | 题材正文提示卡 / 题材分类卡 | `references/genre-prose-cards.md` 索引 + `references/genre-prose-cards/` 单题材卡目录（按题材分类优先） + `references/style-genre-modules.md`（通用流派补充） |
 | 打斗/装逼 | `references/style-combat-face.md` |
 | 高频场景（团战/谈判/揭露/重逢/宴会/审讯） | `references/scene-cards.md`（SC-001~006，冷路径） |
-| 写作技法 | `references/style-craft.md` |
 | 商业创作核心方法 | `references/commercial-core-methods.md` |
 | 对话 | `references/dialogue-mastery.md` |
 | 人物深化 | `references/character-design-methods.md` |

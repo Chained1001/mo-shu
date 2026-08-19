@@ -340,7 +340,6 @@ node {SKILL_DIR}/scripts/jjwxc-rank-scraper.js --type 12 --list-only            
 | [scripts/qidian-rank-scraper.js](scripts/qidian-rank-scraper.js) | 起点榜单采集（畅销/月票/新书等），默认移动端 SSR 提取，PC/CDP 回退 |
 | [scripts/qimao-rank-scraper.js](scripts/qimao-rank-scraper.js) | 七猫榜单采集（大热/新书/完结等），tab 切换（失败重试）+滚动加载，按 bookId 取书名回填作品页链接，带连通性自检+链接/热度命中率标注 |
 | [scripts/jjwxc-rank-scraper.js](scripts/jjwxc-rank-scraper.js) | 晋江榜单采集（收入金榜/月榜等），按频道分组 |
-| [scripts/ciweimao-rank-scraper.js](scripts/ciweimao-rank-scraper.js) | 刺猬猫榜单采集（点击/收藏/月票等），单页 9 榜提取，按 bookId 归一书名回填作品页链接，带连通性自检+空结果重试+链接命中率标注。**预留工具：刺猬猫不在当前 4 平台（起点/番茄/晋江/七猫）分析范围，scan-analyze 不处理其输出** |
 
 ---
 
