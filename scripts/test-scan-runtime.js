@@ -422,7 +422,7 @@ function listScraperPaths() {
 function testScraperImports() {
   const scraperPaths = listScraperPaths();
 
-  assert(scraperPaths.length >= 5, "expected all rank scraper modules");
+  assert(scraperPaths.length >= 4, "expected all rank scraper modules");
   for (const scraperPath of scraperPaths) {
     const probe = spawnSync(
       process.execPath,
@@ -833,7 +833,6 @@ function testLongScanArgumentValidation() {
     ["jjwxc-rank-scraper.js", ["--channel", "bogus"], /未知 --channel: bogus/],
     ["jjwxc-rank-scraper.js", ["--channel", "999"], /未知 --channel: 999/],
     ["qidian-rank-scraper.js", ["--type", "bogus", "--mode", "cdp"], /未知 --type: bogus/],
-    ["ciweimao-rank-scraper.js", ["--type", "bogus"], /未知 --type: bogus/],
   ];
 
   for (const [name, args, message] of cases) {

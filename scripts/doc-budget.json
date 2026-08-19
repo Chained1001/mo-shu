@@ -9,7 +9,8 @@
         "",
         "新增热路径文件时把它加进来，否则它不受任何约束。",
         "narrative-writer 新增逻辑路径映射 + 包内路由表边界说明（部署正确性规则：防 agent 按字面解析失败/跨 skill 读取，每章 spawn 付）40600→40900",
-        "正文 agent 上下文组 40900→43300：writing-craft 合并 style-craft 后 9300→11700（净减 ~11KB，单文件按需读），组随动"
+        "正文 agent 上下文组 40900→43300：writing-craft 合并 style-craft 后 9300→11700（净减 ~11KB，单文件按需读），组随动",
+        "正文 agent 上下文组 43300→43600：writing-craft 补镜头景别/三项输出检查后 11700→12000"
     ],
     "files": [
         {
@@ -39,8 +40,8 @@
         },
         {
             "path": "skills/moshu-write/references/writing-craft.md",
-            "budget": 11700,
-            "why": "moshu-narrative-writer 每章写作时读；→9300：写作技法总路由（每章写作付入口，技法卡已移出至冷路径 craft-cards.md）；→11700：并入 style-craft 独有内容（视角选择/毒点规避/文笔控制/黄金三章定调/写作基础），两份 22.9KB 净减为单文件 11.6KB，每章写作按需读"
+            "budget": 12000,
+            "why": "moshu-narrative-writer 每章写作时读；→9300：写作技法总路由（每章写作付入口，技法卡已移出至冷路径 craft-cards.md）；→11700：并入 style-craft 独有内容（视角选择/毒点规避/文笔控制/黄金三章定调/写作基础），两份 22.9KB 净减为单文件 11.6KB，每章写作按需读；→12000：合并审查补回镜头景别/三项输出检查"
         },
         {
             "path": "skills/moshu-write/references/anti-ai-writing.md",
@@ -93,7 +94,7 @@
         },
         {
             "label": "正文 agent 上下文",
-            "budget": 43300,
+            "budget": 43600,
             "files": [
                 "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
                 "skills/moshu-write/references/writing-craft.md",

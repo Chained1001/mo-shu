@@ -31,6 +31,7 @@ All notable changes to this project will be documented in this file.
   - 写书路径补全：写前准备 (a)/(b) 补无对标 no_benchmark 分支（合法模式不 fail-fast）；对标结构树补 `章节/` 目录（匹配章证据）；主对标缺失回退链补 `拆文库/`；日更确定性收尾脚本清单补 check-outline-copy；情绪基调枚举与拆文摘要对齐。
   - 部署资产：CLAUDE.md.tmpl 路由表补 `/moshu-style`；4 个 agent 模板补「包内路由表边界」声明（路由表可能引用包外主会话文件，按缺失处理用包内等价物）；章节标记统一 `## 第N章 章名`（`###第一章` 注明为平台导出形态）；章尾钩子 13→14 式全线同步；hooks 校验清单补 pre/post-compact。
   - 其他：技法总结基础层改结构/情绪层（不再与文风「分层模仿建议·基础层」重复）；material-decomposition 引用改指 analyze-workflow + 汇总回退策略统一 + 字段清单对齐；涉及段占位统一「值写无」；deconstruction-notes 改单主对标语境；analyze description 补技法总结；锚点段数统一 4 段；confidence 语义表补「样本归纳极强可 high」；review AI 模式计数 10→12。
+- **瘦身 A+B（2026-08-19）**：① 合并 `style-craft.md`（13.6KB）进 `writing-craft.md`——独有内容并入新增 10-14 节（写作基础/视角选择与叙事+三机位+镜头景别/毒点解析与规避/文笔控制+三项输出检查/黄金三章定调与写作四要点），与 anti-ai/quality-checklist/hooks-paragraph 重叠部分改路由指向不重复；写作技法路由表补 8 行；SKILL 索引表删重复行；两份 22.9KB 净减为单文件 ~12KB（预算 9300→12000 显式决定 + 组预算随动 43600）。② 删除 `ciweimao-rank-scraper.js`（刺猬猫已排除，预留工具无用）+ SKILL 参考表删行 + test-scan-runtime 同步删用例/断言 5→4 + plan 文档更新。审查补漏：test-scan-runtime 的 scraper import 断言 ≥5→≥4（否则 CI 红）。
 
 ---
 

@@ -15,7 +15,7 @@
 | 晋江 | ✅ jjwxc-rank-scraper.js | 列表 + 详情两步（gb18030） | ❌ 需适配 |
 | 七猫 | ✅ qimao-rank-scraper.js | tab 切换 + 滚动加载 | ❌ 需适配 |
 
-- 刺猬猫 scraper（ciweimao-rank-scraper.js）**保留文件不删**（已实现可用），但 SKILL 平台画像表不再宣传、scan-analyze 不写适配。
+- 刺猬猫 scraper（ciweimao-rank-scraper.js）**已删除**（2026-08-19 瘦身决策：刺猬猫不在 4 平台分析范围，预留工具无用；SKILL 参考表同步删行、test-scan-runtime 同步删用例）。
 - 飞卢：确认不做（2026-08-18 决策，直连反爬且用户不需要）。
 
 ## 一·五、设计溯源（为什么 scan-analyze 只支持起点——设计如此，非漏洞）
