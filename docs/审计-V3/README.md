@@ -15,7 +15,7 @@
 | # | skill | 审计状态 | 整改状态 | 记录文件 |
 |---|---|---|---|---|
 | 1 | moshu-write | 已完成 | 已整改（W1/W2/W3/W5，W4 随 G5） | [审计-moshu-write.md](审计-moshu-write.md) |
-| 2 | moshu-setup | 已完成 | 已整改（PM1/PM2/PM3/PM6/PM9；PM4① ②已做、③待作者确认） | [审计-moshu-setup.md](审计-moshu-setup.md) |
+| 2 | moshu-setup | 已完成 | 已整改（PM1/PM2/PM3/PM6/PM9；PM4① ②已做、③已确认关闭 2026-08-21） | [审计-moshu-setup.md](审计-moshu-setup.md) |
 | 3 | moshu-review | 已完成 | 已整改（RB1/RB2/RM1/RM2/RM3/RM4/RC1） | [审计-moshu-review.md](审计-moshu-review.md) |
 | 4 | moshu-import | 已完成 | 已整改（IM1-IM6） | [审计-moshu-import.md](审计-moshu-import.md) |
 | 5 | moshu-analyze | 已完成 | 已整改（AM1/AM2/AM3/AM4） | [审计-moshu-analyze.md](审计-moshu-analyze.md) |

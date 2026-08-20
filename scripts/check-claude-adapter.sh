@@ -5,10 +5,17 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+PYBIN=""
+for candidate in python3 python py; do
+  if "$candidate" -c "" >/dev/null 2>&1; then PYBIN="$candidate"; break; fi
+done
+[ -z "$PYBIN" ] && { echo "FAIL: no python interpreter found" >&2; exit 1; }
+
 MARKETPLACE="$REPO_ROOT/.claude-plugin/marketplace.json"
 # Derive the expected plugin count from the marketplace itself instead of
 # hard-coding it: adding/removing a skill must not require editing this script.
-EXPECTED_COUNT=$(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1], encoding='utf-8'))['plugins']))" "$MARKETPLACE")
+EXPECTED_COUNT=$("$PYBIN" -c "import json,sys; print(len(json.load(open(sys.argv[1], encoding='utf-8'))['plugins']))" "$MARKETPLACE")
 
 fail() { echo "FAIL: $*" >&2; exit 1; }
 
@@ -16,7 +23,7 @@ echo "Claude Code adapter check"
 echo "========================="
 echo "Repo: $REPO_ROOT"
 
-python3 - "$MARKETPLACE" "$REPO_ROOT" "$EXPECTED_COUNT" <<'PY'
+"$PYBIN" - "$MARKETPLACE" "$REPO_ROOT" "$EXPECTED_COUNT" <<'PY'
 import json
 import re
 import sys
@@ -94,7 +101,7 @@ if [ "${CLAUDE_REAL_CHECK:-0}" = "1" ]; then
   # SKILL.md files in a single strict validation pass.
   mkdir -p "$TMP_DIR/plugin/.claude-plugin" "$TMP_DIR/home" "$TMP_DIR/config"
   cp -R "$REPO_ROOT/skills" "$TMP_DIR/plugin/skills"
-  python3 - "$TMP_DIR/plugin" <<'PY'
+  "$PYBIN" - "$TMP_DIR/plugin" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -126,7 +133,7 @@ PY
   while IFS= read -r name; do
     CLAUDE_CONFIG_DIR="$TMP_DIR/config" HOME="$TMP_DIR/home" \
       claude plugin install "$name@mo-shu-skills" --scope user >/dev/null
-  done < <(python3 - "$MARKETPLACE" <<'PY'
+  done < <("$PYBIN" - "$MARKETPLACE" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -137,7 +144,7 @@ PY
 )
   CLAUDE_CONFIG_DIR="$TMP_DIR/config" HOME="$TMP_DIR/home" \
     claude plugin list --json >"$TMP_DIR/installed.json"
-  python3 - "$TMP_DIR/installed.json" "$MARKETPLACE" "$EXPECTED_COUNT" <<'PY'
+  "$PYBIN" - "$TMP_DIR/installed.json" "$MARKETPLACE" "$EXPECTED_COUNT" <<'PY'
 import json
 import sys
 from pathlib import Path
