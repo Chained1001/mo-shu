@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.3.0（2026-08-20）
+
+> V2 收官版：审查工单闭环 + 模板 Prompt 纪律 + 场景 eval 与管道契约 + 终检发布（v1.2.0 段批 3-5 与 v1.3.0 段批 6-9 全部合入）。
+
+### 新增
+
+- **审查工单闭环（批 6）**：`review_tickets.py` 四子命令（write 校验 schema+幂等原子写 / resolve 只许 open→fixed/dismissed 单向流转 / list 跨工单汇总 / verify-token 令牌比对）；4 个 reviewer agent 模板新增审稿令牌段（输入首行令牌、报告首行逐字回传，防 subagent 编造）；工单落盘 `{项目}/.moshu-review/tickets/tickets_{时间戳}_{起章}-{止章}.json`，severity 只影响呈报不影响流程；`agents_version` 27→28。
+- **模板 Prompt 纪律（批 7）**：共享产出纪律 `agent-references/shared-output-discipline.md`（纯 JSON 无围栏 / ASCII 直引号 / 换行转义 / 禁尾随逗号 / 先落临时文件再 `--input` / 输出前自检三问），moshu-explorer 与 moshu-chapter-extractor 散落纪律句改锚点引用（引用即挂载、单副本）；`check-agent-template-rules` 守卫（禁互引 / 挂载点存在 / 单副本）；`agents_version` 28→29。
+- **场景 eval 与管道契约（批 8）**：`evals/scenarios/` 三剧本（日更一章必须 + 开书 + 审查工单，断言分机检项/人工项两栏）；`check-eval-scenarios.sh` 静态校验（CI 不跑 LLM）；`test-writing-pipeline.sh` 零 LLM 全链回归（init→commit→check→volume-report→工单→候选机检）。
+- **终检与发布（批 9）**：全守卫复演绿、悬空引用/术语/批次依赖链终检清零、版本三轨对齐 v1.3.0。
+
+### 变更
+
+- review 产出收口为工单真源，review-log 契约（`{章节范围} | {问题} | {建议}` 行式）与读点不变；大修流程（workflow-revision）增工单处置节（读 open 工单→resolve→复审）。
+
+## v1.2.0（2026-08-20）
+
+> 追踪 schema v5 + 候选类机检：信息差域、悬置预警、卷报告、正文候选机检（v1.1.3 之后的 v1.2.0 段，批 3a→3b→3c→5；批 4「下一步判定」经总纲 §4.3 弹性决策跳过）。
+
+### 新增
+
+- **信息差域（批 3a，schema v5）**：state 新顶层域 `information_gaps`（知情人 × 读者已知 × 关键词 × 状态）；delta 新可选键 `information_gap_changes`（register/update/retire）；`INPUT_SCHEMA_VERSION` 1→2、`TRACKING_SCHEMA_VERSION` 4→5；v4 state 写入路径自动备份迁移（`追踪/_备份/schema-v4-*.json`）后升版，老键零丢失；派生视图新增 `追踪/信息差.md`（进 check 强校验集）。
+- **悬置预警（批 3b）**：`check` 输出 `suspension_warnings` 候选清单（status=已埋 且距最近变动章 ≥ 默认 20，`--warn-chapters` 可覆盖）——只呈报不改变退出码。
+- **卷报告（批 3c）**：`volume-report --from-chapter A --to-chapter B` 子命令（只读、不猜卷界），输出伏笔四态清账 / 悬置清单 / 信息差未兑现 / 分层摘要，写 `追踪/卷报告_第A-B章.md`（确定性、不进派生视图强校验集）；卷复盘流程改为"先跑脚本拿表、AI 只做判读"。
+- **候选类机检（批 5）**：`check-prose-candidates.js` 三类候选（高频意象 / 句式偏离 / 信息差兑现），输出结构硬编码 `blocking_count: 0`（结构上不可能拦截），接入日更批末确定性收尾；行为契约新增"候选永不拦截"条款。
+
+### 变更
+
+- 追踪事务输入/输出 schema 版本升级（INPUT 2 / TRACKING 5），旧 v4 项目首次 commit 自动迁移（带备份）；`progress_schema_version`（analyze 拆文续跑契约）保持 2，与追踪 schema 互不联动。
+
 ## v1.1.2（2026-08-18）
 
 > 扫榜全链路加固 + 真实数据验证版：scan-analyze 4 平台通用提取、CDP 导航改 eval 方式、jjwxc 标签过滤、CRLF 字数修复。每步经真实采集验证（起点 40 本 / 番茄 190 本 / 七猫 20 本 / 晋江 432 本，CDP 真机 + 冷启动）。
