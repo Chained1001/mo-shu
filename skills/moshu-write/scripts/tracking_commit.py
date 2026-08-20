@@ -1320,6 +1320,148 @@ def check_project(project: Path) -> dict[str, Any]:
     return state
 
 
+def render_volume_report(
+    *,
+    from_chapter: int,
+    to_chapter: int,
+    state: dict[str, Any],
+    settled: dict[str, list[dict[str, Any]]],
+    suspended: list[dict[str, Any]],
+    open_gaps: list[dict[str, Any]],
+) -> str:
+    """卷报告 Markdown：伏笔四态清账（卷内）+ 悬置预警 + 信息差未兑现 + 分层摘要。
+
+    按需产物（非每章派生视图），不进入 check 的强校验集；全部列表按 id 排序保证确定性。
+    """
+    lines = [
+        "# 卷报告",
+        "",
+        f"- 范围：第 {from_chapter}-{to_chapter} 章 | 截至章：第 {state['last_committed_chapter']} 章 | 状态修订：{state['state_revision']}",
+        "",
+        "## 摘要",
+        f"- 伏笔清账（最近变动章在卷内）：已埋 {len(settled['已埋'])} / 已回收 {len(settled['已回收'])} / 已过期 {len(settled['已过期'])} / 放弃 {len(settled['放弃'])}",
+        f"- 悬置预警（距最近变动章 ≥ {SUSPENSION_WARN_CHAPTERS}）：{len(suspended)} 条",
+        f"- 信息差未兑现（status=登记）：{len(open_gaps)} 条",
+        "",
+    ]
+    lines.extend(["## 伏笔清账", ""])
+    for status in FORESHADOW_STATUSES:
+        lines.append(f"### {status}")
+        rows = settled[status]
+        if not rows:
+            lines.append("- 无")
+        for row in rows:
+            planned = f"第{row['planned_resolution_chapter']}章" if row["planned_resolution_chapter"] else "—"
+            lines.append(
+                f"- {row['id']}｜{row['summary']}｜埋第{row['planted_chapter']}章｜计划回收{planned}｜"
+                f"最近变动第{row['updated_chapter']}章"
+            )
+        lines.append("")
+    lines.extend(["## 悬置预警", ""])
+    if not suspended:
+        lines.append("- 无")
+    for item in suspended:
+        lines.append(f"- {item['id']}｜{item['status']}｜距最近变动 {item['chapters_since_update']} 章")
+    lines.append("")
+    lines.extend(["## 信息差未兑现", ""])
+    if not open_gaps:
+        lines.append("- 无")
+    for row in open_gaps:
+        knowers = "、".join(row["knowers"]) or "—"
+        keywords = "、".join(row["keywords"]) or "—"
+        lines.append(
+            f"- {row['id']}｜知情人：{knowers}｜读者已知：{row['reader_known']}｜关键词：{keywords}｜"
+            f"最近变更第{row['updated_chapter']}章｜{row['note']}"
+        )
+    lines.append("")
+    return "\n".join(lines)
+
+
+def volume_report(
+    project: Path,
+    from_chapter: int,
+    to_chapter: int,
+    json_out: Path | None,
+) -> dict[str, Any]:
+    """卷报告子命令：只读 state，按调用方给的起止章出确定性账表。
+
+    不猜卷界（state 无卷元数据）；不修改 state；产物不进 check 派生视图强校验集。
+    """
+    tracking = tracking_root(project)
+    require_no_retired_tracking_paths(tracking)
+    state = load_state(project)
+    last = state["last_committed_chapter"]
+    require(from_chapter >= 1 and from_chapter <= to_chapter, "volume range must satisfy 1 <= from <= to")
+    require(to_chapter <= last, f"to_chapter {to_chapter} exceeds last committed chapter {last}")
+
+    # ① 伏笔四态清账：按 updated_chapter 落 [from, to] 过滤
+    settled: dict[str, list[dict[str, Any]]] = {status: [] for status in FORESHADOW_STATUSES}
+    for identifier in sorted(state["foreshadow"]):
+        row = state["foreshadow"][identifier]
+        if from_chapter <= row["updated_chapter"] <= to_chapter:
+            settled[row["status"]].append(
+                {
+                    "id": identifier,
+                    "summary": row["summary"],
+                    "planted_chapter": row["planted_chapter"],
+                    "planned_resolution_chapter": row["planned_resolution_chapter"],
+                    "status": row["status"],
+                    "updated_chapter": row["updated_chapter"],
+                }
+            )
+
+    # ② 悬置超阈值清单：复用 3b 的 suspension_warnings（全局视角）
+    suspended = suspension_warnings(state, SUSPENSION_WARN_CHAPTERS)
+
+    # ③ 信息差未兑现清单：status == "登记"（全局视角）
+    open_gaps = [
+        {
+            "id": identifier,
+            "knowers": row["knowers"],
+            "reader_known": row["reader_known"],
+            "keywords": row["keywords"],
+            "status": row["status"],
+            "updated_chapter": row["updated_chapter"],
+            "note": row["note"],
+        }
+        for identifier, row in sorted(state["information_gaps"].items())
+        if row["status"] == "登记"
+    ]
+
+    report_payload = render_volume_report(
+        from_chapter=from_chapter,
+        to_chapter=to_chapter,
+        state=state,
+        settled=settled,
+        suspended=suspended,
+        open_gaps=open_gaps,
+    )
+    relative = f"卷报告_第{from_chapter}-{to_chapter}章.md"
+    write_if_changed(tracking / relative, report_payload)
+
+    summary = {
+        "from_chapter": from_chapter,
+        "to_chapter": to_chapter,
+        "foreshadow_counts": {status: len(settled[status]) for status in FORESHADOW_STATUSES},
+        "suspension_count": len(suspended),
+        "open_gap_count": len(open_gaps),
+    }
+    if json_out is not None:
+        atomic_write_text(
+            json_out,
+            json_payload(
+                {
+                    "range": {"from": from_chapter, "to": to_chapter},
+                    "foreshadow_settled": settled,
+                    "suspension_warnings": suspended,
+                    "open_information_gaps": open_gaps,
+                    "summary": summary,
+                }
+            ),
+        )
+    return {"report": relative, **summary}
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -1335,6 +1477,16 @@ def build_parser() -> argparse.ArgumentParser:
         default=SUSPENSION_WARN_CHAPTERS,
         help="伏笔悬置预警阈值（默认 20）；仅呈报不改变退出码",
     )
+    volume_parser = subparsers.add_parser("volume-report")
+    volume_parser.add_argument("--project", type=Path, required=True, help="book project root containing 追踪/")
+    volume_parser.add_argument("--from-chapter", type=int, required=True, help="卷起章（含）")
+    volume_parser.add_argument("--to-chapter", type=int, required=True, help="卷止章（含）")
+    volume_parser.add_argument(
+        "--json-out",
+        type=Path,
+        default=None,
+        help="可选：把结构化账表 JSON 写到该路径",
+    )
     return parser
 
 
@@ -1345,12 +1497,17 @@ def main() -> int:
             result = initialize(args.project, read_json(args.input))
         elif args.command == "commit":
             result = apply_transaction(args.project, read_json(args.input))
+        elif args.command == "volume-report":
+            result = volume_report(args.project, args.from_chapter, args.to_chapter, args.json_out)
         else:
             require(args.warn_chapters >= 1, "--warn-chapters must be >= 1")
             result = check_project(args.project)
     except (TrackingError, OSError, UnicodeError) as exc:
         emit(f"ERROR: {exc}", error=True)
         return 2
+    if args.command == "volume-report":
+        emit(json.dumps(result, ensure_ascii=False))
+        return 0
     payload: dict[str, Any] = {
         "last_committed_chapter": result["last_committed_chapter"],
         "state_revision": result["state_revision"],

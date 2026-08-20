@@ -672,6 +672,65 @@ class TrackingCommitTests(unittest.TestCase):
             [{"id": "F027", "status": "已埋", "chapters_since_update": 15}],
         )
 
+    def test_volume_report_contents_for_a_fixture_range(self) -> None:
+        # 卷 1-15 内：F027（已埋 updated=1）；卷外：F028（已回收 updated=20）；未兑现：G001（updated=10）
+        self.init(last_chapter=30)
+        in_range = transaction(1, mode="revision", foreshadow=True)
+        self.run_tool("commit", in_range)
+        out_of_range = transaction(20, mode="revision", foreshadow=True)
+        out_of_range["delta"]["foreshadow_changes"][0].update(
+            id="F028",
+            status="已回收",
+            planned_resolution_chapter=20,
+            summary="专业团队重拍版已正式弃用。",
+        )
+        self.run_tool("commit", out_of_range)
+        gap = transaction(10, mode="revision")
+        gap["delta"]["information_gap_changes"] = [
+            {
+                "action": "register",
+                "id": "G001",
+                "knowers": ["江晨"],
+                "reader_known": "未知",
+                "keywords": ["备用安排"],
+                "status": "登记",
+                "note": "尚未揭示的备用安排。",
+            }
+        ]
+        self.run_tool("commit", gap)
+
+        completed = self.run_tool(
+            "volume-report", extra=("--from-chapter", "1", "--to-chapter", "15")
+        )
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["from_chapter"], 1)
+        self.assertEqual(payload["to_chapter"], 15)
+        self.assertEqual(payload["report"], "卷报告_第1-15章.md")
+        self.assertEqual(payload["foreshadow_counts"]["已埋"], 1)
+        self.assertEqual(payload["foreshadow_counts"]["已回收"], 0)
+        self.assertEqual(payload["suspension_count"], 1)
+        self.assertEqual(payload["open_gap_count"], 1)
+
+        report = self.project / "追踪/卷报告_第1-15章.md"
+        self.assertTrue(report.exists())
+        text = report.read_text(encoding="utf-8")
+        self.assertIn("## 伏笔清账", text)
+        self.assertIn("F027", text)
+        self.assertNotIn("F028", text)
+        self.assertIn("G001", text)
+        self.run_tool("check")
+
+    def test_volume_report_is_deterministic_across_runs(self) -> None:
+        self.init(last_chapter=30)
+        backfill = transaction(1, mode="revision", foreshadow=True)
+        self.run_tool("commit", backfill)
+        self.run_tool("volume-report", extra=("--from-chapter", "1", "--to-chapter", "15"))
+        report = self.project / "追踪/卷报告_第1-15章.md"
+        first = report.read_bytes()
+        self.run_tool("volume-report", extra=("--from-chapter", "1", "--to-chapter", "15"))
+        second = report.read_bytes()
+        self.assertEqual(first, second)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
