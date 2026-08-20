@@ -5,7 +5,7 @@
 > 治理沿革：SparkArc AGENTS.md 移植 + 源码级审计教训 + 研究-v3 三参考项目交叉验证（2026-08-20 作者确认批次与不学清单）。
 > **旧规划产物已归档**（2026-08-20 作者指示，移入 `docs/归档/`：实施总纲.md、规格/、研究-v2/、reference-review.md、moshu-style-plan.md、scan-analyze-v2-plan.md）：`docs/归档/**` 不读、不引用、不修改、不删除，不作为任何施工依据。
 >
-> **目标态说明**：本文件描述 V2 完工后的目标状态。其中引用的 `skills/moshu/scripts/next_step.py`（批 4）、`scripts/check-story-numbers.sh`（批 2）、`scripts/check-agent-template-rules.sh`（批 7）、`scripts/README.md` 测试纪律节（批 2）等机制由对应批次落地；**落地前按现有机制执行**（状态判定读各 SKILL.md 流程、数字核对靠人工）。
+> **V2 落地说明（2026-08-20 收官）**：V2 批 0-9 已全部闭环（批 4「下一步判定」经总纲 §4.3 弹性决策跳过，`next_step.py` 未实施——状态判定仍按各 SKILL.md 流程的文件证据执行）。本文件引用的守卫与机制均已落地。规划冻结（§1.6）随 V2 收官解除；后续规划产出须由作者明确发起。
 
 ---
 
@@ -26,7 +26,7 @@
 3. **验收**：规格内验收命令全部跑绿才算完成；失败先判因再改代码——**禁止改断言变绿**。
 4. 提交消息按规格"提交规范"格式。
 5. 新增确定性脚本：按需进 `shared-assets.json`（跨 skill 副本）、进 `scripts/README.md` 索引、进 `.github/workflows/cross-platform.yml` 与 `CONTRIBUTING.md`（CI 三处同步）、配正式回归测试（`test_<能力>`）。
-6. 只吃判定结果：写作类流程的状态判定来自文件系统证据（S0-S6 由 `skills/moshu/scripts/next_step.py` 判定），不得凭对话记忆猜。
+6. 只吃判定结果：写作类流程的状态判定来自文件系统证据（各 SKILL.md 流程按文件存在性/非空判定；next_step 判定脚本经总纲 §4.3 弹性决策于 2026-08-20 跳过未实施），不得凭对话记忆猜。
 7. **候选永不拦截**：机检/审查的候选（candidate）类发现只呈报作者，永不阻断流程、永不影响退出码语义。
 8. **AI 产出先落文件**：结构化载荷（追踪事务/审查工单等）必须先写临时文件再以 `--input <文件>` 提交给确定性脚本，不进对话复述、不进 argv。
 
