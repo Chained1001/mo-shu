@@ -41,7 +41,7 @@ Markdown 只负责给作者和 Agent 阅读，工具不再反向解析 Markdown�
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "book_title": "让你管账号，你高燃混剪炸全网",
   "last_chapter": 0,
   "context": {
@@ -69,7 +69,7 @@ Markdown 只负责给作者和 Agent 阅读，工具不再反向解析 Markdown�
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "mode": "append",
   "chapter": 10,
   "chapter_title": "专业团队拍得还不如他拍的好？",
@@ -146,6 +146,42 @@ Markdown 只负责给作者和 Agent 阅读，工具不再反向解析 Markdown�
 - `timeline_events.action` 可为 `upsert/delete`。`未揭示` 的 `reveal_chapter` 必须为 `null`；部分/完全揭示只能填写已经发生的实际章节。
 - `mode=revision` 时，逐章记录必须重算为修订后该章仍然成立的完整连续性记录；当前角色、伏笔、时间线和上下文则提交受影响对象截至最新已写章的当前值。
 - 修订导入截止章内的正文时，会新增或覆盖该章的逐章记录；`imported_through_chapter` 不变。
+
+## 信息差事务
+
+`information_gap_changes` 是逐章事务 delta 的可选键，登记"谁知道什么"：知情人 × 读者已知 × 关键词。它管**跨章谁知道**，与 timeline 事件级 `reader_knowledge`（记录单个事件当前被读者看到多少）**互补不重复**——同一信息既有事件登记又有跨章知情状态时，两处都要维护。
+
+字段（`action` = `register` / `update` 时）：
+
+| 字段 | 类型 | 约束 |
+|---|---|---|
+| `action` | 枚举 | `register`（首次登记）/ `update`（更新既有登记）/ `retire`（撤销登记，只需 `id`） |
+| `id` | 字符串 | `G\d{3,}`（如 G001），事务内唯一 |
+| `knowers` | 字符串数组 | 知情角色名，≤12 人（对齐 timeline `characters` 上限） |
+| `reader_known` | 枚举 | `未知` / `部分已知` / `已知` |
+| `keywords` | 字符串数组 | 检索关键词（可选，可空数组） |
+| `status` | 枚举 | `登记` / `已兑现` / `已放弃` |
+| `note` | 字符串 | 备注，必填非空（≤360 字节） |
+
+`first_recorded_chapter` / `updated_chapter`（首次登记章/最近变更章）由工具维护，不在输入里。
+
+示例（追加事务 delta）：
+
+```json
+"information_gap_changes": [
+  {
+    "action": "register",
+    "id": "G001",
+    "knowers": ["江晨", "钟嘉嘉"],
+    "reader_known": "部分已知",
+    "keywords": ["培养安排", "军报"],
+    "status": "登记",
+    "note": "钟嘉嘉知道全部安排，读者只看到军报渠道。"
+  }
+]
+```
+
+init 输入同样可带 `information_gaps` 数组（`action` 固定 `register`）。
 
 ## 续写状态卡固定格式
 

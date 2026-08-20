@@ -31,7 +31,7 @@ def position(*, volume: str = "第一卷·军宣整顿", start: int = 1) -> dict
 
 def initial_document(*, last_chapter: int = 0) -> dict[str, object]:
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "book_title": "让你管账号，你高燃混剪炸全网",
         "last_chapter": last_chapter,
         "context": {
@@ -112,7 +112,7 @@ def transaction(
         else []
     )
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "mode": mode,
         "chapter": chapter,
         "chapter_title": f"军宣爆款·{chapter}",
@@ -189,7 +189,7 @@ class TrackingCommitTests(unittest.TestCase):
         tracking = self.project / "追踪"
         state = self.read_state()
 
-        self.assertEqual(state["schema_version"], 4)
+        self.assertEqual(state["schema_version"], 5)
         self.assertEqual(state["state_revision"], 0)
         self.assertEqual(state["characters"], {})
         self.assertEqual(state["foreshadow"], {})
@@ -522,6 +522,120 @@ class TrackingCommitTests(unittest.TestCase):
         invalid["delta"]["character_changes"][0]["name"] = "CON"
         invalid["character_snapshots"] = {"CON": invalid["character_snapshots"]["江晨"]}
         self.run_tool("commit", invalid, expect=2)
+        self.assertEqual(self.read_state()["state_revision"], 0)
+
+    def test_information_gap_register_update_retire_transactions(self) -> None:
+        self.init()
+        gap_row = {
+            "action": "register",
+            "id": "G001",
+            "knowers": ["江晨", "钟嘉嘉"],
+            "reader_known": "部分已知",
+            "keywords": ["培养安排", "军报"],
+            "status": "登记",
+            "note": "钟嘉嘉知道全部安排，读者只看到军报渠道。",
+        }
+        register = transaction(1)
+        register["delta"]["information_gap_changes"] = [gap_row]
+        self.run_tool("commit", register)
+        state = self.read_state()
+        self.assertEqual(state["information_gaps"]["G001"]["first_recorded_chapter"], 1)
+        self.assertEqual(state["information_gaps"]["G001"]["updated_chapter"], 1)
+        self.assertIn("G001", (self.project / "追踪/信息差.md").read_text(encoding="utf-8"))
+
+        # 同一 id 重复 register → 拒绝，state 不推进
+        again = transaction(2)
+        again["delta"]["information_gap_changes"] = [dict(gap_row)]
+        result = self.run_tool("commit", again, expect=2)
+        self.assertIn("already registered", result.stderr)
+        self.assertEqual(self.read_state()["state_revision"], 1)
+
+        update = transaction(2)
+        update["delta"]["information_gap_changes"] = [
+            {
+                "action": "update",
+                "id": "G001",
+                "knowers": ["江晨", "钟嘉嘉", "张耀祖"],
+                "reader_known": "部分已知",
+                "keywords": ["培养安排", "军报"],
+                "status": "登记",
+                "note": "张耀祖在看片会得知安排。",
+            }
+        ]
+        self.run_tool("commit", update)
+        state = self.read_state()
+        self.assertEqual(state["information_gaps"]["G001"]["first_recorded_chapter"], 1)
+        self.assertEqual(state["information_gaps"]["G001"]["updated_chapter"], 2)
+        self.assertIn("张耀祖在看片会得知安排", (self.project / "追踪/信息差.md").read_text(encoding="utf-8"))
+
+        retire = transaction(3)
+        retire["delta"]["information_gap_changes"] = [{"action": "retire", "id": "G001"}]
+        self.run_tool("commit", retire)
+        self.assertNotIn("G001", self.read_state()["information_gaps"])
+        self.run_tool("check")
+
+    def test_v4_state_migrates_to_v5_with_backup_and_zero_key_loss(self) -> None:
+        self.init()
+        self.run_tool("commit", transaction(1))
+        state_path = self.project / "追踪/_tracking-state.json"
+        state = self.read_state()
+        self.assertEqual(state["schema_version"], 5)
+        state["schema_version"] = 4
+        state.pop("information_gaps")
+        state_path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+
+        self.run_tool("commit", transaction(2))
+
+        migrated = self.read_state()
+        self.assertEqual(migrated["schema_version"], 5)
+        self.assertEqual(migrated["information_gaps"], {})
+        self.assertEqual(migrated["last_committed_chapter"], 2)
+        self.assertEqual(migrated["book_title"], state["book_title"])
+        # 老键零丢失：不随 commit 2 变化的部分必须原样保留
+        self.assertEqual(migrated["context"]["position"], state["context"]["position"])
+        self.assertEqual(migrated["context"]["long_term_constraints"], state["context"]["long_term_constraints"])
+        self.assertEqual(migrated["context"]["continuity_risks"], state["context"]["continuity_risks"])
+        self.assertEqual(migrated["characters"], state["characters"])
+        self.assertEqual(migrated["foreshadow"], state["foreshadow"])
+        self.assertEqual(migrated["timeline"], state["timeline"])
+        backups = list((self.project / "追踪/_备份").glob("schema-v4-*.json"))
+        self.assertEqual(len(backups), 1)
+        backup = json.loads(backups[0].read_text(encoding="utf-8"))
+        self.assertEqual(backup["schema_version"], 4)
+        self.assertNotIn("information_gaps", backup)
+        self.run_tool("check")
+
+    def test_information_gap_bad_enum_and_duplicate_id_are_rejected(self) -> None:
+        self.init()
+        bad_enum = transaction(1)
+        bad_enum["delta"]["information_gap_changes"] = [
+            {
+                "action": "register",
+                "id": "G001",
+                "knowers": ["江晨"],
+                "reader_known": "已知一半",
+                "keywords": [],
+                "status": "登记",
+                "note": "",
+            }
+        ]
+        result = self.run_tool("commit", bad_enum, expect=2)
+        self.assertIn("reader_known", result.stderr)
+        self.assertEqual(self.read_state()["state_revision"], 0)
+
+        gap_row = {
+            "action": "register",
+            "id": "G002",
+            "knowers": ["江晨"],
+            "reader_known": "未知",
+            "keywords": [],
+            "status": "登记",
+            "note": "尚未揭示的备用安排。",
+        }
+        duplicate = transaction(1)
+        duplicate["delta"]["information_gap_changes"] = [gap_row, dict(gap_row)]
+        result = self.run_tool("commit", duplicate, expect=2)
+        self.assertIn("duplicate IDs", result.stderr)
         self.assertEqual(self.read_state()["state_revision"], 0)
 
 

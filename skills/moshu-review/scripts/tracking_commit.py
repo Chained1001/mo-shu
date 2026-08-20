@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import datetime
 import json
 import os
 import re
@@ -22,8 +23,8 @@ from pathlib import Path
 from typing import Any
 
 
-INPUT_SCHEMA_VERSION = 1
-TRACKING_SCHEMA_VERSION = 4
+INPUT_SCHEMA_VERSION = 2
+TRACKING_SCHEMA_VERSION = 5
 DELTA_TARGET_BYTES = 1536
 DELTA_MAX_BYTES = 3072
 CONTEXT_TARGET_BYTES = 8192
@@ -46,6 +47,11 @@ REVEAL_STATUSES = ("未揭示", "部分揭示", "已揭示")
 INVALID_FILE_CHARS = re.compile(r"[<>:\"/\\|?*\x00-\x1f]")
 FORESHADOW_ID = re.compile(r"^F\d{3,}$")
 EVENT_ID = re.compile(r"^E\d{3,}$")
+GAP_ID = re.compile(r"^G\d{3,}$")
+READER_KNOWN = ("未知", "部分已知", "已知")
+GAP_STATUSES = ("登记", "已兑现", "已放弃")
+# 知情人上限对齐 timeline 事件 characters 上限（12），不自造新数。
+KNOWERS_MAX = 12
 WINDOWS_RESERVED_NAMES = {
     "CON",
     "PRN",
@@ -502,6 +508,113 @@ def render_timeline_views(events: dict[str, dict[str, Any]], revision: int) -> t
     return "\n".join(author_lines) + "\n", "\n".join(reader_lines) + "\n"
 
 
+def normalize_information_gap_change(
+    value: object,
+    label: str,
+    *,
+    through_chapter: int,
+    default_action: str = "register",
+) -> dict[str, Any]:
+    """归一化一条信息差变更（register 登记 / update 更新 / retire 撤销登记）。
+
+    仿 normalize_foreshadow_change 的 allow-delete 模式：retire 只带 id，
+    其余动作校验完整字段；first/updated 章节由工具维护，不在输入里。
+    """
+    row = as_mapping(value, label)
+    require_known_keys(
+        row,
+        {"action", "id", "knowers", "reader_known", "keywords", "status", "note"},
+        label,
+    )
+    action = clean_text(row.get("action", default_action), f"{label}.action", max_bytes=24)
+    require(action in {"register", "update", "retire"}, f"{label}.action is invalid")
+    identifier = clean_text(row.get("id"), f"{label}.id", max_bytes=24)
+    require(GAP_ID.fullmatch(identifier) is not None, f"{label}.id must look like G001")
+    if action == "retire":
+        return {"action": action, "id": identifier}
+    reader_known = clean_text(row.get("reader_known"), f"{label}.reader_known", max_bytes=12)
+    require(reader_known in READER_KNOWN, f"{label}.reader_known must be one of {READER_KNOWN}")
+    status = clean_text(row.get("status"), f"{label}.status", max_bytes=24)
+    require(status in GAP_STATUSES, f"{label}.status must be one of {GAP_STATUSES}")
+    return {
+        "action": action,
+        "id": identifier,
+        "knowers": clean_string_list(
+            row.get("knowers", []), f"{label}.knowers", maximum=KNOWERS_MAX, item_max_bytes=120
+        ),
+        "reader_known": reader_known,
+        "keywords": clean_string_list(row.get("keywords", []), f"{label}.keywords", item_max_bytes=192),
+        "status": status,
+        "note": clean_text(row.get("note"), f"{label}.note", max_bytes=360),
+    }
+
+
+def normalize_information_gap_state(value: object, last_chapter: int) -> dict[str, dict[str, Any]]:
+    gaps = as_mapping(value, "tracking state.information_gaps")
+    normalized: dict[str, dict[str, Any]] = {}
+    for raw_identifier, raw_row in gaps.items():
+        identifier = clean_text(raw_identifier, "tracking state.information_gaps ID", max_bytes=24)
+        row = as_mapping(raw_row, f"tracking state.information_gaps.{identifier}")
+        require_known_keys(
+            row,
+            {
+                "id", "knowers", "reader_known", "keywords", "status",
+                "first_recorded_chapter", "updated_chapter", "note",
+            },
+            f"tracking state.information_gaps.{identifier}",
+        )
+        require(
+            row.get("id") == identifier,
+            f"tracking state.information_gaps.{identifier}.id does not match its key",
+        )
+        change = normalize_information_gap_change(
+            {
+                "action": "update",
+                **{key: value for key, value in row.items() if key not in {"first_recorded_chapter", "updated_chapter"}},
+            },
+            f"tracking state.information_gaps.{identifier}",
+            through_chapter=last_chapter,
+        )
+        change.pop("action")
+        first = as_int(
+            row.get("first_recorded_chapter"),
+            f"tracking state.information_gaps.{identifier}.first_recorded_chapter",
+            minimum=1,
+        )
+        updated = as_int(
+            row.get("updated_chapter"),
+            f"tracking state.information_gaps.{identifier}.updated_chapter",
+            minimum=1,
+        )
+        require(first <= last_chapter, f"information gap {identifier} starts after current chapter")
+        require(updated <= last_chapter, f"information gap {identifier} updates after current chapter")
+        change["first_recorded_chapter"] = first
+        change["updated_chapter"] = updated
+        normalized[identifier] = change
+    return normalized
+
+
+def render_information_gaps(gaps: dict[str, dict[str, Any]], revision: int) -> str:
+    lines = [
+        "# 信息差当前登记",
+        "",
+        f"> 状态修订：{revision}。登记「谁知道什么」：知情人 × 读者已知 × 关键词；历史变化见 `逐章记录/`。",
+        "",
+        "| ID | 知情人 | 读者已知 | 关键词 | 状态 | 首次登记章 | 最近变更章 | 备注 |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    for identifier in sorted(gaps):
+        row = gaps[identifier]
+        knowers = "、".join(row["knowers"]) or "—"
+        keywords = "、".join(row["keywords"]) or "—"
+        note = row["note"] or "—"
+        lines.append(
+            f"| {identifier} | {knowers} | {row['reader_known']} | {keywords} | {row['status']} | "
+            f"第{row['first_recorded_chapter']}章 | 第{row['updated_chapter']}章 | {note} |"
+        )
+    return "\n".join(lines) + "\n"
+
+
 def validate_context_input(value: object, *, include_initial_fields: bool) -> dict[str, Any]:
     context = as_mapping(value, "context")
     allowed = {"position", "long_term_constraints", "active_character_names", "continuity_risks"}
@@ -615,8 +728,8 @@ def normalize_delta(
     require_known_keys(
         delta,
         {
-            "result", "character_changes", "foreshadow_changes", "timeline_events", "constraints",
-            "next_chapter_commitments", "retired_context_items", "retired_characters",
+            "result", "character_changes", "foreshadow_changes", "timeline_events", "information_gap_changes",
+            "constraints", "next_chapter_commitments", "retired_context_items", "retired_characters",
         },
         "delta",
     )
@@ -656,6 +769,12 @@ def normalize_delta(
         )
         for index, raw in enumerate(as_list(delta.get("timeline_events", []), "delta.timeline_events"))
     ]
+    information_gap_changes = [
+        normalize_information_gap_change(
+            raw, f"delta.information_gap_changes[{index}]", through_chapter=through_chapter
+        )
+        for index, raw in enumerate(as_list(delta.get("information_gap_changes", []), "delta.information_gap_changes"))
+    ]
     require(
         len({item["id"] for item in foreshadow_changes}) == len(foreshadow_changes),
         "delta.foreshadow_changes contains duplicate IDs",
@@ -663,6 +782,10 @@ def normalize_delta(
     require(
         len({item["id"] for item in timeline_events}) == len(timeline_events),
         "delta.timeline_events contains duplicate IDs",
+    )
+    require(
+        len({item["id"] for item in information_gap_changes}) == len(information_gap_changes),
+        "delta.information_gap_changes contains duplicate IDs",
     )
     require(
         set(snapshots).issubset({item["name"] for item in character_changes}),
@@ -673,6 +796,7 @@ def normalize_delta(
         "character_changes": character_changes,
         "foreshadow_changes": foreshadow_changes,
         "timeline_events": timeline_events,
+        "information_gap_changes": information_gap_changes,
         "constraints": clean_string_list(delta.get("constraints", []), "delta.constraints", maximum=6),
         "next_chapter_commitments": clean_string_list(
             delta.get("next_chapter_commitments", []), "delta.next_chapter_commitments", maximum=5
@@ -741,7 +865,7 @@ def normalize_state(document: object) -> dict[str, Any]:
         root,
         {
             "schema_version", "book_title", "last_committed_chapter", "imported_through_chapter",
-            "state_revision", "context", "characters", "foreshadow", "timeline",
+            "state_revision", "context", "characters", "foreshadow", "timeline", "information_gaps",
         },
         "tracking state",
     )
@@ -763,9 +887,11 @@ def normalize_state(document: object) -> dict[str, Any]:
         require(name in characters, f"active core character {name} has no current snapshot")
     foreshadow = normalize_foreshadow_state(root.get("foreshadow", {}), last_chapter)
     timeline = normalize_timeline_state(root.get("timeline", {}), last_chapter)
+    information_gaps = normalize_information_gap_state(root.get("information_gaps", {}), last_chapter)
     if last_chapter == 0:
         require(not foreshadow, "a chapter-0 project cannot have planted foreshadow facts")
         require(not timeline, "a chapter-0 project cannot have established timeline facts")
+        require(not information_gaps, "a chapter-0 project cannot have registered information gaps")
     return {
         "schema_version": TRACKING_SCHEMA_VERSION,
         "book_title": clean_text(root.get("book_title"), "tracking state.book_title", max_bytes=240),
@@ -776,6 +902,7 @@ def normalize_state(document: object) -> dict[str, Any]:
         "characters": characters,
         "foreshadow": foreshadow,
         "timeline": timeline,
+        "information_gaps": information_gaps,
     }
 
 
@@ -785,11 +912,46 @@ def load_state(project: Path) -> dict[str, Any]:
     return normalize_state(read_json(path))
 
 
+def migrate_v4_state(project: Path) -> None:
+    """写入路径的一次性 v4→v5 迁移：先备份原文件，再原地升版并补空 information_gaps 域。
+
+    仅当 schema_version==4 且缺 information_gaps 域时触发；备份命名
+    `追踪/_备份/schema-v4-<YYYYMMDD-HHMMSS>.json`（同秒冲突追加随机后缀）。
+    迁移失败不写任何文件；老键原样保留，零丢失。
+    """
+    path = state_path(project)
+    if not path.exists():
+        return
+    document = read_json(path)
+    if not (
+        isinstance(document, dict)
+        and document.get("schema_version") == TRACKING_SCHEMA_VERSION - 1
+        and "information_gaps" not in document
+    ):
+        return
+    tracking = tracking_root(project)
+    backup_dir = tracking / "_备份"
+    backup_dir.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup = backup_dir / f"schema-v4-{stamp}.json"
+    while backup.exists():
+        backup = backup_dir / f"schema-v4-{stamp}-{os.urandom(2).hex()}.json"
+    atomic_write_text(backup, json_payload(document))
+    migrated = dict(document)
+    migrated["schema_version"] = TRACKING_SCHEMA_VERSION
+    migrated["information_gaps"] = {}
+    atomic_write_text(path, json_payload(migrated))
+    emit(f"NOTE: tracking state migrated v4→v5; backup at 追踪/_备份/{backup.name}", error=True)
+
+
 def normalize_initial_document(document: object) -> dict[str, Any]:
     root = as_mapping(document, "init input")
     require_known_keys(
         root,
-        {"schema_version", "book_title", "last_chapter", "context", "character_snapshots", "foreshadow", "timeline_events"},
+        {
+            "schema_version", "book_title", "last_chapter", "context", "character_snapshots",
+            "foreshadow", "timeline_events", "information_gaps",
+        },
         "init input",
     )
     require(root.get("schema_version") == INPUT_SCHEMA_VERSION, "init input schema_version is unsupported")
@@ -815,6 +977,17 @@ def normalize_initial_document(document: object) -> dict[str, Any]:
         event["first_recorded_chapter"] = max(1, last_chapter)
         event["updated_chapter"] = max(1, last_chapter)
         timeline[event["id"]] = event
+    information_gaps: dict[str, dict[str, Any]] = {}
+    for index, raw_row in enumerate(as_list(root.get("information_gaps", []), "information_gaps")):
+        row = normalize_information_gap_change(
+            raw_row, f"information_gaps[{index}]", through_chapter=last_chapter
+        )
+        require(row["action"] == "register", f"information_gaps[{index}] must use action register in init")
+        require(row["id"] not in information_gaps, f"duplicate information gap ID {row['id']}")
+        row.pop("action")
+        row["first_recorded_chapter"] = max(1, last_chapter)
+        row["updated_chapter"] = max(1, last_chapter)
+        information_gaps[row["id"]] = row
     return normalize_state(
         {
             "schema_version": TRACKING_SCHEMA_VERSION,
@@ -826,6 +999,7 @@ def normalize_initial_document(document: object) -> dict[str, Any]:
             "characters": snapshots,
             "foreshadow": foreshadow,
             "timeline": timeline,
+            "information_gaps": information_gaps,
         }
     )
 
@@ -942,6 +1116,24 @@ def merge_transaction(state: dict[str, Any], transaction: dict[str, Any]) -> dic
             next_state["timeline"][change["id"]] = checkpoint_record(
                 change, chapter, next_state["timeline"].get(change["id"]), keep_first_chapter=True
             )
+    for change in transaction["delta"]["information_gap_changes"]:
+        if change["action"] == "retire":
+            next_state["information_gaps"].pop(change["id"], None)
+            continue
+        previous = next_state["information_gaps"].get(change["id"])
+        if change["action"] == "register":
+            require(
+                previous is None,
+                f"information gap {change['id']} is already registered; use update instead",
+            )
+        else:  # update
+            require(
+                previous is not None,
+                f"information gap {change['id']} is not registered; use register instead",
+            )
+        next_state["information_gaps"][change["id"]] = checkpoint_record(
+            change, chapter, previous, keep_first_chapter=True
+        )
 
     recent_by_chapter = {item["chapter"]: item for item in state["context"]["recent_chapters"]}
     if chapter in recent_by_chapter or transaction["mode"] == "append":
@@ -966,6 +1158,7 @@ def render_views(state: dict[str, Any]) -> dict[str, str]:
     views = {
         "上下文.md": render_context(state),
         "伏笔.md": render_foreshadow(state["foreshadow"], revision),
+        "信息差.md": render_information_gaps(state["information_gaps"], revision),
     }
     author, reader = render_timeline_views(state["timeline"], revision)
     views["时间线/作者真相.md"] = author
@@ -1039,6 +1232,7 @@ def initialize(project: Path, document: object) -> dict[str, Any]:
 def apply_transaction(project: Path, document: object) -> dict[str, Any]:
     tracking = tracking_root(project)
     require_no_retired_tracking_paths(tracking)
+    migrate_v4_state(project)
     state = load_state(project)
     transaction = normalize_transaction(state, document)
     next_state = merge_transaction(state, transaction)
