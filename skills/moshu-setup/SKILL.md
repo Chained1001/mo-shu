@@ -1,6 +1,6 @@
 ---
 name: moshu-setup
-version: 1.2.11
+version: 1.3.0
 description: "网文写作工具集基础设施部署。为 Claude Code 部署 hooks、agents、rules、CLAUDE.md 到写作项目。触发方式：/moshu-setup、「准备写书」「帮我搭一下环境」「配置写作项目」。"
 ---
 # moshu-setup：网文写作工具集基础设施部署
@@ -100,7 +100,7 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
   ```
   deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
   agents_version: 29
-  setup_skill_version: 1.2.11
+  setup_skill_version: 1.3.0
   target_cli: claude-code
   resolver_strategy: project-local-skill-reference
   references_dir: .claude/skills/moshu-setup/references/agent-references
@@ -125,7 +125,7 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
    - 检查 `.claude/skills/moshu-setup/references/agent-references/` 下 reference 文件完整
    - 检查所有 `moshu-setup/references/agent-references/<file>.md` 都能解析到 deployed bundle
 5. 验证部署标记：
-   - 检查 `.story-deployed` 是否存在且包含时间戳、`agents_version: 29`、`setup_skill_version: 1.2.11`、`target_cli`、`resolver_strategy`、`references_dir`
+   - 检查 `.story-deployed` 是否存在且包含时间戳、`agents_version: 29`、`setup_skill_version: 1.3.0`、`target_cli`、`resolver_strategy`、`references_dir`
 6. 输出安装报告：
    - 列出所有已部署的文件
    - 列出需要注意的事项（如已有配置已合并）

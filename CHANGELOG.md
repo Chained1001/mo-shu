@@ -19,10 +19,12 @@ All notable changes to this project will be documented in this file.
 
 ## v1.2.0（2026-08-20）
 
-> 追踪 schema v5 + 候选类机检：信息差域、悬置预警、卷报告、正文候选机检（v1.1.3 之后的 v1.2.0 段，批 3a→3b→3c→5；批 4「下一步判定」经总纲 §4.3 弹性决策跳过）。
+> 术语统一 + 守卫扩面 + 追踪 schema v5 + 候选类机检（v1.1.2 之后的 v1.2.0 段，批 1→2→3a→3b→3c→5；批 4「下一步判定」经总纲 §4.3 弹性决策跳过）。
 
 ### 新增
 
+- **术语统一（批 1）**：续写状态卡 / 主对标按总纲 §三术语表全仓对齐——消灭"当前语义检查点 / 当前检查点 / 对标书"等双名称机制，仅保留定义句 1 处。
+- **守卫扩面（批 2）**：`check-story-numbers` 叙述计数守卫（README / README_EN / CONTRIBUTING / scripts-README / architecture 中「N 个 skill」必须与 skills/ 实测一致，CHANGELOG 排除）+ 正反回归；19 个 `test-*` 补守护对象声明；scripts/README 增测试纪律节（准入三条件 / 禁脆弱快照 / 临时验证不入库）。
 - **信息差域（批 3a，schema v5）**：state 新顶层域 `information_gaps`（知情人 × 读者已知 × 关键词 × 状态）；delta 新可选键 `information_gap_changes`（register/update/retire）；`INPUT_SCHEMA_VERSION` 1→2、`TRACKING_SCHEMA_VERSION` 4→5；v4 state 写入路径自动备份迁移（`追踪/_备份/schema-v4-*.json`）后升版，老键零丢失；派生视图新增 `追踪/信息差.md`（进 check 强校验集）。
 - **悬置预警（批 3b）**：`check` 输出 `suspension_warnings` 候选清单（status=已埋 且距最近变动章 ≥ 默认 20，`--warn-chapters` 可覆盖）——只呈报不改变退出码。
 - **卷报告（批 3c）**：`volume-report --from-chapter A --to-chapter B` 子命令（只读、不猜卷界），输出伏笔四态清账 / 悬置清单 / 信息差未兑现 / 分层摘要，写 `追踪/卷报告_第A-B章.md`（确定性、不进派生视图强校验集）；卷复盘流程改为"先跑脚本拿表、AI 只做判读"。
