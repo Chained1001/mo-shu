@@ -18,6 +18,7 @@ echo "Repo: $REPO_ROOT"
 
 python3 - "$MARKETPLACE" "$REPO_ROOT" "$EXPECTED_COUNT" <<'PY'
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -43,6 +44,7 @@ for plugin in plugins:
     description = plugin.get("description")
     source = plugin.get("source")
     skills = plugin.get("skills")
+    version = plugin.get("version")
     if not isinstance(name, str) or not name:
         raise SystemExit("FAIL: marketplace plugin is missing name")
     if name in found:
@@ -55,8 +57,21 @@ for plugin in plugins:
         raise SystemExit(
             f"FAIL: {name}: skills must contain only './skills/{name}', got {skills!r}"
         )
-    if not (repo_root / "skills" / name / "SKILL.md").is_file():
+    skill_md = repo_root / "skills" / name / "SKILL.md"
+    if not skill_md.is_file():
         raise SystemExit(f"FAIL: {name}: referenced SKILL.md does not exist")
+    # version 必须与 SKILL.md frontmatter 一致（审计-V3 G1-b：此前只校验映射不比版本，
+    # 导致 release-prep bump SKILL.md 后 marketplace 三处滞后且 CI 无感）
+    if not isinstance(version, str) or not version:
+        raise SystemExit(f"FAIL: {name}: missing version")
+    frontmatter = skill_md.read_text(encoding="utf-8").split("---")[1]
+    declared = re.search(r"^version:\s*(\S+)\s*$", frontmatter, re.MULTILINE)
+    if declared is None:
+        raise SystemExit(f"FAIL: {name}: SKILL.md frontmatter has no version field")
+    if declared.group(1) != version:
+        raise SystemExit(
+            f"FAIL: {name}: marketplace version {version!r} != SKILL.md version {declared.group(1)!r}"
+        )
     found.add(name)
 
 if found != expected:
@@ -64,7 +79,7 @@ if found != expected:
     extra = sorted(found - expected)
     raise SystemExit(f"FAIL: marketplace/skills mismatch; missing={missing}, extra={extra}")
 
-print(f"  OK marketplace maps all {len(found)} skills exactly once")
+print(f"  OK marketplace maps all {len(found)} skills exactly once (name+skills+version 与 SKILL.md 一致)")
 PY
 
 if [ "${CLAUDE_REAL_CHECK:-0}" = "1" ]; then

@@ -13,6 +13,7 @@ skills/
 ├── moshu-analyze/      # 长篇拆文
 ├── moshu-scan/         # 长篇扫榜
 ├── moshu-deslop/            # 去AI味
+├── moshu-style/             # 文风学习
 ├── moshu-review/            # 多视角审查
 └── moshu-cdp/             # 浏览器操控
 scripts/                       # 开发守卫 / 测试 / 代码生成（完整索引见 scripts/README.md）
@@ -99,8 +100,8 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-hook-regex-sync.sh` — hook 伏笔状态检测行为
 - `scripts/check-shared-files.sh` — 共享 runtime 资产清单 + 跨 skill reference 副本一致性
 - `scripts/check-moshu-setup-deployment.sh` — moshu-setup 部署完整性
-- `scripts/check-claude-adapter.sh` — Claude marketplace 与 skill 映射检查
-- `scripts/check-behavior-contracts.sh` — 关键行为约束静态守卫（裸调用停靠/细纲优先/S1-S2 过桥/追踪事务/候选永不拦截等 10 条契约，清单见 `scripts/behavior-contracts.json`）
+- `scripts/check-claude-adapter.sh` — Claude marketplace 与 skill 映射检查（含 version 与 SKILL.md frontmatter 一致）
+- `scripts/check-behavior-contracts.sh` — 关键行为约束静态守卫（裸调用停靠/细纲优先/S1-S2 过桥/追踪事务/候选永不拦截等契约，条数以 `scripts/behavior-contracts.json` 为准，清单见 `scripts/behavior-contracts.json`）
 - `scripts/check-agents-version-sync.sh` — agents_version 一致性守卫（7 个 SKILL.md 的声明与 `moshu-setup/UPGRADING.md` 权威一致）
 - `scripts/check-story-numbers.sh` — 叙述性 skill 计数守卫（README/README_EN/CONTRIBUTING/scripts-README/architecture 中「N 个 skill」必须与 skills/ 实测一致；CHANGELOG 排除）
 - `scripts/check-agent-template-rules.sh` — agent 模板纪律守卫（禁互引 / `agent-references/` 挂载点存在 / 共享纪律单副本）
@@ -126,6 +127,8 @@ bash scripts/check-shared-files.sh
 python3 scripts/test-shared-assets.py
 node scripts/test-normalize-punctuation.js
 node scripts/test-scan-runtime.js
+node scripts/test-scan-analyze.js
+node scripts/test-merge-summaries.js
 bash scripts/test-ai-patterns.sh
 bash scripts/test-outline-copy.sh
 bash scripts/test-degeneration.sh
@@ -144,6 +147,7 @@ bash scripts/check-story-numbers.sh
 python3 scripts/test-story-numbers.py
 node scripts/test-prose-candidates.js
 python3 scripts/test-review-tickets.py
+python3 scripts/test-deploy.py
 bash scripts/check-agent-template-rules.sh
 python3 scripts/test-agent-template-rules.py
 bash scripts/check-eval-scenarios.sh

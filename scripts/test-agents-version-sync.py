@@ -75,6 +75,19 @@ with tempfile.TemporaryDirectory(prefix="agents-version-") as tmp:
         print(result.stderr)
         fails += 1
 
+    # 反向二：references/ 里的活指令行写错版本也必须被抓（审计-V3 IM1 根因回归）
+    ref = root / "skills" / "moshu" / "references" / "fake-workflow.md"
+    ref.parent.mkdir(parents=True, exist_ok=True)
+    ref.write_text("只有 agents_version: 24 通过后才执行。\n", encoding="utf-8")
+    result = run(root)
+    if result.returncode == 0:
+        print("FAIL: references 里写错版本后检查仍通过（应失败）")
+        fails += 1
+    elif "fake-workflow.md" not in result.stderr:
+        print("FAIL: 失败信息未指向 references 文件")
+        print(result.stderr)
+        fails += 1
+
 if fails:
     print(f"Agents-version-sync tests FAILED ({fails}).")
     sys.exit(1)

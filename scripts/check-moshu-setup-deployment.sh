@@ -559,7 +559,7 @@ PY
 # last_committed 取一个大于本节所有用例章号的值：章号已在追踪范围内即跳过顺序校验，
 # 于是 第1/7/123/124 章都只被细纲门判定。
 mkdir -p "$guard_root/book/追踪"
-printf '{"schema_version":4,"state_revision":0,"last_committed_chapter":200}\n' > "$guard_root/book/追踪/_tracking-state.json"
+printf '{"schema_version":5,"state_revision":0,"last_committed_chapter":200}\n' > "$guard_root/book/追踪/_tracking-state.json"
 printf '> 状态修订：0。\n' > "$guard_root/book/追踪/上下文.md"
 [ "$(run_guard 'book/正文/第1章_开端.md')" = "0" ] || fail "guard wrongly blocked long prose when 细纲 present"
 # 追踪门本身：state 移走即拦（Claude 端此前静默放行，写出无追踪正文）
@@ -633,6 +633,16 @@ PY
   printf '%s' "$broken_err" | grep -q '守卫解析失败' \
     || fail "broken Bash guard core was silently ignored: $broken_err"
 fi
+# 欠账门（审计-V3 PM4③）：首建第 N 章时，上一章有未清毒句式且未标豁免 → 拦截；标「去味:跳过」→ 放行
+: > "$guard_root/book/大纲/细纲_第10章.md"
+printf '%s\n' '第9章 他不是在害怕，而是在期待。' > "$guard_root/book/正文/第9章_x.md"
+[ "$(run_guard 'book/正文/第10章_x.md')" = "2" ] \
+  || fail "guard did not BLOCK new chapter when previous chapter has toxic debt"
+printf '%s\n' '<!-- 去味:跳过 -->' | cat - "$guard_root/book/正文/第9章_x.md" > "$guard_root/book/正文/第9章_tmp.md"
+mv "$guard_root/book/正文/第9章_tmp.md" "$guard_root/book/正文/第9章_x.md"
+[ "$(run_guard 'book/正文/第10章_x.md')" = "0" ] \
+  || fail "guard wrongly blocked new chapter when previous chapter marked 去味:跳过"
+rm -f "$guard_root/book/正文/第9章_x.md" "$guard_root/book/大纲/细纲_第10章.md"
 echo "  OK TS11 outline-before-prose guard"
 
 # TS11b — 阻断守卫在无 node 时必须回落纯 bash 抽取、仍然 exit 2（不得 fail-open）。

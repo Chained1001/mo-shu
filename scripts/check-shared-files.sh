@@ -30,11 +30,9 @@ IGNORE_NAMES="output-templates.md material-decomposition.md"
 # the remaining prose-card copies must stay byte-identical.
 GENRE_STYLE_DIVERGENT_NAMES="双男主.md"
 
-# Longform-divergent (basename): moshu-write's copy carries a long-form-only
-# section (长篇单元情绪引擎) that references reader-contract-and-progression.md, which
-# exists only under moshu-write; syncing it to the agent-references copy would create
-# a dangling reference. Drop the moshu-write copy from the comparison.
-LONGFORM_DIVERGENT_NAMES="emotional-methods.md"
+# （审计-V3 PM9：emotional-methods.md 已收敛为单副本——agent-references/reader-contract
+# 已存在，原白名单理由失效；该文件现已登记 shared-assets.json 并字节一致，不再豁免）
+LONGFORM_DIVERGENT_NAMES=""
 
 mismatches=0
 checked=0

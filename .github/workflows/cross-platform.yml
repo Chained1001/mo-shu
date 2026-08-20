@@ -132,6 +132,8 @@ jobs:
           python-version: '3.x'
       - name: Check moshu-setup deployment
         run: bash scripts/check-moshu-setup-deployment.sh
+      - name: Deploy.py behavior regression
+        run: python3 scripts/test-deploy.py
 
   windows:
     runs-on: windows-latest

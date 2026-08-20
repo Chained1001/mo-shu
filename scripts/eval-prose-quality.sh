@@ -14,7 +14,13 @@ SAMPLES="$ROOT/evals/samples"
 # 解析检测器 --json 输出：打印 "blocking advisory"（无命中或解析失败 = "0 0"）
 counts() {
   local js="$1"
-  python3 - "$js" <<'PY'
+  # 审计-V3 DC3：先探测解释器（Windows 裸调 python3 会落到 Store 占位程序 exit 49）
+  local PYBIN=""
+  for candidate in python3 python py; do
+    "$candidate" -c "" >/dev/null 2>&1 && { PYBIN="$candidate"; break; }
+  done
+  [ -n "$PYBIN" ] || { echo "0 0"; return 0; }
+  "$PYBIN" - "$js" <<'PY'
 import json, sys
 try:
     d = json.load(open(sys.argv[1], encoding='utf-8'))

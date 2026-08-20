@@ -133,3 +133,61 @@ test("CLI 兼容：require 后不自动执行 main（无副作用）", () => {
   const mod = require("../skills/moshu-scan/scripts/scan-analyze.js");
   assert.strictEqual(typeof mod.main, "function");
 });
+
+// 审计-V3 SM4：scraper 真实渲染输出 ↔ scan-analyze 适配器联合契约（此前零联合守卫，
+// fixture 是手写近似样本，已与真实产出漂移——改任一 scraper 的 meta 段序/字段拼法此用例必红）
+test("契约：qidian renderMarkdown 真实输出能被 detectPlatform/adapt 解析", () => {
+  const { renderMarkdown } = require("../skills/moshu-scan/scripts/qidian-rank-scraper.js");
+  const markdown = renderMarkdown(
+    { label: "月票榜" },
+    [
+      {
+        rank: 1,
+        title: "契约书",
+        author: "契约作者",
+        genre: "玄幻",
+        status: "连载",
+        words: "320万字",
+        totalRecommendations: "85000",
+        signing: "签约",
+        pricing: "VIP",
+        url: "https://www.qidian.com/book/1/",
+      },
+    ],
+    "https://www.qidian.com/rank/yuepiao/",
+    "mobile-ssr"
+  );
+  assert.strictEqual(detectPlatform(markdown), "起点");
+  const items = parseBlocks(markdown).map((b) => adapt("起点", b));
+  assert.strictEqual(items.length, 1);
+  assert.strictEqual(items[0].author, "契约作者");
+  assert.ok(!items[0].genre.includes("连载"), `题材段位不得被状态污染: ${items[0].genre}`);
+});
+
+test("契约：qimao renderMarkdown 真实输出能被 detectPlatform/adapt 解析", () => {
+  const { renderMarkdown } = require("../skills/moshu-scan/scripts/qimao-rank-scraper.js");
+  const markdown = renderMarkdown(
+    { label: "男频" },
+    { label: "大热榜" },
+    { label: "日榜" },
+    "https://www.qimao.com/rank/1/",
+    [
+      {
+        rank: 1,
+        title: "契约书二",
+        author: "契约作者二",
+        genre: "都市",
+        subGenre: "都市生活",
+        status: "连载中",
+        words: "150万字",
+        heat: "100万",
+        url: "https://www.qimao.com/shuku/1/",
+      },
+    ],
+    1
+  );
+  assert.strictEqual(detectPlatform(markdown), "七猫");
+  const items = parseBlocks(markdown).map((b) => adapt("七猫", b));
+  assert.strictEqual(items.length, 1);
+  assert.strictEqual(items[0].author, "契约作者二");
+});

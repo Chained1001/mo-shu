@@ -24,14 +24,11 @@ def collect_mismatches(root: Path, expected: int) -> list[str]:
     skills_root = root / "skills"
     if not skills_root.is_dir():
         return [f"skills/ 目录缺失: {skills_root}"]
-    for skill_dir in sorted(skills_root.iterdir()):
-        if not skill_dir.is_dir():
-            continue
-        sk = skill_dir / "SKILL.md"
-        if not sk.exists():
-            continue
-        text = sk.read_text(encoding="utf-8")
-        rel = sk.relative_to(root)
+    # 全 skill 递归扫描（审计-V3 IM1：只扫 SKILL.md 时 references/ 里的活指令行
+    # agents_version: 27 能一路绿灯过 v1.3.0 发布——import-workflow.md:70 实据）
+    for path in sorted(skills_root.rglob("*.md")):
+        text = path.read_text(encoding="utf-8")
+        rel = path.relative_to(root)
         for match in VERSION_RE.finditer(text):
             actual = int(match.group(1))
             if actual != expected:
@@ -71,7 +68,7 @@ def main() -> int:
             print(f"  {failure}", file=sys.stderr)
         return 1
 
-    print(f"agents_version 一致性通过：{expected} 在所有 SKILL.md 一致")
+    print(f"agents_version 一致性通过：{expected} 在全部 skills/**/*.md 一致")
     return 0
 
 

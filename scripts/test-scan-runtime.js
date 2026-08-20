@@ -158,6 +158,11 @@ if (js.indexOf("onebook.php") > -1) {
       1: { id: "1", collect: "12345", words: "300000", status: "连载中" },
       2: { id: "2", err: "detail timeout" },
     });
+  } else if (process.env.SCAN_FAKE_TWO_BOOKS) {
+    out({
+      1: { id: "1", collect: "12345", words: "300000", status: "连载中" },
+      2: { id: "2", collect: "6789", words: "200000", status: "连载中" },
+    });
   }
   out({ 1: { id: "1", collect: "12345", words: "300000", status: "连载中" } });
 }
@@ -423,7 +428,17 @@ function listScraperPaths() {
 function testScraperImports() {
   const scraperPaths = listScraperPaths();
 
-  assert(scraperPaths.length >= 4, "expected all rank scraper modules");
+  // 审计-V3 SC5：对齐式断言——平台数是 scan 最核心的可数声明，增删 scraper 必须显式改这里
+  assert.deepStrictEqual(
+    scraperPaths.map((p) => path.basename(p)),
+    [
+      "fanqie-rank-scraper.js",
+      "jjwxc-rank-scraper.js",
+      "qidian-rank-scraper.js",
+      "qimao-rank-scraper.js",
+    ].sort(),
+    "scraper 清单必须与 4 平台一一对应（增删平台须同步此断言与 SKILL.md/scan-analyze PLATFORMS）"
+  );
   for (const scraperPath of scraperPaths) {
     const probe = spawnSync(
       process.execPath,
@@ -564,12 +579,18 @@ function testJjwxcDetailFailureIsolation() {
     assert.match(content, /### #1 甲书/, "已解析的列表数据必须保住");
   }
 
-  // 对照：详情正常时质量门不误报
-  const healthy = runScraper(scraper, ["--type", "12"], {});
+  // 对照：详情正常时不误报"详情解析异常"（条目数 2 <15 会标 [数据稀疏]，属 SM1 预期，不算详情误报）
+  const healthy = runScraper(scraper, ["--type", "12"], { SCAN_FAKE_TWO_BOOKS: "1" });
   assert.strictEqual(healthy.status, 0, healthy.stderr);
   assert.strictEqual(healthy.files.length, 1);
-  assert.match(healthy.contents[0], /数据质量：\[OK\]/);
   assert.match(healthy.contents[0], /收藏 1\.2万/);
+  assert.doesNotMatch(healthy.contents[0], /详情解析异常/);
+
+  // 审计-V3 SM1：单条目（<15）必须标 [数据稀疏]（选题硬规则依赖此标记）
+  const sparse = runScraper(scraper, ["--type", "12"], {});
+  assert.strictEqual(sparse.status, 0, sparse.stderr);
+  assert.match(sparse.contents[0], /数据质量：\[存在问题\]/);
+  assert.match(sparse.contents[0], /问题摘要：.*数据稀疏.*实际采集 1 条/);
 
   const partial = runScraper(scraper, ["--type", "12"], {
     SCAN_FAKE_TWO_BOOKS: "1",
@@ -822,6 +843,24 @@ function testFanqiePureFunctions() {
   assert.strictEqual(fanqie.fmtStatus("0"), "已完结");
   assert.strictEqual(fanqie.fmtStatus("2"), "已完结");
   assert.strictEqual(fanqie.fmtStatus(""), "未知");
+
+  // 审计-V3 SM1：条目数下限 [数据稀疏]（与起点/七猫口径一致；选题"不许给高"硬规则依赖它）
+  assert.deepStrictEqual(fanqie.computeQualityProblems(0, 0), ["无数据"], "零条目=无数据，不误报稀疏");
+  const sparse = fanqie.computeQualityProblems(5, 5);
+  assert.ok(
+    sparse.some((p) => p.includes("[数据稀疏]") && p.includes("5 条")),
+    `5 条必须标数据稀疏: ${JSON.stringify(sparse)}`
+  );
+  const adequate = fanqie.computeQualityProblems(20, 20);
+  assert.ok(
+    !adequate.some((p) => p.includes("[数据稀疏]")),
+    `20 条不得标稀疏: ${JSON.stringify(adequate)}`
+  );
+  const parseFail = fanqie.computeQualityProblems(20, 0);
+  assert.ok(
+    parseFail.some((p) => p.includes("[标题解析异常]")),
+    `全解析失败须标异常: ${JSON.stringify(parseFail)}`
+  );
 }
 
 // 长篇扫榜 scraper 参数校验：非法参数必须在打开浏览器/进入 per-target 容错前快速失败，给出具体参数名和值。
