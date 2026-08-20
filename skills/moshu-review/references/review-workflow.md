@@ -317,6 +317,13 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 ## Phase 4：输出报告（full / lean 模式）
 
+### 工单落盘（full / lean / solo 通用）
+
+1. **整理 findings 为工单 JSON**：主会话把综合后的 findings 整理为数组——`id`（`T\d{3,}`，主会话分配）、`severity`（S1/S2 → `blocking`，S3/S4 → `candidate`——只影响呈报与复审范围，不拦截任何流程）、`dimension`（统一 Findings Schema 的 9 类 category 之一）、`evidence`、`suggestion`、`status: "open"`；`review_token` = 本轮主会话生成并注入 reviewer 的 8 位审稿令牌。
+2. **先写临时文件，再走脚本**：把 findings 数组先写到临时 JSON 文件（如 `/.tmp/review-tickets-<时间戳>.json`），再执行 `review_tickets.py write --project {项目根} --input <临时文件>`——**AI 产出只走文件不走 argv**（移植 v7）。校验（schema/枚举/id 唯一且 `T\d{3,}`/令牌非空）失败时按报错修正后重跑同一 `write`。
+3. **落盘位置**：`{项目根}/.moshu-review/tickets/tickets_{YYYYMMDD-HHMM}_{起章}-{止章}.json`（write 原子写、幂等）。
+4. **工单与 review-log 分工**：工单=结构化处置真源（复审只验 open 项，处置走 `resolve`）；review-log=既有写作建议审计流（`{章节范围} | {问题} | {建议}` 行式，S3/S4 与 advisory 记录）——**review-log 格式与读点不变**。
+
 只有 `Effective Mode` 确实为 `full` 或 `lean` 时才使用本模板；如果 Phase 0 或运行时失败导致降级 `solo`，必须改用 solo 模式模板。
 
 注意：下列 `Requested Mode`、`Effective Mode`、`Fallback`、`Rubric`、`Rubric Source` 五个英文 key 必须逐字保留；不要改成“请求模式/实际模式/回退/评估标准”等中文 key。

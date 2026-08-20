@@ -76,6 +76,14 @@
 
 ---
 
+## 工单处置（存在审查工单时）
+
+1. **读工单**：`review_tickets.py list --project {项目根} --status open`（或直接读 `.moshu-review/tickets/` 最新文件）——只处理 `open` 项；工单缺失时跳过本节。
+2. **逐条处置**：fixed / dismissed 均需一句证据（`status_note`）：`review_tickets.py resolve --project {项目根} --ticket <文件> --id T001 --status fixed|dismissed --note "<证据一句>"`。**不得绕过 resolve 手工编辑工单 JSON**——status 只允许 open→fixed/dismissed 单向流转。
+3. **复审**：全部 open 项处置后重跑 review（`/moshu-review`），只验证工单内 open→fixed 项是否真的修好；复审通过后本轮工单闭环。
+
+---
+
 ## Step 5：质量检查
 
 对修改后的章节执行 Phase 5 质量检查（至少包含）：

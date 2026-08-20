@@ -141,6 +141,7 @@ python3 scripts/test-agents-version-sync.py
 bash scripts/check-story-numbers.sh
 python3 scripts/test-story-numbers.py
 node scripts/test-prose-candidates.js
+python3 scripts/test-review-tickets.py
 bash scripts/check-python-invocation.sh
 bash scripts/check-hook-locale-safety.sh
 bash scripts/test-hook-encoding-portable.sh

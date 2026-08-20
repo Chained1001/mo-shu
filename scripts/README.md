@@ -49,6 +49,7 @@
 | `test-agents-version-sync.py` | agents_version 守卫回归：正向（真仓库一致）+ 反向（fixture 改一处版本必须失败） | CI（调 check-agents-version-sync） |
 | `test-story-numbers.py` | 叙述计数守卫回归：正向（fixture 数字与实测一致→退出 0）+ 反向（中文/英文数字不一致→退出 1 且指向文件） | CI（调 check-story-numbers） |
 | `test-prose-candidates.js` | 正文候选类机检回归：正向（意象重复+登记信息差关键词命中）+ 反向（干净文本空候选）+ 降级（缺 style/gaps、坏格式）+ 幂等（同输入逐字节一致） | CI（调 moshu-write 的 check-prose-candidates.js） |
+| `test-review-tickets.py` | 审查工单回归：write 合法+幂等 / 坏枚举/重复 id/坏令牌拒 / resolve 单向流转 / list 过滤 / verify-token 相等与不等 | CI（调 moshu-review 的 review_tickets.py） |
 
 ## 测试纪律
 

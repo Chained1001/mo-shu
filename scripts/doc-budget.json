@@ -36,8 +36,8 @@
         },
         {
             "path": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
-            "budget": 13150,
-            "why": "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则"
+            "budget": 13300,
+            "why": "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则；→13300：批6 审稿令牌段（审查防编造机制：报告首行逐字回传令牌供 verify-token 校验，4 个 reviewer 模板统一；已压缩至最小约 100 字仍超，审查 spawn 与写作 spawn 同付此模板，按 doc-budget 机制显式调高，2026-08-20）"
         },
         {
             "path": "skills/moshu-write/references/writing-craft.md",
@@ -95,7 +95,7 @@
         },
         {
             "label": "正文 agent 上下文",
-            "budget": 43600,
+            "budget": 43700,
             "files": [
                 "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
                 "skills/moshu-write/references/writing-craft.md",

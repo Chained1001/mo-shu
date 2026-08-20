@@ -61,6 +61,12 @@
       "path": "skills/moshu-write/references/workflow-daily.md",
       "must_contain": "候选永不拦截",
       "rationale": "候选类机检（check-prose-candidates）只呈报不阻断（总纲原则 2）"
+    },
+    {
+      "id": "revision-ticket-disposition",
+      "path": "skills/moshu-write/references/workflow-revision.md",
+      "must_contain": "工单处置",
+      "rationale": "大修流程必须走工单处置入口（读 open 工单→resolve→复审），防审查发现无人跟进"
     }
   ]
 }
