@@ -52,6 +52,9 @@ READER_KNOWN = ("未知", "部分已知", "已知")
 GAP_STATUSES = ("登记", "已兑现", "已放弃")
 # 知情人上限对齐 timeline 事件 characters 上限（12），不自造新数。
 KNOWERS_MAX = 12
+# 伏笔悬置预警阈值（mo-shu 自定）：status=已埋 且 距最近变动章 >= 阈值 时，
+# check 输出 suspension_warnings 候选清单（只呈报，不改变退出码）。
+SUSPENSION_WARN_CHAPTERS = 20
 WINDOWS_RESERVED_NAMES = {
     "CON",
     "PRN",
@@ -1261,6 +1264,30 @@ def apply_transaction(project: Path, document: object) -> dict[str, Any]:
     return next_state
 
 
+def suspension_warnings(state: dict[str, Any], threshold: int) -> list[dict[str, Any]]:
+    """悬置伏笔候选清单：status=已埋 且 last - updated_chapter >= 阈值。
+
+    候选性质：只呈报，永不改变 check 退出码。语义=最近一次变动章起算的
+    近似"持续未动"章距（契约文档注明）。
+    """
+    last = state["last_committed_chapter"]
+    warnings: list[dict[str, Any]] = []
+    for identifier in sorted(state["foreshadow"]):
+        row = state["foreshadow"][identifier]
+        if row["status"] != "已埋":
+            continue
+        chapters = last - row["updated_chapter"]
+        if chapters >= threshold:
+            warnings.append(
+                {
+                    "id": identifier,
+                    "status": row["status"],
+                    "chapters_since_update": chapters,
+                }
+            )
+    return warnings
+
+
 def check_project(project: Path) -> dict[str, Any]:
     tracking = tracking_root(project)
     require_no_retired_tracking_paths(tracking)
@@ -1302,6 +1329,12 @@ def build_parser() -> argparse.ArgumentParser:
         subparser.add_argument("--input", type=Path, required=True, help="UTF-8 JSON input document")
     check_parser = subparsers.add_parser("check")
     check_parser.add_argument("--project", type=Path, required=True, help="book project root containing 追踪/")
+    check_parser.add_argument(
+        "--warn-chapters",
+        type=int,
+        default=SUSPENSION_WARN_CHAPTERS,
+        help="伏笔悬置预警阈值（默认 20）；仅呈报不改变退出码",
+    )
     return parser
 
 
@@ -1313,16 +1346,21 @@ def main() -> int:
         elif args.command == "commit":
             result = apply_transaction(args.project, read_json(args.input))
         else:
+            require(args.warn_chapters >= 1, "--warn-chapters must be >= 1")
             result = check_project(args.project)
     except (TrackingError, OSError, UnicodeError) as exc:
         emit(f"ERROR: {exc}", error=True)
         return 2
+    payload: dict[str, Any] = {
+        "last_committed_chapter": result["last_committed_chapter"],
+        "state_revision": result["state_revision"],
+    }
+    if args.command == "check":
+        # 候选清单：只呈报，不改变退出码。
+        payload["suspension_warnings"] = suspension_warnings(result, args.warn_chapters)
     emit(
         json.dumps(
-            {
-                "last_committed_chapter": result["last_committed_chapter"],
-                "state_revision": result["state_revision"],
-            },
+            payload,
             ensure_ascii=False,
         )
     )

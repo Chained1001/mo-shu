@@ -157,6 +157,7 @@ class TrackingCommitTests(unittest.TestCase):
         document: dict[str, object] | None = None,
         *,
         expect: int = 0,
+        extra: tuple[str, ...] = (),
     ) -> subprocess.CompletedProcess[str]:
         args = [sys.executable, str(TOOL), command, "--project", str(self.project)]
         if document is not None:
@@ -166,6 +167,7 @@ class TrackingCommitTests(unittest.TestCase):
             input_path = Path(self.temporary.name) / f"{command}-{os.urandom(4).hex()}.json"
             input_path.write_text(json.dumps(document, ensure_ascii=False), encoding="utf-8")
             args.extend(["--input", str(input_path)])
+        args.extend(extra)
         # 工具按 UTF-8 直写字节；text=True 默认按 locale 解码，Windows 的 cp1252
         # 会在读中文提示时 UnicodeDecodeError，必须显式指定 UTF-8。
         completed = subprocess.run(
@@ -637,6 +639,38 @@ class TrackingCommitTests(unittest.TestCase):
         result = self.run_tool("commit", duplicate, expect=2)
         self.assertIn("duplicate IDs", result.stderr)
         self.assertEqual(self.read_state()["state_revision"], 0)
+
+    def test_suspension_warning_fires_after_threshold(self) -> None:
+        # init 直接建到 30 章，再 revision 回填第 1 章的伏笔（updated=1，last 保持 30）
+        self.init(last_chapter=30)
+        backfill = transaction(1, mode="revision", foreshadow=True)
+        self.run_tool("commit", backfill)
+        completed = self.run_tool("check")
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["last_committed_chapter"], 30)
+        self.assertEqual(
+            payload["suspension_warnings"],
+            [{"id": "F027", "status": "已埋", "chapters_since_update": 29}],
+        )
+
+    def test_suspension_warning_stays_silent_within_threshold(self) -> None:
+        self.init(last_chapter=30)
+        backfill = transaction(15, mode="revision", foreshadow=True)
+        self.run_tool("commit", backfill)
+        completed = self.run_tool("check")
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["suspension_warnings"], [])
+
+    def test_suspension_warning_threshold_override_takes_effect(self) -> None:
+        self.init(last_chapter=30)
+        backfill = transaction(15, mode="revision", foreshadow=True)
+        self.run_tool("commit", backfill)
+        completed = self.run_tool("check", extra=("--warn-chapters", "10"))
+        payload = json.loads(completed.stdout)
+        self.assertEqual(
+            payload["suspension_warnings"],
+            [{"id": "F027", "status": "已埋", "chapters_since_update": 15}],
+        )
 
 
 if __name__ == "__main__":

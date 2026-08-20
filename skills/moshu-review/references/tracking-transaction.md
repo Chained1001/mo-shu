@@ -183,6 +183,13 @@ Markdown 只负责给作者和 Agent 阅读，工具不再反向解析 Markdown�
 
 init 输入同样可带 `information_gaps` 数组（`action` 固定 `register`）。
 
+## 悬置预警
+
+`check` 子命令输出 `suspension_warnings` 候选清单（`[{id, status, chapters_since_update}]`）：仅 `status == "已埋"` 且 `last_committed_chapter - updated_chapter >= 阈值` 的伏笔。语义=最近一次变动章起算的近似"持续未动"章距（不新增状态字段）。
+
+- 默认阈值：`SUSPENSION_WARN_CHAPTERS = 20`（mo-shu 自定；`check --warn-chapters N` 可覆盖，N ≥ 1）。
+- **候选性质，永不拦截**：只呈报、不改变 `check` 退出码（与总纲"候选"术语一致；预警处置由作者决定，如推进回收或显式放弃）。
+
 ## 续写状态卡固定格式
 
 `上下文.md` ≤12288 字节，由 state 整份生成，只含以下 7 个顶层区块：
