@@ -3,9 +3,11 @@
 ## 当前版本
 
 - `setup_skill_version: 1.2.11`
-- `agents_version: 28`
+- `agents_version: 29`
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `28`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `28`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v28 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `29`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `29`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v29 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+
+**v28 → v29 变更**：agent 模板产出纪律收敛为共享 base 段 `agent-references/shared-output-discipline.md`（纯 JSON 无围栏 / ASCII 直引号 / 换行转义 / 禁尾随逗号 / 先落临时文件再 --input / 输出前自检三问）——moshu-explorer 与 moshu-chapter-extractor 的散落纪律句改为锚点引用，并新增 `check-agent-template-rules` 守卫（禁互引 / 挂载点存在 / 单副本）——agent 模板与 agent-references 变化，重跑 `/moshu-setup` 并新开会话后生效。
 
 **v27 → v28 变更**：4 个 reviewer agent 模板（moshu-architect / moshu-character-designer / moshu-consistency-checker / moshu-narrative-writer）新增「审稿令牌」段——输入首行带 8 位令牌、报告首行必须逐字回传（防 subagent 未读输入编造报告），主会话用 `review_tickets.py verify-token` 校验后采纳——agent 模板变化，重跑 `/moshu-setup` 并新开会话后生效。
 
@@ -88,7 +90,7 @@
 ## 升级步骤
 
 1. 在项目根目录重新运行 moshu-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 28` 与 `setup_skill_version: 1.2.11`。
+2. 确认 `.story-deployed` 写入 `agents_version: 29` 与 `setup_skill_version: 1.2.11`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。

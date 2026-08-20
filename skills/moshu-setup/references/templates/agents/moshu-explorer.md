@@ -219,7 +219,7 @@ maxTurns: 15
 
 ## 输出格式
 
-所有查询返回结构化 JSON。**必须输出可被 JSON.parse 解析的纯 JSON**：不要包 Markdown 代码围栏。输出前逐字段做 JSON 字符串安全化：字符串里的英文双引号必须写成 `\"`，换行写成 `\n`；尤其是 `anchor_excerpts[].text` 原文片段。若无法保证原文片段可转义，可把英文双引号替换为中文弯引号后再输出；禁止输出会破坏 JSON 的裸双引号。最终答案前自检一遍：任一字符串包含未转义 `"` 时先修正再返回。
+所有查询返回结构化 JSON。产出纪律见 `moshu-setup/references/agent-references/shared-output-discipline.md`（引用即挂载，此处不重复）。
 
 ```json
 {

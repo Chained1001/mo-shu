@@ -103,6 +103,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-behavior-contracts.sh` — 关键行为约束静态守卫（裸调用停靠/细纲优先/S1-S2 过桥/追踪事务/候选永不拦截等 10 条契约，清单见 `scripts/behavior-contracts.json`）
 - `scripts/check-agents-version-sync.sh` — agents_version 一致性守卫（7 个 SKILL.md 的声明与 `moshu-setup/UPGRADING.md` 权威一致）
 - `scripts/check-story-numbers.sh` — 叙述性 skill 计数守卫（README/README_EN/CONTRIBUTING/scripts-README/architecture 中「N 个 skill」必须与 skills/ 实测一致；CHANGELOG 排除）
+- `scripts/check-agent-template-rules.sh` — agent 模板纪律守卫（禁互引 / `agent-references/` 挂载点存在 / 共享纪律单副本）
 - 采集脚本 `node --check` 语法校验
 
 以上为代表性列举；**强制清单按 `.github/workflows/cross-platform.yml` 为准**，每个脚本的用途与触发时机见 [scripts/README.md](scripts/README.md)。另有 `.github/workflows/cli-compat.yml` 在相关 PR、每周定时和手动触发时安装官方当前版本，真实运行 Claude Code 的无鉴权 smoke。
@@ -142,6 +143,8 @@ bash scripts/check-story-numbers.sh
 python3 scripts/test-story-numbers.py
 node scripts/test-prose-candidates.js
 python3 scripts/test-review-tickets.py
+bash scripts/check-agent-template-rules.sh
+python3 scripts/test-agent-template-rules.py
 bash scripts/check-python-invocation.sh
 bash scripts/check-hook-locale-safety.sh
 bash scripts/test-hook-encoding-portable.sh

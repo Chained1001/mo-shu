@@ -77,7 +77,7 @@ maxTurns: 12
 严格按以下 markdown 格式输出。**不要输出任何格式之外的内容**。
 
 > **结构化输出约束**：调用方可通过 prompt 末尾附加 `OUTPUT_MODE: json` 要求 JSON 格式输出。
-> 此时，你的最终消息必须是单个 JSON 对象（不带 prose、不带 code fence），结构如下：
+> 此时，你的最终消息必须是单个 JSON 对象，结构如下（产出纪律见 `moshu-setup/references/agent-references/shared-output-discipline.md`，引用即挂载，此处不重复）：
 > ```
 > {
 >   "chapter_number": <integer>,

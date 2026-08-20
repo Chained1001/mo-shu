@@ -50,6 +50,10 @@ jobs:
         run: python3 scripts/test-agents-version-sync.py
       - name: Check Claude Code adapter
         run: bash scripts/check-claude-adapter.sh
+      - name: Check agent template rules
+        run: bash scripts/check-agent-template-rules.sh
+      - name: Agent-template-rules regression
+        run: python3 scripts/test-agent-template-rules.py
       - name: Guard against bare python3 invocations
         run: bash scripts/check-python-invocation.sh
       - name: Guard hook locale safety (LC_ALL=C + no full-width char classes)
