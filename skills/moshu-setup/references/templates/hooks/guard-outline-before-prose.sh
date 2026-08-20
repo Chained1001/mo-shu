@@ -2,12 +2,15 @@
 # guard-outline-before-prose.sh — PreToolUse(Bash|Write|Edit|MultiEdit) 流程守卫
 # 写「正文」前必须先有对应大纲/细纲，否则阻止（exit 2，BLOCKING）。
 #
-# 拦截三类：
+# 拦截四类（Bash 命令面走 JS 共享核，Write/Edit 面本文件全量判定）：
 #   - 长篇 正文/第N章_*.md 首建且缺细纲：要求同书 大纲/细纲_第N章.md 存在
 #   - 长篇追踪检查点不成立：state 缺失/schema 不符/续写状态卡修订不一致/首建新章时
 #     上一章事务未提交（判定走共享核；见下方该段注释）
 #   - 上一章有未清毒句式欠账：首建新章时，上一章未标「去味:跳过」且检出毒句式先清再写
-# 细纲/大纲门只在首建时判，追踪门对首建与续写都判（与 JS 核 proseBlockReason 同序）。
+#   - 主产物门（Write/Edit 面）：有对标时 剧情/情绪模块.md 与 剧情/节奏.md 缺失即拦
+# 细纲/大纲门只在首建时判，追踪门对首建与续写都判（与 JS 核 proseBlockReason 同序；
+# 主产物门仅 Write/Edit 面生效——Bash 命令面为 best-effort 静态识别、门集少一道主产物门，
+# 两面不对称是有意设计，见 UPGRADING 与 story_hook_core.js proseBlockReason 注释）。
 # 非正文目标、解析不到路径一律静默放行。
 # 设计原则：宁可漏拦不可误伤——任何不确定都 exit 0。
 set -euo pipefail

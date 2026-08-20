@@ -57,7 +57,7 @@ PYEOF
 实测输出形如：
 `sentences=6; short_lt15=66%; mid_15to30=33%; long_gt30=0%; long_ge50=0%; avg_len=12; paras=3; para_avg_sents=2.0; punct_density=15%; comma=50%; period=30%; excl=5%; ques=5%; dash=0%; ellipsis=0%`
 
-把数值直接填进模板「整体语感」——`confidence: high`（确定性测量，不是抽样估计）。
+把数值直接填进模板「整体语感」——`confidence: high`（确定性测量，不是抽样估计）。**字段名必须照模板逐字写**：「平均句长」是下游确定性解析锚点（`check-prose-candidates.js` 按字面匹配），改成「平均 N 字」这类变体就会解析失败且不报降级。
 
 **字段语义**：
 - **段落按行切分**（非空行 = 一段）：网文 txt 常见"一行一段"（行首缩进、无空行分隔），空行分隔格式同样兼容（折叠空行后按行计）——实测《大奉打更人》914 章样本段落均句数 ≈1.4，一行一段的典型值

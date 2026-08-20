@@ -29,7 +29,7 @@ make_book() {
   printf 'b\n' > "$root/某书/设定/世界.md"
   printf 'c\n' > "$root/某书/设定/力量.md"
   printf '卷纲\n' > "$root/某书/大纲/卷纲.md"
-  printf '%s\n' '{"schema_version":4,"state_revision":0,"last_committed_chapter":0}' > "$root/某书/追踪/_tracking-state.json"
+  printf '%s\n' '{"schema_version":5,"state_revision":0,"last_committed_chapter":0}' > "$root/某书/追踪/_tracking-state.json"
   printf '%s\n' '> 状态修订：0' > "$root/某书/追踪/上下文.md"
 }
 
@@ -49,7 +49,7 @@ for kind in mismatch malformed missing; do
   T_META="$(mktemp -d)"; make_book "$T_META"
   printf '# 第1章 开端\n正文。\n' > "$T_META/某书/正文/第001章_开端.md"
   case "$kind" in
-    mismatch) printf '%s\n' '{"schema_version":4,"state_revision":1,"last_committed_chapter":0}' > "$T_META/某书/追踪/_tracking-state.json" ;;
+    mismatch) printf '%s\n' '{"schema_version":5,"state_revision":1,"last_committed_chapter":0}' > "$T_META/某书/追踪/_tracking-state.json" ;;
     malformed) printf '%s\n' '{not-json' > "$T_META/某书/追踪/_tracking-state.json" ;;
     missing) rm -f "$T_META/某书/追踪/_tracking-state.json" ;;
   esac
@@ -64,7 +64,7 @@ done
 
 # ④ 干净项目：state 与正文章号一致、上下文 revision 一致、标题唯一 → 静默
 T2="$(mktemp -d)"; make_book "$T2"
-printf '%s\n' '{"schema_version":4,"state_revision":0,"last_committed_chapter":2}' > "$T2/某书/追踪/_tracking-state.json"
+printf '%s\n' '{"schema_version":5,"state_revision":0,"last_committed_chapter":2}' > "$T2/某书/追踪/_tracking-state.json"
 printf '# 第1章 开端\n正文。\n' > "$T2/某书/正文/第001章_开端.md"
 printf '# 第2章 转折\n正文。\n' > "$T2/某书/正文/第002章_转折.md"
 sleep 1
@@ -75,7 +75,7 @@ rm -rf "$T2"
 
 # ⑤ 同章号改写/回炉：章号未超追踪，但正文 mtime 新于上下文 → 提醒提交 revision 事务
 T3="$(mktemp -d)"; make_book "$T3"
-printf '%s\n' '{"schema_version":4,"state_revision":0,"last_committed_chapter":2}' > "$T3/某书/追踪/_tracking-state.json"
+printf '%s\n' '{"schema_version":5,"state_revision":0,"last_committed_chapter":2}' > "$T3/某书/追踪/_tracking-state.json"
 printf '%s\n' '> 状态修订：0' '旧上下文' > "$T3/某书/追踪/上下文.md"
 sleep 1
 printf '# 第1章 开端\n正文。\n' > "$T3/某书/正文/第001章_开端.md"
@@ -88,7 +88,7 @@ rm -rf "$T3"
 T4="$(mktemp -d)"; make_book "$T4"
 printf '# 第55章 终章\n正文。\n' > "$T4/某书/正文/第055章_终章.md"
 sleep 1
-printf '%s\n' '{"schema_version":4,"state_revision":0,"last_committed_chapter":55,"foreshadow":{"F001":{"id":"F001","summary":"神秘信件","planted_chapter":1,"planned_resolution_chapter":null,"status":"已埋","importance":"高","updated_chapter":1}}}' > "$T4/某书/追踪/_tracking-state.json"
+printf '%s\n' '{"schema_version":5,"state_revision":0,"last_committed_chapter":55,"foreshadow":{"F001":{"id":"F001","summary":"神秘信件","planted_chapter":1,"planned_resolution_chapter":null,"status":"已埋","importance":"高","updated_chapter":1}}}' > "$T4/某书/追踪/_tracking-state.json"
 printf '%s\n' '> 状态修订：0' '上下文已更新' > "$T4/某书/追踪/上下文.md"
 out="$(run "$T4")"
 printf '%s' "$out" | grep -q '伏笔 F001' || { echo "FAIL: 伏笔超期未触发"; echo "$out" >&2; fails=$((fails+1)); }

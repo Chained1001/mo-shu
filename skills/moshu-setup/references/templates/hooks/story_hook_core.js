@@ -115,8 +115,8 @@ function trackingCheckpointIssue(book, requireState = false, expectedLastCommitt
   } catch {
     return `追踪/_tracking-state.json 无法解析；停止写正文并重新 /moshu-import，不能猜测或手补状态`
   }
-  if (!document || typeof document !== "object" || Array.isArray(document) || document.schema_version !== 4) {
-    return `追踪/_tracking-state.json 不是当前 schema_version=4；停止写正文并重新 /moshu-import，不保留旧结构兼容路径`
+  if (!document || typeof document !== "object" || Array.isArray(document) || document.schema_version !== 5) {
+    return `追踪/_tracking-state.json 不是当前 schema_version=5；停止写正文并重新 /moshu-import，不保留旧结构兼容路径`
   }
   if (!Number.isInteger(document.state_revision)) {
     return `追踪/_tracking-state.json 缺少整数 state_revision；停止写正文并重新 /moshu-import`
@@ -701,6 +701,8 @@ function proseBlockReason(root, absolute) {
     return `⛔ 写正文被拦截：${safeRelative(root, book)} 的${checkpointIssue}。`
   }
   if (exists) return null
+  // 注：主产物门（情绪模块/节奏缺失即拦）仅在 Write/Edit 面的 bash 守卫中生效；
+  // Bash 命令面是 best-effort 静态识别（UPGRADING 已声明），不在本核实现，两面门集不同是有意为之。
   // 欠账门（无状态）：写第 N 章（首建）前，上一章有未清毒句式且未标「去味:跳过」豁免时先清再写。
   // 判据现算自上一章文件本身，不落任何状态文件；找不到上一章/读取失败一律放行（宁可漏拦不可误伤）。
   const prevNum = Number(chapter) - 1

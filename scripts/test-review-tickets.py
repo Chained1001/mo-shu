@@ -141,6 +141,17 @@ class ReviewTicketsTests(unittest.TestCase):
         self.assertIn("review_token", result.stderr)
         self.assertEqual(self.ticket_files(), [])
 
+    def test_write_rejects_non_open_status(self) -> None:
+        # write 只接受 open：fixed/dismissed 必须走 resolve（批6 禁止事项 4，防绕过处置证据）
+        preclosed = json.loads(json.dumps(VALID_DOCUMENT, ensure_ascii=False))
+        preclosed["findings"][0]["status"] = "fixed"
+        result = self.run_tool(
+            ["write", "--project", str(self.project), "--input", str(self.write_input(preclosed))],
+            expect=2,
+        )
+        self.assertIn("status must be open", result.stderr)
+        self.assertEqual(self.ticket_files(), [])
+
     def test_resolve_is_open_to_fixed_only(self) -> None:
         self.run_tool(["write", "--project", str(self.project), "--input", str(self.write_input(VALID_DOCUMENT))])
         ticket = self.ticket_files()[0]

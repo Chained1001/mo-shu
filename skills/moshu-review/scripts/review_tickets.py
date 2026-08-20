@@ -113,6 +113,9 @@ def normalize_finding(value: object, index: int) -> dict[str, Any]:
     require(dimension in DIMENSIONS, f"findings[{index}].dimension must be one of {DIMENSIONS}")
     status = clean_text(finding.get("status", "open"), f"findings[{index}].status", max_bytes=24)
     require(status in STATUSES, f"findings[{index}].status must be one of {STATUSES}")
+    # write 只接受新建态：处置一律走 resolve（单向 open→fixed/dismissed），
+    # 禁止用 write 直接落 fixed/dismissed 绕过处置证据（批6 禁止事项 4）。
+    require(status == "open", f"findings[{index}].status must be open on write; use resolve to change status")
     return {
         "id": identifier,
         "severity": severity,
@@ -186,6 +189,11 @@ def write_command(project: Path, input_path: Path) -> Path:
 
 def resolve_command(project: Path, ticket_path: Path, identifier: str, status: str, note: str) -> Path:
     path = ticket_path.resolve()
+    # 审计-V3 RC1：--project 必须有归属约束（此前是装饰参数，可用无关目录处置真实工单）
+    require(
+        path.is_relative_to(tickets_dir(project).resolve()),
+        f"ticket {path.name} is not under project tickets dir {tickets_dir(project)}",
+    )
     document = read_json(path)
     root = document
     require(isinstance(root, dict) and isinstance(root.get("findings"), list), "ticket file is malformed")

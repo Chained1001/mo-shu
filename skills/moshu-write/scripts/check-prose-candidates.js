@@ -69,9 +69,10 @@ const SENTENCE_ANCHOR_PATTERNS = [
 ];
 const PARAGRAPH_ANCHOR_PATTERNS = [
   /段均字数[^0-9]{0,10}(\d{1,4})(?:\s*[-~至]\s*(\d{1,4}))?/,
-  /段落节奏[^0-9]{0,15}(\d{1,4})(?:\s*[-~至]\s*(\d{1,4}))?/,
+  // 注：不把「段落节奏」当锚点——moshu-style 模板该行填的是「段落平均句数」，
+  // 单位与段均字数不同，误配会产出永久假阳性（审计-V3 S2）。
 ];
-const DIALOG_ANCHOR_PATTERNS = [/对话[^0-9]{0,10}(\d{1,3})\s*%/];
+const DIALOG_ANCHOR_PATTERNS = [/对话行占比[^0-9]{0,6}(\d{1,3})\s*%/];
 
 function styleDriftCandidates(prose, styleText) {
   const candidates = [];
@@ -87,7 +88,7 @@ function styleDriftCandidates(prose, styleText) {
   const sentences = prose.split(/[。！？!?…]+/).filter((part) => countHan(part) > 0);
   const paragraphs = prose.split(/\n\s*\n/).filter((part) => countHan(part) > 0);
   const lines = prose.split("\n").filter((line) => line.trim() !== "");
-  const dialogLines = lines.filter((line) => /^["“]/.test(line.trim())).length;
+  const dialogLines = lines.filter((line) => /^["“「]/.test(line.trim())).length;
 
   const round1 = (value) => Math.round(value * 10) / 10;
   const outOfBand = (actual, anchor) =>

@@ -74,6 +74,38 @@ try {
   assert.ok(degradedOut.degraded.includes("gaps_unparsed"));
   assert.strictEqual(degradedOut.blocking_count, 0);
 
+  // 契约：moshu-style 模板逐字产出的文风文件必须能被解析出句长锚点
+  // （守护 S1：模板字段名与 check-prose-candidates.js 解析锚点对齐；改任何一侧字段名此用例必红）
+  const styleTemplate = path.join(tmpDir, "style-template.md");
+  fs.writeFileSync(
+    styleTemplate,
+    "# 某书 文风\n" +
+      "## 生成记录\n" +
+      "- 来源：本地文件\n" +
+      "- 抽样：第 1/50/120 章全文\n" +
+      "- 生成时间：2026-08-21\n" +
+      "- 文风可用：是\n" +
+      "## 整体语感\n" +
+      "- 句长分布：短<15字 66% / 中15-30 33% / 长>30 0% / ≥50字超长句 0% / 平均句长 12 字\n" +
+      "- 标点习惯：逗号 50% / 句号 30% / 感叹号 5% / 问号 5% / 破折号 0% / 省略号 0%\n" +
+      "- 段落节奏：段落平均句数 2.0（统计）+ 单段单动作为主\n",
+    "utf8"
+  );
+  const styled = run(["--prose", prose, "--gaps", gaps, "--style", styleTemplate, "--json"]);
+  assert.strictEqual(styled.status, 0, styled.stderr);
+  const styledOut = JSON.parse(styled.stdout);
+  assert.ok(
+    styledOut.candidates.some((candidate) => candidate.type === "style_drift" && candidate.metric === "avg_sentence_len"),
+    `按 moshu-style 模板生成的文风未解析出 avg_sentence_len 锚点: ${JSON.stringify(styledOut)}`
+  );
+  assert.ok(
+    !styledOut.candidates.some(
+      (candidate) => candidate.type === "style_drift" && candidate.metric === "avg_paragraph_chars" && candidate.baseline === "2-2"
+    ),
+    "段落平均句数被误当段均字数（S2 假阳性回归）"
+  );
+  assert.ok(!styledOut.degraded.includes("style_baseline_unparsed"), "句长锚点不得静默丢失");
+
   // 幂等：同输入跑两遍输出逐字节一致
   const first = run(["--prose", prose, "--gaps", gaps, "--json"]);
   const second = run(["--prose", prose, "--gaps", gaps, "--json"]);
