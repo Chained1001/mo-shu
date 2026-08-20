@@ -54,6 +54,8 @@ jobs:
         run: bash scripts/check-agent-template-rules.sh
       - name: Agent-template-rules regression
         run: python3 scripts/test-agent-template-rules.py
+      - name: Check eval scenarios (static, no LLM)
+        run: bash scripts/check-eval-scenarios.sh
       - name: Guard against bare python3 invocations
         run: bash scripts/check-python-invocation.sh
       - name: Guard hook locale safety (LC_ALL=C + no full-width char classes)
@@ -104,6 +106,8 @@ jobs:
         run: python3 scripts/test-tracking-commit.py
       - name: Review tickets regression
         run: python3 scripts/test-review-tickets.py
+      - name: Writing pipeline contract e2e
+        run: bash scripts/test-writing-pipeline.sh
       # Generate a GBK-class locale so the hook test's Part 2 runs end-to-end here,
       # not just on macOS. Best-effort: if it fails the test self-skips Part 2.
       - name: Generate zh_CN.GBK locale (Chinese Windows simulation)

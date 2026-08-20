@@ -23,6 +23,7 @@
 | `check-agents-version-sync.sh` + `check-agents-version-sync.py` | agents_version 一致性守卫：7 个 SKILL.md 中带数字的 `agents_version` 声明必须与 `moshu-setup/UPGRADING.md` 权威一致，防升级漏改导致误判降级 | CI；bump agents_version 时 |
 | `check-story-numbers.sh` + `check-story-numbers.py` | 叙述性 skill 计数守卫：README / README_EN / CONTRIBUTING / scripts-README / architecture 中「N 个 skill」「N skills」必须与 skills/ 实测数一致（CHANGELOG 排除——历史条目不可改） | CI；增删 skill 或改动上述文档数字后 |
 | `check-agent-template-rules.sh` + `check-agent-template-rules.py` | agent 模板纪律守卫：禁互引（格式同/同上/参照上文/见上文）、`agent-references/` 挂载点文件存在、共享纪律单副本（标题不得复制进模板） | CI；改 agent 模板或 agent-references 后 |
+| `check-eval-scenarios.sh` | 场景剧本静态校验（不跑 LLM）：3 剧本存在非空、各含断言节与 ≥3 条 `[机检]` 标记、引用脚本路径存在 | CI；改 evals/scenarios 或引用脚本后 |
 
 ## 测试回归（test-*）
 
@@ -52,6 +53,7 @@
 | `test-prose-candidates.js` | 正文候选类机检回归：正向（意象重复+登记信息差关键词命中）+ 反向（干净文本空候选）+ 降级（缺 style/gaps、坏格式）+ 幂等（同输入逐字节一致） | CI（调 moshu-write 的 check-prose-candidates.js） |
 | `test-review-tickets.py` | 审查工单回归：write 合法+幂等 / 坏枚举/重复 id/坏令牌拒 / resolve 单向流转 / list 过滤 / verify-token 相等与不等 | CI（调 moshu-review 的 review_tickets.py） |
 | `test-agent-template-rules.py` | 模板纪律守卫回归：正向（干净模板通过）+ 反向（互引句/挂载点缺失/复制纪律标题必须失败） | CI（调 check-agent-template-rules） |
+| `test-writing-pipeline.sh` | 零 LLM 管道契约 e2e：init→commit（伏笔+信息差）→check（含 suspension_warnings）→volume-report（重放 diff 空）→review_tickets write/resolve/list→check-prose-candidates（blocking_count=0），临时目录自清理 | CI；改任一管道脚本后 |
 
 ## 测试纪律
 
