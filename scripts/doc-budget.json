@@ -82,7 +82,7 @@
         },
         {
             "path": "skills/moshu-scan/SKILL.md",
-            "budget": 8900,
+            "budget": 3600,
             "why": "触发 /moshu-scan 时入口全量进上下文（审计-V3 G-3 登记：实测约 8.61K 去空白，是已登记 analyze 的 3.8 倍；Phase 1-5 流程内联，防继续膨胀）"
         },
         {

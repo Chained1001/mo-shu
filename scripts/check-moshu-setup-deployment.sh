@@ -171,11 +171,14 @@ done < <(find "$HOOKS_DIR" -maxdepth 1 \( -name '*.sh' -o -name '*.js' \) -type 
 echo "  OK TS1b session-start self-check lists all hook scripts and node cores"
 
 # TS2 — Deployment checklist/manifest parseability
+# （审计-V3 D2：清单表与 Step 1-7 兜底指引已下沉 references/deploy-manual.md，
+#   断言目标随架构演进指向该文件；SKILL.md 保留递归复制与 sentinel 字段块锚点）
+MANUAL="$SKILL_DIR/references/deploy-manual.md"
 for header in 'Source path' 'Target path' 'Owner class' 'Merge mode' 'Validation check'; do
-  assert_grep "$header" "$SKILL_FILE" "deployment manifest missing column: $header"
+  assert_grep "$header" "$MANUAL" "deployment manifest missing column: $header"
 done
 for group in 'templates/hooks/' 'templates/rules' 'templates/agents' 'agent-references' 'settings-hooks\.json' 'CLAUDE\.md' '\.story-deployed'; do
-  assert_grep "$group" "$SKILL_FILE" "deployment manifest missing asset group: $group"
+  assert_grep "$group" "$MANUAL" "deployment manifest missing asset group: $group"
 done
 assert_grep 'references_dir' "$SKILL_FILE" "sentinel references_dir must be documented"
 assert_grep 'resolver_strategy' "$SKILL_FILE" "sentinel resolver_strategy must be documented"
