@@ -86,6 +86,8 @@ jobs:
         run: bash scripts/test-outline-copy.sh
       - name: Degeneration detector regression
         run: bash scripts/test-degeneration.sh
+      - name: Prose candidates regression
+        run: node scripts/test-prose-candidates.js
       - name: Prose backstop hook regression
         run: bash scripts/test-prose-backstop-hook.sh
       - name: Story continuity backstop regression

@@ -100,7 +100,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-shared-files.sh` — 共享 runtime 资产清单 + 跨 skill reference 副本一致性
 - `scripts/check-moshu-setup-deployment.sh` — moshu-setup 部署完整性
 - `scripts/check-claude-adapter.sh` — Claude marketplace 与 skill 映射检查
-- `scripts/check-behavior-contracts.sh` — 关键行为约束静态守卫（裸调用停靠/细纲优先/S1-S2 过桥/追踪事务等 8 条契约，清单见 `scripts/behavior-contracts.json`）
+- `scripts/check-behavior-contracts.sh` — 关键行为约束静态守卫（裸调用停靠/细纲优先/S1-S2 过桥/追踪事务/候选永不拦截等 10 条契约，清单见 `scripts/behavior-contracts.json`）
 - `scripts/check-agents-version-sync.sh` — agents_version 一致性守卫（7 个 SKILL.md 的声明与 `moshu-setup/UPGRADING.md` 权威一致）
 - `scripts/check-story-numbers.sh` — 叙述性 skill 计数守卫（README/README_EN/CONTRIBUTING/scripts-README/architecture 中「N 个 skill」必须与 skills/ 实测一致；CHANGELOG 排除）
 - 采集脚本 `node --check` 语法校验
@@ -140,6 +140,7 @@ bash scripts/check-agents-version-sync.sh
 python3 scripts/test-agents-version-sync.py
 bash scripts/check-story-numbers.sh
 python3 scripts/test-story-numbers.py
+node scripts/test-prose-candidates.js
 bash scripts/check-python-invocation.sh
 bash scripts/check-hook-locale-safety.sh
 bash scripts/test-hook-encoding-portable.sh

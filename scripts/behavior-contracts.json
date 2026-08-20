@@ -55,6 +55,12 @@
       "path": "skills/moshu-write/SKILL.md",
       "must_contain": "脚本做确定性的",
       "rationale": "三层分工宪法：脚本做确定性/ AI 做语义/ 作者做品味，防越权与遗漏"
+    },
+    {
+      "id": "candidate-checks-never-block",
+      "path": "skills/moshu-write/references/workflow-daily.md",
+      "must_contain": "候选永不拦截",
+      "rationale": "候选类机检（check-prose-candidates）只呈报不阻断（总纲原则 2）"
     }
   ]
 }

@@ -22,7 +22,7 @@
 | 文件 | 改什么 | 注意点 |
 |---|---|---|
 | `evals/scenarios/日更一章/README.md`（新，**必须**） | 步骤（日更流程一轮）→断言（tracking check 绿、续写状态卡 7 栏、信息差/悬置输出存在、候选机检跑过且未拦截、章文件非空） | 剧本=给真人带 agent 走查用；断言区分"机检项/人工项"两栏 |
-| `evals/scenarios/开书/README.md`（新，**可裁**） | 剧本：前置（deploy+scan/analyze 可选）→步骤（/moshu-write 开书 Phase 1-3）→断言（`大纲/大纲.md`、`卷纲_第1卷.md`、`追踪/` 初始化、next_step 判 S3/S4） | 总纲 §4.3 弹性项；若裁，check-eval-scenarios 只校验保留项；含 next_step 断言（批 4 跳过时剔除该断言） |
+| `evals/scenarios/开书/README.md`（新，**可裁**） | 剧本：前置（deploy+scan/analyze 可选）→步骤（/moshu-write 开书 Phase 1-3）→断言（`大纲/大纲.md`、`卷纲_第1卷.md`、`追踪/` 初始化） | 总纲 §4.3 弹性项；若裁，check-eval-scenarios 只校验保留项；next_step 断言已按批 4 跳过剔除（2026-08-20 作者决策） |
 | `evals/scenarios/审查工单/README.md`（新，**可裁**） | 步骤（/moshu-review 一轮→工单落盘→/moshu-write 处置→复审）→断言（tickets JSON 过 review_tickets list、open→fixed 流转、令牌回传、review-log 未被破坏） | 总纲 §4.3 弹性项；若裁同上 |
 | `scripts/check-eval-scenarios.sh`（新） | 静态校验（不跑 LLM）：3 个 README 存在且非空；各含"断言"节与 ≥3 条机检项标记（`[机检]` 前缀）；剧本内引用的脚本路径存在 | 移植"测试守护 evals 存在" |
 | `scripts/test-writing-pipeline.sh`（新） | 零 LLM 管道契约 e2e，见 §4 | fixture 全在临时目录，自清理 |
@@ -40,7 +40,6 @@
    - `volume-report --from-chapter 1 --to-chapter 1` → `追踪/卷报告_第1-1章.md` 存在且非空；重跑 diff 为空（确定性）；
    - `review_tickets.py write`（fixture findings JSON：blocking 1 条+candidate 1 条）→ 工单文件生成；`resolve --id T001 --status fixed` → 再 `list --status open` 只剩 candidate；
    - `check-prose-candidates.js --prose fixture正文.md` → 退出 0、blocking_count=0；
-   - `next_step.py --project .` → step=="S3"（第 2 章无细纲）。**批 4 被跳过时剔除本步**（总纲 §4.3）。
 3. 全部通过退出 0；任一步失败打印步骤名与非零退出。
 4. 结束清理临时目录（trap）。
 
