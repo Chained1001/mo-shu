@@ -9,8 +9,6 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 
 ## 路由表
 
-下表以 slash command 展示。
-
 | 用户意图 | 关键词示例 | 路由到 |
 |---|---|---|
 | 写长篇 | 开书、写大纲、长篇、连载、回炉、重写第X章 | `/moshu-write` |
@@ -33,7 +31,14 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 
 ## 状态判定（"继续 / 接下来"入口）
 
-用户说"继续""接下来写什么""现在该干嘛"或请求模糊时，按以下顺序判定（**命中即停**，不继续往下问）。
+用户说"继续""接下来写什么""现在该干嘛"或请求模糊时，**先跑确定性判定脚本**（按解释器探测形态调用）：
+
+```bash
+for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
+"$PYBIN" {moshu skill 根}/scripts/next_step.py --project {项目根}
+```
+
+脚本返回单行 JSON DTO（`step` / `interrupt` / `evidence` / `last_committed_chapter` / `next_action` / `suggested_skill`），按返回 DTO 行动——不再逐条读下方判定表。脚本不可用（Python 缺失/项目根不存在）时回退下表，判定语义与脚本一致（**命中即停**，不继续往下问）。
 
 **优先中断项（与序位无关，命中即引导并停）**：① `拆文库/*/_progress.md` 最终状态非 completed → `/moshu-analyze` 续跑（断点恢复）；② `{项目根}/.moshu-review/` 下存在未完成审查状态（state 文件）→ `/moshu-review` 续批。这两项是"从进行中状态插入的中断"，先于下方序位检查（与 `docs/architecture.md` §3 的虚线边语义一致）。
 
@@ -45,50 +50,36 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 | 4 | 有正文但下一章无细纲 | 补纲（`/moshu-write` 中途补纲/扩纲） |
 | 5 | 下一章有细纲未写 | 日更/写下一章（`/moshu-write`） |
 | 6 | 最新定稿章（追踪 last_committed_chapter）= 当前卷卷纲「章节范围」上界 | 卷复盘（`/moshu-write`，四步：伏笔清账/卷摘要/下卷规划/契约修订候选） |
-| 7 | 其余 | 询问意图（用下方路由表） |
+| 7 | 其余 | 询问意图（用路由表） |
 
 判定依据全部来自文件系统（.story-deployed / 拆文库 `_progress.md` / 细纲章号 vs 追踪 last_committed_chapter / 卷纲末章 / `.moshu-review/` 状态文件），不依赖会话记忆。会话启动时 session-start hook 已注入近况（写作进度/当前位置/未完成拆文），本判定在其之上给出"下一步"。
 
-### 导入续写顺序
-
-用户问"导入续写先 setup 还是 import"时，直接回答：**推荐先 `/moshu-setup`，新开/刷新会话后 `/moshu-import`，最后 `/moshu-write 日更` 或 `/moshu-write 写第N章`**。如果用户已经直接触发 `/moshu-import`，按 moshu-import 自带环境检测继续：未 setup 时让用户选择先去 setup 或继续串行导入。
+> **导入续写顺序**：用户问"导入续写先 setup 还是 import"时直接回答——**推荐先 `/moshu-setup`，新开/刷新会话后 `/moshu-import`，最后 `/moshu-write 日更` 或 `/moshu-write 写第N章`**；用户已直接触发 `/moshu-import` 时按其自带环境检测继续。
 
 ## Dashboard 工作台
 
-用户执行 `/moshu dashboard`，或明确说“打开工作台 / 看项目
-文件”时，直接启动随本 skill 分发的本地 Dashboard，不再转发到其他 skill：
+用户执行 `/moshu dashboard` 或明确说"打开工作台 / 看项目文件"时，直接启动随本 skill 分发的本地 Dashboard，不再转发到其他 skill：
 
-1. 把**当前工作目录**作为默认工作区；用户明确给出目录时改用该目录。目录必须存在。
-2. 从当前已加载的 `moshu` skill 目录定位 `scripts/dashboard-server.mjs`，不要硬编码仓库路径、
-   全局 skill 路径或用户主目录。
+1. 把**当前工作目录**作为默认工作区；用户明确给出目录时改用该目录（目录必须存在）。
+2. 从当前已加载的 `moshu` skill 目录定位 `scripts/dashboard-server.mjs`，不要硬编码仓库/全局 skill/用户主目录路径。
 3. 检查 `node` 可用后，以长运行进程执行：
 
    ```bash
    node "<moshu-skill-dir>/scripts/dashboard-server.mjs" --root "<workspace>" --open
    ```
 
-4. 等待输出出现“本机地址”，把完整 URL 回给用户。工具支持后台进程/PTY 时让服务保持运行；
-   无法自动拉起浏览器不算失败，仍返回可点击 URL。
-5. Dashboard 默认只监听 `127.0.0.1`。不要主动增加 `--allow-network`，不要把工作区暴露到
-   局域网或公网。
+4. 等待输出出现"本机地址"，把完整 URL 回给用户；无法自动拉起浏览器不算失败，仍返回可点击 URL。
+5. Dashboard 默认只监听 `127.0.0.1`。不要主动增加 `--allow-network`，不要把工作区暴露到局域网或公网。
+6. 停止服务时终止对应的 Node 长运行进程即可。用户只问用法时不替他启动，给出 `/moshu dashboard` 入口。
 
-工作台会识别标准 `拆文库/{书名}/`，兼容存量 `拆文库-{书名}/`。写作项目识别同时支持：
-
-- 长篇目录结构：目录内含 `正文/`、`大纲/`、`设定/` 或 `追踪/` 任一普通子目录。
-
-符号链接不作为项目标记，只有单个 `正文.md` 的普通资料目录也不会被误认。浏览器可编辑
-`.md`、`.txt`、`.json`、`.yaml`、`.yml`、`.toml`，保存或确认删除前做内容版本校验（sha256），检测到外部修改时提示重新载入，防止
-误操作外部更新。
-
-停止服务时终止对应的 Node 长运行进程即可。若用户只问用法，不要替他启动；给出
-`/moshu dashboard` 对应入口。
+项目识别规则、可编辑扩展名与冲突保护细节见 [references/dashboard-guide.md](references/dashboard-guide.md)。
 
 ## 路由流程
 
 1. 分析用户请求，提取意图关键词
-2. 匹配上表，找到对应的 skill
-3. 如果能明确匹配，直接调用对应 skill（可用 `Skill("skill-name")` 或 slash command）
-4. 如果无法匹配，询问用户想做什么（从上表中选择）
+2. 匹配路由表，找到对应的 skill
+3. 能明确匹配 → 直接调用对应 skill（`Skill("skill-name")` 或 slash command）
+4. 无法匹配 → 询问用户想做什么（从路由表中选择）
 
 ## 查询降级
 
@@ -103,17 +94,15 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 
 路由前先检查当前项目状态：
 
-- **无项目目录**（没有包含 `追踪/` 或 `设定/` 的书名目录）：
-  - 如果用户要写作，下一步是先运行 `/moshu-setup` 初始化环境
-  - 如果用户要扫榜/拆文，直接路由
-- **已有项目**：检查 `.story-deployed` 标记，如未部署则先运行 `/moshu-setup`
+- **无项目目录**（没有包含 `追踪/` 或 `设定/` 的书名目录）：用户要写作 → 下一步先 `/moshu-setup`；要扫榜/拆文 → 直接路由。
+- **已有项目**：检查 `.story-deployed` 标记，未部署则先 `/moshu-setup`。
 
 ## 多书切换
 
 用户想切换或查看在写的书时（一个项目可同时有多本）：
 
-1. 在项目根查找所有书目录：包含 `追踪/` 或 `设定/` 子目录的目录（含 `长篇/` 下的子目录）。
-2. 列出书名，并标出当前 `.active-book` 指向的那本。
+1. 在项目根查找所有书目录：包含 `追踪/` 或 `设定/` 子目录的目录（含 `长篇/` 下的子目录；限项目下 4 层，跳过隐藏目录与 `node_modules`）。
+2. 列出书名，标出当前 `.active-book` 指向的那本。
 3. 让用户选择，把所选书的相对路径写入项目根 `.active-book`（覆盖原内容）。
 4. 只发现一本时直接确认为活跃书，无需询问。
 
@@ -122,7 +111,7 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 用户问"有没有新版本""检查更新""升级"时执行。**只通知，更不更新由用户定，不自动安装。**
 
 1. **当前版本**：读本 skill 同目录的 `VERSION` 文件；缺失则视为未知。
-2. **最新版本**：`curl -fsS --max-time 5 https://api.github.com/repos/Chained1001/mo-shu/releases/latest` 取 `.tag_name`（jq 或 grep）。查不到 → 告知"暂时拉不到最新版本，可手动看 [Releases](https://github.com/Chained1001/mo-shu/releases)"，不报错。
+2. **最新版本**：`curl -fsS --max-time 5 https://api.github.com/repos/Chained1001/mo-shu/releases/latest` 取 `.tag_name`。查不到 → 告知"暂时拉不到最新版本，可手动看 [Releases](https://github.com/Chained1001/mo-shu/releases)"，不报错。
 3. **比较**：去掉 `v` 前缀按语义版本比（major.minor.patch）。
 4. **告知**：
    - 已最新 → 「已是最新版 vX.Y.Z」。

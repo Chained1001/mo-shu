@@ -80,6 +80,8 @@ flowchart TD
     S3 -.->|未完成审查| R[moshu-review 续批]
 ```
 
+> S0-S6 由 `skills/moshu/scripts/next_step.py` 只读判定（输出 JSON DTO，判定依据即本图文件证据）；图中的优先中断边（拆文续跑/审查续批）由脚本以 `step=INTERRUPT` 输出。
+
 ## 4. 分层架构
 
 ```mermaid
