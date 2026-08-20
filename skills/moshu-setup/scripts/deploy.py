@@ -9,7 +9,7 @@ AskUserQuestion 与结果报告，不再逐条手写 cp/chmod（三层分工：�
 用法（按仓库解释器探测形态调用，Windows 禁止裸 python3）:
   for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
   "$PYBIN" deploy.py --project {项目目录} --name {项目名} [--book {书名}]
-                     [--agents-version 29] [--setup-version 1.3.0] [--dry-run]
+                     [--agents-version 30] [--setup-version 1.3.0] [--dry-run]
   "$PYBIN" deploy.py --verify {项目目录}
 
 行为:
@@ -51,7 +51,7 @@ MANAGED_SECTIONS = ('Skill 路由表', '文件结构', '协作规则', '作者�
                     'Compact 后恢复上下文')
 SECTION_RE = re.compile(r'^##\s+(.+?)\s*$', re.M)
 
-DEFAULT_AGENTS_VERSION = '29'
+DEFAULT_AGENTS_VERSION = '30'
 DEFAULT_SETUP_VERSION = '1.3.0'
 SENTINEL_FIELDS = ('deployed_at', 'agents_version', 'setup_skill_version', 'target_cli',
                    'resolver_strategy', 'references_dir')
@@ -178,7 +178,7 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
                     shutil.copy2(f, ref_dst / f.name)
         except OSError as e:
             fatal.append(f'agent-references 复制失败: {e}')
-    missing = [f.name for f in AGENT_REFS.iterdir() if f.is_file() and not (ref_dst / f.name).exists()]
+    missing = [str(f.relative_to(AGENT_REFS)) for f in AGENT_REFS.rglob('*') if f.is_file() and not (ref_dst / f.relative_to(AGENT_REFS)).exists()]
     logs.append(f'agent-references: {"同路径跳过复制" if same_path else "已复制"} {len(list(AGENT_REFS.iterdir()))} 项' +
                 (f' | 缺失: {missing}' if missing else ' | 全部在位'))
 
@@ -276,8 +276,8 @@ def verify(project: Path) -> list[str]:
     check('agents 7 个', len(list(agents.glob('*.md'))) == 7)
     ref_dst = project / '.claude' / 'skills' / 'moshu-setup' / 'references' / 'agent-references'
     same_path = os.path.realpath(AGENT_REFS) == os.path.realpath(ref_dst)
-    ref_ok = same_path or all((ref_dst / f.name).exists() for f in AGENT_REFS.iterdir() if f.is_file())
-    check('agent-references 在位', ref_ok)
+    ref_ok = same_path or all((ref_dst / f.relative_to(AGENT_REFS)).exists() for f in AGENT_REFS.rglob('*') if f.is_file())
+    check('agent-references 在位（含 genre-prose-cards 子卡）', ref_ok)
 
     # settings：JSON 有效 + 模板命令必须各一份
     try:
@@ -357,8 +357,13 @@ def main():
             print('  4. 修复后重新运行 deploy.py deploy，成功前不会写入 .story-deployed。', file=sys.stderr)
             sys.exit(1)
     else:
-        for line in verify(project):
+        lines = verify(project)
+        failed = any('HAS FAILURE' in line for line in lines)
+        for line in lines:
             print(line)
+        if failed:
+            # 审计-V3 PM1：验证失败必须以非零退出码暴露（此前恒 0，脚本/CI 包装会把失败当通过）
+            sys.exit(1)
 
 
 if __name__ == '__main__':

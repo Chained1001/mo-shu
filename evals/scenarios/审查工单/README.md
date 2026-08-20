@@ -19,7 +19,7 @@
 | `review_tickets.py list --project {项目根}` 输出含工单文件（`tickets_*.json`）且 findings 非空 | 过：有工单且 findings 非空；不过：无工单或空 | [机检] |
 | `review_tickets.py list --status open` 处置后只剩 candidate（blocking 已 fixed/dismissed） | 过：open 仅剩 candidate；不过：blocking 仍 open | [机检] |
 | `review_tickets.py resolve` 后工单 JSON 中该 id 的 `status` 为 `fixed`/`dismissed` 且 `status_note` 非空（open→fixed/dismissed 单向流转） | 过：状态与证据齐备；不过：状态非法或 note 空 | [机检] |
-| reviewer 报告首行逐字回传 `审稿令牌：<token>`（`review_tickets.py verify-token` 相等） | 过：令牌比对通过；不过：不等或缺失 | [机检] |
+| reviewer 报告首行逐字回传 `审稿令牌：<token>`（人工把报告首行令牌串抄给 `review_tickets.py verify-token --ticket <工单> --token <该串>`） | 过：退 0；不过：退 2 或报告首行为 `审稿令牌：缺失` | 人工项 |
 | `.moshu-review/review-log` 仍为 `{章节范围} \| {问题} \| {建议}` 行式（契约未破坏） | 过：行式格式未变；不过：格式被改 | [机检] |
 | 处置证据与工单一致（作者确认 fixed 项真的修好） | 过：证据成立；不过：名不副实 | 人工项 |
 | 复审只验 open 项（未重复报已 fixed 项） | 过：复审聚焦 open；不过：重复纠缠已处置项 | 人工项 |

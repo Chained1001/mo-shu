@@ -13,7 +13,7 @@ description: "Use this skill when you need to control a Chrome browser via CDP (
 - Node.js 20+
 - `agent-browser` 已安装：`npm install -g agent-browser`
 
-> ⚠️ **首次启动会 kill 用户的常规 Chrome。** 在启动前必须征求用户同意（见下方"启动流程"），否则用户可能丢失未保存的标签页/草稿。
+> ⚠️ **首次启动会 kill 用户的常规 Chrome。** 在启动前必须征求用户同意（见下方"启动流程"），否则用户可能丢失未保存的标签页/草稿。**另需一并告知**：启动会把当前 Chrome profile（含 cookie、保存的密码与自动填充数据）复制一份到 `~/chrome-debug-profile`，用于自动化会话复用登录态；这是登录态复用的实际机制，不是无副作用的只读操作。
 
 ---
 
@@ -122,8 +122,9 @@ agent-browser --cdp 9222 type "<sel>" "<text>"
   - macOS / Linux：`pgrep -af chrome-debug-profile`
   - Windows：`Get-CimInstance Win32_Process -Filter "Name='chrome.exe'" | Where-Object { $_.CommandLine -like '*chrome-debug-profile*' } | Select-Object ProcessId,CommandLine`
   拿到 PID 后 `kill -9 {PID}` / `taskkill /F /PID {PID}`。核验不出归属时停止，**手工清理不得按 Chrome 可执行文件名批量结束进程**——那会连带杀掉用户的日常 Chrome。
-  例外：`setup-cdp-chrome.js --reset` 内部确实会做一次按可执行名的清理，它属于本 skill 自带的、需 `--yes` 显式同意的启动流程；手工排障不要复制该做法。
+  例外：`setup-cdp-chrome.js` 的启动流程（任何需要先关闭现有 Chrome 的分支，含 `--reset`）会做一次按可执行名的清理，它属于本 skill 自带的、需 `--yes` 显式同意的启动流程；手工排障不要复制该做法。
 - 登录态失效：`node {SKILL_DIR}/scripts/setup-cdp-chrome.js 9222 --reset --yes`（注意 `--yes` 同样需要先问用户）。
+- 不再需要浏览器自动化时，删除 `~/chrome-debug-profile` 可清除启动时复制的登录态副本（该目录只在下次启动时重新生成；删除不影响用户日常 Chrome 数据）。
 
 ---
 

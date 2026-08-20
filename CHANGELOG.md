@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.4.0（2026-08-21）
+
+> 审计-V3 全量体检与整改：10 个 skill 逐份审计（`docs/审计-V3/`），2 条阻断级 + 45 条需修 + 48 条候选按总计划分 A→G 批修复。重点：审稿令牌注入链（批 6 防编造机制此前恒空转）、文风产物字段口径（与候选机检解析器错配，静默失效）、**部署 hook 追踪 schema 钉死 v4 与状态 v5 脱节（批 3a 遗漏面，会拦死写正文）**、多卷重起书三方死锁、番茄/晋江数据稀疏标记缺失、工单 write 旁路与跨文件去重。
+
+### 阻断级修复
+
+- **审稿令牌闭环（RB1）**：`review-workflow.md` 补令牌生成、4 个 spawn prompt 首行注入、采纳前逐字比对；工单落盘后 `verify-token` 确定性复核；write 强制 `status: open`（RM1，堵 bypass）；复审轮只重落 open 项（RB2）。
+- **文风字段口径（S1/S2）**：`moshu-style` 模板「平均 N 字」→「平均句长 N 字」（一处修两个消费方）；候选机检解析器删段落节奏误认、对话正则收紧并补 `「`；`test-prose-candidates.js` 增模板口径契约用例永久锁住。
+- **hook schema 脱节（施工中新发现）**：`story_hook_core.js` 追踪 schema 校验 4→5；`test-story-continuity.sh`/`test-hook-encoding-portable.sh`/`check-moshu-setup-deployment.sh` fixture 同步。
+
+### 需修级修复（按 skill）
+
+- **moshu-write**：日更事务补 `information_gap_changes` 登记（W1）、候选机检进单章收尾（W2）、批前查 open 工单（W3）。
+- **moshu-setup**：`deploy.py verify` 失败非零退出（PM1）+ `rglob` 纳入 32 张题材子卡（PM2）+ 3 模板断句修复（PM3）+ hook 头注四类门（PM4①②）+ 新增 `test-deploy.py`（PM6）+ `emotional-methods.md` 收敛单副本进 shared-assets（PM9）。
+- **moshu-import**：写死 `agents_version: 27` 门禁改相对表述（IM1）；质量检查空节填三条判据（IM2）；init 信息差登记指示（IM3）；三处产物清单补 `信息差.md`（IM4）；悬置预警导入语义说明（IM5）；待补项加信息差/创意约束表（IM6）。
+- **moshu-scan**：番茄/晋江补 `[数据稀疏]`（SM1）；番茄 partial 语义（SM2）；5 处 CDP 路径注释（SM3+N1）；题材段位恒定（SM5）；scraper 清单对齐式断言（SC5）。
+- **moshu-analyze**：`chapter_boundary.py --renumber-volumes` 解多卷死锁（AM1）；情节点下限进硬检查（AM2）；置信度自造常数改档位（AM3）。
+- **moshu**：状态判定序 3/8 提为优先中断项（M1）；`blob/master` 死链（M2）；书目录判据统一（M4）；Fallback 措辞消歧（M5）。
+- **moshu-cdp**：profile 拷贝范围披露 + 清理指引（N2）；按可执行名清理范围修正（N3）。
+- **moshu-deslop**：豁免标记处置指示（DM1）；对话行 tier1 降级例外三处（DM2）；轮次服从统一阀门（DM3）。
+- **moshu-review**：信息差权威源/事务字段/悬置呈报/卷报告四接线（RM2）；总纲工单术语勘误（RM3）；eval 令牌断言改人工项（RM4）；`resolve` 归属校验（RC1）。
+- **moshu-style**：explorer 两级检查改正查（S5）→ `agents_version` **29→30**（7 个 SKILL.md + UPGRADING + deploy.py + session-start + current-contract 全链）。
+
+### 仓库级
+
+- marketplace 版本对齐 SKILL.md（1.2.0/1.2.0/1.3.0 + metadata 1.3.0）并给 `check-claude-adapter.sh` 加版本断言（G1）；`moshu-style` 补 README×2/architecture/CONTRIBUTING 索引（G2）；总纲术语表过期数字勘误（G7）；`check-agents-version-sync.py` 扫描面扩到 `skills/**/*.md`；doc-budget 四个新入口登记（G-3）。
+
 ## v1.3.0（2026-08-20）
 
 > V2 收官版：审查工单闭环 + 模板 Prompt 纪律 + 场景 eval 与管道契约 + 终检发布（v1.2.0 段批 3-5 与 v1.3.0 段批 6-9 全部合入）。

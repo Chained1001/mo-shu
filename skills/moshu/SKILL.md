@@ -13,11 +13,11 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 
 | 用户意图 | 关键词示例 | 路由到 |
 |---|---|---|
-| 写长篇 | 开书、写大纲、长篇、连载 | `/moshu-write` |
-| 长篇拆文 | 拆文、分析这本书、黄金三章 | `/moshu-analyze` |
-| 长篇扫榜 | 长篇排行、什么火、起点/番茄/晋江 | `/moshu-scan` |
+| 写长篇 | 开书、写大纲、长篇、连载、回炉、重写第X章 | `/moshu-write` |
+| 长篇拆文 | 拆文、分析这本书、黄金三章、深度拆解 | `/moshu-analyze` |
+| 长篇扫榜 | 长篇排行、什么火、起点/番茄/晋江/七猫 | `/moshu-scan` |
 | 选题决策 | 写什么能爆、帮我选题、选题方向 | `/moshu-scan` |
-| 去 AI 味 | 去 AI 味、太 AI、去味 | `/moshu-deslop` |
+| 去AI味 | 去AI味、太 AI、去味 | `/moshu-deslop` |
 | 审查稿件 | 审查、审稿、帮我审一下、一致性检查、看看有没有问题 | `/moshu-review` |
 | 环境部署 | 准备写书、搭环境、初始化 | `/moshu-setup` |
 | 浏览器操控 | 浏览器、抓取、登录态 | `/moshu-cdp` |
@@ -33,19 +33,19 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 
 ## 状态判定（"继续 / 接下来"入口）
 
-用户说"继续""接下来写什么""现在该干嘛"或请求模糊时，按以下顺序判定（**命中即停**，不继续往下问）：
+用户说"继续""接下来写什么""现在该干嘛"或请求模糊时，按以下顺序判定（**命中即停**，不继续往下问）。
+
+**优先中断项（与序位无关，命中即引导并停）**：① `拆文库/*/_progress.md` 最终状态非 completed → `/moshu-analyze` 续跑（断点恢复）；② `{项目根}/.moshu-review/` 下存在未完成审查状态（state 文件）→ `/moshu-review` 续批。这两项是"从进行中状态插入的中断"，先于下方序位检查（与 `docs/architecture.md` §3 的虚线边语义一致）。
 
 | 序 | 判定条件（文件证据） | 引导 |
 |---|---|---|
 | 1 | 无 `.story-deployed`（未部署） | `/moshu-setup` |
-| 2 | 无书名目录（无含 `追踪/` 的项目目录） | 开书引导（或先扫榜/拆文/选题） |
-| 3 | `拆文库/*/_progress.md` 存在且最终状态非 completed | `/moshu-analyze` 续跑（断点恢复） |
-| 4 | 有书但无 `正文/` | 开书 Phase 1-3（`/moshu-write`） |
-| 5 | 有正文但下一章无细纲 | 补纲（`/moshu-write` 中途补纲/扩纲） |
-| 6 | 下一章有细纲未写 | 日更/写下一章（`/moshu-write`） |
-| 7 | 最新定稿章（追踪 last_committed_chapter）= 当前卷卷纲「章节范围」上界 | 卷复盘（`/moshu-write`，四步：伏笔清账/卷摘要/下卷规划/契约修订候选） |
-| 8 | `{项目根}/.moshu-review/` 下存在未完成审查状态（state 文件） | `/moshu-review` 续批 |
-| 9 | 其余 | 询问意图（用下方路由表） |
+| 2 | 无书名目录（无含 `追踪/` 或 `设定/` 的项目目录） | 开书引导（或先扫榜/拆文/选题） |
+| 3 | 有书但无 `正文/` | 开书 Phase 1-3（`/moshu-write`） |
+| 4 | 有正文但下一章无细纲 | 补纲（`/moshu-write` 中途补纲/扩纲） |
+| 5 | 下一章有细纲未写 | 日更/写下一章（`/moshu-write`） |
+| 6 | 最新定稿章（追踪 last_committed_chapter）= 当前卷卷纲「章节范围」上界 | 卷复盘（`/moshu-write`，四步：伏笔清账/卷摘要/下卷规划/契约修订候选） |
+| 7 | 其余 | 询问意图（用下方路由表） |
 
 判定依据全部来自文件系统（.story-deployed / 拆文库 `_progress.md` / 细纲章号 vs 追踪 last_committed_chapter / 卷纲末章 / `.moshu-review/` 状态文件），不依赖会话记忆。会话启动时 session-start hook 已注入近况（写作进度/当前位置/未完成拆文），本判定在其之上给出"下一步"。
 
@@ -92,7 +92,7 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 
 ## 查询降级
 
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 29` 不一致时（标记缺失、字段缺失/非整数、小于或大于 29）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 29）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 29 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 30` 不一致时（标记缺失、字段缺失/非整数、小于或大于 30）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 30）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 30 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`（**注意**：下方「查询降级」的目标态是 `-> direct lookup`，两处措辞不同是有意的）。
 
 「查故事资料」「查资料」走 agent 前先做轻量可用性检查（路由只做这一层，不承担全局部署策略）：当前不在子代理上下文、Agent/Task 工具可用、且 `.claude/agents/{moshu-explorer|moshu-researcher}.md` 存在 → 可尝试 spawn。任一不满足，则降级，不硬失败：
 
@@ -126,6 +126,6 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 3. **比较**：去掉 `v` 前缀按语义版本比（major.minor.patch）。
 4. **告知**：
    - 已最新 → 「已是最新版 vX.Y.Z」。
-   - 有新版 → 列出 当前 vA → 最新 vB + [Releases](https://github.com/Chained1001/mo-shu/releases)/[CHANGELOG](https://github.com/Chained1001/mo-shu/blob/master/CHANGELOG.md)（能拿到 release notes 就附本次要点），再用 AskUserQuestion 问「现在更新吗？」：
+   - 有新版 → 列出 当前 vA → 最新 vB + [Releases](https://github.com/Chained1001/mo-shu/releases)/[CHANGELOG](https://github.com/Chained1001/mo-shu/blob/main/CHANGELOG.md)（能拿到 release notes 就附本次要点），再用 AskUserQuestion 问「现在更新吗？」：
      - 选更新 → 跑 `npx skills add Chained1001/mo-shu -y -g`（`-g` 全局，去掉则只更当前目录）；完成后提示：已部署过的项目在项目根重跑 `/moshu-setup` 同步 hooks/agents/references，并**新开一个会话**让 agents 重新注册。
      - 选先不 → 不动，告知随时可再来。

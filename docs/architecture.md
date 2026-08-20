@@ -14,6 +14,7 @@ flowchart LR
     R -->|写作| Write[moshu-write]
     R -->|导入| Import[moshu-import]
     R -->|去 AI 味| Deslop[moshu-deslop]
+    R -->|学文风| Style[moshu-style]
     R -->|审查| Review[moshu-review]
     R -->|环境部署| Setup[moshu-setup]
     R -->|浏览器 CDP| CDP[moshu-cdp]
@@ -30,6 +31,8 @@ flowchart LR
     Import -->|重建| Project[写作项目]
     Scan -->|产出| Decision[选题决策.md]
     Decision --> Write
+    Style -->|产出| StyleLib[文风库]
+    StyleLib --> Write
 
     Write --> Project
     Review --> Project

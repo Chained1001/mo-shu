@@ -14,7 +14,7 @@
  *   node qimao-rank-scraper.js --channel all --type all         # 全部采集
  *
  * 前置：
- *   node {SKILL_DIR}/moshu-cdp/scripts/setup-cdp-chrome.js 9222
+ *   node <moshu-cdp skill ?>/scripts/setup-cdp-chrome.js 9222
  */
 
 const fs = require("fs");

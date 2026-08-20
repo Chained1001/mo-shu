@@ -91,6 +91,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-analyze` | `/moshu-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
 | `moshu-scan` | `/moshu-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
 | `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
+| `moshu-style` | `/moshu-style` `/学文风` | 文风学习 · 从任意量原文提取写作风格基准（句长/标点/对话技法/锚点），产出 `文风库/文风.md` |
 | `moshu-import` | `/moshu-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
 | `moshu-review` | `/moshu-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
 | `moshu-cdp` | `/moshu-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
@@ -124,7 +125,7 @@ npx skills add Chained1001/mo-shu -y -g
 | **moshu-explorer** | Haiku | 故事查询 · 角色/伏笔/设定/进度只读查询，日更上下文快速加载 |
 | **moshu-chapter-extractor** | Haiku | 章节提取 · 摘要+情节点+角色提及，并行拆文核心单元 |
 
-Agent 按需加载 `references/` 中的写作理论（角色设计、对话技法、反转工具箱等），部署包 agent-references 含 31 份方法论文件，全仓 references 189 份，不预占上下文。
+Agent 按需加载 `references/` 中的写作理论（角色设计、对话技法、反转工具箱等），部署包 agent-references 含全套方法论文件（数量随版本增长），全仓 references 数百份，不预占上下文。
 
 ## 自动化 Hooks
 

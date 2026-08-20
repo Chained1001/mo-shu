@@ -19,7 +19,7 @@
  *   node jjwxc-rank-scraper.js --type all                 # 全部榜单
  *
  * 前置：
- *   node {SKILL_DIR}/moshu-cdp/scripts/setup-cdp-chrome.js 9222
+ *   node <moshu-cdp skill ?>/scripts/setup-cdp-chrome.js 9222
  */
 
 const fs = require("fs");
@@ -282,6 +282,10 @@ function scrapeRank(port, rankTypeId, channelId) {
     console.error(`  ⚠ 详情仅命中 ${detailOk}/${detailPlanned}，已按部分结果标注。`);
   } else if (LIST_ONLY) {
     problems.push("[仅列表-无核心指标]");
+  }
+  // 审计-V3 SM1：条目数下限与起点/七猫一致（晋江固有缺题材已另有告警，条目数稀疏须标出）
+  if (totalBooks > 0 && totalBooks < 15) {
+    problems.push(`[数据稀疏] 实际采集 ${totalBooks} 条`);
   }
   const quality = problems.length ? "[存在问题]" : "[OK]";
 

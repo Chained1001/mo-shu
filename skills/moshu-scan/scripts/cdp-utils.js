@@ -5,7 +5,7 @@
  *   const { ab, sleep, evalJSON, evalJSONBase64, scrollLoad, getArg, safeStr, localDateStamp } = require("./cdp-utils");
  *
  * 前置：
- *   node {SKILL_DIR}/moshu-cdp/scripts/setup-cdp-chrome.js 9222
+ *   node <moshu-cdp skill ?>/scripts/setup-cdp-chrome.js 9222
  */
 
 const { execFileSync } = require("child_process");

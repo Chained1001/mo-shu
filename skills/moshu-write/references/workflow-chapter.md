@@ -82,7 +82,7 @@
 9. **检查**：章尾是否有往下看的理由（低压/过场章弱钩子或留阶段目标即可，不强求爽点）、爽点是否到位（按章节定位，高压/推进章必查）。两条可证伪核对（不达标→修复）：① 爽点出手前是否有可指认的危机/期待段落（指到具体情节点）？指不出=空洞 → 回步骤 8 补铺垫情节点（plot-emotion-system 倒推法）；② 装逼/打脸/揭露章，在场配角是否写出差异化反应（集体震惊/各异），还是只写主角动作？没有 → 补在场配角反应（plot-core-methods）
 10. **元信息扫描**：检查标题行以外的正文，命中 `第[一二三四五六七八九十百千万两0-9]+章|上一章|上章|前一章|本章|这一章|前文|后文|伏笔|细纲|读者` 时必须改写为场景内表达；只有角色在故事世界内真实阅读/讨论“第X章”文本，或真实身为作者/读者并谈论读者身份时例外。
 	11. **禁用词扫描**：先过**最毒句式速查**（实测最易漏，命中即改）：①「不是A，(而)是B」全家族——含「没有X，没有Y(，只是Z)」排比否定、「是B，不是A」反序、「他没X，也没有Y。他只是Z」先抑后扬，；②声线反差「声音不大/不高…却…」；③「，带着……」万能状语；④预告/总结收尾「没人知道…」「(这)才刚刚开始/开头」「正朝着…压过去」「即将拉开序幕」「这一刻…」；⑤叙述里短词加引号强调（他是被请来"把关"的）。再复核 detector 的 `formulaic-parallelism` advisory：跨段「不是A。/也不是B。/只是C。」、`至于X不X，怎么X`、同动词 `不V A，不V B` 即使写在台词里也不能跳过，确属人物当场的功能性表达才保留。然后对照 `references/banned-words.md` 全表：一级词（高频AI腔）命中即替换；二级词（低频/语境相关）高频出现时替换，偶发可参考 `references/anti-ai-writing.md` 定性裁定
-12. **更新追踪**：按 workflow-daily「每章提交一次追踪事务」构造 JSON，执行 `scripts/tracking_commit.py commit`。工具先在内存完成全部合并/渲染/容量校验，再生成逐章记录、角色/伏笔/时间线/上下文派生视图，最后原子替换 `_tracking-state.json`。失败按类型处理（分类与恢复动作见 [recovery-protocol.md](recovery-protocol.md)）：**写入失败**（工具不可用、权限被拒、磁盘满）时 `_tracking-state.json` 未推进，保留原事务 JSON 直接重跑同一 `commit`；**校验失败**要按报错改事务本身再提交，重跑同一份结果不变；**派生视图被手改**导致 `check` 报不一致时，重新提交该章的 `mode=revision` 事务让工具整份重建（`expected_state_revision` 取 `追踪/_tracking-state.json` 的 `state_revision` 字段——`check` 失败时只往 stderr 打 ERROR，不输出 JSON）。任何情况都不手改派生文件。本章首次引入会复用的具名角色/势力时，仍按 `references/workflow-setup.md` 的 Phase 3 规则补建静态 `设定/` 档案。
+12. **更新追踪**：按 workflow-daily「每章提交一次追踪事务」构造 JSON（含可选的 `information_gap_changes` 信息差登记，见 workflow-daily 第 1 条），执行 `scripts/tracking_commit.py commit`。工具先在内存完成全部合并/渲染/容量校验，再生成逐章记录、角色/伏笔/时间线/上下文派生视图，最后原子替换 `_tracking-state.json`。失败按类型处理（分类与恢复动作见 [recovery-protocol.md](recovery-protocol.md)）：**写入失败**（工具不可用、权限被拒、磁盘满）时 `_tracking-state.json` 未推进，保留原事务 JSON 直接重跑同一 `commit`；**校验失败**要按报错改事务本身再提交，重跑同一份结果不变；**派生视图被手改**导致 `check` 报不一致时，重新提交该章的 `mode=revision` 事务让工具整份重建（`expected_state_revision` 取 `追踪/_tracking-state.json` 的 `state_revision` 字段——`check` 失败时只往 stderr 打 ERROR，不输出 JSON）。任何情况都不手改派生文件。本章首次引入会复用的具名角色/势力时，仍按 `references/workflow-setup.md` 的 Phase 3 规则补建静态 `设定/` 档案。
 13. **中途快照**（长篇写作安全网）：每连续写完 3 章，在继续前执行以下快照操作：
    - 执行 `scripts/tracking_commit.py check`，确认 `_tracking-state.json` 有效、逐章记录连续且未超限、所有派生视图一致、续写状态卡恰好 7 栏且 ≤12288 字节
    - 用 `ls -la 正文/` 确认最近 3 个章节文件已成功写入磁盘且大小正常（>100 bytes）
@@ -148,8 +148,10 @@
 **确定性收尾**：本批正文写完后，主会话对实际落盘文件运行 `node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking 正文/第XXX章_*.md` 与 `node {SKILL_DIR}/scripts/check-outline-copy.js 正文/第XXX章_*.md`（细纲照搬复扫；`{SKILL_DIR}` 指当前加载的 moshu-write skill 根目录）。blocking 命中先回正文改写并复扫；advisory 与细纲重合逐条读原文判断，确属问题才改，功能性写法标 `[需复核]`——每条都要有结论，不为归零机械改写；细纲重合里判定保留的补进细纲「复沓锚句」，下章起不再复报。其中 `formulaic-parallelism` 必须连同对话一起复核，不能因为 hook 不阻断台词就略过。
 随后运行 `node {SKILL_DIR}/scripts/normalize-punctuation.js 正文/第XXX章_*.md`（默认 `--quote-mode keep`）清理无功能省略号、破折号、双连字符和独立分隔线；古言/日式的「」不受影响。moshu-narrative-writer agent 不运行这些脚本。
 
+**候选机检（可选，永不拦截）**：单章/大修路径可再跑 `node {SKILL_DIR}/scripts/check-prose-candidates.js --prose 正文/第XXX章_*.md --style 文风库/文风.md --gaps 追踪/信息差.md`——高频意象/句式偏离/信息差兑现三类候选**只呈报作者，不消耗修复预算、不阻断**；日更批末由 workflow-daily 统一跑。
+
 **退化防护**：正文落盘后运行 `node {SKILL_DIR}/scripts/check-degeneration.js --check 正文/第XXX章_*.md`。blocking（复读、截断、拒绝语、tier1 工程词泄漏）只重写受影响章节，最多 2 次；仍失败就报告证据让用户定夺。
-advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界面用语、弹幕刷屏、重复台词等有功能则保留。
+advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界面用语、弹幕刷屏、重复台词等有功能则保留。**注意：对话行里的 tier1 工程词会被脚本降级为 advisory（角色真身为作者/编剧、故事内真讨论创作的例外），不消耗修复预算，不要按 blocking 回炉。**
 
 **机检修复预算（统一阀门，防 token 失控）**：本章所有机检项（字数不达标、check-ai-patterns blocking、check-degeneration blocking、check-outline-copy 细纲照搬、标点异常）共享**同一份自动修复预算 = 2 轮**：命中后主线程自动修复并复扫，同一草稿每项最多 2 轮（同一内容重复检查幂等、不重复消耗预算）；2 轮后仍失败的项**停止自动修复**，把证据（命中项 + 已尝试的修复）报告给用户定夺，不得无限自动消耗写稿 token。advisory 与细纲重合逐条人工判定，不消耗预算；用户显式豁免（`<!-- 去味:跳过 -->`）的章不消耗预算。
 

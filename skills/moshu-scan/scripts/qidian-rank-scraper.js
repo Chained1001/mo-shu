@@ -23,7 +23,7 @@
  *
  * 前置：
  *   默认 mobile/auto 模式不需要 Chrome。
- *   cdp 模式需要：node {SKILL_DIR}/moshu-cdp/scripts/setup-cdp-chrome.js 9222
+ *   cdp 模式需要：node <moshu-cdp skill ?>/scripts/setup-cdp-chrome.js 9222
  */
 
 const fs = require("fs");
@@ -387,7 +387,8 @@ function renderMarkdown(rt, books, url, sourceMode, extraLines = [], rawCount = 
   for (let i = 0; i < books.length; i++) {
     const b = books[i];
     lines.push(`## #${b.rank || i + 1} ${b.title}`);
-    const meta = [b.author, b.genre, b.status].filter(Boolean).join(" · ");
+    // 审计-V3 SM5：题材段位恒定（缺题材用 [待补] 占位），否则下游按固定下标取 segs[1] 会把状态当题材
+    const meta = [b.author, b.genre || "[待补]", b.status].filter(Boolean).join(" · ");
     if (meta) lines.push(`*${meta}*`);
     const required = (value) =>
       value === undefined || value === null || value === "" ? "[待补]" : String(value);

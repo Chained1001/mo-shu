@@ -171,7 +171,7 @@ maxTurns: 15
    - 若两个权威文件都存在但对同一章节/模块的读者情绪或爆发点描述互相矛盾，保留两条原文摘要，并返回 `gaps.module_rhythm_conflict: true` 与 `gaps.conflict: "..."`；调用方按两个权威文件优先于 `拆文报告.md` / `故事线.md` 的规则处理，禁止自行改写
 6. **读文风**（唯一来源：项目根 `文风库/文风.md`，moshu-style 产出）：
    - `Read 文风库/文风.md`；目录/文件不存在 → 返回 `gaps.profile_missing: true, expected_path: "文风库/文风.md"`，**不继续后续步骤**
-   - 检查「生成记录」：`文风可用：否` → 返回 `gaps.profile_degenerate: true`，后续不把文风作为强约束；**锚点片段全缺**（锚点节全是占位/无内容）→ `gaps.profile_degenerate: true`（few-shot 核心缺失）
+   - 检查「生成记录」：**缺少 `文风可用：是`**（含「生成记录」整段缺失/文件被截断/占位 stub）或写有 `文风可用：否` → 返回 `gaps.profile_degenerate: true`，后续不把文风作为强约束；**锚点片段全缺**（锚点节全是占位/无内容）→ `gaps.profile_degenerate: true`（few-shot 核心缺失）。正查口径与主会话手动路径一致：合规必须**见到** `文风可用：是`，不是"没见到否"。
 7. **可用性检查（只读可执行）**：
    - 本 agent 只有 `Read/Glob/Grep`，不能调用 Bash/stat。
    - 只读取文风文件「生成记录」：若写有 `文风可用：否`、`需重生`、`原文缺失` 等标记 → `gaps.profile_stale: true` 或 `gaps.profile_degenerate: true`，并在 `stale_reason` 写明原因。

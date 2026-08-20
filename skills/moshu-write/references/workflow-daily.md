@@ -22,7 +22,7 @@
 
 ## Step 1：快速上下文加载
 
-**审查记录**：`.moshu-review/review-log`（如有）读最新未解决写作建议，转为本批约束。
+**审查记录**：`.moshu-review/review-log`（如有）读最新未解决写作建议，转为本批约束；并查 `review_tickets.py list --project {项目根} --status open`——有 open 工单时按 [workflow-revision.md](workflow-revision.md)「工单处置」先闭环再开写（open 项是上轮审查留下的待修，续写前不清会让缺陷累积）。
 
 **可选：使用 moshu-explorer agent 批量加载上下文**。如果项目已部署 moshu-explorer agent（检查 `.claude/agents/moshu-explorer.md` 是否存在），可以用 `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={上一步 check 的值}，state_revision={上一步 check 的值}")` 执行 `context_load` 查询，一次获取全部写作上下文。spawn 返回后直接使用其 results，跳过下方手动加载步骤。如果 agent 不可用或返回不完整，回退到下方手动加载。
 
@@ -82,7 +82,7 @@
      - **无 moshu-explorer 时直接执行**：主会话按 workflow-chapter.md 写前准备 (a)-(f) 手动依次召回情绪模块、节奏、题材卡、文风与匹配章 K；模块或节奏文件缺失时设置 `missing_primary_contract` 并停止修复
    - **写后清零不拖到批末**：写后 hook 推回的毒句式命中当轮清零，不得攒到 Step 3。
    - 每章写完后**立即提交一次追踪事务**：
-     1. 从刚落盘的正文、细纲和上一版续写状态卡提取 `result / character_changes / foreshadow_changes / timeline_events / constraints / next_chapter_commitments`。只记录会影响未来章节的变化；过程日志、质检计数、参照章和去 AI 味统计全部排除。
+     1. 从刚落盘的正文、细纲和上一版续写状态卡提取 `result / character_changes / foreshadow_changes / timeline_events / constraints / next_chapter_commitments`，并可选登记本章的**信息差变化** `information_gap_changes`（正文揭示/新埋的「谁知道什么」：知情人×读者已知×关键词，字段见 [tracking-transaction.md](tracking-transaction.md)「信息差事务」；无变化不填）。只记录会影响未来章节的变化；过程日志、质检计数、参照章和去 AI 味统计全部排除。
      2. 需要长期复用的核心角色，把完整动态快照放进 `character_snapshots`，并在 `character_changes` 写对应变化；一次性路人只写变化、不交快照。已有动态快照的核心角色再次变化时必须提交新快照。静态人设继续以 `设定/角色/{名}.md` 为准。
      3. `context.long_term_constraints`、当前卷/故事时间/场景、活跃核心角色名、连贯性风险提交当前完整值；故事时间取本章细纲「时间锚点」；活跃伏笔、近三章速记和下一章承诺由工具从当前视图/本章增量派生，不重复手填。
      4. 把最近一次 `tracking_commit.py check` 返回的 `state_revision` 写入事务 `expected_state_revision`，再把 JSON 写到临时文件并执行 `tracking_commit.py commit`。成功并复检后删除临时 JSON；脚本返回新的 `state_revision` 才能进入下一章。
@@ -127,7 +127,7 @@
 2. **契约与细纲双向核对**：先按 `reader-contract-and-progression.md` 检查读者契约、因果权 + 结算权、关键节点四问、期待所有权、期待债偿还、终局储备（透支两问）；章级推进按权威文件七类状态分档（快节奏保留可见事件/爽点下限），相对本书题材与对标判断；高潮后允许短暂低压和小而可见的收益/奖励。新地图/机构/能力/敌人/谜团须检查换书债；履约爽文/能力幻想另查主角是否反复以可避免的无能制造灾难再由他人收拾。再核对正文是否消费了细纲的内容概括五段式、情节安排多线、人物关系变化/出场顺序、行动成本（可无）/收益归属；并加三条写作要求兑现核对（不达标→修复）：① 爽点出手前是否有可指认的危机/期待铺垫段落？指不出=空洞 → 回 Step 2 补铺垫情节点（plot-emotion-system 倒推法）；② 装逼/打脸/揭露章是否写出在场配角差异化反应（集体震惊/各异），还是只写主角动作？没有 → 补在场配角反应（plot-core-methods）；③ 详略是否按目的词（爽点/卖点点展开、过渡点带过、信息密度交替），还是均匀注水？均匀 → 删过渡、扩爽点点。
 3. **伏笔盘点（仅本轮增量）**：确认本批新增/推进/回收的每个 ID 在 `追踪/伏笔.md` 恰好有一行当前状态，并能在对应 `逐章记录/第NNN章.md` 找到本次变化；不得追加第二行历史，也不得在日更流程扫描全部正文做全量伏笔审计
 
-批末再对本批全部落盘正文整体跑一遍 workflow-chapter.md「质量检查」的确定性收尾（`check-ai-patterns.js` → `check-outline-copy.js` → `normalize-punctuation.js` → `check-degeneration.js` 退化防护 → `check-prose-candidates.js`（候选永不拦截）），确认无回潮。
+批末再对本批全部落盘正文整体跑一遍 workflow-chapter.md「质量检查」的确定性收尾（`check-ai-patterns.js` → `check-outline-copy.js` → `normalize-punctuation.js` → `check-degeneration.js` 退化防护 → `check-prose-candidates.js --prose <本章> --style 文风库/文风.md --gaps 追踪/信息差.md`（候选永不拦截）），确认无回潮。
 
 > 若本步修文改变了会影响后续的事实、角色状态、伏笔、时间线或下一章承诺，必须在进入 Step 4 前为受影响章节提交 `mode=revision` 事务并通过 `check`；其中 `delta` 要重算修订后该章仍成立的完整当前记录，不能只传本次改动；纯措辞调整不重复提交。
 

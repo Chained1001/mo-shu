@@ -68,8 +68,10 @@ node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文
 ```
 > `{SKILL_DIR}` 指当前加载的 moshu-deslop skill 根目录。
 
+> **豁免标记（重要）**：若脚本输出「命中「去味:跳过」豁免标记，跳过扫描」并退出 0，说明该文件首 6 行带用户显式豁免标记（`<!-- 去味:跳过 -->`，全/半角冒号皆认）——**本次是显式调用去味，不得把跳过当成零命中**：应告知用户标记在场，并询问是否删除标记后重扫。豁免只作用于 check-ai-patterns，degeneration/标点/细纲照搬三网照常。
+
 - severity=blocking 的类别（`not-is-comparison` / `em-dash` / `voice-contrast` / `negation-parade` / `reverse-not-is` / `trailer-ending` / `trailer-summary`）按处理优先级并入 Gate B（em-dash 属 Gate D 标点节奏、trailer-ending/trailer-summary 属 Gate F 结尾去升华，此处仅指处理优先级）。
-- 其他 findings（碎句号、长段落、微动作、动作清单、抽象总结、套词、比喻密度、解释链、公文腔、过度精炼、低连接密度、引号强调滥用、`formulaic-parallelism` 工整并列）只作读感提示；完整类别和修法见 `anti-ai-writing.md`。其中工整并列会扫描台词，必须读语境判断，不能因为 hook 对台词低误报豁免就跳过。
+- 其他 findings（碎句号、长段落、微动作、动作清单、抽象总结、套词、比喻密度、解释链、公文腔、过度精炼、低连接密度、引号强调滥用、`formulaic-parallelism` 工整并列、群像反应、翻案腔变体、模型路标词、名词化、提示性冒号）只作读感提示；完整类别和修法见 `anti-ai-writing.md` 与 `banned-words.md`。其中工整并列会扫描台词，必须读语境判断，不能因为 hook 对台词低误报豁免就跳过。
 - 处理方式：删掉否定铺垫，直接写后项；或改成角色动作、物件细节、身体反应来呈现。
 - 若用户只要检测，保留报告不改文。若执行去 AI 味，只改确实损害读感且无叙事功能的问题；功能性写法标 `[需复核]` 并保留。
 
@@ -122,7 +124,7 @@ node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文
 「诊断与分级」完成后，按以下顺序选择执行路径：
 
 1. **已在 moshu-narrative-writer 子代理内**：直接 inline 执行 Gate A-G，不再 spawn（嵌套 spawn 会被静默降级）。
-2. **未在子代理内且 `.claude/agents/moshu-narrative-writer.md` 存在**：spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{诊断与分级结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/人物记忆/情绪承接/因果锚点/必要信息/必要转折的直接删，会丢才进 Gate 润色；看似解释/评价但承担小连贯的句子，压成白话承接、动作或物件锚点，不机械删除；已有任务/手续/物件/证据缺口可以压成角色当下要处理的具体卡点，但不新增原文没有的事件链；删除服从比例上限与字数下限，跌破下限改降AI重写。\n模式处理：按 anti-ai-writing.md 的问题模式目录执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；")`。
+2. **未在子代理内且 `.claude/agents/moshu-narrative-writer.md` 存在**：spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: "项目目录：{dir}\n任务描述：去AI味\n检查范围：{待处理的正文文件}\nAI味等级：{诊断与分级结果}\n处理策略：{轻度/中度/重度对应的 Gate 范围}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/人物记忆/情绪承接/因果锚点/必要信息/必要转折的直接删，会丢才进 Gate 润色；看似解释/评价但承担小连贯的句子，压成白话承接、动作或物件锚点，不机械删除；已有任务/手续/物件/证据缺口可以压成角色当下要处理的具体卡点，但不新增原文没有的事件链；删除服从比例上限与字数下限，跌破下限改降AI重写。\n模式处理：按 anti-ai-writing.md 的「12 种 AI 写作模式检测」节执行；模式 8（解释腔/上帝视角/安排感）归入 Gate G，其余新增模式归入 Gate A-F 的对应处理。相邻段重复表达同一信息/动作/情绪时，按 Gate C/D 合并去重；")`。
 3. **agent 不存在或 spawn 失败**：主线程 inline 执行。
 
 #### 删除优先判断（先于各 Gate）
@@ -310,7 +312,7 @@ node {SKILL_DIR}/scripts/check-outline-copy.js <正文文件...>
 作用边界：
 - `check-ai-patterns.js` 只报告不改写：severity=blocking 的类别优先改正文并复扫；advisory 先通读判断，确属提纲感、解释腔或模板腔再改，功能性写法标 `[需复核]`。
 - 它只是读感提示；完整类别、例外和修法见 `anti-ai-writing.md`。
-- `check-degeneration.js` 报告模型退化（逐字复读/打转、末尾截断、占位符、工程词泄漏 `细纲`/`情节点` 等），每条带 `severity: blocking|advisory`。blocking 是退化信号，去AI味改不掉，应回去重新生成那一段再 deslop；advisory（tier2 章节/歧义词）只提示。
+- `check-degeneration.js` 报告模型退化（逐字复读/打转、末尾截断、占位符、工程词泄漏 `细纲`/`情节点` 等），每条带 `severity: blocking|advisory`。blocking 是退化信号，去AI味改不掉，应回去重新生成那一段再 deslop；advisory（tier2 章节/歧义词、**对话行里的 tier1 工程词**）只提示。
 - `normalize-punctuation.js` 机械兜底：清除残留的 `……`、漏网破折号 `——`/`—`、双连字符 `--` 和独立行 `---`；默认不改变引号风格，也不把有功能的 `？` / 少量 `！` 改成句号。
 - `check-outline-copy.js` 检测正文与同章细纲连续重合 >15 字，只报告不改写，复沓锚句除外；无细纲/非分章正文时静默返回 0。
 - 古言/日式可保留 `「」`；只有用户或项目明确要求时，才给标点脚本加 `--quote-mode ascii` 或 `--quote-mode corner`。
@@ -356,3 +358,5 @@ node {SKILL_DIR}/scripts/check-outline-copy.js <正文文件...>
 1. 同一段连续两轮去 AI 后没有新改动 → 停止该段处理
 2. 全文上限 3 轮重扫；第 3 轮仍有 ≥10 处改动 → 在报告里标 `[需复核]`，移交人工
 3. 每轮结束前都要做一遍"再检一次"：是否有不符合的地方，有则继续；没有则停
+
+> **在 moshu-write 章节流程内被调用时**，自动修复轮次服从该流程「机检修复预算」的统一阀门 **2 轮**；本节 3 轮上限只适用于独立 `/moshu-deslop` 会话（用户直接贴文/指定文件）。

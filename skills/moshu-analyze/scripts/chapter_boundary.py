@@ -77,6 +77,8 @@ def main():
     ap.add_argument('--author', default='', help='作者（写 _progress.md 用）')
     ap.add_argument('--encoding', default='utf-8', help='原文编码（默认 utf-8）')
     ap.add_argument('--dry-run', action='store_true', help='只打印报告不写文件')
+    ap.add_argument('--renumber-volumes', action='store_true',
+                    help='多卷书每卷重起章号时按全书连续序号重编号（需存在卷标记；标题列前置卷名消歧）')
     args = ap.parse_args()
 
     if not os.path.isfile(args.input):
@@ -119,29 +121,64 @@ def main():
     # 连续性校验
     nums = [c[0] for c in chapters]
     dup = sorted({n for n in set(nums) if nums.count(n) > 1})
-    missing = [n for n in range(1, max(nums) + 1) if n not in set(nums)]
     formats = set()
     for raw in [lines[c[2] - 1].strip() for c in chapters]:
         m = CHAP_RE.match(raw)
         if m:
             formats.add('digit' if m.group(1).isdigit() else 'cn')
     issue = None
+    renumbered = False
     if dup:
-        issue = f'重复章号: {dup[:20]}{"…" if len(dup) > 20 else ""}（可能每卷重起——按 analyze-workflow「Stage 0 章节边界子步骤」处理：多卷书每卷从「第一章」重起是合法结构，标题列保留卷号消歧、章号列按全书连续序号重编）'
-    elif missing:
+        if args.renumber_volumes and vols:
+            # 多卷重起：章号列按全书连续序号重编，标题列前置卷名消歧（审计-V3 AM1：
+            # 此前"文档说重编、脚本拒绝落盘、文档禁手写脚本"三方互斥，多卷书无合法路径）
+            renumbered = True
+            seq = 0
+            renumber_map = []
+            for c_idx, (num, title, start) in enumerate(chapters):
+                seq += 1
+                vol_name = ""
+                for v_idx, (vname, vline) in enumerate(vols):
+                    next_line = vols[v_idx + 1][1] - 1 if v_idx + 1 < len(vols) else len(lines)
+                    if vline <= start <= next_line:
+                        vol_name = vname
+                        break
+                chapters[c_idx] = (seq, title, start)
+                renumber_map.append((num, seq, vol_name or "—", title))
+            print(f'[重编号] 多卷重起章号按全书连续序号重编（共 {len(chapters)} 章，映射如下，供人工核对）：')
+            for old_num, new_num, vol_name, title in renumber_map:
+                print(f'  第{old_num}章 -> 第{new_num}章  [{vol_name}]  {title[:20]}')
+        else:
+            issue = f'重复章号: {dup[:20]}{"…" if len(dup) > 20 else ""}（可能每卷重起——多卷书每卷从「第一章」重起是合法结构：加 --renumber-volumes 按全书连续序号重编、标题列前置卷名消歧；不加则按重复问题处理）'
+    # 连续性在（可能重编号后的）章节序列上重算
+    nums = [c[0] for c in chapters]
+    missing = [n for n in range(1, max(nums) + 1) if n not in set(nums)]
+    if issue is None and missing:
         issue = f'1..{max(nums)} 跳号: {missing[:20]}{"…" if len(missing) > 20 else ""}'
-    elif nums != list(range(1, max(nums) + 1)):
+    elif issue is None and nums != list(range(1, max(nums) + 1)):
         issue = '章号非 1..N 连续'
 
     # 每章字数（去空白，精确字符）
     rows = []
     total = 0
+    # 重编号模式下标题列前置卷名消歧（与重编号映射表同一批信息）
+    vol_of_start = None
+    if renumbered:
+        vol_of_start = {}
+        for v_idx, (vname, vline) in enumerate(vols):
+            end_line = vols[v_idx + 1][1] - 1 if v_idx + 1 < len(vols) else len(lines)
+            for (num, title, start) in chapters:
+                if vline <= start <= end_line:
+                    vol_of_start[start] = vname
     for idx, (num, title, start) in enumerate(chapters):
         end = chapters[idx + 1][2] - 1 if idx + 1 < len(chapters) else len(lines)
         text = ''.join(lines[start - 1:end])
         chars = len(WS_RE.sub('', text))
         total += chars
-        rows.append((num, title, start, chars))
+        disp_title = title
+        if renumbered and vol_of_start and vol_of_start.get(start):
+            disp_title = f'{vol_of_start[start]} {title}'
+        rows.append((num, disp_title, start, chars))
 
     avg = total // len(rows)
 
@@ -169,7 +206,10 @@ def main():
     print(f'首章: 第{rows[0][0]}章 {rows[0][1]} @行{rows[0][2]} | 末章: 第{rows[-1][0]}章 {rows[-1][1]} @行{rows[-1][2]}')
     if issue:
         print(f'[警告] {issue}', file=sys.stderr)
-        if not args.dry_run and args.outdir:
+        # 审计-V3 AC2：--dry-run 遇连续性问题也必须以非零退出码暴露（落盘保护由分支自身保证）
+        if args.dry_run:
+            sys.exit(3)
+        if args.outdir:
             print('[提示] 问题未解决前不落盘边界表（防止污染切片真值）', file=sys.stderr)
             sys.exit(3)
 
@@ -196,7 +236,7 @@ def main():
 ## 管道进度
 | 阶段 | 状态 | 进度 | 备注 |
 |------|------|------|------|
-| 0 概要+章节边界 | done | 概要.md 首版 + 边界表 | 首版 200 字 thin，全量版 Stage 5 覆盖 |
+| 0 概要+章节边界 | partial | 边界表已落盘；概要.md 待 AI 落盘 | 边界表唯一真值；概要非空后由 AI 改 done |
 | 1 黄金三章 | pending | 第1-3章 | 拆完停靠产出快速预览 |
 | 2 逐章摘要 | pending | 0/{len(rows)} | 并行 spawn moshu-chapter-extractor |
 | 3 聚合分析 | pending | — | 剧情/节奏/情绪模块 |

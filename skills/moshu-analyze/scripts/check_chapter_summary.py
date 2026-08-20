@@ -20,6 +20,7 @@
   3. 基调枚举 ⊆ {紧张,轻松,悲伤,热血,爽,甜,温馨,恐怖,压抑,其他}
   4. 主题标签枚举 ⊆ {爱情,亲情,友情,权力,金钱,成长,复仇,悬念,搞笑,热血,日常,其他}
      (出现「主题标签：」带冒号或值为基调词均判失败)
+  5. 情节点硬下限: P 行数 ≥ 10（agent 模板硬约束的机检兜底）
   --deep: 额外检查 第*章_深度拆解.md 的必含字段（Stage 1 轻检查）
 
 ⚠️ 枚举单一权威: 基调/主题标签枚举以本脚本为唯一权威——
@@ -64,6 +65,10 @@ def check_file(path: Path) -> tuple[list[str], list[str]]:
     desc_count = sum(1 for l in lines if WHITE_DESC.match(l))
     if not (p_count == tone_count == desc_count):
         fails.append(f'情节点数不一致: P={p_count} 基调={tone_count} 白描={desc_count}')
+    # 审计-V3 AM2：情节点硬下限 10（agent 模板硬约束的机检兜底；下限不足会静默
+    # 拖低 Stage 3 语料密度——haiku 输出 6 条格式全对时旧 4 检仍 PASS）
+    if p_count < 10:
+        fails.append(f'情节点不足: P={p_count}（每章至少 10 个，至多 40 个）')
 
     if '{' in text or '}' in text:
         warns.append('含花括号残留 { }（仅提示，不判 FAIL）')

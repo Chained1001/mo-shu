@@ -15,7 +15,7 @@
  *   node fanqie-rank-scraper.js --channel 1 --top 15              # 每题材只取前 15 本
  *
  * 前置：
- *   node {SKILL_DIR}/moshu-cdp/scripts/setup-cdp-chrome.js 9222
+ *   node <moshu-cdp skill ?>/scripts/setup-cdp-chrome.js 9222
  */
 
 const fs = require("fs");
@@ -201,9 +201,27 @@ function fmtStatus(s) {
   return s ? String(s) : "未知";
 }
 
+/** 质量问题判定（审计-V3 SM1/SM2：与起点/七猫的 [数据稀疏] 口径一致，供测试与渲染共用） */
+function computeQualityProblems(totalBooks, resolvedTitles) {
+  const ratio = totalBooks ? resolvedTitles / totalBooks : 0;
+  const problems = [];
+  if (totalBooks === 0) {
+    problems.push("无数据");
+  } else {
+    if (totalBooks < 15) {
+      problems.push(`[数据稀疏] 实际采集 ${totalBooks} 条`);
+    }
+    if (resolvedTitles === 0) {
+      problems.push("[标题解析异常] 全部标题解析失败，详情页结构可能已变或登录/验证拦截");
+    } else if (ratio < 0.5) {
+      problems.push(`[标题解析异常] 标题解析率偏低（${resolvedTitles}/${totalBooks}）`);
+    }
+  }
+  return problems;
+}
+
 /** 清洗简介：去平台模板文本 → 折叠空白 → 句末截断 100 字 */
-function cleanDesc(raw) {
-  if (!raw) return "";
+function cleanDesc(raw) {  if (!raw) return "";
   let d = String(raw)
     // 简介取自 JSON 字符串原文，先还原常见转义（\n \uXXXX \" 等）
     .replace(/\\u([0-9a-fA-F]{4})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
@@ -330,7 +348,8 @@ function scrapeChannel(ch, type) {
         const title = info.title || "（标题待解析）";
         const author = info.author || "未知";
         const category = info.category || b.category || "";
-        const catSeg = category ? ` · ${category}` : "";
+        // 审计-V3 SM5：题材段位恒定（缺题材用 [待补] 占位），否则下游按固定下标取 segs[1] 会把状态当题材
+        const catSeg = ` · ${category || "[待补]"}`;
 
         bodyLines.push(`### #${i + 1} ${title}`);
         bodyLines.push(
@@ -360,15 +379,7 @@ function scrapeChannel(ch, type) {
   }
 
   // 质量状态：标题解析比例是番茄采集成败的核心信号（数据质量枚举统一为 [OK/存在问题]，具体问题进问题摘要）
-  const ratio = totalBooks ? resolvedTitles / totalBooks : 0;
-  const problems = [];
-  if (totalBooks === 0) {
-    problems.push("无数据");
-  } else if (resolvedTitles === 0) {
-    problems.push("[标题解析异常] 全部标题解析失败，详情页结构可能已变或登录/验证拦截");
-  } else if (ratio < 0.5) {
-    problems.push(`[标题解析异常] 标题解析率偏低（${resolvedTitles}/${totalBooks}）`);
-  }
+  const problems = computeQualityProblems(totalBooks, resolvedTitles);
   const quality = problems.length ? "[存在问题]" : "[OK]";
   lines.splice(5, 0,
     `- 数据质量：${quality}`,
@@ -400,29 +411,44 @@ function main() {
   }
   const channels = CHANNEL === "all" ? ["1", "0"] : [CHANNEL];
   const types = TYPE === "all" ? ["2", "1"] : [TYPE];
-  let written = 0;
+  // 审计-V3 SM2：返回结构化 outcome（与起点/七猫/晋江同形），部分失败必须 partial=true
+  const outcome = {
+    planned: channels.length * types.length,
+    written: 0,
+    failed: 0,
+    partial: false,
+    partialReasons: [],
+  };
 
   for (const ch of channels) {
     for (const ty of types) {
       try {
         const content = scrapeChannel(ch, ty);
-        if (!content) continue;
+        if (!content) {
+          outcome.failed += 1;
+          outcome.partial = true;
+          outcome.partialReasons.push(`${channelLabel(ch)}${typeLabel(ty)}: 无内容`);
+          continue;
+        }
 
         const date = localDateStamp();
         const filename = `番茄${channelLabel(ch)}${typeLabel(ty)}_全题材_${date}.md`;
         fs.mkdirSync(OUTDIR, { recursive: true });
         const filepath = path.join(OUTDIR, filename);
         fs.writeFileSync(filepath, content, "utf-8");
-        written++;
+        outcome.written += 1;
         console.log(`  ✓ 已保存: ${filepath}`);
       } catch (chErr) {
+        outcome.failed += 1;
+        outcome.partial = true;
+        outcome.partialReasons.push(`${channelLabel(ch)}${typeLabel(ty)}: ${chErr && chErr.message ? chErr.message : chErr}`);
         console.error(
           `[fanqie] ${channelLabel(ch)}${typeLabel(ty)} 采集失败，跳过: ${chErr && chErr.message ? chErr.message : chErr}`
         );
       }
     }
   }
-  return written;
+  return outcome;
 }
 
 if (require.main === module) {
@@ -438,4 +464,5 @@ module.exports = {
   fmtWords,
   fmtStatus,
   cleanDesc,
+  computeQualityProblems,
 };
