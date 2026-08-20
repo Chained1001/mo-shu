@@ -37,7 +37,7 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
 
 > **hooks 部署必须递归复制完整目录树**（`templates/hooks/` → `.claude/hooks/`，含 `lib/` 子目录），见 deploy-manual Step 3。
 
-## Step 7：创建部署标记
+## 部署标记（sentinel）
 
 创建 `.story-deployed`（sentinel），写入以下字段（YAML `key: value`，hook 经 `lib/sentinel.sh` 读取；其余说明见 [references/deploy-manual.md](references/deploy-manual.md) Step 7）：
 

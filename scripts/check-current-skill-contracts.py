@@ -1064,7 +1064,11 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
             )
         )
     setup_text = read_text(setup_skill) or ""
-    findings.extend(sentinel_contract_findings(setup_text, manifest, setup_skill))
+    # 审计-V3 D2 后 Step 1-7 细节在 deploy-manual.md；sentinel 契约的 Step 7 标题+字段块随架构迁移到那里，
+    # 与 SKILL.md 的锚点字段块合并检查（两处字段必须一致）
+    deploy_manual = repo_root / "skills/moshu-setup/references/deploy-manual.md"
+    manual_text = read_text(deploy_manual) or ""
+    findings.extend(sentinel_contract_findings(setup_text + "\n" + manual_text, manifest, setup_skill))
 
     for relative in SPAWN_CAPABLE_SKILLS:
         spawn_skill = repo_root / relative
