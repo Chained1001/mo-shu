@@ -141,6 +141,9 @@ bash scripts/check-moshu-setup-deployment.sh
 bash scripts/check-claude-adapter.sh
 bash scripts/check-behavior-contracts.sh
 python3 scripts/test-behavior-contracts.py
+bash scripts/check-capability-wiring.sh
+python3 scripts/test-capability-wiring.py
+python3 scripts/test-next-step.py
 bash scripts/check-agents-version-sync.sh
 python3 scripts/test-agents-version-sync.py
 bash scripts/check-story-numbers.sh

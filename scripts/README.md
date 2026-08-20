@@ -20,6 +20,7 @@
 | `check-python-invocation.sh` | 技能文档禁止裸调 `python3`（须 python3→python→py 探测） | CI |
 | `check-claude-adapter.sh` | Claude marketplace 与全部 skill 的一一映射（name/skills 路径/`version` 与 SKILL.md frontmatter 三者一致）；可选真实 CLI strict validate | CI（静态）；`CLAUDE_REAL_CHECK=1`（真实 CLI） |
 | `check-behavior-contracts.sh` + `behavior-contracts.json` + `check-behavior-contracts.py` | 关键行为约束静态守卫：契约清单里的约束文本必须存在于对应文档（裸调用停靠 / 细纲优先 / S1-S2 过桥 / 追踪事务等），防止 skill 迭代丢约束导致行为漂移 | CI；改动 SKILL.md / workflow-*.md / tracking-transaction.md 后 |
+| `check-capability-wiring.sh` + `capability-wiring.json` + `check-capability-wiring.py` | 能力接线守卫：每个确定性能力的全部 consumer 文件必须含调用点标记（锁 producer→consumer 链通不通）。与 behavior-contracts 分工：本表锁「链通不通」，契约锁「话在不在」。新增能力先登记本表，删除能力同步清表 | CI；新增/删除确定性能力或改流程文档调用点后 |
 | `check-agents-version-sync.sh` + `check-agents-version-sync.py` | agents_version 一致性守卫：7 个 SKILL.md 中带数字的 `agents_version` 声明必须与 `moshu-setup/UPGRADING.md` 权威一致，防升级漏改导致误判降级 | CI；bump agents_version 时 |
 | `check-story-numbers.sh` + `check-story-numbers.py` | 叙述性 skill 计数守卫：README / README_EN / CONTRIBUTING / scripts-README / architecture 中「N 个 skill」「N skills」必须与 skills/ 实测数一致（CHANGELOG 排除——历史条目不可改） | CI；增删 skill 或改动上述文档数字后 |
 | `check-agent-template-rules.sh` + `check-agent-template-rules.py` | agent 模板纪律守卫：禁互引（格式同/同上/参照上文/见上文）、`agent-references/` 挂载点文件存在、共享纪律单副本（标题不得复制进模板） | CI；改 agent 模板或 agent-references 后 |
@@ -48,6 +49,8 @@
 | `test-hook-encoding-portable.sh` | 部署 hook 在 Windows 中文系统的编码健壮性 | CI |
 | `test-skill-numbering.sh` | Step 重排级联安全、锚点 fail-closed、代码块引用、验证零写入/提交回滚、dry-run/write/幂等性 | Linux / Windows Git Bash / macOS CI |
 | `test-behavior-contracts.py` | 行为契约守卫回归：正向（真仓库契约全部在位，条数以 `behavior-contracts.json` 为准）+ 反向（fixture 删约束必须失败且指向契约 id） | CI（调 check-behavior-contracts） |
+| `test-capability-wiring.py` | 能力接线守卫回归：正向（真仓库全部接线）+ 反向（fixture 破坏调用点标记必须失败且指向能力 id 与文件） | CI（调 check-capability-wiring） |
+| `test-next-step.py` | 下一步判定回归（审计-V3 D5）：S0-S6 各序命中 + 优先中断（拆文续跑/审查续批）+ 卷界解析降级 + 空文件完成判据 + state 缺失回退 | CI（调 skills/moshu/scripts/next_step.py） |
 | `test-agents-version-sync.py` | agents_version 守卫回归：正向（真仓库一致）+ 反向（fixture 改一处版本必须失败） | CI（调 check-agents-version-sync） |
 | `test-story-numbers.py` | 叙述计数守卫回归：正向（fixture 数字与实测一致→退出 0）+ 反向（中文/英文数字不一致→退出 1 且指向文件） | CI（调 check-story-numbers） |
 | `test-prose-candidates.js` | 正文候选类机检回归：正向（意象重复+登记信息差关键词命中）+ 反向（干净文本空候选）+ 降级（缺 style/gaps、坏格式）+ 幂等（同输入逐字节一致） | CI（调 moshu-write 的 check-prose-candidates.js） |

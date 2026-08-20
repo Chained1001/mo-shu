@@ -44,6 +44,12 @@ jobs:
         run: bash scripts/check-behavior-contracts.sh
       - name: Behavior-contract regression
         run: python3 scripts/test-behavior-contracts.py
+      - name: Check capability wiring
+        run: bash scripts/check-capability-wiring.sh
+      - name: Capability-wiring regression
+        run: python3 scripts/test-capability-wiring.py
+      - name: Next-step routing regression
+        run: python3 scripts/test-next-step.py
       - name: Check agents-version sync
         run: bash scripts/check-agents-version-sync.sh
       - name: Agents-version-sync regression
