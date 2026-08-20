@@ -8,7 +8,7 @@
       "rationale": "批3a 信息差域（知情人×读者已知×关键词）——生产端登记、消费端候选机检与卷报告依赖",
       "consumers": [
         {"file": "skills/moshu-write/references/workflow-daily.md", "must_contain": "information_gap_changes"},
-        {"file": "skills/moshu-write/references/workflow-chapter.md", "must_contain": "information_gap_changes"},
+        {"file": "skills/moshu-write/references/chapter-core.md", "must_contain": "information_gap_changes"},
         {"file": "skills/moshu-import/references/import-workflow.md", "must_contain": "information_gaps"},
         {"file": "skills/moshu-review/references/review-workflow.md", "must_contain": "information_gap_changes"},
         {"file": "skills/moshu-write/references/tracking-transaction.md", "must_contain": "信息差事务"}
@@ -61,7 +61,7 @@
       "rationale": "批5 候选机检——日更批末与单章收尾两条车道都要有调用点",
       "consumers": [
         {"file": "skills/moshu-write/references/workflow-daily.md", "must_contain": "check-prose-candidates.js"},
-        {"file": "skills/moshu-write/references/workflow-chapter.md", "must_contain": "check-prose-candidates.js"}
+        {"file": "skills/moshu-write/references/chapter-core.md", "must_contain": "check-prose-candidates.js"}
       ]
     },
     {

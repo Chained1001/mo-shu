@@ -10,19 +10,19 @@
     },
     {
       "id": "outline-first-boundary",
-      "path": "skills/moshu-write/references/workflow-chapter.md",
+      "path": "skills/moshu-write/references/chapter-core.md",
       "must_contain": "正文只能展开本章细纲已有事件",
       "rationale": "细纲优先边界：写手不自造新主线/角色/反转"
     },
     {
       "id": "outline-missing-must-build",
-      "path": "skills/moshu-write/references/workflow-chapter.md",
+      "path": "skills/moshu-write/references/chapter-core.md",
       "must_contain": "不允许跳过细纲直接写作",
       "rationale": "缺细纲必须补建，禁止跳过直接写正文"
     },
     {
       "id": "s1s2-bridge",
-      "path": "skills/moshu-write/references/workflow-chapter.md",
+      "path": "skills/moshu-write/references/chapter-core.md",
       "must_contain": "S1/S2 必须显式过桥",
       "rationale": "一致性冲突必须显式落盘（已修复/进 risks/进 commitments），未判定不进下一章"
     },

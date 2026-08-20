@@ -217,8 +217,8 @@ def test_retired_tracking_architecture_is_absent() -> None:
 
 
 def test_no_tracking_fallback_or_context_style_fingerprint_remains() -> None:
-    # 缺失文件处理契约自入口下沉后位于 workflow-chapter.md「写前准备契约」节
-    long_write = read("skills/moshu-write/SKILL.md") + read("skills/moshu-write/references/workflow-chapter.md")
+    # 缺失文件处理契约自入口下沉后位于 chapter-core.md「写前准备契约」节（审计-V3 D3 车道收敛后）
+    long_write = read("skills/moshu-write/SKILL.md") + read("skills/moshu-write/references/chapter-core.md")
     for forbidden in (
         "角色状态文件缺失** → 从角色设定文件和前文推断当前状态",
         "伏笔/时间线文件缺失** → 不检查",
