@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+// 守护对象：CDP argv/JSON 契约与 scraper 无副作用 import。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 "use strict";
 
 const assert = require("assert");

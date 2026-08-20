@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * test-scan-analyze.js — scan-analyze.js v2 回归（4 平台通用提取 + --dup 跨平台）
+ * 守护对象：scan-analyze 4 平台通用提取回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
  *
  * 运行：node scripts/test-scan-analyze.js
  * fixture：tests/fixtures/scan/（4 平台最小样例，含跨平台同名书「星海征途」）

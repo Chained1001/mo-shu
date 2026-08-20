@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Focused regressions for the structured current-contract validator."""
+"""Focused regressions for the structured current-contract validator.
+
+守护对象：current-contract manifest 与主产物 fail-fast 语义。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+"""
 
 from __future__ import annotations
 

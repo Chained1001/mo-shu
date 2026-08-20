@@ -1,5 +1,6 @@
 #!/bin/bash
 # test-story-continuity.sh — detect-story-gaps.sh 的跨批连续性兜底回归测试
+# 守护对象：detect-story-gaps.sh 跨批连续性兜底回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 # 保证：① 追踪 staleness（正文更新到第N章但 上下文.md 更早）→ 提示续写状态卡滞后；
 #       ② 章节标题去重（两章撞名）→ 提示改名；③ missing/mismatched/malformed state → 明确警告；
 #       ④ 干净项目（state/上下文 revision 一致、上下文新于正文、标题唯一）静默。

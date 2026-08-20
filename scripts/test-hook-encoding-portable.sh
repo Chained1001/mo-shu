@@ -1,5 +1,6 @@
 #!/bin/bash
 # test-hook-encoding-portable.sh — 部署型 hook 在 Windows 中文系统下的编码健壮性回归。
+# 守护对象：部署型 hook 在 Windows 中文系统的编码健壮性。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 #
 # Windows 中文环境有两层独立的编码坑（都让 hook 静默失效，见 issue #164）：
 #   1) python stdout 默认 cp936（与区域设置无关）：print(中文) 编成 GBK，和脚本 UTF-8

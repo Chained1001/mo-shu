@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Behavioral regression tests for the single-authority tracking state tool."""
+"""Behavioral regression tests for the single-authority tracking state tool.
+
+守护对象：单权威追踪状态工具行为回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+"""
 
 from __future__ import annotations
 

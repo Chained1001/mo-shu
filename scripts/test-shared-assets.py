@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Behavior tests for sync-shared-assets.py."""
+"""Behavior tests for sync-shared-assets.py.
+
+守护对象：共享资产 manifest 一致性检测回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+"""
 
 from __future__ import annotations
 

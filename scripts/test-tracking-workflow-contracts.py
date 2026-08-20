@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Lexical guards for the single-authority tracking workflow contracts."""
+"""Lexical guards for the single-authority tracking workflow contracts.
+
+守护对象：追踪工作流契约词法守卫。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+"""
 
 from __future__ import annotations
 

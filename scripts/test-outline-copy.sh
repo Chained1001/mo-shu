@@ -1,5 +1,6 @@
 #!/bin/bash
 # test-outline-copy.sh — regression tests for the outline-copy detector.
+# 守护对象：细纲照搬检测器 check-outline-copy.js 回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"

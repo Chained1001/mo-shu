@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Regression tests for the structured skill Markdown checker."""
+"""Regression tests for the structured skill Markdown checker.
+
+守护对象：结构化 skill Markdown 检查器回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+"""
 
 from __future__ import annotations
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 # test-prose-backstop-hook.sh — regression tests for check-prose-after-write.sh
 # 核心保证：① 绝不过度捕获非正文文件（代码/细纲/设定/大纲/游离正文）；② 真正文兜底触发；
+# 守护对象：check-prose-after-write.sh 兜底回归（不过度捕获+真正文触发）。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 # ③ 轻量内容网抓对硬信号（截断/拒绝语/工程词/复读），干净正文（排比+对话+悬念）静默。
 # 过度捕获用路径门验证（不依赖解释器）；内容网用内嵌 python（与 parity 测试同源）。
 set -euo pipefail

@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""行为契约守卫回归：正向（真仓库约束在位）+ 反向（fixture 删约束必须失败）。"""
+"""行为契约守卫回归：正向（真仓库约束在位）+ 反向（fixture 删约束必须失败）。
+
+守护对象：行为契约守卫回归（正向约束在位+反向删约束必败）。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+"""
 
 from __future__ import annotations
 

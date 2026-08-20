@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
  * test-merge-summaries.js — merge-chapter-summaries.js 回归
+ * 守护对象：merge-chapter-summaries 拼接回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
  *
  * 运行：node scripts/test-merge-summaries.js
  * 覆盖：自然排序（第2章<第10章）、拼接完整性、无损校验（P 行/概要头）、

@@ -1,5 +1,6 @@
 #!/bin/bash
 # test-degeneration.sh — regression tests for the model-degeneration detector.
+# 守护对象：模型退化检测器 check-degeneration.js 回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null)"

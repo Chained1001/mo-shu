@@ -21,6 +21,7 @@
 | `check-claude-adapter.sh` | Claude marketplace 与全部 skill 的一一映射；可选真实 CLI strict validate | CI（静态）；`CLAUDE_REAL_CHECK=1`（真实 CLI） |
 | `check-behavior-contracts.sh` + `behavior-contracts.json` + `check-behavior-contracts.py` | 关键行为约束静态守卫：契约清单里的约束文本必须存在于对应文档（裸调用停靠 / 细纲优先 / S1-S2 过桥 / 追踪事务等），防止 skill 迭代丢约束导致行为漂移 | CI；改动 SKILL.md / workflow-*.md / tracking-transaction.md 后 |
 | `check-agents-version-sync.sh` + `check-agents-version-sync.py` | agents_version 一致性守卫：7 个 SKILL.md 中带数字的 `agents_version` 声明必须与 `moshu-setup/UPGRADING.md` 权威一致，防升级漏改导致误判降级 | CI；bump agents_version 时 |
+| `check-story-numbers.sh` + `check-story-numbers.py` | 叙述性 skill 计数守卫：README / README_EN / CONTRIBUTING / scripts-README / architecture 中「N 个 skill」「N skills」必须与 skills/ 实测数一致（CHANGELOG 排除——历史条目不可改） | CI；增删 skill 或改动上述文档数字后 |
 
 ## 测试回归（test-*）
 
@@ -46,6 +47,16 @@
 | `test-skill-numbering.sh` | Step 重排级联安全、锚点 fail-closed、代码块引用、验证零写入/提交回滚、dry-run/write/幂等性 | Linux / Windows Git Bash / macOS CI |
 | `test-behavior-contracts.py` | 行为契约守卫回归：正向（真仓库 9 条约束在位）+ 反向（fixture 删约束必须失败且指向契约 id） | CI（调 check-behavior-contracts） |
 | `test-agents-version-sync.py` | agents_version 守卫回归：正向（真仓库一致）+ 反向（fixture 改一处版本必须失败） | CI（调 check-agents-version-sync） |
+| `test-story-numbers.py` | 叙述计数守卫回归：正向（fixture 数字与实测一致→退出 0）+ 反向（中文/英文数字不一致→退出 1 且指向文件） | CI（调 check-story-numbers） |
+
+## 测试纪律
+
+- **守护对象声明**：每个 `scripts/test-*` 头部必须有一行式声明：`守护对象：<一句话>。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。`（.py 写进 docstring，.sh 用 `#` 注释行，.js 用 `//` 注释行）——说明这个测试在长期守护什么，防止删改时误伤。
+- **准入三条件**（新增架构/契约类正式回归时）：① 守护跨模块稳定不变量；② 直接覆盖统一收口；③ 普通迭代不会频繁改断言。凡主要断言 prompt 措辞、供应商参数、单接口结果、README 字符串者，禁止进入正式回归。
+- **测协议不测实现**：断言事件/状态机终态/注册表一致性/回放能力，不断言 prompt 全文或生成结果快照。
+- **禁脆弱快照**：不断言整段 HTML / prompt / 生成结果；禁真实上游（LLM / 联网 / API key）——需要外部能力的场景用 fixture 或临时验证。
+- **临时验证不入库**：只回答"现在是否正常"→ 用 `/.tmp/tests/<任务>/` 临时验证并删除；要防止"以后再次坏掉"才写正式回归。
+- **失败先判因**：失败先判因再改代码，禁止改断言变绿。
 
 ## 代码生成 / 同步
 

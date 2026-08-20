@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""agents_version 一致性守卫回归：正向（真仓库一致）+ 反向（fixture 改一处必须失败）。"""
+"""agents_version 一致性守卫回归：正向（真仓库一致）+ 反向（fixture 改一处必须失败）。
+
+守护对象：agents_version 三端同步一致性守卫回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+"""
 
 from __future__ import annotations
 

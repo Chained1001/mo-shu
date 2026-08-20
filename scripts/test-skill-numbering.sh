@@ -1,5 +1,6 @@
 #!/bin/bash
 # test-skill-numbering.sh — skill 工作流编号维护器的隔离回归。
+# 守护对象：skill 工作流编号维护器隔离回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 #
 # 所有 fixture 都在临时目录创建，不读取或改写仓库 skills/，因此可与内容迁移并行运行。
 set -euo pipefail

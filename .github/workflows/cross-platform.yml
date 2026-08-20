@@ -18,6 +18,10 @@ jobs:
           python-version: '3.x'
       - name: Run skill static check
         run: bash scripts/static-check.sh
+      - name: Check story numbers
+        run: bash scripts/check-story-numbers.sh
+      - name: Story-number regression
+        run: python3 scripts/test-story-numbers.py
       - name: Structured static-check regression
         run: python3 scripts/test-static-check.py
       - name: Check workflow numbering

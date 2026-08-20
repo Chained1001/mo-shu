@@ -1,6 +1,7 @@
 #!/bin/bash
 # test-charcount-portable.sh — 验证「跨平台字符统计」命令在三大平台 + Windows
 # Microsoft Store 占位程序场景下都能正确数出中文字符数。
+# 守护对象：跨平台字符统计命令正确性回归。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 #
 # 背景：技能文档要求模型用下面这条探测命令统计字数。Windows 上 python.org 安装后
 # `python3` 会落到 Microsoft Store 占位程序、以 exit 49 静默失败，必须按
