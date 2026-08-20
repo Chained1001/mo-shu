@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.3.0):** tracking schema v5 (information gaps / suspension warnings / volume reports), review-ticket closure, candidate machine checks, template prompt discipline, and scenario eval pipeline regression. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.4.0):** Audit-V3 full inspection & remediation (2 blocking + 45 must-fix) plus architecture work (entry slimming, capability registry, next-step scripting, lane-converged shared core). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 

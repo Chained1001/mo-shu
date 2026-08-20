@@ -2,7 +2,7 @@
 
 ## 当前版本
 
-- `setup_skill_version: 1.3.0`
+- `setup_skill_version: 1.4.0`
 - `agents_version: 30`
 
 `.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `30`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `30`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v30 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。

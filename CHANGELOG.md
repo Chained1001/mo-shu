@@ -29,6 +29,19 @@ All notable changes to this project will be documented in this file.
 
 - marketplace 版本对齐 SKILL.md（1.2.0/1.2.0/1.3.0 + metadata 1.3.0）并给 `check-claude-adapter.sh` 加版本断言（G1）；`moshu-style` 补 README×2/architecture/CONTRIBUTING 索引（G2）；总纲术语表过期数字勘误（G7）；`check-agents-version-sync.py` 扫描面扩到 `skills/**/*.md`；doc-budget 四个新入口登记（G-3）。
 
+### 架构优化（D1-D5，作者授权"按建议做"）
+
+- **D2 入口瘦身**：`moshu-scan` 8795→3485、`moshu-setup` 8627→3600、`moshu` 4807→4581 去空白字符——采集/部署/Dashboard 细节下沉 4 个新 references（`collection-guide`/`analysis-guide`/`deploy-manual`/`dashboard-guide`）；doc-budget 同步收紧；部署检查 TS2 断言目标随架构演进。
+- **D1 能力注册表**：`capability-wiring.json`（10 能力 × 29 消费点）+ `check-capability-wiring` 守卫——锁「producer→consumer 链通不通」，与 behavior-contracts 的「话在不在」互补；接线缺口类问题从结构上杜绝（本轮 9 条接线修复全部登记在册）。
+- **D5 下一步判定脚本化**：`next_step.py`（S0-S6 只读 DTO + 拆文续跑/审查续批两条优先中断 + 卷界解析降级 + 空文件完成判据）——批 4 当年跳过，本轮重估落地；moshu 路由不再靠 AI 读判定表。
+- **D4 单一真源化**：`check-story-numbers` 增 Skills 表行数断言——README/README_EN 表漏登记 skill（moshu-style 缺席一整版的那类问题）结构性杜绝。
+- **D3 车道收敛**：新共享内核 `chapter-core.md`（写前准备/正文/机检收尾/事务提交四段 + 事务构造 9 条细则）；workflow-chapter 14932→1320、workflow-daily 11830→7500 薄壳化；workflow-revision 扫描/质检指向 core。写前/机检/事务三段各一份真源，三车道能力对称性由结构保证。契约与接线锚点（behavior-contracts 3 条、capability-wiring 2 条、部署断言、追踪契约）随架构迁移。
+- **D6 references 治理审计**：同名 basename 65 组全部字节一致、零双源漂移——知识层健康，无需大动作（结论见 `docs/审计-V3/架构优化-D2-D6.md`）。
+
+### 版本与发布
+
+- 版本四轨对齐 v1.4.0：`skills/moshu/VERSION`、marketplace metadata、README/README_EN 更新行；4 个 skill frontmatter bump（write 1.2.0→1.3.0、setup 1.3.0→1.4.0、scan/moshu 1.1.1→1.2.0）并同步 marketplace 与 `setup_skill_version` 全链（current-contract/deploy.py/sentinel 块/UPGRADING）。
+
 ## v1.3.0（2026-08-20）
 
 > V2 收官版：审查工单闭环 + 模板 Prompt 纪律 + 场景 eval 与管道契约 + 终检发布（v1.2.0 段批 3-5 与 v1.3.0 段批 6-9 全部合入）。

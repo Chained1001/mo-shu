@@ -1,6 +1,6 @@
 ---
 name: moshu-setup
-version: 1.3.0
+version: 1.4.0
 description: "网文写作工具集基础设施部署。为 Claude Code 部署 hooks、agents、rules、CLAUDE.md 到写作项目。触发方式：/moshu-setup、「准备写书」「帮我搭一下环境」「配置写作项目」。"
 ---
 # moshu-setup：网文写作工具集基础设施部署
@@ -44,7 +44,7 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
 ```
 deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
 agents_version: 30
-setup_skill_version: 1.3.0
+setup_skill_version: 1.4.0
 target_cli: claude-code
 resolver_strategy: project-local-skill-reference
 references_dir: .claude/skills/moshu-setup/references/agent-references
