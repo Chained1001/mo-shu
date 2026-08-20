@@ -83,7 +83,7 @@ flowchart TD
 flowchart TB
     subgraph UI[Claude Code 会话层]
         Router[moshu 路由]
-        Skills[9 个 Skill 入口]
+        Skills[全部 Skill 入口]
         Agents[7 个专业 Agent]
     end
 

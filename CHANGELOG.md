@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## v1.1.2（2026-08-18，未发布）
+## v1.1.2（2026-08-18）
 
 > 扫榜全链路加固 + 真实数据验证版：scan-analyze 4 平台通用提取、CDP 导航改 eval 方式、jjwxc 标签过滤、CRLF 字数修复。每步经真实采集验证（起点 40 本 / 番茄 190 本 / 七猫 20 本 / 晋江 432 本，CDP 真机 + 冷启动）。
 

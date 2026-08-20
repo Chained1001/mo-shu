@@ -10,7 +10,8 @@
         "新增热路径文件时把它加进来，否则它不受任何约束。",
         "narrative-writer 新增逻辑路径映射 + 包内路由表边界说明（部署正确性规则：防 agent 按字面解析失败/跨 skill 读取，每章 spawn 付）40600→40900",
         "正文 agent 上下文组 40900→43300：writing-craft 合并 style-craft 后 9300→11700（净减 ~11KB，单文件按需读），组随动",
-        "正文 agent 上下文组 43300→43600：writing-craft 补镜头景别/三项输出检查后 11700→12000"
+        "正文 agent 上下文组 43300→43600：writing-craft 补镜头景别/三项输出检查后 11700→12000",
+        "批0 按 check-doc-budget.sh 松弛提示收紧（2026-08-20）：moshu-review 4000→2900（低 1101）、moshu-import 3500→2600（低 991）、moshu-deslop 4500→3300（低 1229）、moshu-analyze 3500→2300（低 1227）"
     ],
     "files": [
         {
@@ -55,22 +56,22 @@
         },
         {
             "path": "skills/moshu-review/SKILL.md",
-            "budget": 4000,
+            "budget": 2900,
             "why": "触发 /moshu-review 时入口全量进上下文（P-A 骨架化后约 2.6K 去空白；预算防重新膨胀到 30KB 级，详细流程在 references/review-workflow.md 按需加载）"
         },
         {
             "path": "skills/moshu-import/SKILL.md",
-            "budget": 3500,
+            "budget": 2600,
             "why": "触发 /moshu-import 时入口全量进上下文（P-A 骨架化后约 2.5K 去空白；防膨胀，流程在 references/import-workflow.md）"
         },
         {
             "path": "skills/moshu-deslop/SKILL.md",
-            "budget": 4500,
+            "budget": 3300,
             "why": "触发 /moshu-deslop 时入口全量进上下文（P-A 骨架化后约 3.4K 去空白；防膨胀，流程在 references/deslop-workflow.md）"
         },
         {
             "path": "skills/moshu-analyze/SKILL.md",
-            "budget": 3500,
+            "budget": 2300,
             "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）"
         }
     ],

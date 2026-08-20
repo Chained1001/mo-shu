@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.1.1):** audit-fix release — deployment no longer marks failure as success, deconstruction scripts handle Windows BOM/deep-only checks, doc command paths unified, CI branch fixed, detector skips HTML comments and honors exemption markers. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.1.2):** audit-fix release — deployment no longer marks failure as success, deconstruction scripts handle Windows BOM/deep-only checks, doc command paths unified, CI branch fixed, detector skips HTML comments and honors exemption markers. See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 

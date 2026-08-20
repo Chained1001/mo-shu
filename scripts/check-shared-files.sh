@@ -22,13 +22,9 @@ fi
 # - output-templates.md / material-decomposition.md: single-copy (moshu-analyze).
 # - genre-catalog.md / genre-readers.md: previously ignored for a historical analyst-lens
 #   fork; copies are now byte-identical and registered in shared-assets.json — no longer ignored.
-# - genre-writing-techniques.md: no longer present in the repo — no-op.
-# - AGENTS.md.tmpl / hooks.json: removed together with the non-Claude CLI adapters — no-op.
 # - quality-checklist.md: previously split writer/reviewer copies; since audit P0 it is a
 #   single canonical copy (moshu-write) registered in shared-assets.json — no longer ignored.
-IGNORE_NAMES="output-templates.md material-decomposition.md \
-genre-writing-techniques.md \
-AGENTS.md.tmpl hooks.json"
+IGNORE_NAMES="output-templates.md material-decomposition.md"
 
 # Genre-style-divergent (basename): drop the references/genre-styles/ fork copy (if any);
 # the remaining prose-card copies must stay byte-identical.
