@@ -50,9 +50,47 @@ def scan_doc(root: Path, rel: str, n: int) -> list[str]:
     return violations
 
 
+# 索引表检查（审计-V3 D4 单一真源化）：README/README_EN 的 Skills 表数据行数必须 == 实测 skill 数。
+# 此前守卫只锁「N 个 skill」数字口径，表格行数漏登记（moshu-style 缺席整个 v1.3.0）永远不被发现。
+SKILLS_TABLE_START = re.compile(r"^\|\s*`?[a-z][\w-]*`?\s*\|")  # 首个 skill 数据行特征
+
+
+def check_skills_tables(root: Path, n: int) -> list[str]:
+    violations: list[str] = []
+    for rel in ("README.md", "README_EN.md"):
+        path = root / rel
+        if not path.exists():
+            continue
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except UnicodeDecodeError:
+            violations.append(f"{rel}:<decode error>")
+            continue
+        table_rows = 0
+        in_skills_table = False
+        for index, line in enumerate(lines, 1):
+            stripped = line.strip()
+            if stripped.startswith("| Skill ") or stripped.startswith("| `Skill`"):
+                in_skills_table = True
+                continue
+            if not in_skills_table:
+                continue
+            if not stripped.startswith("|"):
+                break
+            if stripped.startswith("|:") or set(stripped) <= {"|", ":", "-", " "}:
+                continue  # 表头分隔行
+            if "|" in stripped[1:]:
+                table_rows += 1
+        if in_skills_table and table_rows != n:
+            violations.append(
+                f"{rel}: Skills 表数据行 {table_rows} 行 != 实测 {n} 个 skill（漏登记/多登记）"
+            )
+    return violations
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="叙述性 skill 计数守卫：文档中的 skill 数字必须与 skills/ 实测一致",
+        description="叙述性 skill 计数守卫：文档中的 skill 数字与索引表行数必须与 skills/ 实测一致",
     )
     parser.add_argument(
         "--root",
@@ -71,6 +109,7 @@ def main() -> int:
     violations: list[str] = []
     for rel in SCAN_FILES:
         violations.extend(scan_doc(root, rel, n))
+    violations.extend(check_skills_tables(root, n))
 
     if violations:
         print("story numbers: FAIL")
@@ -79,7 +118,7 @@ def main() -> int:
         print(f"expected {n} skills everywhere in scanned docs")
         return 1
 
-    print(f"story numbers: ok ({n} skills)")
+    print(f"story numbers: ok ({n} skills，索引表行数与叙述数字一致)")
     return 0
 
 

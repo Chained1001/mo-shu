@@ -82,6 +82,23 @@ def main() -> int:
         else:
             print("PASS 反向2（5 skills → 退出 1 且指向 README.md）")
 
+        # 反向 3（审计-V3 D4）：Skills 表漏登记——表行数 != 实测 skill 数必须失败
+        rev_table = base / "rev-table"
+        rev_table.mkdir()
+        make_repo(rev_table, 3, "")
+        (rev_table / "README.md").write_text(
+            "| Skill | Trigger |\n|:------|:--------|\n| `skill-0` | a |\n| `skill-1` | b |\n\n"
+            "说明文字（无数字叙述，旧守卫会放行）。\n",
+            encoding="utf-8",
+        )
+        result = run(rev_table)
+        if result.returncode != 1 or "Skills 表数据行" not in result.stdout:
+            failures += 1
+            print(f"FAIL 反向3: 表漏登记应失败且指向行数不一致，实际 {result.returncode}")
+            print(result.stdout, end="")
+        else:
+            print("PASS 反向3（Skills 表 2 行 vs 3 skill → 退出 1 且指向行数）")
+
     if failures:
         print(f"{failures} failure(s)")
         return 1
