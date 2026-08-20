@@ -70,7 +70,7 @@
    - **世界级意图分流**：改变世界格局的指令（天灾/势力变动/时代事件）是世界级意图——经追踪事务 `timeline_events` 落为世界事件并同步后续章节，不能只当本章临时背景；只影响本章的仍走本章意图。**世界级事件必须带前置因果（如瘟疫需有来源），不能凭空出现；因果缺失时补中间环节或写入 `continuity_risks`。**
    - **上一章欠账检查**：写本章正文前，确认上一章正文无未清 blocking 毒句式欠账（写前 hook 会自动拦；hook 不可用时对上一章跑 `node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <上一章正文文件...>`，`{SKILL_DIR}` 指当前加载的 moshu-write skill 根目录）；有欠账先清完再写本章，除非上一章标了 `<!-- 去味:跳过 -->`（用户显式豁免）
    - **状态来源纪律**：不要为取状态/章号把完整 `_tracking-state.json` 加载进 prompt；缺失内容按下方「旧信息查找步骤」定点查询，不得用未标明来源的聊天记忆替代，也不得为了方便通读所有逐章记录。
-   - **久别角色交叉检查**：本章细纲列出的核心复用角色若不在 `## 核心角色状态`，直接读取小文件 `追踪/角色状态/{名}.md`；不存在即视为当前检查点损坏，运行 `tracking_commit.py check` 并通过完整事务修复，不能临时扫描增量后手写替代。`设定/角色/{名}.md` 只有静态原始人设，不能替代动态快照。角色重新活跃后，把名字放进本章事务 `context.active_character_names`，由工具更新续写状态卡。
+   - **久别角色交叉检查**：本章细纲列出的核心复用角色若不在 `## 核心角色状态`，直接读取小文件 `追踪/角色状态/{名}.md`；不存在即视为派生视图损坏，运行 `tracking_commit.py check` 并通过完整事务修复，不能临时扫描增量后手写替代。`设定/角色/{名}.md` 只有静态原始人设，不能替代动态快照。角色重新活跃后，把名字放进本章事务 `context.active_character_names`，由工具更新续写状态卡。
    - **moshu-explorer 召回的 gaps 分支**（用 `benchmark_style_load` query_type 一次拿到 `{style_profile_path, style_profile_summary, selected_emotion_module, rhythm_reference, module_source_path, rhythm_source_path, matched_chapter_K, matched_chapter_techniques, anchor_excerpts, gaps}` 后按此分流）：
      - 若 `gaps.no_benchmark: true` → 无对标可召回：情绪 / 节奏目标改从本书细纲「目标情绪」、卷纲、`设定/题材定位.md` 等内部材料取，`selected_emotion_module` / `rhythm_reference` 记为「无」，不声称从对标召回；文风与对标无关（文风库独立），按 workflow-chapter (d) 照常处理
      - 若 `gaps.missing_primary_contract: true` → 停止本章准备，按 `repair_action` 提示重跑 `/moshu-analyze` Stage 3+ 或重新 `/moshu-import`；不得进入 moshu-narrative-writer（情绪 / 节奏轴独立于文风轴，文风缺失不豁免此停止——补 `剧情/情绪模块.md` / `剧情/节奏.md`）

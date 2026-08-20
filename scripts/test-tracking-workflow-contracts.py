@@ -224,7 +224,7 @@ def test_no_tracking_fallback_or_context_style_fingerprint_remains() -> None:
     require_all(
         long_write,
         (
-            "视为当前语义检查点损坏",
+            "视为续写状态卡损坏",
             "已有正文但 `_tracking-state.json` 缺失时重新 `/moshu-import`",
         ),
         "fail-closed tracking reads",

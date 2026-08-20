@@ -40,7 +40,7 @@
 | 派生视图被手改 | `check` 报 `derived view differs from _tracking-state.json` | 重新提交**该章**的 `mode=revision` 事务让工具整份重建；`expected_state_revision` 取 `追踪/_tracking-state.json` 的 `state_revision` 字段 |
 | 逐章记录被手写 | 同章 `append` 报 `chapter delta N already exists with different content` | 删掉那个手写文件后重跑原事务 |
 | 角色状态文件缺失 | `check` 报缺失/孤儿 | 先运行 `check`，再重跑产生该状态的完整事务；不得从前文临时推断后直接手写快照 |
-| 伏笔/时间线文件缺失 | 视为当前语义检查点损坏 | 停止写正文；先 `check`，再用事务修复。卷纲/大纲中的计划不能代替已发生事实的当前检查点 |
+| 伏笔/时间线文件缺失 | 视为续写状态卡损坏 | 停止写正文；先 `check`，再用事务修复。卷纲/大纲中的计划不能代替已发生事实的追踪记录 |
 
 **不做什么**：不手工补派生视图、不删 state 重来、不忽略返回码。
 
