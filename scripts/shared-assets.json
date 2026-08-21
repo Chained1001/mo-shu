@@ -89,7 +89,29 @@
       "source": "skills/moshu-write/references/plot-core-methods.md",
       "targets": [
         "skills/moshu-review/references/plot-core-methods.md",
-        "skills/moshu-setup/references/agent-references/plot-core-methods.md"
+        "skills/moshu-setup/references/agent-references/plot-core-methods.md",
+        "skills/moshu-build/references/plot-core-methods.md"
+      ]
+    },
+    {
+      "name": "plot-frameworks-reference",
+      "source": "skills/moshu-write/references/plot-frameworks.md",
+      "targets": [
+        "skills/moshu-build/references/plot-frameworks.md"
+      ]
+    },
+    {
+      "name": "plot-special-topics-reference",
+      "source": "skills/moshu-write/references/plot-special-topics.md",
+      "targets": [
+        "skills/moshu-build/references/plot-special-topics.md"
+      ]
+    },
+    {
+      "name": "plot-emotion-system-reference",
+      "source": "skills/moshu-write/references/plot-emotion-system.md",
+      "targets": [
+        "skills/moshu-build/references/plot-emotion-system.md"
       ]
     },
     {
@@ -105,14 +127,16 @@
       "name": "character-design-methods-reference",
       "source": "skills/moshu-write/references/character-design-methods.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/character-design-methods.md"
+        "skills/moshu-setup/references/agent-references/character-design-methods.md",
+        "skills/moshu-build/references/character-design-methods.md"
       ]
     },
     {
       "name": "character-basics-reference",
       "source": "skills/moshu-write/references/character-basics.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/character-basics.md"
+        "skills/moshu-setup/references/agent-references/character-basics.md",
+        "skills/moshu-build/references/character-basics.md"
       ]
     },
     {
@@ -142,7 +166,8 @@
       "name": "opening-design-reference",
       "source": "skills/moshu-write/references/opening-design.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/opening-design.md"
+        "skills/moshu-setup/references/agent-references/opening-design.md",
+        "skills/moshu-build/references/opening-design.md"
       ]
     },
     {
@@ -176,24 +201,41 @@
       ]
     },
     {
+      "name": "outline-structure-theory-reference",
+      "source": "skills/moshu-write/references/outline-structure-theory.md",
+      "targets": [
+        "skills/moshu-build/references/outline-structure-theory.md"
+      ]
+    },
+    {
+      "name": "outline-workflow-reference",
+      "source": "skills/moshu-write/references/outline-workflow.md",
+      "targets": [
+        "skills/moshu-build/references/outline-workflow.md"
+      ]
+    },
+    {
       "name": "outline-rhythm-reference",
       "source": "skills/moshu-write/references/outline-rhythm.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/outline-rhythm.md"
+        "skills/moshu-setup/references/agent-references/outline-rhythm.md",
+        "skills/moshu-build/references/outline-rhythm.md"
       ]
     },
     {
       "name": "outline-conflict-reference",
       "source": "skills/moshu-write/references/outline-conflict.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/outline-conflict.md"
+        "skills/moshu-setup/references/agent-references/outline-conflict.md",
+        "skills/moshu-build/references/outline-conflict.md"
       ]
     },
     {
       "name": "genre-writing-formulas-reference",
       "source": "skills/moshu-write/references/genre-writing-formulas.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/genre-writing-formulas.md"
+        "skills/moshu-setup/references/agent-references/genre-writing-formulas.md",
+        "skills/moshu-build/references/genre-writing-formulas.md"
       ]
     },
     {
@@ -246,7 +288,8 @@
       "name": "genre-readers-reference",
       "source": "skills/moshu-write/references/genre-readers.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/genre-readers.md"
+        "skills/moshu-setup/references/agent-references/genre-readers.md",
+        "skills/moshu-build/references/genre-readers.md"
       ]
     },
     {
@@ -268,7 +311,8 @@
       "name": "naming-cards-reference",
       "source": "skills/moshu-write/references/naming-cards.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/naming-cards.md"
+        "skills/moshu-setup/references/agent-references/naming-cards.md",
+        "skills/moshu-build/references/naming-cards.md"
       ]
     },
     {
