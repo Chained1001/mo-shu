@@ -14,7 +14,7 @@
 
 ## Step 1：快速上下文加载
 
-**审查记录**：`.moshu-review/review-log`（如有）读最新未解决写作建议，转为本批约束；并查 `review_tickets.py list --project {项目根} --status open`——有 open 工单时按 [workflow-revision.md](workflow-revision.md)「工单处置」先闭环再开写（open 项是上轮审查留下的待修，续写前不清会让缺陷累积）。
+**审查记录**：`.moshu-review/review-log`（如有）读最新未解决写作建议，转为本批约束；并查 `review_tickets.py list --project {项目根} --status open`（该脚本为 moshu-review 侧单副本，本 skill 不分发，执行时按已部署技能目录定位）——有 open 工单时按 [workflow-revision.md](workflow-revision.md)「工单处置」先闭环再开写（open 项是上轮审查留下的待修，续写前不清会让缺陷累积）。
 
 **可选：moshu-explorer 批量加载**（`.claude/agents/moshu-explorer.md` 存在时）：spawn `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={上一步 check 的值}，state_revision={上一步 check 的值}")` 一次获取全部写作上下文；不可用或返回不完整时回退手动加载。
 

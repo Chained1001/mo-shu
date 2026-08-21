@@ -122,7 +122,7 @@ Writing skills internally coordinate 7 specialized agents:
 | **moshu-explorer** | Haiku | Story query — read-only character/foreshadowing/setting/progress lookup, quick context loading |
 | **moshu-chapter-extractor** | Haiku | Chapter extraction — summaries, plot points, character mentions, parallel deconstruction unit |
 
-Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — 31 methodology files in the agent-references bundle, 189 references across the repo), without reserving context window space.
+Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — the agent-references bundle ships the full methodology set, which grows with each version; hundreds of references across the repo), without reserving context window space.
 
 ## Automation Hooks
 

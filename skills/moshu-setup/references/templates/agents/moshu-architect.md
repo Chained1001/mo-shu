@@ -22,7 +22,7 @@ memory: project
 
 ## 审稿令牌
 
-输入首行含 `审稿令牌：<token>`；**报告第一行必须逐字回传该行**；无令牌写 `审稿令牌：缺失`。主会话用 `review_tickets.py verify-token` 校验，防未读输入编造报告。
+输入首行含 `审稿令牌：<token>`；**报告第一行必须逐字回传该行**；无令牌写 `审稿令牌：缺失`。主会话用 `review_tickets.py verify-token` 校验（该脚本为 moshu-review 侧单副本，本 skill 不分发），防未读输入编造报告。
 
 ---
 

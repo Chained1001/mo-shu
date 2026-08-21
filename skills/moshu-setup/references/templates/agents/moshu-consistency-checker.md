@@ -23,7 +23,7 @@ maxTurns: 15
 
 ## 审稿令牌
 
-输入首行含 `审稿令牌：<token>`；**报告第一行必须逐字回传该行**；无令牌写 `审稿令牌：缺失`。主会话用 `review_tickets.py verify-token` 校验，防未读输入编造报告。
+输入首行含 `审稿令牌：<token>`；**报告第一行必须逐字回传该行**；无令牌写 `审稿令牌：缺失`。主会话用 `review_tickets.py verify-token` 校验（该脚本为 moshu-review 侧单副本，本 skill 不分发），防未读输入编造报告。
 
 评分标准参考 `moshu-setup/references/agent-references/quality-checklist.md` 中的五维评分体系（核心一致度、表层重写度、格式一致度、可读性、逻辑连贯），你的检查聚焦于**核心一致度**和**逻辑连贯**两个维度的事实性冲突。
 

@@ -90,6 +90,8 @@ class NextStepTests(unittest.TestCase):
         self.init_state(project, 1)
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S3")
+        self.assertEqual(payload["suggested_skill"], "moshu-write")
+        self.assertIn("/moshu-write", payload["next_action"])
         self.assertEqual(payload["last_committed_chapter"], 1)
 
     def test_s4_when_next_outline_present(self) -> None:
@@ -100,6 +102,8 @@ class NextStepTests(unittest.TestCase):
         self.init_state(project, 1)
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S4")
+        self.assertEqual(payload["suggested_skill"], "moshu-write")
+        self.assertIn("/moshu-write", payload["next_action"])
 
     def test_s5_when_volume_end_without_review(self) -> None:
         project = self.make_project()
@@ -110,6 +114,8 @@ class NextStepTests(unittest.TestCase):
         self.init_state(project, 5)
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S5")
+        self.assertEqual(payload["suggested_skill"], "moshu-write")
+        self.assertIn("/moshu-write", payload["next_action"])
 
     def test_s6_when_volume_end_with_review(self) -> None:
         project = self.make_project()

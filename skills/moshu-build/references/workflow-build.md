@@ -179,7 +179,7 @@ moshu-architect 属于高层级结构设计 agent。轻量题材定位优先由�
 大纲完成后，按上方「卷级大纲」模板创建以下 artifact：
 - **大纲/大纲.md**：全书卷级鸟瞰（卷名+字数+章数+核心事件+状态变化，一段式汇总）
 - **大纲/卷纲_第X卷.md**：每卷的剧情单元+情绪弧线（含章节定位）+人物弧线+伏笔+反转+对标结构坐标（参考 [outline-methods.md](outline-methods.md)「大纲三层结构法」 + [emotional-arc-design.md](emotional-arc-design.md)「六种弧线速查」 + [reversal-toolkit.md](reversal-toolkit.md)「反转类型」）
-- **追踪事务初始状态**：按 `references/tracking-transaction.md`（write 侧共享副本）构造第 0 章初始化 JSON，执行 `scripts/tracking_commit.py init`（build 侧共享副本），生成检查点、续写状态卡（固定 7 栏）、空的伏笔/时间线视图与目录；核心角色动态快照可在第一次正文事务中创建（write 侧）。
+- **追踪事务初始状态**：按 `references/tracking-transaction.md`（write 侧共享副本）构造第 0 章初始化 JSON，执行 `scripts/tracking_commit.py init`（build 侧共享副本），生成检查点（续写状态卡，固定 7 栏）、空的伏笔/时间线视图与目录；核心角色动态快照可在第一次正文事务中创建（write 侧）。
 
 > 追踪 init 后，**事实层归 write**：build 不再写 `追踪/`，只读（修订工作流的边界判定输入）。
 

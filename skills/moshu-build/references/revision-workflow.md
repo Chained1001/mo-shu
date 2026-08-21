@@ -55,7 +55,7 @@
 
 构建环开工或修订前，先读两处现存流出，转为修订提案（走上面五步）：
 
-1. **审查工单**：`review_tickets.py list --project {项目根} --status open`——dimension 为设定类（structure/character/consistency/factual/world 相关）的 open 条目转为修订候选；处置走工单 resolve（fixed/dismissed + 一句证据）。
+1. **审查工单**：`review_tickets.py list --project {项目根} --status open`（该脚本为 moshu-review 侧单副本，本 skill 不分发，执行时按已部署技能目录定位）——dimension 为设定类（structure/character/consistency/factual/world 相关）的 open 条目转为修订候选；处置走工单 resolve（fixed/dismissed + 一句证据）。
 2. **追踪连贯性风险与信息差冲突**：读 `追踪/上下文.md` 的 `## 连贯性风险` 与 `追踪/信息差.md` 的冲突条目——影响设定/大纲的转为本轮修订提案（不直接改追踪，事实层归 write）。
 
 > 回流不新开管线：以上两处是既有产出（批 6 工单 / 批 3a 信息差），build 只消费并转提案（P6）。
