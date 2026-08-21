@@ -16,7 +16,7 @@
 
 围绕四条线展开：爆款逆向 · 剧情模块化重组 · 上下文状态分层管理 · 人机协同。
 
-> **最近更新（v1.5.0）**：B1 构建/执行分离战役——新技能 `moshu-build`（开书构建/设定大纲卷纲修订/开新卷）、write 侧细纲工作流独立（outline-workflow）、全局路由切 build（moshu 路由/next_step/README 五方一致）、3 条契约锁定新边界（修订须影响分析 / write 不改既有设定 / 变更日志 append-only）。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **最近更新（v1.5.0）**：B1 构建/执行分离战役——新技能 `moshu-build`（开书构建/设定大纲卷纲修订/开新卷）、write 侧细纲工作流独立（outline-workflow）、全局路由切 build（moshu 路由/next_step/README 五方一致）、3 条契约锁定新边界（修订须影响分析 / write 不改既有设定 / 变更日志 append-only）；发布前经审计-V4 全量体检（六链五闭合一断裂已修、A1-A6 需修批 + 候选/存疑 7 项全处置、路由残留清零）。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 流程总览
 
@@ -204,7 +204,7 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 | 大纲排布 | 五步大纲法 · 故事结构分级 · 节点设计法 · 升级感设计 | moshu-write |
 | 开头设计 | 开篇模式 · 前 500 字设计 · 黄金三章开头策略 | moshu-write |
 | 人物设计 | 角色设定 · 人物提取 · 关系映射 · 动机链 · 群像 | moshu-write |
-| 钩子技法 | 章尾钩子 13 式 · 章首钩子 7 式 · 段落级钩子 · 悬念编排 | moshu-write |
+| 钩子技法 | 章尾钩子 14 式 · 章首钩子 7 式 · 段落级钩子 · 悬念编排 | moshu-write |
 | 情绪设计 | 6 种弧形模板 · 期待感管理 · 题材赛道策略 | moshu-write |
 | 题材框架 | 长篇八节点 · 8 大题材开头模板 | moshu-write |
 | 对话技法 | 节奏 · 潜台词 · 信息控制 · 对话模式数据库 | moshu-write |

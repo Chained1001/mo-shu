@@ -1,4 +1,4 @@
-<!-- Last synced with README.md: 2026-08-13 -->
+<!-- Last synced with README.md: 2026-08-21 -->
 
 **English** | [中文](README.md)
 
@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.5.0):** B1 build-vs-write separation campaign — new `moshu-build` skill (book setup / setting-outline-volume revision / new-volume planning), standalone write-side outline workflow (outline-workflow), global routing switched to build (moshu router / next_step / README five-way consistency), 3 new behavior contracts locking new boundaries (revision requires impact scan / write never edits existing settings / changelog append-only). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.5.0):** B1 build-vs-write separation campaign — new `moshu-build` skill (book setup / setting-outline-volume revision / new-volume planning), standalone write-side outline workflow (outline-workflow), global routing switched to build (moshu router / next_step / README five-way consistency), 3 new behavior contracts locking new boundaries (revision requires impact scan / write never edits existing settings / changelog append-only); pre-release audit-V4 health check (six chains: five closed and the one field-level break fixed, A1-A6 fixes plus all 7 candidate/doubtful items resolved, routing residue cleared). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 
@@ -200,7 +200,7 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 | Outline Layout | Five-step outline method · Story structure levels · Node design · Progression design | moshu-write |
 | Opening Design | Opening patterns · First 500 words · Golden First 3 Chapters | moshu-write |
 | Character Design | Character profiles · Character extraction · Relationship mapping · Motivation chains · Ensemble casts | moshu-write |
-| Hook Techniques | 13 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | moshu-write |
+| Hook Techniques | 14 chapter-end hooks · 7 chapter-start hooks · Paragraph-level hooks · Suspense orchestration | moshu-write |
 | Emotion Design | 6 arc templates · Expectation management · Genre track strategies | moshu-write |
 | Genre Frameworks | Long-form 8-node · 8 genre opening templates | moshu-write |
 | Dialogue Techniques | Rhythm · Subtext · Information control · Dialogue pattern database | moshu-write |
