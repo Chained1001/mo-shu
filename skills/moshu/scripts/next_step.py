@@ -161,7 +161,7 @@ def main() -> int:
             "step": "S2",
             "evidence": evidence + ["正文/ 无章文件或全部为空（完成判定只认非空文件）"],
             "last_committed_chapter": 0,
-            "next_action": "写第 1 章（先补第 1 章细纲）",
+            "next_action": "首批细纲 + 写第 1 章（/moshu-write，细纲首建见 outline-workflow；设定/卷纲缺失才回 /moshu-build）",
             "suggested_skill": "moshu-write",
         })
         return 0

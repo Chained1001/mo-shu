@@ -75,10 +75,13 @@ class NextStepTests(unittest.TestCase):
         self.write(project / "大纲/大纲.md")
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S2")
+        self.assertEqual(payload["suggested_skill"], "moshu-write")
+        self.assertIn("/moshu-write", payload["next_action"])
         # 空文件 = 未写（完成判定只认非空文件）
         self.write(project / "正文/第001章_开端.md", "")
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S2")
+        self.assertEqual(payload["suggested_skill"], "moshu-write")
 
     def test_s3_when_next_outline_missing(self) -> None:
         project = self.make_project()

@@ -62,7 +62,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 - 重启后即可使用。**新项目下一步推荐（按最优路径，可跳步）**：
   1. 还没想好写什么 → 先 `/moshu-scan` 扫榜定选题方向（可选但推荐）
   2. 有方向、想学爆款写法 → `/moshu-analyze` 拆对标书（可选；拆到 Stage 3 才有情绪模块/节奏主产物，只想试水可只拆黄金三章）
-  3. 直接开书 → `/moshu-write`（无对标也能开书，写正文前才需要主产物）
+  3. 直接开书 → `/moshu-build`（无对标也能开书，写正文前才需要主产物；细纲与正文接力 `/moshu-write`）
   已有小说要导入 → `/moshu-import`（不走扫榜/拆文）
 
 ---
@@ -89,6 +89,6 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 |---|---|---|
 | 新项目·先扫榜定选题（可选） | moshu-scan | `/moshu-scan` |
 | 新项目·拆对标学写法（可选） | moshu-analyze | `/moshu-analyze` |
-| 部署完成，直接开书 | moshu-write | `/moshu-write` |
+| 部署完成，直接开书 | moshu-build | `/moshu-build` |
 | 导入已有小说做拆解 | moshu-import | `/moshu-import` |
 | 需要浏览器登录态（扫榜/拆文取原文） | moshu-cdp | `/moshu-cdp` |

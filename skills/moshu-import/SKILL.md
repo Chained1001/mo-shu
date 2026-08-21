@@ -71,7 +71,7 @@ description: "逆向导入已有小说。将已写好的小说（半成品或完
 | 导入完想继续写（长篇） | moshu-write | `/moshu-write` + "日更" |
 | 导入完想审查质量 | moshu-review | `/moshu-review` |
 | 想深入分析对标（长篇） | moshu-analyze | `/moshu-analyze` |
-| 从零开新书（长篇） | moshu-write | `/moshu-write` + "开书" |
+| 从零开新书（长篇） | moshu-build | `/moshu-build` + "开书" |
 | 项目未部署环境 | moshu-setup | `/moshu-setup` |
 
 ---

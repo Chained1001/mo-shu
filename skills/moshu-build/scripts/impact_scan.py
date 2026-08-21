@@ -16,6 +16,12 @@ import re
 import sys
 from pathlib import Path
 
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except Exception:
+    pass
+
 CHAPTER_NUMBER = re.compile(r"第(\d+)章")
 
 # 追踪 state 的命中域（事实层四域）
