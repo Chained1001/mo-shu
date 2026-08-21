@@ -43,6 +43,23 @@
 - **决策收敛必写**：待定项 → 已收敛，并在 `大纲/变更日志.md` 追加一行（变更同步，不重复变更日志职能）。
 - **会话收尾必结**：收尾时定格当前焦点与待定项（台账是构建期对谈的快照锚，不是机读状态机）。
 
+### 方法论副本索引（经 outline-methods 路由表按需加载）
+
+- [outline-structure-theory.md](outline-structure-theory.md)
+- [outline-rhythm.md](outline-rhythm.md)
+- [outline-conflict.md](outline-conflict.md)
+- [character-design-methods.md](character-design-methods.md)
+- [character-basics.md](character-basics.md)
+- [plot-frameworks.md](plot-frameworks.md)
+- [plot-core-methods.md](plot-core-methods.md)
+- [opening-design.md](opening-design.md)
+- [genre-writing-formulas.md](genre-writing-formulas.md)
+- [naming-cards.md](naming-cards.md)
+- [genre-readers.md](genre-readers.md)
+- [plot-special-topics.md](plot-special-topics.md)
+- [plot-emotion-system.md](plot-emotion-system.md)
+- [outline-workflow.md](outline-workflow.md)
+
 ---
 
 ## 开书构建
