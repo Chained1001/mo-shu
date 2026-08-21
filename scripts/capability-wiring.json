@@ -103,6 +103,25 @@
         {"file": "skills/moshu-deslop/references/deslop-workflow.md", "must_contain": "去味:跳过"},
         {"file": "skills/moshu-deslop/references/deslop-workflow.md", "must_contain": "不得把跳过当成零命中"}
       ]
+    },
+    {
+      "id": "story-construction",
+      "producer": "workflow-build.md 的开书构建流程（Phase 1 选题/对标 → Phase 2 核心设定 → Phase 3 卷级大纲 → artifact 创建含 tracking init）",
+      "rationale": "V2.1 B1a 构建环开书职责——SKILL 路由必须指向 workflow-build，防新技能入口悬空",
+      "consumers": [
+        {"file": "skills/moshu-build/SKILL.md", "must_contain": "workflow-build.md"},
+        {"file": "skills/moshu-build/references/workflow-build.md", "must_contain": "tracking_commit.py init"}
+      ]
+    },
+    {
+      "id": "setting-revision",
+      "producer": "revision-workflow.md 的五步修订流程（impact_scan 影响分析→作者裁决→留痕落盘→级联标记→回流提示）",
+      "rationale": "V2.1 B1a 修订职责——影响分析脚本必须被流程文档指示使用（接线缺口即流程静默失效）",
+      "consumers": [
+        {"file": "skills/moshu-build/SKILL.md", "must_contain": "impact_scan.py"},
+        {"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "impact_scan.py"},
+        {"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "变更日志"}
+      ]
     }
   ]
 }

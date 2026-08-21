@@ -155,6 +155,7 @@ bash scripts/check-agent-template-rules.sh
 python3 scripts/test-agent-template-rules.py
 bash scripts/check-eval-scenarios.sh
 bash scripts/test-writing-pipeline.sh
+python3 scripts/test-impact-scan.py
 bash scripts/check-python-invocation.sh
 bash scripts/check-hook-locale-safety.sh
 bash scripts/test-hook-encoding-portable.sh

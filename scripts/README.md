@@ -57,6 +57,7 @@
 | `test-review-tickets.py` | 审查工单回归：write 合法+幂等 / 坏枚举/重复 id/坏令牌拒 / resolve 单向流转 / list 过滤 / verify-token 相等与不等 | CI（调 moshu-review 的 review_tickets.py） |
 | `test-agent-template-rules.py` | 模板纪律守卫回归：正向（干净模板通过）+ 反向（互引句/挂载点缺失/复制纪律标题必须失败） | CI（调 check-agent-template-rules） |
 | `test-writing-pipeline.sh` | 零 LLM 管道契约 e2e：init→commit（伏笔+信息差）→check（含 suspension_warnings）→volume-report（重放 diff 空）→review_tickets write/resolve/list→check-prose-candidates（blocking_count=0），临时目录自清理 | CI；改任一管道脚本后 |
+| `test-impact-scan.py` | 构建资产修订影响分析回归：正向（关键词命中未写细纲+已写正文+追踪三处）+ 反向（干净关键词三清单空）+ 无 state 退出 2 且引导 | CI（调 moshu-build 的 impact_scan.py） |
 | `test-deploy.py` | moshu-setup deploy.py 部署执行体回归：deploy→verify 全 PASS、题材子卡缺失时 verify 非零退出（PM2）、agents_version 降级门拒绝 | CI（deploy-check job）；改 deploy.py 后 |
 
 ## 测试纪律

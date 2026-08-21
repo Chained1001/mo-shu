@@ -87,7 +87,8 @@ npx skills add Chained1001/mo-shu -y -g
 |:------|:-----|:-----|
 | `moshu-setup` | `/moshu-setup` `/准备写书` | 环境部署 · Claude Code（已有配置安全合并） |
 | `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
-| `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 大纲搭建、人物设定、正文输出 |
+| `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 细纲与正文输出、日更续写、大修、卷复盘执行 |
+| `moshu-build` | `/moshu-build` `/建书` | 开书构建 · 题材定位、世界观、人物、全书大纲、首卷卷纲、设定/大纲/卷纲修订、开新卷规划 |
 | `moshu-analyze` | `/moshu-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
 | `moshu-scan` | `/moshu-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
 | `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
@@ -99,7 +100,7 @@ npx skills add Chained1001/mo-shu -y -g
 > `moshu-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
 
 自然语言同样触发：
-- 「帮我开书」→ `moshu-write`
+- 「帮我开书」→ `moshu-build`（细纲与正文 → `moshu-write`）
 - 「这篇太 AI 了」→ `moshu-deslop`
 - 「把我的书导进来」→ `moshu-import`
 - 「打开工作台」→ `moshu dashboard`（本机浏览拆文库与写作项目，可轻量编辑）

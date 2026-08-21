@@ -28,6 +28,27 @@
       ]
     },
     {
+      "name": "moshu-build",
+      "description": "开书构建与设定/大纲/卷纲修订。新书开书构建（题材定位、世界观、人物、全书大纲与首卷卷纲）、构建资产迭代修订（影响分析→作者裁决→留痕→级联标记）与开新卷规划。细纲与正文归 /moshu-write。",
+      "source": "./",
+      "strict": false,
+      "version": "1.0.0",
+      "category": "novel-writing",
+      "keywords": [
+        "build",
+        "outline",
+        "worldbuilding",
+        "setting",
+        "construction",
+        "开书",
+        "设定",
+        "大纲"
+      ],
+      "skills": [
+        "./skills/moshu-build"
+      ]
+    },
+    {
       "name": "moshu-scan",
       "description": "长篇网文扫榜。分析起点、番茄、晋江等平台排行榜数据，提炼市场趋势与热门题材。",
       "source": "./",

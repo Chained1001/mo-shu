@@ -87,7 +87,8 @@ npx skills add Chained1001/mo-shu -y -g
 |:------|:--------|:------------|
 | `moshu-setup` | `/moshu-setup` | Environment setup — Claude Code (safe merge) |
 | `moshu` | `/moshu` / `/moshu dashboard` | Toolbox router plus a local deconstruction/project dashboard |
-| `moshu-write` | `/moshu-write` | Long-form writing — outline building, character design, prose output |
+| `moshu-write` | `/moshu-write` | Long-form writing — chapter outlines and prose, daily continuation, revision, volume-review execution |
+| `moshu-build` | `/moshu-build` | Book construction — premise, worldview, characters, full outline, first-volume outline; setting/outline/volume revision; new-volume planning |
 | `moshu-analyze` | `/moshu-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
 | `moshu-scan` | `/moshu-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
 | `moshu-deslop` | `/moshu-deslop` | De-AI-ify — detect and remove AI writing traces |

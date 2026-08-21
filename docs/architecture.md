@@ -12,6 +12,7 @@ flowchart LR
     R -->|扫榜 / 选题| Scan[moshu-scan]
     R -->|拆文| Analyze[moshu-analyze]
     R -->|写作| Write[moshu-write]
+    R -->|设定/大纲/卷纲构建| Build[moshu-build]
     R -->|导入| Import[moshu-import]
     R -->|去 AI 味| Deslop[moshu-deslop]
     R -->|学文风| Style[moshu-style]
