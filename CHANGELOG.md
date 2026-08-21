@@ -25,6 +25,11 @@ All notable changes to this project will be documented in this file.
 - volume-review 末步转向提示「下卷规划转 /moshu-build」。
 - 版本四轨对齐 v1.5.0（VERSION/marketplace metadata/README×2/CHANGELOG）；受改 skill frontmatter bump（moshu 1.2.0→1.3.0、moshu-write 1.3.0→1.4.0）。
 
+### 发布前审计（审计-V4，A1-A6 需修批）
+
+- 审计产出 `docs/审计-V4/`：基线 41 项 = 40 绿 + 1 已知平台限制红；六链端到端五闭合一断裂（链②单元ID 字段级断裂）；路由残留 7 处；阻断 0 ｜ 需修 6 ｜ 候选 5 ｜ 存疑 2。
+- A1-A6 需修批全绿：impact_scan stdout/stderr UTF-8 重配（中文 Windows 无 PYTHONIOENCODING 可跑）；workflow-build 剧情单元卡补「单元ID/位置（{L卷号-序号}）」等 write 消费字段并注明细纲消费链路；判定表序3 语义修正（首批细纲+写第 1 章，与 next_step S2/test 断言同步）；README_EN 开书路由切 moshu-build；跨 skill 路由残留清理（import/setup×2/deploy-manual + topic-decision 顺清 2 处）；moshu-write 开书类触发词移除并对齐路由表。
+
 ## v1.4.0（2026-08-21）
 
 > 审计-V3 全量体检与整改：10 个 skill 逐份审计（`docs/审计-V3/`），2 条阻断级 + 45 条需修 + 48 条候选按总计划分 A→G 批修复。重点：审稿令牌注入链（批 6 防编造机制此前恒空转）、文风产物字段口径（与候选机检解析器错配，静默失效）、**部署 hook 追踪 schema 钉死 v4 与状态 v5 脱节（批 3a 遗漏面，会拦死写正文）**、多卷重起书三方死锁、番茄/晋江数据稀疏标记缺失、工单 write 旁路与跨文件去重。
