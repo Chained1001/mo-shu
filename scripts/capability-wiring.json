@@ -122,6 +122,15 @@
         {"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "impact_scan.py"},
         {"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "变更日志"}
       ]
+    },
+    {
+      "id": "build-ledger",
+      "producer": "workflow-build.md 的构建台账机制（进入规则/方法论声明步/台账模板/更新规则）",
+      "rationale": "V2.1 批B3 构建台账（构建态与方法论单真源）——三种入口进入必读、决策收敛必写、会话收尾必结；修订与开新卷车道都要指示读取",
+      "consumers": [
+        {"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "构建台账"},
+        {"file": "skills/moshu-build/references/workflow-build.md", "must_contain": "构建台账"}
+      ]
     }
   ]
 }

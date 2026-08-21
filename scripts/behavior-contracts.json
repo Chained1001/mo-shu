@@ -85,6 +85,12 @@
       "path": "skills/moshu-build/references/revision-workflow.md",
       "must_contain": "追加一行",
       "rationale": "变更日志 append-only：修订留痕只追加一行摘要，不覆盖不改历史（D6）"
+    },
+    {
+      "id": "build-ledger-entry",
+      "path": "skills/moshu-build/references/workflow-build.md",
+      "must_contain": "构建台账",
+      "rationale": "进入必读话术：构建环三种入口第一步先读构建台账（构建态与方法论单真源），锁不被迭代丢掉"
     }
   ]
 }

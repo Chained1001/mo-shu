@@ -45,6 +45,7 @@ NEW_CONTRACT_IDS = (
     "build-revision-requires-impact",
     "write-no-existing-setting-edit",
     "changelog-append-only",
+    "build-ledger-entry",
 )
 for target in [contracts[0]] + [c for c in contracts if c["id"] in NEW_CONTRACT_IDS]:
     with tempfile.TemporaryDirectory(prefix="behavior-contract-") as tmp:
