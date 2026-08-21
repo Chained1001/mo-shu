@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.4.0):** Audit-V3 full inspection & remediation (2 blocking + 45 must-fix) plus architecture work (entry slimming, capability registry, next-step scripting, lane-converged shared core). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v1.5.0):** B1 build-vs-write separation campaign — new `moshu-build` skill (book setup / setting-outline-volume revision / new-volume planning), standalone write-side outline workflow (outline-workflow), global routing switched to build (moshu router / next_step / README five-way consistency), 3 new behavior contracts locking new boundaries (revision requires impact scan / write never edits existing settings / changelog append-only). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 

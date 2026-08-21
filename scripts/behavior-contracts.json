@@ -67,6 +67,24 @@
       "path": "skills/moshu-write/references/workflow-revision.md",
       "must_contain": "工单处置",
       "rationale": "大修流程必须走工单处置入口（读 open 工单→resolve→复审），防审查发现无人跟进"
+    },
+    {
+      "id": "build-revision-requires-impact",
+      "path": "skills/moshu-build/references/revision-workflow.md",
+      "must_contain": "影响分析",
+      "rationale": "构建资产修订必须先跑影响分析（impact_scan 三清单），禁止顺手改设定/大纲/卷纲"
+    },
+    {
+      "id": "write-no-existing-setting-edit",
+      "path": "skills/moshu-write/references/outline-workflow.md",
+      "must_contain": "不修改既有设定",
+      "rationale": "write 侧细纲后只新建设定档案，不修改既有设定/大纲/卷纲（修改既有=转 /moshu-build）"
+    },
+    {
+      "id": "changelog-append-only",
+      "path": "skills/moshu-build/references/revision-workflow.md",
+      "must_contain": "追加一行",
+      "rationale": "变更日志 append-only：修订留痕只追加一行摘要，不覆盖不改历史（D6）"
     }
   ]
 }

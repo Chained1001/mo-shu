@@ -38,30 +38,34 @@ if result.returncode != 0:
     print(result.stderr)
     fails += 1
 
-# 反向：fixture 完整复制仓库文件后删掉第一条约束，必须失败且指向该契约 id
-with tempfile.TemporaryDirectory(prefix="behavior-contract-") as tmp:
-    root = Path(tmp)
-    contracts = json.loads(CONTRACTS.read_text(encoding="utf-8"))["contracts"]
-    for contract in contracts:
-        src = REPO_ROOT / contract["path"]
-        dst = root / contract["path"]
+# 反向：fixture 完整复制仓库文件后删掉契约，必须失败且指向该契约 id
+# 覆盖基线首条 + B1c 新增三条（防止新增契约形同虚设）
+contracts = json.loads(CONTRACTS.read_text(encoding="utf-8"))["contracts"]
+NEW_CONTRACT_IDS = (
+    "build-revision-requires-impact",
+    "write-no-existing-setting-edit",
+    "changelog-append-only",
+)
+for target in [contracts[0]] + [c for c in contracts if c["id"] in NEW_CONTRACT_IDS]:
+    with tempfile.TemporaryDirectory(prefix="behavior-contract-") as tmp:
+        root = Path(tmp)
+        src = REPO_ROOT / target["path"]
+        dst = root / target["path"]
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
 
-    target = contracts[0]
-    dst = root / target["path"]
-    text = dst.read_text(encoding="utf-8")
-    assert target["must_contain"] in text, "fixture 前提失败：关键词不在源文件"
-    dst.write_text(text.replace(target["must_contain"], "【已删除】"), encoding="utf-8")
+        text = dst.read_text(encoding="utf-8")
+        assert target["must_contain"] in text, f"fixture 前提失败：{target['id']} 关键词不在源文件"
+        dst.write_text(text.replace(target["must_contain"], "【已删除】"), encoding="utf-8")
 
-    result = run(root)
-    if result.returncode == 0:
-        print("FAIL: 删除约束后检查仍通过（应失败）")
-        fails += 1
-    elif target["id"] not in result.stderr:
-        print(f"FAIL: 失败信息未指向契约 {target['id']}")
-        print(result.stderr)
-        fails += 1
+        result = run(root)
+        if result.returncode == 0:
+            print(f"FAIL: 删除契约 {target['id']} 后检查仍通过（应失败）")
+            fails += 1
+        elif target["id"] not in result.stderr:
+            print(f"FAIL: 失败信息未指向契约 {target['id']}")
+            print(result.stderr)
+            fails += 1
 
 # 非法契约清单：path 逃逸必须被拒绝（防御性）
 with tempfile.TemporaryDirectory(prefix="behavior-contract-bad-") as tmp:

@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## v1.5.0（2026-08-21）
+
+> B1 构建/执行分离战役收官：新建 `moshu-build` 技能（构建环），write 侧细纲工作流独立成 `outline-workflow.md`，全局路由/判定/next_step 切 build，行为契约锁定新边界。开书/设定/大纲/卷纲构建与修订归 build；细纲与正文写作归 write（write 只新建设定档案，不改既有构建资产）。
+
+### 新技能：moshu-build（B1a）
+
+- **三职责**：开书构建（题材定位/世界观/人物/全书大纲/首卷卷纲 + 追踪 init）、设定/大纲/卷纲修订（impact_scan 影响分析→作者裁决→留痕→级联 stale 标记）、开新卷规划（消费卷复盘下卷方向候选）。
+- **配套**：marketplace 第 11 插件、moshu 路由表/判定表/next_step 开书与下卷规划转向、README/architecture 路由更新、doc-budget 构建路径组（Q5 裁决）、capability-wiring 两能力（story-construction/setting-revision）。
+- **共享接线**：13 个既有 references 副本 + genre-prose-cards 32 卡目录 + tracking_commit 脚本副本进 build（71 组 97 副本）；artifact-protocols/outline-structure-theory 因字节副本自带指向拆分目标的链接而撤回，改内联字段模板（B1a 审核沉淀）。
+
+### write 侧拆分（B1b）
+
+- **outline-workflow.md 承接细纲职责**：细纲模板/安全七检/分批建纲/中途补纲/细纲后设定补全/大纲锁定语义（等量迁移 + Q7 增量建档边界声明：write 只新建 `设定/` 档案）。
+- **workflow-setup.md 删除**，全仓引用清零（SKILL/chapter-core/artifact-protocols/outline-structure-theory/volume-review/outline-methods 及其副本/守卫扫描目标/evals 开书剧本）。
+- **路由五方一致**：moshu 路由表拆行（开书/建设定→build）、判定表开书与下卷规划转向、next_step S1/S6 suggested_skill=moshu-build、test-next-step 断言同步、README 示例（B1a 已改）。
+
+### 契约锁定与回流闭环（B1c）
+
+- behavior-contracts 11→14：`build-revision-requires-impact`（修订须先影响分析）、`write-no-existing-setting-edit`（write 不改既有设定）、`changelog-append-only`（变更日志只追加一行）；反向 fixture 覆盖三条新契约。
+- write 细纲失效检查扩展 **stale 消费**：写前遇 `<!-- stale:` 标记先对照变更日志复核，处理后才写并移除标记（只提示不自动改）。
+- volume-review 末步转向提示「下卷规划转 /moshu-build」。
+- 版本四轨对齐 v1.5.0（VERSION/marketplace metadata/README×2/CHANGELOG）；受改 skill frontmatter bump（moshu 1.2.0→1.3.0、moshu-write 1.3.0→1.4.0）。
+
 ## v1.4.0（2026-08-21）
 
 > 审计-V3 全量体检与整改：10 个 skill 逐份审计（`docs/审计-V3/`），2 条阻断级 + 45 条需修 + 48 条候选按总计划分 A→G 批修复。重点：审稿令牌注入链（批 6 防编造机制此前恒空转）、文风产物字段口径（与候选机检解析器错配，静默失效）、**部署 hook 追踪 schema 钉死 v4 与状态 v5 脱节（批 3a 遗漏面，会拦死写正文）**、多卷重起书三方死锁、番茄/晋江数据稀疏标记缺失、工单 write 旁路与跨文件去重。
