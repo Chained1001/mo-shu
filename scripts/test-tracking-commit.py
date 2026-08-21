@@ -731,6 +731,148 @@ class TrackingCommitTests(unittest.TestCase):
         second = report.read_bytes()
         self.assertEqual(first, second)
 
+    def _write_outline(self, *, volume: int = 1, text: str) -> None:
+        outline_dir = self.project / "大纲"
+        outline_dir.mkdir(exist_ok=True)
+        (outline_dir / f"卷纲_第{volume}卷.md").write_text(text, encoding="utf-8")
+
+    def _write_prose(self, chapter: int, *lines: str) -> None:
+        prose_dir = self.project / "正文"
+        prose_dir.mkdir(exist_ok=True)
+        (prose_dir / f"第{chapter}章.md").write_text("\n".join(lines), encoding="utf-8")
+
+    def test_benchmark_rhythm_check_reports_deviation_for_prose_hit(self) -> None:
+        # ① 坐标+锚点命中正文第 Y+2 章（计划5 → 实际7）→ 偏差 +2 且 JSON 结构断言
+        self.init(last_chapter=30)
+        self._write_outline(
+            text=(
+                "第1-20章\n\n"
+                "### 对标结构坐标\n"
+                "| 点位 | 对标章位 | 本卷计划章位 | 事件锚点（关键词） |\n"
+                "|---|---|---|---|\n"
+                "| 1/4 点 | 对标第3章 | 本卷第5章 | 江晨、钟嘉嘉 |\n"
+                "| 中点 | 对标第10章 | 本卷第10章 | 老兵采访 |\n"
+                "| 3/4 点 | 对标第15章 | 本卷第13章 | 五天百万粉 |\n"
+            )
+        )
+        self._write_prose(7, "江晨与钟嘉嘉在会议室复盘宣传片。")
+        json_out = Path(self.temporary.name) / "report.json"
+        self.run_tool(
+            "volume-report",
+            extra=("--from-chapter", "1", "--to-chapter", "15", "--json-out", str(json_out)),
+        )
+        payload = json.loads(json_out.read_text(encoding="utf-8"))
+        check = payload["benchmark_rhythm_check"]
+        self.assertIsNone(check["skipped"])
+        self.assertEqual(len(check["rows"]), 3)
+        front = next(row for row in check["rows"] if row["point"] == "1/4 点")
+        self.assertEqual(front["planned_chapter"], 5)
+        self.assertEqual(front["actual_chapter"], 7)
+        self.assertEqual(front["deviation"], 2)
+        self.assertEqual(front["status"], "ok")
+        self.assertTrue(any(hit["scope"] == "prose" for hit in front["hits"]))
+        self.assertEqual(len(check["degraded"]), 2)
+
+    def test_benchmark_rhythm_check_not_found_when_anchor_missing(self) -> None:
+        # ② 锚点未命中 → 该行 not_found（候选呈报，不失败）
+        self.init(last_chapter=30)
+        self._write_outline(
+            text=(
+                "第1-20章\n\n"
+                "### 对标结构坐标\n"
+                "| 点位 | 对标章位 | 本卷计划章位 | 事件锚点（关键词） |\n"
+                "|---|---|---|---|\n"
+                "| 1/4 点 | 对标第3章 | 本卷第5章 | 不存在词 |\n"
+            )
+        )
+        self._write_prose(7, "江晨与钟嘉嘉在会议室复盘宣传片。")
+        json_out = Path(self.temporary.name) / "report.json"
+        self.run_tool(
+            "volume-report",
+            extra=("--from-chapter", "1", "--to-chapter", "15", "--json-out", str(json_out)),
+        )
+        payload = json.loads(json_out.read_text(encoding="utf-8"))
+        check = payload["benchmark_rhythm_check"]
+        self.assertEqual(len(check["rows"]), 1)
+        self.assertEqual(check["rows"][0]["status"], "not_found")
+        self.assertIsNone(check["rows"][0]["actual_chapter"])
+        self.assertIsNone(check["rows"][0]["deviation"])
+
+    def test_benchmark_rhythm_check_skips_old_outline_without_coordinates(self) -> None:
+        # ③ 老卷纲无坐标表 → skipped_no_coordinates（①②③节不变，只多一行说明）
+        self.init(last_chapter=30)
+        self._write_outline(text="第1-20章\n\n## 其他节\n- 内容\n")
+        json_out = Path(self.temporary.name) / "report.json"
+        self.run_tool(
+            "volume-report",
+            extra=("--from-chapter", "1", "--to-chapter", "15", "--json-out", str(json_out)),
+        )
+        payload = json.loads(json_out.read_text(encoding="utf-8"))
+        check = payload["benchmark_rhythm_check"]
+        self.assertEqual(check["skipped"], "skipped_no_coordinates")
+        self.assertEqual(check["rows"], [])
+        text = (self.project / "追踪/卷报告_第1-15章.md").read_text(encoding="utf-8")
+        self.assertIn("## 伏笔清账", text)
+        self.assertIn("## 悬置预警", text)
+        self.assertIn("## 信息差未兑现", text)
+        self.assertIn("卷纲无「### 对标结构坐标」节", text)
+
+    def test_benchmark_rhythm_check_explicit_volume_and_auto_detect(self) -> None:
+        # ④ --volume 显式与自动探测各一态，均应定位到卷纲（非跳过）
+        self.init(last_chapter=30)
+        self._write_outline(
+            text=(
+                "第1-20章\n\n"
+                "### 对标结构坐标\n"
+                "| 点位 | 对标章位 | 本卷计划章位 | 事件锚点（关键词） |\n"
+                "|---|---|---|---|\n"
+                "| 1/4 点 | 对标第3章 | 本卷第5章 | 江晨 |\n"
+            )
+        )
+        self._write_prose(7, "江晨复盘宣传片。")
+        explicit = Path(self.temporary.name) / "explicit.json"
+        self.run_tool(
+            "volume-report",
+            extra=("--from-chapter", "1", "--to-chapter", "15", "--volume", "1", "--json-out", str(explicit)),
+        )
+        check_explicit = json.loads(explicit.read_text(encoding="utf-8"))["benchmark_rhythm_check"]
+        self.assertIsNone(check_explicit["skipped"])
+        auto = Path(self.temporary.name) / "auto.json"
+        self.run_tool(
+            "volume-report",
+            extra=("--from-chapter", "1", "--to-chapter", "15", "--json-out", str(auto)),
+        )
+        check_auto = json.loads(auto.read_text(encoding="utf-8"))["benchmark_rhythm_check"]
+        self.assertIsNone(check_auto["skipped"])
+        self.assertEqual(len(check_auto["rows"]), 1)
+
+    def test_benchmark_rhythm_check_is_deterministic_across_runs(self) -> None:
+        # ⑤ 确定性重放（同输入两遍逐字节一致）
+        self.init(last_chapter=30)
+        self._write_outline(
+            text=(
+                "第1-20章\n\n"
+                "### 对标结构坐标\n"
+                "| 点位 | 对标章位 | 本卷计划章位 | 事件锚点（关键词） |\n"
+                "|---|---|---|---|\n"
+                "| 1/4 点 | 对标第3章 | 本卷第5章 | 江晨、钟嘉嘉 |\n"
+            )
+        )
+        self._write_prose(7, "江晨与钟嘉嘉复盘。")
+        json_out = Path(self.temporary.name) / "report.json"
+        self.run_tool(
+            "volume-report",
+            extra=("--from-chapter", "1", "--to-chapter", "15", "--json-out", str(json_out)),
+        )
+        first_json = json_out.read_bytes()
+        first_md = (self.project / "追踪/卷报告_第1-15章.md").read_bytes()
+        self.run_tool(
+            "volume-report",
+            extra=("--from-chapter", "1", "--to-chapter", "15", "--json-out", str(json_out)),
+        )
+        self.assertEqual(first_json, json_out.read_bytes())
+        self.assertEqual(first_md, (self.project / "追踪/卷报告_第1-15章.md").read_bytes())
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

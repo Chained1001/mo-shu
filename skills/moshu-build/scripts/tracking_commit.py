@@ -50,6 +50,13 @@ EVENT_ID = re.compile(r"^E\d{3,}$")
 GAP_ID = re.compile(r"^G\d{3,}$")
 READER_KNOWN = ("未知", "部分已知", "已知")
 GAP_STATUSES = ("登记", "已兑现", "已放弃")
+# 卷报告第④节「对标节奏对照」（批B2）：坐标表固化格式与确定性对照（候选呈报，零 LLM）。
+VOLUME_OUTLINE_RE = re.compile(r"卷纲_第0*(\d+)卷")
+VOLUME_RANGE_RE = re.compile(r"第\s*(\d+)\s*[-—~至]\s*(\d+)\s*章")
+PROSE_CHAPTER_RE = re.compile(r"^第0*(\d+)章.*\.md$")
+BENCHMARK_HEADING = "### 对标结构坐标"
+BENCHMARK_POINTS = ("1/4 点", "中点", "3/4 点")
+BENCHMARK_PLANNED_RE = re.compile(r"第\s*(\d+)\s*章")
 # 知情人上限对齐 timeline 事件 characters 上限（12），不自造新数。
 KNOWERS_MAX = 12
 # 伏笔悬置预警阈值（mo-shu 自定）：status=已埋 且 距最近变动章 >= 阈值 时，
@@ -1320,6 +1327,256 @@ def check_project(project: Path) -> dict[str, Any]:
     return state
 
 
+def _try_read_utf8(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8")
+    except OSError:
+        return ""
+
+
+def locate_volume_outline(
+    project: Path,
+    from_chapter: int,
+    to_chapter: int,
+    volume: int | None,
+) -> tuple[Path | None, str | None]:
+    """定位第④节要对照的卷纲。返回 (path, skipped_reason)。
+
+    --volume 显式指定 → 大纲/卷纲_第N卷.md；缺省时 glob 卷纲并按「第 X-Y 章」
+    章节范围正则探测包含 [from,to] 的唯一卷。无法定位（零卷/多卷命中/范围未识别/
+    显式卷缺失）→ path=None, skipped="skipped_ambiguous_outline"。只读探测，不失败。
+    """
+    outline_dir = project / "大纲"
+    if volume is not None:
+        for path in outline_dir.glob("卷纲_*.md"):
+            match = VOLUME_OUTLINE_RE.match(path.name)
+            if match and int(match.group(1)) == volume:
+                return path, None
+        return None, "skipped_ambiguous_outline"
+    candidates: list[Path] = []
+    for path in sorted(outline_dir.glob("卷纲_*.md")):
+        match = VOLUME_OUTLINE_RE.match(path.name)
+        if not match:
+            continue
+        text = _try_read_utf8(path)
+        range_match = VOLUME_RANGE_RE.search(text)
+        if (
+            range_match
+            and int(range_match.group(1)) <= from_chapter
+            and to_chapter <= int(range_match.group(2))
+        ):
+            candidates.append(path)
+    if len(candidates) == 1:
+        return candidates[0], None
+    return None, "skipped_ambiguous_outline"
+
+
+def parse_benchmark_coordinates(text: str) -> list[dict[str, Any]] | None:
+    """解析卷纲的「### 对标结构坐标」表。无该节返回 None。
+
+    只认点位（1/4 点 / 中点 / 3/4 点）开头的表行；表行在空行或非表行处截断。
+    """
+    lines = text.splitlines()
+    start = None
+    for index, line in enumerate(lines):
+        if line.strip() == BENCHMARK_HEADING:
+            start = index
+            break
+    if start is None:
+        return None
+    rows: list[dict[str, Any]] = []
+    for line in lines[start + 1 :]:
+        stripped = line.strip()
+        if not stripped or not stripped.startswith("|"):
+            if rows:
+                break
+            continue
+        cells = [cell.strip() for cell in stripped.strip("|").split("|")]
+        if len(cells) < 4:
+            continue
+        point = cells[0]
+        if point not in BENCHMARK_POINTS:
+            continue
+        benchmark_chapter = cells[1] or "—"
+        planned_text = cells[2]
+        anchors_text = cells[3]
+        planned_match = BENCHMARK_PLANNED_RE.search(planned_text)
+        if planned_match:
+            planned_chapter: int | None = int(planned_match.group(1))
+            status = "ok"
+        else:
+            planned_chapter = None
+            status = "unparseable"
+        anchors = [part for part in re.split(r"[、，,;；]+", anchors_text) if part]
+        rows.append(
+            {
+                "point": point,
+                "benchmark_chapter": benchmark_chapter,
+                "planned_chapter": planned_chapter,
+                "anchors": anchors,
+                "status": status,
+                "actual_chapter": None,
+                "deviation": None,
+                "hits": [],
+            }
+        )
+    return rows
+
+
+def _grep_anchor_lines(
+    chapter_file: Path, chapter: int, anchors: list[str], content: str
+) -> list[dict[str, Any]]:
+    hits: list[dict[str, Any]] = []
+    for line_no, line in enumerate(content.splitlines(), start=1):
+        if any(anchor in line for anchor in anchors):
+            hits.append(
+                {
+                    "scope": "prose",
+                    "chapter": chapter,
+                    "file": str(chapter_file),
+                    "line": line_no,
+                    "text": line.strip(),
+                }
+            )
+    return hits
+
+
+def _find_prose_anchor(
+    project: Path, from_chapter: int, to_chapter: int, anchors: list[str]
+) -> tuple[int | None, list[dict[str, Any]]]:
+    """正文逐章升序扫描，首个含任一锚点的章即实际落点；附命中明细（文件:行）。"""
+    prose_dir = project / "正文"
+    ordered: list[tuple[int, Path]] = []
+    for chapter_file in prose_dir.glob("第*.md"):
+        match = PROSE_CHAPTER_RE.match(chapter_file.name)
+        if match:
+            chapter = int(match.group(1))
+            if from_chapter <= chapter <= to_chapter:
+                ordered.append((chapter, chapter_file))
+    ordered.sort(key=lambda pair: pair[0])
+    for chapter, chapter_file in ordered:
+        content = _try_read_utf8(chapter_file)
+        hits = _grep_anchor_lines(chapter_file, chapter, anchors, content)
+        if hits:
+            return chapter, hits
+    return None, []
+
+
+def _find_timeline_anchor(state: dict[str, Any], anchors: list[str]) -> list[dict[str, Any]]:
+    """辅助：timeline 事件 objective_fact/reader_knowledge 命中 → 事件 id + 首记章。"""
+    hits: list[dict[str, Any]] = []
+    timeline = state.get("timeline", {})
+    for event_id in sorted(timeline):
+        event = timeline[event_id]
+        for field in ("objective_fact", "reader_knowledge"):
+            if any(anchor in (event.get(field) or "") for anchor in anchors):
+                hits.append(
+                    {
+                        "scope": "timeline",
+                        "event_id": event_id,
+                        "field": field,
+                        "first_recorded_chapter": event.get("first_recorded_chapter"),
+                    }
+                )
+                break
+    return hits
+
+
+def _resolve_anchor_row(
+    project: Path,
+    from_chapter: int,
+    to_chapter: int,
+    state: dict[str, Any],
+    row: dict[str, Any],
+) -> dict[str, Any]:
+    anchors: list[str] = row["anchors"]
+    if not anchors:
+        row.update(status="unanchored", actual_chapter=None, deviation=None, hits=[])
+        return row
+    actual_chapter, prose_hits = _find_prose_anchor(project, from_chapter, to_chapter, anchors)
+    timeline_hits = _find_timeline_anchor(state, anchors)
+    row["hits"] = prose_hits + timeline_hits
+    if actual_chapter is None:
+        row.update(status="not_found", actual_chapter=None, deviation=None)
+        return row
+    row["actual_chapter"] = actual_chapter
+    planned = row["planned_chapter"]
+    if planned is None:
+        row["status"] = "unparseable"
+        row["deviation"] = None
+        return row
+    row["deviation"] = actual_chapter - planned
+    row["status"] = "ok"
+    return row
+
+
+def run_benchmark_rhythm_check(
+    project: Path,
+    from_chapter: int,
+    to_chapter: int,
+    state: dict[str, Any],
+    volume: int | None = None,
+) -> dict[str, Any]:
+    """第④节确定性对照：定位卷纲 → 解析坐标表 → 锚点 grep 实际落点 → 偏差。
+
+    候选性质：不改退出码、不写任何来自本节的 state；返回 rows/skipped/degraded 结构。
+    """
+    outline_path, skipped = locate_volume_outline(project, from_chapter, to_chapter, volume)
+    if skipped is not None:
+        return {"rows": [], "skipped": skipped, "degraded": []}
+    text = _try_read_utf8(outline_path)
+    rows = parse_benchmark_coordinates(text)
+    if rows is None:
+        return {"rows": [], "skipped": "skipped_no_coordinates", "degraded": []}
+    resolved = [_resolve_anchor_row(project, from_chapter, to_chapter, state, row) for row in rows]
+    degraded = [row for row in resolved if row["status"] != "ok"]
+    return {"rows": resolved, "skipped": None, "degraded": degraded}
+
+
+def _hit_desc(hit: dict[str, Any]) -> str:
+    if hit["scope"] == "prose":
+        return f"正文{hit['chapter']}章 {hit['file']}:{hit['line']}（{hit['text']}）"
+    return f"事件库 {hit['event_id']} 第{hit['first_recorded_chapter']}章（{hit['field']}）"
+
+
+def render_benchmark_rhythm_check(check: dict[str, Any]) -> list[str]:
+    skip_reasons = {
+        "skipped_ambiguous_outline": "卷纲定位失败：未找到唯一卷纲（零卷/多卷命中/范围未识别/显式卷缺失）",
+        "skipped_no_coordinates": "卷纲无「### 对标结构坐标」节（老卷纲兼容路径，只多一行说明）",
+    }
+    lines = ["## 对标节奏对照（候选呈报）", ""]
+    if check["skipped"]:
+        lines.append(f"- 跳过：{skip_reasons.get(check['skipped'], check['skipped'])}")
+    elif not check["rows"]:
+        lines.append("- 卷纲坐标表为空，无对照项。")
+    else:
+        lines.extend(
+            [
+                "| 点位 | 对标章位 | 本卷计划章位 | 实际落点 | 偏差 | 状态 |",
+                "|---|---|---|---|---|---|",
+            ]
+        )
+        for row in check["rows"]:
+            benchmark = row["benchmark_chapter"]
+            planned = f"第{row['planned_chapter']}章" if row["planned_chapter"] is not None else "—"
+            actual = f"第{row['actual_chapter']}章" if row["actual_chapter"] is not None else "—"
+            deviation = f"{row['deviation']:+d}" if row["deviation"] is not None else "—"
+            lines.append(
+                f"| {row['point']} | {benchmark} | {planned} | {actual} | {deviation} | {row['status']} |"
+            )
+        lines.append("")
+        for row in check["rows"]:
+            if row["hits"]:
+                lines.append(
+                    f"- {row['point']}：命中 {len(row['hits'])} 处——"
+                    + "；".join(_hit_desc(hit) for hit in row["hits"])
+                )
+    lines.append("")
+    lines.append("- 说明：第④节为候选性质偏差呈报，不影响退出码、不写任何状态；判读归 AI 与作者。")
+    lines.append("")
+    return lines
+
+
 def render_volume_report(
     *,
     from_chapter: int,
@@ -1328,6 +1585,7 @@ def render_volume_report(
     settled: dict[str, list[dict[str, Any]]],
     suspended: list[dict[str, Any]],
     open_gaps: list[dict[str, Any]],
+    benchmark_rhythm_check: dict[str, Any],
 ) -> str:
     """卷报告 Markdown：伏笔四态清账（卷内）+ 悬置预警 + 信息差未兑现 + 分层摘要。
 
@@ -1374,6 +1632,7 @@ def render_volume_report(
             f"最近变更第{row['updated_chapter']}章｜{row['note']}"
         )
     lines.append("")
+    lines.extend(render_benchmark_rhythm_check(benchmark_rhythm_check))
     return "\n".join(lines)
 
 
@@ -1382,6 +1641,7 @@ def volume_report(
     from_chapter: int,
     to_chapter: int,
     json_out: Path | None,
+    volume: int | None = None,
 ) -> dict[str, Any]:
     """卷报告子命令：只读 state，按调用方给的起止章出确定性账表。
 
@@ -1428,6 +1688,9 @@ def volume_report(
         if row["status"] == "登记"
     ]
 
+    # ④ 对标节奏对照（候选呈报；只读，不改变退出码、不写状态）
+    benchmark_rhythm_check = run_benchmark_rhythm_check(project, from_chapter, to_chapter, state, volume)
+
     report_payload = render_volume_report(
         from_chapter=from_chapter,
         to_chapter=to_chapter,
@@ -1435,6 +1698,7 @@ def volume_report(
         settled=settled,
         suspended=suspended,
         open_gaps=open_gaps,
+        benchmark_rhythm_check=benchmark_rhythm_check,
     )
     relative = f"卷报告_第{from_chapter}-{to_chapter}章.md"
     write_if_changed(tracking / relative, report_payload)
@@ -1456,6 +1720,7 @@ def volume_report(
                     "suspension_warnings": suspended,
                     "open_information_gaps": open_gaps,
                     "summary": summary,
+                    "benchmark_rhythm_check": benchmark_rhythm_check,
                 }
             ),
         )
@@ -1482,6 +1747,12 @@ def build_parser() -> argparse.ArgumentParser:
     volume_parser.add_argument("--from-chapter", type=int, required=True, help="卷起章（含）")
     volume_parser.add_argument("--to-chapter", type=int, required=True, help="卷止章（含）")
     volume_parser.add_argument(
+        "--volume",
+        type=int,
+        default=None,
+        help="可选：指定卷号以定位卷纲（缺省自动探测含该章节范围的唯一卷）",
+    )
+    volume_parser.add_argument(
         "--json-out",
         type=Path,
         default=None,
@@ -1498,7 +1769,7 @@ def main() -> int:
         elif args.command == "commit":
             result = apply_transaction(args.project, read_json(args.input))
         elif args.command == "volume-report":
-            result = volume_report(args.project, args.from_chapter, args.to_chapter, args.json_out)
+            result = volume_report(args.project, args.from_chapter, args.to_chapter, args.json_out, args.volume)
         else:
             require(args.warn_chapters >= 1, "--warn-chapters must be >= 1")
             result = check_project(args.project)
