@@ -146,7 +146,7 @@ advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界�
 
 ### D4 追踪事务提交（每章一次）
 
-按 workflow-daily「每章提交一次追踪事务」构造 JSON（含可选的 `information_gap_changes` 信息差登记，见 workflow-daily 第 1 条），执行 `scripts/tracking_commit.py commit`。工具先在内存完成全部合并/渲染/容量校验，再生成逐章记录、角色/伏笔/时间线/上下文派生视图，最后原子替换 `_tracking-state.json`。失败按类型处理（分类与恢复动作见 [recovery-protocol.md](recovery-protocol.md)）：**写入失败**（工具不可用、权限被拒、磁盘满）时 `_tracking-state.json` 未推进，保留原事务 JSON 直接重跑同一 `commit`；**校验失败**要按报错改事务本身再提交，重跑同一份结果不变；**派生视图被手改**导致 `check` 报不一致时，重新提交该章的 `mode=revision` 事务让工具整份重建（`expected_state_revision` 取 `追踪/_tracking-state.json` 的 `state_revision` 字段——`check` 失败时只往 stderr 打 ERROR，不输出 JSON）。任何情况都不手改派生文件。本章首次引入会复用的具名角色/势力时，仍按 `references/workflow-setup.md` 的 Phase 3 规则补建静态 `设定/` 档案。
+按 workflow-daily「每章提交一次追踪事务」构造 JSON（含可选的 `information_gap_changes` 信息差登记，见 workflow-daily 第 1 条），执行 `scripts/tracking_commit.py commit`。工具先在内存完成全部合并/渲染/容量校验，再生成逐章记录、角色/伏笔/时间线/上下文派生视图，最后原子替换 `_tracking-state.json`。失败按类型处理（分类与恢复动作见 [recovery-protocol.md](recovery-protocol.md)）：**写入失败**（工具不可用、权限被拒、磁盘满）时 `_tracking-state.json` 未推进，保留原事务 JSON 直接重跑同一 `commit`；**校验失败**要按报错改事务本身再提交，重跑同一份结果不变；**派生视图被手改**导致 `check` 报不一致时，重新提交该章的 `mode=revision` 事务让工具整份重建（`expected_state_revision` 取 `追踪/_tracking-state.json` 的 `state_revision` 字段——`check` 失败时只往 stderr 打 ERROR，不输出 JSON）。任何情况都不手改派生文件。本章首次引入会复用的具名角色/势力时，仍按 `references/outline-workflow.md` 的「细纲后设定补全」规则补建静态 `设定/` 档案。
 
 **事务构造 9 条细则**（日更/单章共用）：
 

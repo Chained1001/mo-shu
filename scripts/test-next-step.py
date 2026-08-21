@@ -66,6 +66,8 @@ class NextStepTests(unittest.TestCase):
         self.write(project / ".story-deployed")
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S1")
+        self.assertEqual(payload["suggested_skill"], "moshu-build")
+        self.assertIn("/moshu-build", payload["next_action"])
 
     def test_s2_when_prose_empty_or_missing(self) -> None:
         project = self.make_project()
@@ -116,6 +118,8 @@ class NextStepTests(unittest.TestCase):
         self.init_state(project, 5)
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S6")
+        self.assertEqual(payload["suggested_skill"], "moshu-build")
+        self.assertIn("/moshu-build", payload["next_action"])
 
     def test_volume_range_unparsed_degrades_to_s4(self) -> None:
         project = self.make_project()

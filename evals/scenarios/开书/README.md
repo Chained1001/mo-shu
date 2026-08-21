@@ -1,17 +1,17 @@
 # 场景剧本：开书
 
-- 定位：真实 Claude Code 会话走查**新书开书**（`/moshu-write` Phase 1-3）的端到端行为。
+- 定位：真实 Claude Code 会话走查**新书开书**（`/moshu-build` 开书构建 → `/moshu-write` 接力首批细纲）的端到端行为。
 - 用途：给真人带 agent 走查用；机检项可被 `check-eval-scenarios.sh` 静态校验，人工项需走查者判断。
 - 前置：可选 `deploy + scan/analyze`（已部署 skill 包；扫榜/拆文可跳过，用"无对标"合法模式）。
 - 备注：批 4（下一步判定）已跳过（作者决策 2026-08-20），本剧本不含 next_step 断言。
 
 ## 步骤
 
-1. 新开 Claude Code 会话，输入 `/moshu-write`，确认路由到开书流程（Phase 1）。
-2. 走 Phase 1 选题/题材定位（可无对标）。
-3. 走 Phase 2 核心设定（题材定位、角色、世界观，按需）。
-4. 走 Phase 3 大纲（`大纲/大纲.md` → `卷纲_第1卷.md` → 首批细纲）。
-5. 初始化追踪：执行 `tracking_commit.py init`（构造 init JSON，schema_version=2）。
+1. 新开 Claude Code 会话，输入 `/moshu-build`，确认路由到开书构建流程。
+2. 走构建 Phase 1 选题/题材定位（可无对标）。
+3. 走构建 Phase 2 核心设定（题材定位、角色、世界观，按需）。
+4. 走构建 Phase 3 卷级大纲（`大纲/大纲.md` → `卷纲_第1卷.md` → 追踪 init）。
+5. 转 `/moshu-write` 接力首批细纲：按 outline-workflow 默认分批建纲（`大纲/细纲_第001章.md` 起，默认 5 章停靠）。
 
 ## 断言
 
@@ -26,4 +26,4 @@
 | 卷纲「章节范围」与首批细纲章号一致 | 过：一致；不过：矛盾 | 人工项 |
 | 无对标时全程未 fail-fast（合法无对标模式） | 过：流程正常走完；不过：被"缺对标"阻断 | 人工项 |
 
-> 规则依据：`skills/moshu-write/SKILL.md`（Phase 1-3）与 `skills/moshu-write/references/workflow-setup.md`。
+> 规则依据：`skills/moshu-build/SKILL.md`、`skills/moshu-build/references/workflow-build.md`（开书构建）与 `skills/moshu-write/references/outline-workflow.md`（首批细纲接力）。

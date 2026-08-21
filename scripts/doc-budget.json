@@ -32,9 +32,9 @@
       "why": "D3 ????????13 ??? + ???????1320 ??????????? chapter-core.md???????????"
     },
     {
-      "path": "skills/moshu-write/references/workflow-setup.md",
-      "budget": 13600,
-      "why": "开书/补纲路径加载。预算 12300→12400：首批细纲批次边界改为默认 5 章（原 10 章封顶，实测痛点：一次性 10 章费 token 且正文变化导致后文细纲老化），批次规则值得每个开书会话付；→12500：开新卷衔接卷复盘候选（全面升级）；→12900：方法论补强（细纲时间锚点/世界观可选模块/信息差 INF 引用/创意约束对照，开书路径付）；→13100：批末交叉核对（卷纲↔细纲埋设章/时间口径/钩子衔接，实测抓到产物矛盾）；→13300：设定建档标计划状态；→13500：灵感种子分支（开书 Phase 1 可选收敛器，引火方法论补学，模糊灵感场景路由句，开书路径付）；→13600：细纲认知边界+信息留白字段（笔枢 info_boundary/info_voids 补学，开书路径付）"
+      "path": "skills/moshu-write/references/outline-workflow.md",
+      "budget": 6986,
+      "why": "细纲工作流（自 write 侧开书工作流细纲段拆分，V2.1 B1b；细纲/中途补纲/设定补全路径每次会话付，预算=实测×1.05 取整）"
     },
     {
       "path": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
@@ -78,8 +78,8 @@
     },
     {
       "path": "skills/moshu/SKILL.md",
-      "budget": 4900,
-      "why": "触发 /moshu 时入口全量进上下文（审计-V3 G-3 登记：实测约 4.66K 去空白；路由/状态判定/dashboard 说明防无声膨胀）"
+      "budget": 5186,
+      "why": "触发 /moshu 时入口全量进上下文（审计-V3 G-3 登记：实测约 4.66K 去空白；路由/状态判定/dashboard 说明防无声膨胀）；→5186：B1b 路由切换净增（路由表拆 build/write 两行 + 判定表 build 转向，路由正确性值得每次会话付，预算=实测×1.05 取整）"
     },
     {
       "path": "skills/moshu-scan/SKILL.md",
@@ -109,7 +109,7 @@
     {
       "path": "skills/moshu-build/references/workflow-build.md",
       "budget": 8055,
-      "why": "开书构建/开新卷流程（自 workflow-setup 构建段改写，V2.1 B1a；构建会话触发即全量加载——Q5 裁决，预算=实测×1.05 取整；验收后按最终实测 7672 校准）"
+      "why": "开书构建/开新卷流程（自 write 侧开书工作流构建段改写，V2.1 B1a；构建会话触发即全量加载——Q5 裁决，预算=实测×1.05 取整；验收后按最终实测 7672 校准）"
     },
     {
       "path": "skills/moshu-build/references/revision-workflow.md",
@@ -129,10 +129,10 @@
     },
     {
       "label": "长篇开书",
-      "budget": 22750,
+      "budget": 16186,
       "files": [
         "skills/moshu-write/SKILL.md",
-        "skills/moshu-write/references/workflow-setup.md"
+        "skills/moshu-write/references/outline-workflow.md"
       ]
     },
     {

@@ -70,7 +70,7 @@ flowchart LR
 flowchart TD
     S0[未部署 .story-deployed] -->|/moshu-setup| S1[无书名目录]
     S1 -->|/moshu-scan 选题| S1
-    S1 -->|/moshu-write 开书| S2[有书但无正文]
+    S1 -->|/moshu-build 开书| S2[有书但无正文]
     S2 -->|/moshu-write 写第1章| S3[有正文但下一章无细纲]
     S3 -->|/moshu-write 补纲| S4[下一章有细纲未写]
     S4 -->|/moshu-write 日更| S5[已写至卷末]

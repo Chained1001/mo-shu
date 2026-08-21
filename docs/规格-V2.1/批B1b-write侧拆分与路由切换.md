@@ -22,7 +22,7 @@
 
 | 文件 | 改什么 | 注意点 |
 |---|---|---|
-| `skills/moshu-write/references/outline-workflow.md`（新） | 从 workflow-setup 迁移重组：F1 全部段落 + **增量建档边界声明**（Q7：write 只新建 `设定/` 档案，不修改既有设定/大纲文件；修改既有=转 /moshu-build）+ 开书时"设定/大纲/卷纲构建已移 /moshu-build，本文件只管细纲"头注 | 内容迁移保持原文措辞（等量迁移，不趁机改写）；doc-budget 等量登记 |
+| `skills/moshu-write/references/outline-workflow.md`（新） | 从 workflow-setup 迁移重组：F1 全部段落 + **增量建档边界声明**（Q7：write 只新建 `设定/` 档案，不修改既有设定/大纲文件；修改既有=转 /moshu-build）+ 开书时"设定/大纲/卷纲构建已移 /moshu-build，本文件只管细纲"头注 | 内容迁移保持原文措辞（等量迁移，不趁机改写）；doc-budget 等量登记；**B1a 审核沉淀：迁移后逐链接自查可达性**——原文引用的 references（opening-design 等）须在 write 侧可达，不可达者要么该文件本就在 write（多数是），要么按 B1a 模式处理（内联/措辞化），禁止留 broken-link 给 static-check |
 | `skills/moshu-write/references/workflow-setup.md` | **删除** | 删除前完成全部引用切换（同提交） |
 | `skills/moshu-write/SKILL.md` | ①开书 Phase 描述改写为"开书/设定/大纲/卷纲 → /moshu-build（本 skill 接力细纲与写作）"；②:47 补纲路由改指 outline-workflow.md；③其余 workflow-setup 引用改指新文件 | 路由关键词（连载/回炉/重写/补纲）留 write 不动 |
 | `skills/moshu-write/references/chapter-core.md` | :149 `references/workflow-setup.md` → `references/outline-workflow.md` | 一处 |

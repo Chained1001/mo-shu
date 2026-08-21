@@ -42,13 +42,13 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 
 | 场景 | 触发条件 | 执行流程 |
 |------|----------|----------|
-| **开书** | "帮我开书" / 项目目录为空 | Phase 1→2→3：建项目、核心设定、卷纲与**首批细纲（默认 5 章，可指定章数，如"先出 3 章细纲"）**；**默认停在细纲交付，不自动写正文** |
-| **写指定章** | "写第 N 章" / "写第1章" / "开书并写首章" | Phase 4 单章写作；只写用户点名的章节，写完 Phase 5 检查后停止。空项目/无细纲（如"开书并写首章"）先补 Phase 1→3 再写点名章 |
-| **补纲/扩纲** | "出细纲/补细纲/规划下一段剧情/接下来写XX剧情（先出细纲）" **且**项目已有大纲 | Phase 3「中途补纲/扩纲小流程」（见 `references/workflow-setup.md`）：选同类剧情单元→追加剧情单元卡→按剧情批滚动补细纲；**默认停在细纲交付，不自动写正文** |
+| **开书/设定/大纲/卷纲** | "帮我开书" / 项目目录为空 | → `/moshu-build` 开书构建（题材定位、世界观、人物、全书大纲、首卷卷纲）；本 skill 接力**细纲与写作**（见 [outline-workflow.md](references/outline-workflow.md)） |
+| **写指定章** | "写第 N 章" / "写第1章" / "开书并写首章" | Phase 4 单章写作；只写用户点名的章节，写完 Phase 5 检查后停止。空项目/无细纲（如"开书并写首章"）先经 /moshu-build 建纲再写点名章 |
+| **补纲/扩纲** | "出细纲/补细纲/规划下一段剧情/接下来写XX剧情（先出细纲）" **且**项目已有大纲 | [outline-workflow.md](references/outline-workflow.md)「中途补纲/扩纲小流程」：选同类剧情单元→追加剧情单元卡→按剧情批滚动补细纲；**默认停在细纲交付，不自动写正文** |
 | **日更续写** | 关键词（"日更"/"续写"/"继续写"）**且**项目已有正文+追踪 | 加载 `references/workflow-daily.md` |
 | **大修** | "修改第X章" / "回炉" / "重写第X章" | 加载 `references/workflow-revision.md` |
 
-> **开新卷**：如果新卷引入新角色/势力/设定，先回 Phase 2 增量补充，再进 Phase 3 补充新卷细纲，最后 Phase 4 写作。如果纯延续，直接回 Phase 3。
+> **开新卷**：新卷构建（增量设定/卷纲/新卷规划）→ `/moshu-build` 开新卷（消费卷复盘下卷方向候选）；本 skill 接力新卷细纲与写作（细纲见 [outline-workflow.md](references/outline-workflow.md)）。
 
 ### 裸调用与停靠点（防失控）
 
@@ -58,7 +58,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 - 已有设定/大纲但无正文 → 建议说「写第1章」「只写1章」或「日更2章」；
 - 已有正文+追踪 → 展示最后完成章节与下一章细纲状态，建议说「日更3章」「只写1章」「逐章确认」或「修改第X章」。
 
-**开书默认停靠**：用户只说"开书/写大纲/帮我开书"时，完成 Phase 1→3 与首批细纲（默认 5 章，用户可指定更少或更多，上限 10）后停止，报告已生成文件和下一步命令；除非用户同一句明确说"并写第1章/写 N 章/日更"，否则不要自动进入 Phase 4 正文。
+**开书默认停靠（build 侧）**：用户只说"开书/写大纲/帮我开书"时，由 `/moshu-build` 完成开书构建与首批细纲（默认 5 章，用户可指定更少或更多，上限 10）后停止，报告已生成文件和下一步命令；除非用户同一句明确说"并写第1章/写 N 章/日更"，否则不要自动进入正文写作。
 
 **正文批量上限**：写正文必须由用户显式给出章节范围或日更意图。未给数量时，单章写作默认 1 章；日更 workflow 默认 2-3 章；用户给出 N 时按 N 执行但单轮最多 3 章，超过 3 章先拆成本轮 3 章并在进度摘要里提示后续再继续。
 
@@ -78,25 +78,15 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 
 ### Phase 1：确认选题方向
 
-消费 `选题决策.md`、确认题材方向、做对标发现并登记主对标书。
-
-**执行前先读 [references/workflow-setup.md](references/workflow-setup.md) 的「Phase 1：确认选题方向」节**，按其中步骤执行。只有模糊灵感、没方向没选题时，先灵感种子收敛（[idea-seed.md](references/idea-seed.md)）再提问。
-
----
+> **本 Phase（选题/对标/题材定位构建）已移 `/moshu-build`**；本 skill 不再执行开书构建，细纲与正文在此接力。
 
 ### Phase 2：核心设定
 
-产出核心设定表，并创建 `设定/关系.md`、`设定/题材定位.md`、`设定/题材正文提示卡.md`。
-
-**执行前先读 [references/workflow-setup.md](references/workflow-setup.md) 的「Phase 2：核心设定」节**。
-
----
+> **本 Phase（核心设定/设定建档）已移 `/moshu-build`**；细纲后设定补全见 [outline-workflow.md](references/outline-workflow.md)「细纲后设定补全」。
 
 ### Phase 3：大纲搭建
 
-产出全书体量与阶段总览、卷级大纲、逐章细纲；含大纲安全七检、大纲安全审查、分批建纲与「中途补纲/扩纲小流程」。
-
-**执行前先读 [references/workflow-setup.md](references/workflow-setup.md) 的「Phase 3：大纲搭建」节**。
+> **卷级大纲/卷纲构建已移 `/moshu-build`**；细纲（全书每章）模板、七检/审查、分批建纲、中途补纲见 [outline-workflow.md](references/outline-workflow.md)。
 
 ---
 
@@ -210,7 +200,7 @@ description: "长篇网文写作。从大纲到正文，辅助长篇网络小说
 | 女频写作 | **`references/female-audience-writing.md`**（女频长篇：核心原则/文案/题材/感情线长线/平台） | `references/genre-readers.md`（读者心理/平台差异）· `references/character-relations.md`（感情线总框架） |
 | 去AI味 | **`references/anti-ai-writing.md`**（AI指纹/核心规则/Show Don't Tell） | `references/banned-words.md`（禁用词扫描）· `references/quality-checklist.md`（成稿检查） |
 | 失败恢复 | **`references/recovery-protocol.md`**（A 环境/B 状态/C 主产物/D 模型四类失败分类与恢复动作） | `references/tracking-transaction.md`（事务重试语义）· `/moshu-import`（旧追踪迁移）· `/moshu-analyze`（拆解管道恢复机制） |
-| 卷复盘 | **`references/volume-review.md`**（卷末四步：伏笔清账/卷摘要/下卷规划/契约修订候选） | `references/workflow-setup.md`（开新卷增量流程）· `追踪/伏笔.md`（清账数据源）· `设定/题材定位.md`（终局储备与契约） |
+| 卷复盘 | **`references/volume-review.md`**（卷末四步：伏笔清账/卷摘要/下卷规划/契约修订候选） | `/moshu-build` 开新卷（消费下卷方向候选）· `追踪/伏笔.md`（清账数据源）· `设定/题材定位.md`（终局储备与契约） |
 | 起名 | **`references/naming-cards.md`**（NC-001~005：书名/章节名/卷名/角色名/绰号，冷路径） | — |
 
 ---

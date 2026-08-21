@@ -11,7 +11,8 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 
 | 用户意图 | 关键词示例 | 路由到 |
 |---|---|---|
-| 写长篇 | 开书、写大纲、长篇、连载、回炉、重写第X章 | `/moshu-write` |
+| 开书/建设定 | 开书、设定、世界观、写大纲、卷纲、修订设定 | `/moshu-build` |
+| 写长篇 | 长篇、连载、回炉、重写第X章 | `/moshu-write` |
 | 长篇拆文 | 拆文、分析这本书、黄金三章、深度拆解 | `/moshu-analyze` |
 | 长篇扫榜 | 长篇排行、什么火、起点/番茄/晋江/七猫 | `/moshu-scan` |
 | 选题决策 | 写什么能爆、帮我选题、选题方向 | `/moshu-scan` |
@@ -46,10 +47,10 @@ for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
 |---|---|---|
 | 1 | 无 `.story-deployed`（未部署） | `/moshu-setup` |
 | 2 | 无书名目录（无含 `追踪/` 或 `设定/` 的项目目录） | 开书引导（或先扫榜/拆文/选题） |
-| 3 | 有书但无 `正文/` | 开书 Phase 1-3（`/moshu-write`） |
+| 3 | 有书但无 `正文/` | 开书（`/moshu-build`） |
 | 4 | 有正文但下一章无细纲 | 补纲（`/moshu-write` 中途补纲/扩纲） |
 | 5 | 下一章有细纲未写 | 日更/写下一章（`/moshu-write`） |
-| 6 | 最新定稿章（追踪 last_committed_chapter）= 当前卷卷纲「章节范围」上界 | 卷复盘（`/moshu-write`，四步：伏笔清账/卷摘要/下卷规划/契约修订候选） |
+| 6 | 最新定稿章（追踪 last_committed_chapter）= 当前卷卷纲「章节范围」上界 | 卷复盘（`/moshu-write`，四步：伏笔清账/卷摘要/下卷规划/契约修订候选）；下卷规划转 `/moshu-build` |
 | 7 | 其余 | 询问意图（用路由表） |
 
 判定依据全部来自文件系统（.story-deployed / 拆文库 `_progress.md` / 细纲章号 vs 追踪 last_committed_chapter / 卷纲末章 / `.moshu-review/` 状态文件），不依赖会话记忆。会话启动时 session-start hook 已注入近况（写作进度/当前位置/未完成拆文），本判定在其之上给出"下一步"。

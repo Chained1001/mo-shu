@@ -25,9 +25,9 @@ Phase 3 建大纲时加载。包含大纲创建法、结构分级、节点设计
 | 黄金三章 / 开篇设计 | opening-design.md「黄金一章检查清单」「三大基点与核心模板」「七步法字数分配」 |
 | 题材写作公式 | genre-writing-formulas.md 按题材选公式（都市系统/玄幻仙侠/年代重生/宫闱宅斗/现代悬疑/架空历史） |
 | 对标节奏迁移 / 章节张弛 | outline-structure-theory.md「一级结构 = 对标书的剧情单元」「章节定位与张弛」 |
-| 防套路自检（规划后必过） | 本文件「反模式自查表」「剧情相似度/匹配度检查」「约束规则」+ workflow-setup.md 大纲安全七检段（细纲节前） |
-| 卷纲 / 细纲模板字段 | workflow-setup.md「细纲（全书每章）」+ artifact-protocols.md（大纲/卷纲/细纲模板） |
-| 卷末复盘 / 开新卷 | volume-review.md「四步」+ workflow-setup.md 开新卷段（Phase 2/3 增量） |
+| 防套路自检（规划后必过） | 本文件「反模式自查表」「剧情相似度/匹配度检查」「约束规则」+ outline-workflow.md 大纲安全七检段 |
+| 卷纲 / 细纲模板字段 | outline-workflow.md「细纲（第 N 章）」+ artifact-protocols.md（大纲/卷纲/细纲模板） |
+| 卷末复盘 / 开新卷 | volume-review.md「四步」+ /moshu-build 开新卷（增量补设定与卷纲） |
 
 > 用方法顺序建议：**先五步法/八节点定骨架 → 结构理论定类型 → 卷内用节奏/矛盾/弧线/反转填肉 → 防套路自检 → 模板落盘**。卡在哪一步就加载对应行，不必通读全部文件。
 

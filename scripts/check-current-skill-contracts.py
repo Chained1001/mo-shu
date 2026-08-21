@@ -1178,10 +1178,10 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
             )
         )
 
-    # 长篇的「对标发现」随 Phase 1-3 从 SKILL.md 搬进 workflow-setup.md（#269 减无条件加载），
+    # 长篇的「对标发现」随 B1a 拆分进 build 侧 workflow-build.md（开书构建段），
     # 断言跟着内容走。
     for relative in (
-        "skills/moshu-write/references/workflow-setup.md",
+        "skills/moshu-build/references/workflow-build.md",
         ):
         benchmark_discovery = repo_root / relative
         findings.extend(

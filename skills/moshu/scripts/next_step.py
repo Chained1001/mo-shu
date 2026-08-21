@@ -135,8 +135,8 @@ def main() -> int:
             "step": "S1",
             "evidence": ["无 正文/ 大纲/ 追踪 任一目录"],
             "last_committed_chapter": 0,
-            "next_action": "运行 /moshu-write 开书（Phase 1-3）",
-            "suggested_skill": "moshu-write",
+            "next_action": "运行 /moshu-build 开书（构建设定/大纲/卷纲；细纲与正文接力 /moshu-write）",
+            "suggested_skill": "moshu-build",
         })
         return 0
 
@@ -230,8 +230,8 @@ def main() -> int:
             "step": "S6",
             "evidence": evidence + [f"第 {volume_number} 卷卷复盘已完成"],
             "last_committed_chapter": last,
-            "next_action": "下卷规划（回 /moshu-write 开新卷增量流程）",
-            "suggested_skill": "moshu-write",
+            "next_action": "下卷规划（/moshu-build，消费卷复盘方向候选）",
+            "suggested_skill": "moshu-build",
         })
         return 0
 
