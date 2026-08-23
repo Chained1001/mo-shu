@@ -124,6 +124,8 @@ jobs:
         run: bash scripts/test-writing-pipeline.sh
       - name: Impact-scan regression (build ring)
         run: python3 scripts/test-impact-scan.py
+      - name: check_outline regression (build ring)
+        run: python3 scripts/test-check-outline.py
       # Generate a GBK-class locale so the hook test's Part 2 runs end-to-end here,
       # not just on macOS. Best-effort: if it fails the test self-skips Part 2.
       - name: Generate zh_CN.GBK locale (Chinese Windows simulation)
