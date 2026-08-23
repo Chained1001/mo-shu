@@ -107,6 +107,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-agent-template-rules.sh` — agent 模板纪律守卫（禁互引 / `agent-references/` 挂载点存在 / 共享纪律单副本）
 - `scripts/check-eval-scenarios.sh` — 场景剧本静态校验（3 剧本存在非空/断言节/机检标记 ≥3/引用路径存在；不跑 LLM）
 - `scripts/check-reference-closure.sh` — 引用可达性守卫（批B4 方案 A 资产宇宙）：`skills/*/references/*.md` 中「资产宇宙内」文件名提及须在本 skill 域可达，跨域合法提及走理由白名单；与 static-check 互补（链接 vs 文件名文本提及）
+- `scripts/check-route-write.sh` — 路由残留守卫（批B8）：表格行第二列=moshu-write 的语境两级判定（构建域词 blocking / 写作域白名单 / 未知 candidate 不阻断）；只锁表格行，不扫 prose
 - 采集脚本 `node --check` 语法校验
 
 以上为代表性列举；**强制清单按 `.github/workflows/cross-platform.yml` 为准**，每个脚本的用途与触发时机见 [scripts/README.md](scripts/README.md)。另有 `.github/workflows/cli-compat.yml` 在相关 PR、每周定时和手动触发时安装官方当前版本，真实运行 Claude Code 的无鉴权 smoke。
@@ -146,6 +147,8 @@ bash scripts/check-capability-wiring.sh
 python3 scripts/test-capability-wiring.py
 bash scripts/check-reference-closure.sh
 python3 scripts/test-reference-closure.py
+bash scripts/check-route-write.sh
+python3 scripts/test-route-write.py
 python3 scripts/test-next-step.py
 bash scripts/check-agents-version-sync.sh
 python3 scripts/test-agents-version-sync.py

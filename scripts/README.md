@@ -26,6 +26,7 @@
 | `check-agent-template-rules.sh` + `check-agent-template-rules.py` | agent 模板纪律守卫：禁互引（格式同/同上/参照上文/见上文）、`agent-references/` 挂载点文件存在、共享纪律单副本（标题不得复制进模板） | CI；改 agent 模板或 agent-references 后 |
 | `check-eval-scenarios.sh` | 场景剧本静态校验（不跑 LLM）：3 剧本存在非空、各含断言节与 ≥3 条 `[机检]` 标记、引用脚本路径存在 | CI；改 evals/scenarios 或引用脚本后 |
 | `check-reference-closure.sh` + `check-reference-closure.py` | 引用可达性守卫（批B4，方案 A 资产宇宙）：扫描 `skills/*/references/*.md` 中「资产宇宙内」的文件名提及（链接/反引号/正文词元）须在所属 skill 域内可达；跨域合法提及走理由白名单（`ALLOWED_CROSS_DOMAIN`）。与 static-check 互补（链接 vs 文件名文本提及） | CI；增删 build 方法论副本 / 改路由表 / 提及跨域文件后 |
+| `check-route-write.sh` + `check-route-write.py` | 路由残留守卫（批B8）：扫描 `skills/**/*.md` 第二列=moshu-write 的表格行，语境两级判定——构建域词（开书/开写/…）blocking 退出 1、写作域白名单过、未知语境 candidate 不阻断（候选永不拦截）；只锁表格行，prose 面留审计法轻扫 | CI；改流程衔接表/路由表后 |
 
 ## 测试回归（test-*）
 
@@ -55,6 +56,7 @@
 | `test-next-step.py` | 下一步判定回归（审计-V3 D5）：S0-S6 各序命中 + 优先中断（拆文续跑/审查续批）+ 卷界解析降级 + 空文件完成判据 + state 缺失回退 | CI（调 skills/moshu/scripts/next_step.py） |
 | `test-agents-version-sync.py` | agents_version 守卫回归：正向（真仓库一致）+ 反向（fixture 改一处版本必须失败） | CI（调 check-agents-version-sync） |
 | `test-story-numbers.py` | 叙述计数守卫回归：正向（fixture 数字与实测一致→退出 0）+ 反向（中文/英文数字不一致→退出 1 且指向文件） | CI（调 check-story-numbers） |
+| `test-route-write.py` | 路由残留守卫回归（批B8 四用例）：①白名单行→过 ②blocking 行→退出 1 且指向文件 ③未知语境→candidate 打印但退出 0 ④无表格行→过 | CI（调 check-route-write） |
 | `test-prose-candidates.js` | 正文候选类机检回归：正向（意象重复+登记信息差关键词命中）+ 反向（干净文本空候选）+ 降级（缺 style/gaps、坏格式）+ 幂等（同输入逐字节一致） | CI（调 moshu-write 的 check-prose-candidates.js） |
 | `test-review-tickets.py` | 审查工单回归：write 合法+幂等 / 坏枚举/重复 id/坏令牌拒 / resolve 单向流转 / list 过滤 / verify-token 相等与不等 | CI（调 moshu-review 的 review_tickets.py） |
 | `test-agent-template-rules.py` | 模板纪律守卫回归：正向（干净模板通过）+ 反向（互引句/挂载点缺失/复制纪律标题必须失败） | CI（调 check-agent-template-rules） |

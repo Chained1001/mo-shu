@@ -52,6 +52,10 @@ jobs:
         run: bash scripts/check-reference-closure.sh
       - name: Reference-closure regression
         run: python3 scripts/test-reference-closure.py
+      - name: Check route-write residual guard
+        run: bash scripts/check-route-write.sh
+      - name: Route-write regression
+        run: python3 scripts/test-route-write.py
       - name: Next-step routing regression
         run: python3 scripts/test-next-step.py
       - name: Check agents-version sync
