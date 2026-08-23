@@ -108,6 +108,14 @@ def main():
     ap.add_argument('--deep', action='store_true', help='额外检查 第*章_深度拆解.md 必含字段')
     args = ap.parse_args()
 
+    # 审计法 v1.3 A2：--file/--dir 路径预检（异常降级链半步——缺件人话明示，不裸抛堆栈）
+    if args.file and not Path(args.file).exists():
+        print(f'[错误] 文件不存在: {args.file}', file=sys.stderr)
+        sys.exit(2)
+    if args.dir and not Path(args.dir).exists():
+        print(f'[错误] 目录不存在: {args.dir}', file=sys.stderr)
+        sys.exit(2)
+
     deep_only = False
     if args.file:
         p = Path(args.file)

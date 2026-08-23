@@ -173,6 +173,12 @@ function main() {
     process.exit(2);
   }
 
+  // 审计法 v1.3 A1：--dir 不存在时预检（异常降级链半步——缺件人话明示，不裸抛堆栈）
+  if (!fs.existsSync(DIR)) {
+    console.error(`[错误] 目录不存在: ${DIR}`);
+    process.exit(2);
+  }
+
   const data = parseDir(DIR);
   if (!data) {
     console.error(`[错误] ${DIR} 下没有榜单文件`);
