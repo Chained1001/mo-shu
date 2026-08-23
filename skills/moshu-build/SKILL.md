@@ -22,7 +22,7 @@ description: "开书构建与设定/大纲/卷纲修订。负责新书开书构�
 | 修订设定/大纲/卷纲（中途改构建资产） | [revision-workflow.md](references/revision-workflow.md) |
 | 开新卷（消费 `卷复盘_第X卷.md` 的下卷方向候选） | [workflow-build.md](references/workflow-build.md)「开新卷」节 |
 
-> 三种入口第一步均先读 `设定/构建台账.md`（存在时）——构建态与方法论单真源（见 workflow-build.md「构建台账与进入规则」）。
+> 三种入口第一步均先读 `设定/构建台账.md`（存在时）——**先读六步状态节**（见 workflow-build.md「构建台账与进入规则」）。
 
 > 日更/写章/补细纲/卷复盘执行 → 回 `/moshu-write`；审查/去AI味/拆文/扫榜/导入/文风 → 各自 skill。本技能是构建环，不消费也不生产正文。
 
