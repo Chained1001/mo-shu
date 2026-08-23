@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v1.5.0):** B1 build-vs-write separation campaign — new `moshu-build` skill (book setup / setting-outline-volume revision / new-volume planning), standalone write-side outline workflow (outline-workflow), global routing switched to build (moshu router / next_step / README five-way consistency), 3 new behavior contracts locking new boundaries (revision requires impact scan / write never edits existing settings / changelog append-only); pre-release audit-V4 health check (six chains: five closed and the one field-level break fixed, A1-A6 fixes plus all 7 candidate/doubtful items resolved, routing residue cleared). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest update (v2.0.0):** Construction iteration method (six-step five-facet book-driven build: Snowflake base + setting/emotion facets + benchmark dual-path + ledger v2 + perfect-review/emergence records) + Three-pass writing method (fast-draft / reader-reread / craft-polish + context isolation) + Knowledge curation pipeline (five extracts from *The Skeleton of a Novel*) + Governance consolidation (Audit Method v1.3 + self-contained AGENTS + one of each governance doc) + 3 new guards (reference-closure / route-write / story-numbers extension). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
 
 ## Pipeline Overview
 
