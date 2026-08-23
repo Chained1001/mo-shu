@@ -73,8 +73,8 @@
     },
     {
       "path": "skills/moshu-analyze/SKILL.md",
-      "budget": 2300,
-      "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）"
+      "budget": 2422,
+      "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）。→2422：B1b 路由残留第 4 例修复（流程衔接表 1 行拆 2 行：准备开书→moshu-build / 已有书续写→moshu-write，路由正确性值得每次会话付，预算=实测 2307×1.05 取整）"
     },
     {
       "path": "skills/moshu/SKILL.md",

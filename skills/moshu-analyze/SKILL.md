@@ -41,7 +41,8 @@ description: "长篇网文拆文。深度拆解爆款长篇小说的黄金三章
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 准备开写 | moshu-write | `/moshu-write` |
+| 准备开书 | moshu-build | `/moshu-build` |
+| 已有书续写 | moshu-write | `/moshu-write` |
 | 需要市场数据 | moshu-scan | `/moshu-scan` |
 
 ---
