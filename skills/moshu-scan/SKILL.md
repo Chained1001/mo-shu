@@ -71,7 +71,7 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
 | 找到方向 | moshu-analyze | `/moshu-analyze` |
-| 直接开写 | moshu-write | `/moshu-write` |
+| 直接开书 | moshu-build | `/moshu-build` |
 
 ## 参考资料
 
