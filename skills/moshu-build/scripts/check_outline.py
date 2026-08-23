@@ -221,6 +221,54 @@ def main() -> int:
         except OutlineError as exc:
             candidate.append(f"整合记录读取异常：{exc}")
 
+    # ---------- B20 扩展：暗线设计 / 支线登记（观察 017；断言与 B20 模板同批更新） ----------
+    dark_section = section_text(text, "暗线设计")
+    branch_section = section_text(text, "支线登记")
+    if eight_col:
+        if dark_section is None:
+            blocking.append("必备节缺失：暗线设计")
+        else:
+            dark_rows = [r for t in extract_tables(dark_section) for r in t[1:]]
+            if not dark_rows:
+                blocking.append("暗线设计层次表无数据行")
+            for row in dark_rows:
+                if len(row) > 2 and not row[2].strip():
+                    blocking.append("暗线设计层次表存在空节奏列（读者感知节奏）")
+                    break
+        if branch_section is None:
+            blocking.append("必备节缺失：支线登记")
+        else:
+            branch_rows = [r for t in extract_tables(branch_section) for r in t[1:]]
+            if not branch_rows:
+                blocking.append("支线登记表无数据行")
+            for row in branch_rows:
+                if len(row) > 6 and not row[6].strip():
+                    blocking.append("支线登记表存在空收束卷列（无收束=坑）")
+                    break
+    # candidate：大伏笔中间卷无半揭/误导
+    if integration_path.exists() and dark_section:
+        try:
+            integration_text = read_text(integration_path)
+            spans = re.findall(r"F\d+[^\n]{0,40}?(\d+)[^\n]{0,20}?(\d+)", integration_text)
+            if spans and not re.search(r"半揭|误导", integration_text):
+                long_spans = [s for s in spans if abs(int(s[1]) - int(s[0])) >= 3]
+                if long_spans:
+                    candidate.append("存在跨 ≥3 卷的大伏笔且整合记录无「半揭/误导」标注——建议中间卷补铺垫")
+        except OutlineError:
+            pass
+    # candidate：支线篇幅占比 >25%（mo-shu 自定参数）
+    if branch_section:
+        for row in extract_tables(branch_section):
+            for cells in row[1:]:
+                if len(cells) > 5:
+                    m = re.search(r"(\d+(?:\.\d+)?)\s*%", cells[5])
+                    if m and float(m.group(1)) > 25.0:
+                        candidate.append(f"支线篇幅占比 {m.group(1)}% > 25%（mo-shu 自定上限，可按题材调整）")
+                        break
+    # candidate：暗线某卷无推进点（对照线索矩阵登记——无法确定性验证，提示人工核）
+    if dark_section:
+        candidate.append("暗线每卷至少推进一格——请对照整合记录线索矩阵核对推进点登记（机检无法确定性验证）")
+
     # ---------- j. candidate：势力场互引（疑似单链条） ----------
     power_section = section_text(text, "对手梯队与势力场") or ""
     power_tables = extract_tables(power_section)

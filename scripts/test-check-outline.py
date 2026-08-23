@@ -45,6 +45,16 @@ COMPLIANT = """# 大纲（测试书）
 | 乙 | 目的B | 中立 | 与甲对立 | 1-2 |
 | 丙 | 目的C | 盟友 | 与甲博弈 | 1-2 |
 
+## 暗线设计
+| 层次 | 内容 | 读者感知节奏 | 主角知晓节奏 | 揭示卷 |
+|---|---|---|---|---|
+| 暗线一 | 身世之谜 | 第2卷闻到味/第4卷揭半层 | 主角先不知 | 卷9 |
+
+## 支线登记
+| 支线名 | 归属角色 | 起点卷 | 本卷进展 | 与主线交汇点 | 篇幅占比 | 收束卷 |
+|---|---|---|---|---|---|---|
+| 师门旧案 | 配角甲 | 卷1 | 追查 | 卷3交汇 | 15% | 卷5 |
+
 ## 常驻压力
 - 阴德账（每卷结算，收尾卷合流）
 """
@@ -133,6 +143,20 @@ def test_missing_outline(tmp: Path) -> None:
     assert code == 2, f"无大纲文件应 exit 2，实得 {code}: {payload}"
 
 
+def test_missing_dark_section(tmp: Path) -> None:
+    outline = COMPLIANT.replace("## 暗线设计\n| 层次 | 内容 | 读者感知节奏 | 主角知晓节奏 | 揭示卷 |\n|---|---|---|---|---|\n| 暗线一 | 身世之谜 | 第2卷闻到味/第4卷揭半层 | 主角先不知 | 卷9 |\n\n", "")
+    project = write_project(tmp, "noad", outline)
+    code, payload = run_check(project)
+    assert code == 1 and any("暗线设计" in b for b in payload["blocking"]), f"缺暗线设计节应 blocking: {payload}"
+
+
+def test_missing_branch_section(tmp: Path) -> None:
+    outline = COMPLIANT.replace("## 支线登记\n| 支线名 | 归属角色 | 起点卷 | 本卷进展 | 与主线交汇点 | 篇幅占比 | 收束卷 |\n|---|---|---|---|---|---|---|\n| 师门旧案 | 配角甲 | 卷1 | 追查 | 卷3交汇 | 15% | 卷5 |\n\n", "")
+    project = write_project(tmp, "nobr", outline)
+    code, payload = run_check(project)
+    assert code == 1 and any("支线登记" in b for b in payload["blocking"]), f"缺支线登记表应 blocking: {payload}"
+
+
 def test_harvest_proper_names(tmp: Path) -> None:
     # B19 联动：设定/采风-*.md 通配专名比对（候选不拦截）
     project = write_project(tmp, "harvest", COMPLIANT)
@@ -159,9 +183,11 @@ def main() -> None:
         test_old_structure_downgrade(work)
         test_missing_outline(work)
         test_harvest_proper_names(work)
+        test_missing_dark_section(work)
+        test_missing_branch_section(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选)")
+    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1)")
 
 
 if __name__ == "__main__":
