@@ -5,7 +5,7 @@
   },
   "metadata": {
     "description": "网络小说创作工具箱 — 扫榜、拆文、写作全流程 Claude Code skill，覆盖长篇网文",
-    "version": "2.1.0"
+    "version": "2.2.0"
   },
   "plugins": [
     {
@@ -32,7 +32,7 @@
       "description": "开书构建与设定/大纲/卷纲修订。新书开书构建（题材定位、世界观、人物、全书大纲与首卷卷纲）、构建资产迭代修订（影响分析→作者裁决→留痕→级联标记）与开新卷规划。细纲与正文归 /moshu-write。",
       "source": "./",
       "strict": false,
-      "version": "1.1.0",
+      "version": "1.2.0",
       "category": "novel-writing",
       "keywords": [
         "build",
@@ -93,7 +93,7 @@
       "description": "长篇网文写作。从大纲到正文，辅助长篇网络小说的创作，包括世界观、人物、情节线管理。",
       "source": "./",
       "strict": false,
-      "version": "1.5.1",
+      "version": "1.6.0",
       "category": "novel-writing",
       "keywords": [
         "long-novel",
@@ -152,7 +152,7 @@
       "description": "网文写作环境部署。一键部署 hooks、rules、agents、CLAUDE.md 到写作项目，提供会话恢复、一致性检查、提交验证等自动化基础设施。",
       "source": "./",
       "strict": false,
-      "version": "1.4.0",
+      "version": "1.4.1",
       "category": "novel-infra",
       "keywords": [
         "setup",

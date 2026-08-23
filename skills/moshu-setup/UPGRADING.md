@@ -2,10 +2,12 @@
 
 ## 当前版本
 
-- `setup_skill_version: 1.4.0`
-- `agents_version: 30`
+- `setup_skill_version: 1.4.1`
+- `agents_version: 31`
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `30`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `30`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v30 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `31`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `31`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v31 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+
+**v30 → v31 变更**：agent-references 内容更新（B17 三书逆向萃取三节——势力场设计/升级绑弧光/叙事装置，经 shared-assets 同步进 agent-references；题材公式降级头注定位）——agent 参考文件变化，重跑 `/moshu-setup` 并新开会话后生效。
 
 **v29 → v30 变更**：moshu-explorer 模板的文风两级检查改为正查口径（合规必须见到 `文风可用：是`；「生成记录」整段缺失/被截断/占位 stub 一律 `profile_degenerate`，与主会话手动路径等价）——agent 模板变化，重跑 `/moshu-setup` 并新开会话后生效。
 
@@ -92,7 +94,7 @@
 ## 升级步骤
 
 1. 在项目根目录重新运行 moshu-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 30` 与 `setup_skill_version: 1.3.0`。
+2. 确认 `.story-deployed` 写入 `agents_version: 31` 与 `setup_skill_version: 1.4.1`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。

@@ -59,7 +59,7 @@
 
 ```
 deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
-agents_version: 30
+agents_version: 31
 setup_skill_version: 1.4.0
 target_cli: claude-code
 resolver_strategy: project-local-skill-reference
@@ -68,7 +68,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 
 - 此文件供 session-start.sh 和写作 skill 检测部署状态，避免重复提示
 - 同时创建一次性标记文件 `.claude/.agents-pending-restart`（空文件即可）。session-start.sh 在下一个会话启动时据此确认 agents 已随新会话注册，并自动删除该标记——用来向用户确认「重启已生效」。
-- 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `30`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `30` 时已在 Phase 1 停止，不得降级覆盖
+- 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `31`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `31` 时已在 Phase 1 停止，不得降级覆盖
 
 ## Phase 3 逐项验证（deploy.py verify 不可用时）
 
@@ -76,7 +76,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 2. 验证 rules 路径：`.claude/rules/` 下的规则文件存在且包含 `paths` frontmatter
 3. 验证 agents：`.claude/agents/` 下的 7 个 agent 定义文件存在
 4. 验证 agent reference bundle：`.claude/skills/moshu-setup/references/agent-references/` 下 reference 文件完整；所有 `moshu-setup/references/agent-references/<file>.md` 都能解析到 deployed bundle
-5. 验证部署标记：`.story-deployed` 存在且包含时间戳、`agents_version: 30`、`setup_skill_version: 1.4.0`、`target_cli`、`resolver_strategy`、`references_dir`
+5. 验证部署标记：`.story-deployed` 存在且包含时间戳、`agents_version: 31`、`setup_skill_version: 1.4.1`、`target_cli`、`resolver_strategy`、`references_dir`
 
 ---
 
@@ -103,6 +103,6 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 
 - 重部署时已部署项目以 sentinel 里的值为准：`target_cli`、`resolver_strategy`、`references_dir` 沿用 `.story-deployed` 里已有的值，不重新询问、不覆盖为不同值
 - `.story-deployed` 不存在 → 全新安装，Phase 2 全部执行
-- `.story-deployed` 存在且 `agents_version: 30` → 提示已部署，AskUserQuestion 确认是否重新部署；提示里写明重新部署只用当前本地 skill 包刷新项目文件，skill 本身的更新走 `git pull` 或 marketplace
-- `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `30` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / settings.local.json 走合并策略
-- `.story-deployed` 存在且 `agents_version` 大于 `30` → 当前 skill 版本过旧，停止并提示先更新 mo-shu；不覆盖项目中的更新部署
+- `.story-deployed` 存在且 `agents_version: 31` → 提示已部署，AskUserQuestion 确认是否重新部署；提示里写明重新部署只用当前本地 skill 包刷新项目文件，skill 本身的更新走 `git pull` 或 marketplace
+- `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `31` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / settings.local.json 走合并策略
+- `.story-deployed` 存在且 `agents_version` 大于 `31` → 当前 skill 版本过旧，停止并提示先更新 mo-shu；不覆盖项目中的更新部署
