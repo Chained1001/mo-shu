@@ -1,7 +1,7 @@
 ---
 name: moshu-write
-version: 1.4.0
-description: "长篇网文写作。承接开书构建（/moshu-build）之后的细纲与正文：细纲补建/滚动、日更续写、大修、卷复盘执行。触发方式：/moshu-write、/写长篇、「出细纲」「补细纲」「日更」「续写」「继续写」「修改第X章」「回炉」「重写第X章」；开书/建设定/写大纲 → /moshu-build。"
+version: 1.5.0
+description: "长篇网文写作。承接开书构建（/moshu-build）之后的细纲与正文：细纲补建/滚动、日更续写（写作三遍法）、大修、卷复盘执行。触发方式：/moshu-write、/写长篇、「出细纲」「补细纲」「日更」「续写」「继续写」「修改第X章」「回炉」「重写第X章」；开书/建设定/写大纲 → /moshu-build。"
 ---
 # moshu-write：长篇网文写作
 
@@ -98,7 +98,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 
 #### 单章写作流程
 
-**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（步骤 1-13）、写作技巧提醒、字数验收权威与 Phase 5 质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
+**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（步骤 1-13，**B 段按三遍法执行：第 1 遍快写→第 2 遍读者重读→第 3 遍技艺打磨**，见 chapter-core「B 段」）、写作技巧提醒、字数验收权威与 Phase 5 质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
 
 ## 流程衔接
 
