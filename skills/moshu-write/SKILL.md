@@ -1,6 +1,6 @@
 ---
 name: moshu-write
-version: 1.5.0
+version: 1.5.1
 description: "长篇网文写作。承接开书构建（/moshu-build）之后的细纲与正文：细纲补建/滚动、日更续写（写作三遍法）、大修、卷复盘执行。触发方式：/moshu-write、/写长篇、「出细纲」「补细纲」「日更」「续写」「继续写」「修改第X章」「回炉」「重写第X章」；开书/建设定/写大纲 → /moshu-build。"
 ---
 # moshu-write：长篇网文写作
