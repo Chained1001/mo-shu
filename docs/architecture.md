@@ -19,6 +19,7 @@ flowchart LR
     R -->|审查| Review[moshu-review]
     R -->|环境部署| Setup[moshu-setup]
     R -->|浏览器 CDP| CDP[moshu-cdp]
+    R -->|采风 / 找参照| Research[moshu-research]
     R -->|本地工作台| Dash[Dashboard]
 
     Setup -->|部署到项目| Hooks[Hooks 自动化]
@@ -34,6 +35,8 @@ flowchart LR
     Decision --> Write
     Style -->|产出| StyleLib[文风库]
     StyleLib --> Write
+    Research -->|产出| Caifeng[设定/采风-*.md]
+    Caifeng --> Build
 
     Write --> Project
     Review --> Project

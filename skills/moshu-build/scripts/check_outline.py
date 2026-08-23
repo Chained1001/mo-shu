@@ -235,20 +235,20 @@ def main() -> int:
         elif names:
             candidate.append(f"势力场仅 {len(names)} 个势力（建议 ≥3 成网）")
 
-    # ---------- k. candidate：采风记录专名比对 ----------
-    harvest_path = project / "设定" / "采风记录.md"
-    if harvest_path.exists():
-        try:
-            harvest_text = read_text(harvest_path)
-            proper = re.findall(r"[^\s，。；、（）()【】\[\]「」『』]{2,}", harvest_text)
-            # 取「来源专有名词」清单行内容
-            names_block = section_text(harvest_text, "来源专有名词") or ""
-            for term in re.findall(r"[一-龥A-Za-z][一-龥A-Za-z0-9]{1,12}", names_block):
-                if term in text:
-                    candidate.append(f"大纲疑似复用来源专名：{term}")
-                    break
-        except OutlineError as exc:
-            candidate.append(f"采风记录读取异常：{exc}")
+    # ---------- k. candidate：采风专名比对（设定/采风-*.md 通配，B19 联动） ----------
+    harvest_dir = project / "设定"
+    harvest_files = sorted(harvest_dir.glob("采风-*.md")) if harvest_dir.is_dir() else []
+    if harvest_files:
+        for harvest_path in harvest_files:
+            try:
+                harvest_text = read_text(harvest_path)
+                names_block = section_text(harvest_text, "来源专有名词") or ""
+                for term in re.findall(r"[一-龥A-Za-z][一-龥A-Za-z0-9]{1,12}", names_block):
+                    if term in text:
+                        candidate.append(f"大纲疑似复用来源专名：{term}（{harvest_path.name}）")
+                        break
+            except OutlineError as exc:
+                candidate.append(f"采风记录读取异常：{harvest_path.name}——{exc}")
 
     # ---------- l. candidate：常驻压力空/占位 ----------
     pressure_match = re.search(r"常驻压力[：:]\s*[^\n]*", text)

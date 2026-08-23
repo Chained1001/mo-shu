@@ -96,6 +96,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-import` | `/moshu-import` | Reverse import — parse existing novels into standard project structure |
 | `moshu-review` | `/moshu-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian scoring rubrics |
 | `moshu-cdp` | `/moshu-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
+| `moshu-research` | `/moshu-research` `/caifeng` | Reference research — three object types (structure/character/mechanism) with cross-media translation, project-level `设定/采风-*.md` output |
 
 > `moshu-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
 

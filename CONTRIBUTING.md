@@ -15,7 +15,9 @@ skills/
 ├── moshu-deslop/            # 去AI味
 ├── moshu-style/             # 文风学习
 ├── moshu-review/            # 多视角审查
-└── moshu-cdp/             # 浏览器操控
+├── moshu-cdp/             # 浏览器操控
+├── moshu-research/          # 采风研究（结构/角色/设定机制三类参照）
+└── moshu-build/             # 构建环（开书/修订/开新卷）
 scripts/                       # 开发守卫 / 测试 / 代码生成（完整索引见 scripts/README.md）
 ```
 

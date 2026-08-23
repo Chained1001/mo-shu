@@ -227,6 +227,25 @@
       "skills": [
         "./skills/moshu-style"
       ]
+    },
+    {
+      "name": "moshu-research",
+      "description": "采风/找参照——为构建环提供三类动态参照（结构/角色/设定机制），跨媒介转译防抄，产出项目级 设定/采风-*.md。",
+      "source": "./",
+      "strict": false,
+      "version": "1.0.0",
+      "category": "novel-writing",
+      "keywords": [
+        "research",
+        "reference",
+        "caifeng",
+        "采风",
+        "参照",
+        "chinese"
+      ],
+      "skills": [
+        "./skills/moshu-research"
+      ]
     }
   ]
 }

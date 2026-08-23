@@ -133,6 +133,17 @@ def test_missing_outline(tmp: Path) -> None:
     assert code == 2, f"无大纲文件应 exit 2，实得 {code}: {payload}"
 
 
+def test_harvest_proper_names(tmp: Path) -> None:
+    # B19 联动：设定/采风-*.md 通配专名比对（候选不拦截）
+    project = write_project(tmp, "harvest", COMPLIANT)
+    (project / "设定").mkdir()
+    (project / "设定" / "采风-角色-师爷.md").write_text(
+        "# 采风-角色\n\n## 来源专有名词\n- 阴德账（来源书特有设定名）\n", encoding="utf-8")
+    code, payload = run_check(project)
+    assert code == 0, f"采风专名比对为候选，应 exit 0，实得 {code}: {payload}"
+    assert any("疑似复用来源专名" in c for c in payload["candidate"]), f"应出专名候选: {payload}"
+
+
 def main() -> None:
     work = ROOT / ".tmp" / "tests" / "B18work"
     import shutil
@@ -147,9 +158,10 @@ def main() -> None:
         test_missing_section(work)
         test_old_structure_downgrade(work)
         test_missing_outline(work)
+        test_harvest_proper_names(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2)")
+    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选)")
 
 
 if __name__ == "__main__":

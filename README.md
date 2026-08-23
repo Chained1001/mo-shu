@@ -96,6 +96,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-import` | `/moshu-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
 | `moshu-review` | `/moshu-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
 | `moshu-cdp` | `/moshu-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
+| `moshu-research` | `/moshu-research` `/采风` | 采风研究 · 三类参照（结构/角色/设定机制）跨媒介转译防抄，产出项目级 `设定/采风-*.md` |
 
 > `moshu-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
 
