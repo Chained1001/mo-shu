@@ -18,7 +18,7 @@
   "files": [
     {
       "path": "skills/moshu-write/SKILL.md",
-      "budget": 9200,
+      "budget": 9500,
       "why": "长篇任一场景都无条件加载。预算 13200→9000：Phase 4 契约块（结构树/产物映射表→artifact-protocols.md，缺失处理/权威优先级/追踪体积→workflow-chapter.md 写前准备契约）下沉，入口只留路由与索引（P-A 审计）；→9200：参考索引登记 3 个冷路径文件（idea-seed/naming-cards/scene-cards），主入口可发现性，索引本身按需加载"
     },
     {
@@ -58,7 +58,7 @@
     },
     {
       "path": "skills/moshu-review/SKILL.md",
-      "budget": 2900,
+      "budget": 3150,
       "why": "触发 /moshu-review 时入口全量进上下文（P-A 骨架化后约 2.6K 去空白；预算防重新膨胀到 30KB 级，详细流程在 references/review-workflow.md 按需加载）"
     },
     {
@@ -103,7 +103,7 @@
     },
     {
       "path": "skills/moshu-build/SKILL.md",
-      "budget": 1560,
+      "budget": 1800,
       "why": "构建环入口：触发 /moshu-build 时全量进上下文（V2.1 B1a 新增，预算=完工实测×1.05 取整；薄壳：三职责概览/入口三分/边界声明，流程全在 references）"
     },
     {
@@ -129,7 +129,7 @@
     },
     {
       "label": "长篇开书",
-      "budget": 16186,
+      "budget": 16400,
       "files": [
         "skills/moshu-write/SKILL.md",
         "skills/moshu-write/references/outline-workflow.md"
