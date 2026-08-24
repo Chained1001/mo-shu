@@ -60,7 +60,7 @@
 ```
 deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
 agents_version: 33
-setup_skill_version: 1.4.0
+setup_skill_version: 1.5.0
 target_cli: claude-code
 resolver_strategy: project-local-skill-reference
 references_dir: .claude/skills/moshu-setup/references/agent-references
