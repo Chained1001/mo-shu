@@ -132,6 +132,35 @@ def test_manifest_contract() -> None:
             "agent count drift from the manifest must be rejected",
         )
 
+        # B40：artifact_contracts 结构违规与字段缺失必须被拒
+        ac_wrong = dict(raw)
+        ac_wrong["artifact_contracts"] = [{"artifact": "X", "fields": "not-a-list"}]
+        ac_wrong_path = tmpdir / "ac-wrong.json"
+        ac_wrong_path.write_text(json.dumps(ac_wrong, ensure_ascii=False), encoding="utf-8")
+        _, ac_wrong_findings = VALIDATOR.load_manifest(ac_wrong_path)
+        require(
+            "manifest-artifact-contract-type" in finding_codes(ac_wrong_findings),
+            "malformed artifact_contracts must be rejected",
+        )
+
+        ac_missing = dict(raw)
+        ac_missing["artifact_contracts"] = [
+            {"artifact": "虚构产物", "fields": ["绝不存在的字段XYZ"], "anchor_docs": ["skills/moshu-review/references/review-workflow.md"]}
+        ]
+        ac_missing_path = tmpdir / "ac-missing.json"
+        ac_missing_path.write_text(json.dumps(ac_missing, ensure_ascii=False), encoding="utf-8")
+        ac_manifest, ac_findings = VALIDATOR.load_manifest(ac_missing_path)
+        require(
+            not ac_findings and ac_manifest is not None,
+            "well-formed artifact_contracts must load",
+        )
+        require(
+            "artifact-field-missing" in finding_codes(
+                VALIDATOR.artifact_contract_findings(REPO_ROOT, ac_manifest)
+            ),
+            "missing artifact fields must be flagged",
+        )
+
         duplicate_artifacts = dict(raw)
         duplicate_artifacts["primary_benchmark_artifacts"] = ["剧情/节奏.md", "剧情/节奏.md"]
         duplicate_path = tmpdir / "duplicate-artifacts.json"

@@ -28,6 +28,7 @@ EXPECTED_MANIFEST_KEYS = {
     "primary_benchmark_artifacts",
     "required_outline_sections",
     "deployment_manifest",
+    "artifact_contracts",
 }
 SEMVER_RE = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 ARTIFACT_PATH_RE = re.compile(r"(?:[^/\s]+/)+[^/\s]+\.md")
@@ -43,6 +44,7 @@ class ContractManifest:
     primary_benchmark_artifacts: Tuple[str, ...]
     required_outline_sections: Tuple[str, ...]
     deployment_manifest: Optional[Dict[str, Any]]
+    artifact_contracts: Optional[List[Dict[str, Any]]]
 
 
 @dataclass(frozen=True)
@@ -369,6 +371,29 @@ def load_manifest(path: Path) -> Tuple[Optional[ContractManifest], List[Finding]
     if findings:
         return None, findings
 
+    ac = raw.get("artifact_contracts")
+    ac_valid = (
+        isinstance(ac, list)
+        and all(
+            isinstance(c, dict)
+            and isinstance(c.get("artifact"), str) and c["artifact"].strip()
+            and isinstance(c.get("fields"), list) and c["fields"]
+            and all(isinstance(f, str) and f.strip() for f in c["fields"])
+            and isinstance(c.get("anchor_docs"), list) and c["anchor_docs"]
+            for c in ac
+        )
+    )
+    if "artifact_contracts" in raw and not ac_valid:
+        findings.append(
+            Finding(
+                "manifest-artifact-contract-type",
+                "artifact_contracts must be an array of {artifact, fields[], anchor_docs[]}",
+                path,
+            )
+        )
+    if findings:
+        return None, findings
+
     manifest = ContractManifest(
         manifest_version=raw["manifest_version"],
         setup_skill_version=raw["setup_skill_version"],
@@ -378,6 +403,7 @@ def load_manifest(path: Path) -> Tuple[Optional[ContractManifest], List[Finding]
         primary_benchmark_artifacts=tuple(artifacts),
         required_outline_sections=tuple(sections),
         deployment_manifest=dm if isinstance(dm, dict) else None,
+        artifact_contracts=ac if isinstance(ac, list) else None,
     )
     return manifest, []
 
@@ -1319,6 +1345,30 @@ def deployment_manifest_findings(repo_root: Path, manifest: ContractManifest) ->
     return findings
 
 
+def artifact_contract_findings(repo_root: Path, manifest: ContractManifest) -> List[Finding]:
+    """B40：产物契约字段抽检——契约声明的字段必须在锚点文档中存在（防跨 skill 字段级断裂）。"""
+    findings: List[Finding] = []
+    for contract in manifest.artifact_contracts or []:
+        missing_by_doc = {}
+        for rel in contract.get("anchor_docs", []):
+            doc = repo_root / rel
+            text = doc.read_text(encoding="utf-8", errors="ignore")
+            missing = [f for f in contract.get("fields", []) if f not in text]
+            if missing:
+                missing_by_doc[rel] = missing
+        if missing_by_doc:
+            findings.append(
+                Finding(
+                    "artifact-field-missing",
+                    "{} 契约字段缺失: {}".format(
+                        contract.get("artifact"), missing_by_doc
+                    ),
+                    None,
+                )
+            )
+    return findings
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     repo_root = args.repo_root.resolve()
@@ -1336,6 +1386,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     print("  [PASS] manifest schema and declared release values")
     findings = validate_repository(repo_root, manifest)
     findings.extend(deployment_manifest_findings(repo_root, manifest))
+    findings.extend(artifact_contract_findings(repo_root, manifest))
     if findings:
         for finding in findings:
             print("  [FAIL] {}: {}".format(finding.code, finding.detail(repo_root)))

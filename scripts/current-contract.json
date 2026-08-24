@@ -38,5 +38,51 @@
       "Compact 后恢复上下文"
     ],
     "chapter_range_format": "第{N}-{M}章"
-  }
+  },
+  "artifact_contracts": [
+    {
+      "artifact": "剧情单元卡",
+      "producer": "moshu-build",
+      "consumer": "moshu-write",
+      "fields": [
+        "单元 ID",
+        "章节范围",
+        "承诺",
+        "风险",
+        "对标剧情参照",
+        "章功能分配"
+      ],
+      "anchor_docs": [
+        "skills/moshu-build/references/workflow-build.md"
+      ]
+    },
+    {
+      "artifact": "审查工单 JSON",
+      "producer": "moshu-review",
+      "consumer": "moshu-write",
+      "fields": [
+        "schema_version",
+        "chapter_range",
+        "review_token",
+        "findings"
+      ],
+      "anchor_docs": [
+        "skills/moshu-review/references/review-workflow.md"
+      ]
+    },
+    {
+      "artifact": "采风-CF 记录",
+      "producer": "moshu-research",
+      "consumer": "moshu-build",
+      "fields": [
+        "CF",
+        "需求描述",
+        "状态"
+      ],
+      "anchor_docs": [
+        "skills/moshu-build/references/workflow-build.md",
+        "skills/moshu-research/references/caifeng-methods.md"
+      ]
+    }
+  ]
 }
