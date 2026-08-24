@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.3.6（2026-08-24）
+
+> 安装/部署体验修复——deploy.py 过期常量根治、安装引导补齐、版本展示可达、README 三步走。
+
+### 修复
+
+- **deploy.py 三处过期常量**（观察 007/P5）：`DEFAULT_AGENTS_VERSION='30'`→`'33'`、`DEFAULT_SETUP_VERSION='1.4.0'`→`'1.5.0'`、CLI 帮助同步——**首次部署不再写错 sentinel，verify 不再误判**（此前不带 flag 部署会写入过期版本号）
+- **版本展示读取源**（观察 006/P3）：从不可达的 `scripts/current-contract.json` 改为 SKILL.md 部署逻辑段自身文本——**部署项目中可达**（npx 只部署 skills/ 不部署仓库 scripts/）
+- **bump-agents-version.py 新增第 7 类覆盖**：`deploy.py` 的 `DEFAULT_AGENTS_VERSION` 常量+CLI 帮助——观察 024 版本散射第 7 层闭合
+
+### 变更
+
+- **安装引导**：moshu 路由 description 加首次使用引导（新开会话→/moshu-setup）；setup 部署首行展示版本号（🚀 mo-shu v{VERSION}·agents_version·setup_skill_version）
+- **README 安装区改为三步走表**：装完→开窗→setup→再开窗→build（双语）——新用户不再面对安装完成输出不知道下一步
+
+> 插件版本：setup 1.5.1（版本展示逻辑+常量修复）、moshu 1.3.1（description 加引导）。test2-4 实测观察 003-007。
+
 ## v2.3.5（2026-08-24）
 
 > 工程基建——版本 bump 确定性脚本根治观察 024 散射；开发标准入库；CI 修复链闭合。

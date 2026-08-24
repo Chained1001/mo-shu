@@ -1,6 +1,6 @@
 ---
 name: moshu-setup
-version: 1.5.0
+version: 1.5.1
 description: "网文写作工具集基础设施部署。为 Claude Code 部署 hooks、agents、rules、CLAUDE.md 到写作项目。部署开始时会读取并展示 mo-shu 版本号与 agents_version。触发方式：/moshu-setup、「准备写书」「帮我搭一下环境」「配置写作项目」「刚装完 mo-shu」。"
 ---
 # moshu-setup：网文写作工具集基础设施部署
