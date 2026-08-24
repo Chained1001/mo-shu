@@ -46,7 +46,7 @@ for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
 | 序 | 判定条件（文件证据） | 引导 |
 |---|---|---|
 | 1 | 无 `.story-deployed`（未部署） | `/moshu-setup` |
-| 2 | 无书名目录（无含 `追踪/` 或 `设定/` 的项目目录） | 开书引导（或先扫榜/拆文/选题） |
+| 2 | 无书名目录（无含 `正文/`、`大纲/`、`追踪/` 任一的项目目录） | 开书引导（或先扫榜/拆文/选题） |
 | 3 | 有书但无 `正文/` | 首批细纲 + 写第 1 章（`/moshu-write`，细纲首建见 outline-workflow；设定/卷纲缺失才回 `/moshu-build`） |
 | 4 | 有正文但下一章无细纲 | 补纲（`/moshu-write` 中途补纲/扩纲） |
 | 5 | 下一章有细纲未写 | 日更/写下一章（`/moshu-write`） |

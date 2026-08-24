@@ -201,6 +201,18 @@ function fmtStatus(s) {
   return s ? String(s) : "未知";
 }
 
+/** 渲染路径质量提示（B37 提取：原 ratio 作用域 bug——scrapeChannel 引用了 computeQualityProblems 的局部变量导致 ReferenceError 数据丢失；提取为纯函数供测试）。返回提示内容或 null */
+function qualityRatioNote(totalBooks, resolvedTitles) {
+  const ratio = totalBooks ? resolvedTitles / totalBooks : 0;
+  if (totalBooks > 0 && resolvedTitles === 0) {
+    return `${totalBooks} 本全部标题解析失败。多为详情页结构变动或登录/验证拦截，请在 Chrome 内手动打开任一 https://fanqienovel.com/page/{bookId} 确认页面正常。`;
+  }
+  if (totalBooks > 0 && ratio < 0.5) {
+    return `标题解析率偏低（${resolvedTitles}/${totalBooks}），结果质量已标注。`;
+  }
+  return null;
+}
+
 /** 质量问题判定（审计-V3 SM1/SM2：与起点/七猫的 [数据稀疏] 口径一致，供测试与渲染共用） */
 function computeQualityProblems(totalBooks, resolvedTitles) {
   const ratio = totalBooks ? resolvedTitles / totalBooks : 0;
@@ -388,15 +400,10 @@ function scrapeChannel(ch, type) {
     `- 标题解析：成功 ${resolvedTitles} / 共 ${totalBooks}`
   );
 
-  if (totalBooks > 0 && resolvedTitles === 0) {
-    console.error(
-      `  ✗ ${chLabel}${tyLabel}：${totalBooks} 本全部标题解析失败。多为详情页结构变动或登录/验证拦截，` +
-      `请在 Chrome 内手动打开任一 https://fanqienovel.com/page/{bookId} 确认页面正常。`
-    );
-  } else if (ratio < 0.5) {
-    console.error(
-      `  ⚠ ${chLabel}${tyLabel}：标题解析率偏低（${resolvedTitles}/${totalBooks}），结果质量已标注。`
-    );
+  const ratioNote = qualityRatioNote(totalBooks, resolvedTitles);
+  if (ratioNote) {
+    const prefix = resolvedTitles === 0 ? "✗" : "⚠";
+    console.error(`  ${prefix} ${chLabel}${tyLabel}：${ratioNote}`);
   }
 
   return lines.concat(bodyLines).join("\n");
@@ -457,6 +464,7 @@ if (require.main === module) {
 
 // 导出纯函数/JS 构建器，供测试在 sandbox 内验证解析逻辑
 module.exports = {
+  qualityRatioNote,
   buildCategoriesJS,
   buildBookListJS,
   buildDetailJS,

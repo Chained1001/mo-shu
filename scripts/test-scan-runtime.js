@@ -861,6 +861,14 @@ function testFanqiePureFunctions() {
     parseFail.some((p) => p.includes("[标题解析异常]")),
     `全解析失败须标异常: ${JSON.stringify(parseFail)}`
   );
+
+  // B37：渲染路径质量提示（原 ratio 作用域 bug 的回归——scrapeChannel 曾引用 computeQualityProblems 局部变量致 ReferenceError 数据丢失）
+  assert.strictEqual(fanqie.qualityRatioNote(0, 0), null, "零条目不提示");
+  const allFail = fanqie.qualityRatioNote(10, 0);
+  assert.ok(allFail && allFail.includes("10 本全部标题解析失败"), `全失败须提示: ${allFail}`);
+  const lowRatio = fanqie.qualityRatioNote(10, 4);
+  assert.ok(lowRatio && lowRatio.includes("标题解析率偏低（4/10）"), `偏低须提示: ${lowRatio}`);
+  assert.strictEqual(fanqie.qualityRatioNote(10, 10), null, "满解析不提示");
 }
 
 // 长篇扫榜 scraper 参数校验：非法参数必须在打开浏览器/进入 per-target 容错前快速失败，给出具体参数名和值。
