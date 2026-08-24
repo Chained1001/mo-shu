@@ -81,6 +81,15 @@ npx skills add Chained1001/mo-shu -y -g
 
 **Import and continuation order:** run `/moshu-setup` from the writing-project root first to deploy hooks and agents; start or refresh the session, then run `/moshu-import` for the existing novel and continue with `/moshu-write 日更` or `/moshu-write 写第N章`. You can also run `/moshu-import` directly; if setup is missing, it offers to run setup first or continue with a serial import.
 
+### Post-Install Steps (New Users Read This)
+
+| Step | What to Do | Why |
+|---|---|---|
+| **① New Window** | After installation, **close the current Claude Code window and open a new one** in your writing directory | Skills load at session start — `/moshu-build` etc. won't work in the install session |
+| **② Deploy Environment** | Run `/moshu-setup` in the new window | Deploys hooks, agents, rules, CLAUDE.md to your writing project |
+| **③ New Window Again** | After setup, open another new window and start `/moshu-build` | Agents register at session start, not available in the setup session |
+
+
 ## Skills
 
 | Skill | Trigger | Description |

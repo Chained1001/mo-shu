@@ -67,15 +67,23 @@ flowchart LR
 
 > 完整架构图（Skill/Agent/Hook/数据层与状态机）见 [docs/architecture.md](docs/architecture.md)。
 
-## 安装
+## 安装（三步走）
 
 ```bash
 npx skills add Chained1001/mo-shu -y -g
 ```
 
-`-g` 全局安装，所有目录可用；去掉 `-g` 只装到当前目录。更新时重新执行同一命令。
+### 安装后必做（新用户看这里）
 
-**安装后必须新开一个 Claude Code 会话**（skill 在会话启动时加载；在安装前的旧会话里刚装完可能无法触发 `/moshu-setup`），然后在写作项目根目录运行 `/moshu-setup` 部署。部署完成后再新开一个会话开始写作（见下条 agents 注册说明）。升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。
+| 步骤 | 做什么 | 为什么 |
+|---|---|---|
+| **① 新开窗口** | 安装完成后，**关闭当前 Claude Code 窗口，在写作目录新开一个** | Skills 在会话启动时加载——安装会话里 `/moshu-build` 等命令不可用 |
+| **② 部署环境** | 新窗口里运行 `/moshu-setup` | 部署 hooks、agents、rules、CLAUDE.md 到你的写作项目 |
+| **③ 再开窗口** | setup 完成后再新开一个窗口，开始 `/moshu-build` 构建 | agents 在会话启动时注册，setup 会话里不可用 |
+
+> 💡 快速记忆：**装完→开窗→setup→再开窗→build**
+
+升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。
 
 **多 agent 协作要先部署再新开会话：** 7 个专业 agent（moshu-architect、moshu-narrative-writer、moshu-consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 
