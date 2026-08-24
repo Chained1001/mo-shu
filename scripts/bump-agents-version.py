@@ -8,6 +8,7 @@
   3. skills/moshu-setup/SKILL.md：部署判定门反引号 `33`
   4. skills/moshu-setup/references/templates/hooks/session-start.sh：-lt 33 / -gt 33 / 低于 v33 / 高于 v33
   5. skills/moshu-setup/references/deploy-manual.md：agents_version: 33 反引号/无反引号
+  6. skills/moshu-setup/scripts/deploy.py：DEFAULT_AGENTS_VERSION 常量 + CLI 帮助
   6. skills/moshu-setup/UPGRADING.md：版本头 agents_version: 33 + 升级步骤行——**排除历史条目**（含「变更」关键词的行不动）
 
 不动：marketplace.json / SKILL.md frontmatter version（插件版本独立轨，本脚本只管 agents_version）。
@@ -90,6 +91,14 @@ def collect_edits(root: Path, old: int, new: int) -> list[tuple[Path, int, str, 
         for line_no, line in enumerate(dm.read_text(encoding="utf-8").splitlines(), start=1):
             for m in re.finditer(rf"`?agents_version: {old}`?", line):
                 edits.append((dm, line_no, m.group(0), m.group(0).replace(str(old), str(new))))
+    # deploy.py（DEFAULT_AGENTS_VERSION / DEFAULT_SETUP_VERSION 常量 + CLI 帮助）
+    dp = root / "skills" / "moshu-setup" / "scripts" / "deploy.py"
+    if dp.exists():
+        for line_no, line in enumerate(dp.read_text(encoding="utf-8").splitlines(), start=1):
+            # agents_version 常量与 CLI 帮助
+            for m in re.finditer(rf"(DEFAULT_AGENTS_VERSION = '{old}'|--agents-version {old})", line):
+                edits.append((dp, line_no, m.group(0), m.group(0).replace(str(old), str(new))))
+            # setup_skill_version（独立轨：old_setup → new_setup 由调用方传入，此处用 agents_version 同步推算不适用——setup 版本独立变化，不跟 agents_version 联动，bump 脚本只管 agents_version）
     # UPGRADING.md 版本头 + 升级步骤行（排除含「变更」的历史条目行）
     up = root / "skills" / "moshu-setup" / "UPGRADING.md"
     if up.exists():

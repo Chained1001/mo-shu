@@ -9,7 +9,7 @@ AskUserQuestion 与结果报告，不再逐条手写 cp/chmod（三层分工：�
 用法（按仓库解释器探测形态调用，Windows 禁止裸 python3）:
   for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
   "$PYBIN" deploy.py --project {项目目录} --name {项目名} [--book {书名}]
-                     [--agents-version 30] [--setup-version 1.4.0] [--dry-run]
+                     [--agents-version 33] [--setup-version 1.5.0] [--dry-run]
   "$PYBIN" deploy.py --verify {项目目录}
 
 行为:
@@ -51,8 +51,8 @@ MANAGED_SECTIONS = ('Skill 路由表', '文件结构', '协作规则', '作者�
                     'Compact 后恢复上下文')
 SECTION_RE = re.compile(r'^##\s+(.+?)\s*$', re.M)
 
-DEFAULT_AGENTS_VERSION = '30'
-DEFAULT_SETUP_VERSION = '1.4.0'
+DEFAULT_AGENTS_VERSION = '33'
+DEFAULT_SETUP_VERSION = '1.5.0'
 SENTINEL_FIELDS = ('deployed_at', 'agents_version', 'setup_skill_version', 'target_cli',
                    'resolver_strategy', 'references_dir')
 
