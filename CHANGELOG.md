@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased（v2.4.0 待发，2026-08-25）
+
+> 全仓审计修复闭环 + 治理批（B31-B45）
+
+### 修复
+
+- **审计修复（B31-B37）**：setup/build 全仓审计需修/候选落地——版本阈值散射闭合（bump 补 3 模式：小于/大于/不得用 v）、32 张文风卡 setup 副本登记 shared-assets、计数口径对齐（8 agents/8 项 verify）、CLAUDE.md 合并幂等规范化、verify 补 CLAUDE.md 标准节检查、全仓称谓统一（Phase/Step→Stage 含 B34 补齐）、write/review/scan 域修复（fanqie 采集降级崩溃、卷纲章节范围字段级断裂、工单 JSON 根字段文档、台账采风需求行、路由判定表对齐）
+- **治理批（B38-B43）**：shared-assets 全量对账守卫化（未登记副本即红）、部署契约机器化（deployment_manifest 单一真源）、产物契约注册表（artifact_contracts 字段抽检）、流程锚点契约化（flow_anchors + 测试从契约读）、审计守卫化闭环（审计法 v1.7、开发标准 §4.3）、write 三工作流 lane 标识（单章 4-C / 日更 4-D / 修订 4-R）
+- **核验与审核闭环（B44-B45）**：治理批整体核验报告、B32-B44 审核落档、称谓残留收尾（F1/F3）
+
 ## v2.3.6（2026-08-24）
 
 > 安装/部署体验修复——deploy.py 过期常量根治、安装引导补齐、版本展示可达、README 三步走。
