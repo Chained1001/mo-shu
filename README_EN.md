@@ -77,7 +77,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 **Open a new Claude Code session after installing** (skills are loaded at session start; a session that was open before the install may not be able to trigger `/moshu-setup`), then run `/moshu-setup` from your writing project root to deploy. Open yet another fresh session before writing (see the agents note below). After updating, re-run `/moshu-setup` to sync hooks / agents / references. Per-version changes are in [CHANGELOG.md](CHANGELOG.md) and [Releases](https://github.com/Chained1001/mo-shu/releases).
 
-**Multi-agent collaboration needs setup + a fresh session:** the 7 specialist agents (moshu-architect, moshu-narrative-writer, moshu-consistency-checker, etc.) are written into your project's `.claude/agents/` by `/moshu-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/moshu-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
+**Multi-agent collaboration needs setup + a fresh session:** the 8 specialist agents (moshu-architect, moshu-narrative-writer, moshu-consistency-checker, etc.) are written into your project's `.claude/agents/` by `/moshu-setup`. Claude Code registers custom agents most reliably at session start. To check agents: run `/moshu-review` in the new session — `Effective Mode: full/lean` means agents registered, `Fallback: ... -> solo` means they are unavailable.
 
 **Import and continuation order:** run `/moshu-setup` from the writing-project root first to deploy hooks and agents; start or refresh the session, then run `/moshu-import` for the existing novel and continue with `/moshu-write 日更` or `/moshu-write 写第N章`. You can also run `/moshu-import` directly; if setup is missing, it offers to run setup first or continue with a serial import.
 
@@ -97,7 +97,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-setup` | `/moshu-setup` | Environment setup — Claude Code (safe merge) |
 | `moshu` | `/moshu` / `/moshu dashboard` | Toolbox router plus a local deconstruction/project dashboard |
 | `moshu-write` | `/moshu-write` | Long-form writing — chapter outlines and prose, daily continuation, revision, volume-review execution |
-| `moshu-build` | `/moshu-build` | Book construction — premise, worldview, characters, full outline, first-volume outline; setting/outline/volume revision; new-volume planning |
+| `moshu-build` | `/moshu-build` | Book construction — Stage 1-6 six-step flow (ideal review → 8-column skeleton → character arcs → unit cards → integration → finalize), three-dimension review, research fusion, setting revision, new-volume planning |
 | `moshu-analyze` | `/moshu-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
 | `moshu-scan` | `/moshu-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
 | `moshu-deslop` | `/moshu-deslop` | De-AI-ify — detect and remove AI writing traces |
@@ -105,7 +105,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-import` | `/moshu-import` | Reverse import — parse existing novels into standard project structure |
 | `moshu-review` | `/moshu-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian scoring rubrics |
 | `moshu-cdp` | `/moshu-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
-| `moshu-research` | `/moshu-research` `/caifeng` | Reference research — three object types (structure/character/mechanism) with cross-media translation, project-level `设定/采风-*.md` output |
+| `moshu-research` | `/moshu-research` `/caifeng` | Reference research — five reference types (structure/character/mechanism/plot/emotion) × seven sources, cross-media translation against plagiarism, project-level `设定/采风-*.md` output |
 
 > `moshu-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
 
@@ -120,7 +120,7 @@ uploads moshu content.
 
 ## Agent System
 
-Writing skills internally coordinate 7 specialized agents:
+Writing skills internally coordinate 8 specialized agents:
 
 | Agent | Model | Role |
 |:------|:------|:-----|
@@ -131,6 +131,7 @@ Writing skills internally coordinate 7 specialized agents:
 | **moshu-researcher** | Sonnet | Research — CDP search + full-text extraction, multi-source cross-verification, structured reference files |
 | **moshu-explorer** | Haiku | Story query — read-only character/foreshadowing/setting/progress lookup, quick context loading |
 | **moshu-chapter-extractor** | Haiku | Chapter extraction — summaries, plot points, character mentions, parallel deconstruction unit |
+| **moshu-evaluator** | Sonnet | Creation review — read-only three-dimension (editor/author/reader) review of build artifacts, routine call at stop points |
 
 Agents load writing theory from `references/` on demand (character design, dialogue techniques, twist toolbox, etc. — the agent-references bundle ships the full methodology set, which grows with each version; hundreds of references across the repo), without reserving context window space.
 
@@ -164,10 +165,19 @@ The file system separates settings, outlines, prose, and tracking into independe
 │   ├── 角色/            # Characters: one file per person (江晨.md, 钟嘉嘉.md)
 │   ├── 势力/            # Factions: one file per faction/organization (火箭军文工团.md)
 │   ├── 关系.md          # Character relationship map
-│   └── 题材定位.md      # Genre core trope + benchmark analysis
+│   ├── 题材定位.md      # Genre core trope + benchmark analysis + endgame trump card
+│   ├── 理想书评.md      # Full-book north-star yardstick (Stage 1 output)
+│   ├── 题材正文提示卡.md  # Genre boundaries / payoff points / no-drift
+│   ├── 构建台账.md      # Six-step status / build state / open items / emergence log
+│   ├── 角色弧线.md      # Six arc types × six stages + emotion engine + low-pressure side
+│   └── 采风-CF*.md      # Research artifacts (five types × seven sources, CF ticket system)
 ├── 大纲/ (Outline)
-│   ├── 大纲.md          # Full-book volume-level structure
-│   ├── 卷纲_第一卷.md   # One per volume: payoff pacing + emotion arc + character arc + foreshadowing + twists
+│   ├── 大纲.md          # Full-book skeleton (8-column table + faction web + darkline + standing pressure + upgrade steps)
+│   ├── 角色弧线.md      # Character arcs (Stage 3 output; same as 设定/角色弧线.md)
+│   ├── 单元卡.md        # First-volume plot units (BC-ID chapter function + subplot registration + supporting-character spotlight)
+│   ├── 整合记录.md      # Foreshadowing 4 states + twists + clue matrix + motivation chains + Stage 6 polish record
+│   ├── 变更日志.md      # Append-only change log
+│   ├── 卷纲_第一卷.md   # One per volume: final v1.0
 │   ├── 细纲_第001章.md  # One per chapter: summary + multi-line plot + relationships/order + hooks
 │   └── ...
 ├── 正文/ (Prose)
