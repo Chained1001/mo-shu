@@ -84,5 +84,15 @@
         "skills/moshu-research/references/caifeng-methods.md"
       ]
     }
-  ]
+  ],
+  "flow_anchors": {
+    "daily_batch_finalize": {
+      "doc": "skills/moshu-write/references/workflow-daily.md",
+      "section": "Stage 4-4：批末收尾"
+    },
+    "daily_quality_repair": {
+      "doc": "skills/moshu-write/references/workflow-daily.md",
+      "section": "若本步修文改变了会影响后续的事实"
+    }
+  }
 }

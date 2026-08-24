@@ -161,6 +161,32 @@ def test_manifest_contract() -> None:
             "missing artifact fields must be flagged",
         )
 
+        # B41：flow_anchors 结构违规与锚点缺失必须被拒
+        fa_wrong = dict(raw)
+        fa_wrong["flow_anchors"] = {"x": {"doc": 123}}
+        fa_wrong_path = tmpdir / "fa-wrong.json"
+        fa_wrong_path.write_text(json.dumps(fa_wrong, ensure_ascii=False), encoding="utf-8")
+        _, fa_wrong_findings = VALIDATOR.load_manifest(fa_wrong_path)
+        require(
+            "manifest-flow-anchor-type" in finding_codes(fa_wrong_findings),
+            "malformed flow_anchors must be rejected",
+        )
+
+        fa_missing = dict(raw)
+        fa_missing["flow_anchors"] = {
+            "phantom_anchor": {"doc": "skills/moshu-write/references/workflow-daily.md", "section": "绝不存在的节XYZ"}
+        }
+        fa_missing_path = tmpdir / "fa-missing.json"
+        fa_missing_path.write_text(json.dumps(fa_missing, ensure_ascii=False), encoding="utf-8")
+        fa_manifest, fa_findings = VALIDATOR.load_manifest(fa_missing_path)
+        require(not fa_findings and fa_manifest is not None, "well-formed flow_anchors must load")
+        require(
+            "flow-anchor-missing" in finding_codes(
+                VALIDATOR.flow_anchor_findings(REPO_ROOT, fa_manifest)
+            ),
+            "missing flow anchor must be flagged",
+        )
+
         duplicate_artifacts = dict(raw)
         duplicate_artifacts["primary_benchmark_artifacts"] = ["剧情/节奏.md", "剧情/节奏.md"]
         duplicate_path = tmpdir / "duplicate-artifacts.json"

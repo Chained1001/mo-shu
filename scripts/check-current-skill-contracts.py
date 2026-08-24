@@ -29,6 +29,7 @@ EXPECTED_MANIFEST_KEYS = {
     "required_outline_sections",
     "deployment_manifest",
     "artifact_contracts",
+    "flow_anchors",
 }
 SEMVER_RE = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 ARTIFACT_PATH_RE = re.compile(r"(?:[^/\s]+/)+[^/\s]+\.md")
@@ -45,6 +46,7 @@ class ContractManifest:
     required_outline_sections: Tuple[str, ...]
     deployment_manifest: Optional[Dict[str, Any]]
     artifact_contracts: Optional[List[Dict[str, Any]]]
+    flow_anchors: Optional[Dict[str, Dict[str, str]]]
 
 
 @dataclass(frozen=True)
@@ -371,6 +373,27 @@ def load_manifest(path: Path) -> Tuple[Optional[ContractManifest], List[Finding]
     if findings:
         return None, findings
 
+    fa = raw.get("flow_anchors")
+    fa_valid = (
+        isinstance(fa, dict)
+        and all(
+            isinstance(v, dict)
+            and isinstance(v.get("doc"), str) and v["doc"].strip()
+            and isinstance(v.get("section"), str) and v["section"].strip()
+            for v in fa.values()
+        )
+    )
+    if "flow_anchors" in raw and not fa_valid:
+        findings.append(
+            Finding(
+                "manifest-flow-anchor-type",
+                "flow_anchors must map names to {doc, section}",
+                path,
+            )
+        )
+    if findings:
+        return None, findings
+
     ac = raw.get("artifact_contracts")
     ac_valid = (
         isinstance(ac, list)
@@ -404,6 +427,7 @@ def load_manifest(path: Path) -> Tuple[Optional[ContractManifest], List[Finding]
         required_outline_sections=tuple(sections),
         deployment_manifest=dm if isinstance(dm, dict) else None,
         artifact_contracts=ac if isinstance(ac, list) else None,
+        flow_anchors=fa if isinstance(fa, dict) else None,
     )
     return manifest, []
 
@@ -1369,6 +1393,23 @@ def artifact_contract_findings(repo_root: Path, manifest: ContractManifest) -> L
     return findings
 
 
+def flow_anchor_findings(repo_root: Path, manifest: ContractManifest) -> List[Finding]:
+    """B41：流程锚点契约——契约声明的节锚点必须在对应文档存在（命名迁移时文档/契约/测试单点更新）。"""
+    findings: List[Finding] = []
+    for name, anchor in (manifest.flow_anchors or {}).items():
+        doc = repo_root / anchor["doc"]
+        text = doc.read_text(encoding="utf-8", errors="ignore")
+        if anchor["section"] not in text:
+            findings.append(
+                Finding(
+                    "flow-anchor-missing",
+                    "流程锚点 {}「{}」在 {} 中缺失".format(name, anchor["section"], anchor["doc"]),
+                    doc,
+                )
+            )
+    return findings
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     repo_root = args.repo_root.resolve()
@@ -1387,6 +1428,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     findings = validate_repository(repo_root, manifest)
     findings.extend(deployment_manifest_findings(repo_root, manifest))
     findings.extend(artifact_contract_findings(repo_root, manifest))
+    findings.extend(flow_anchor_findings(repo_root, manifest))
     if findings:
         for finding in findings:
             print("  [FAIL] {}: {}".format(finding.code, finding.detail(repo_root)))
