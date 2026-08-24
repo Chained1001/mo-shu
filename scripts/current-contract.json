@@ -72,7 +72,7 @@
     },
     {
       "artifact": "采风-CF 记录",
-      "producer": "moshu-research",
+      "producer": "moshu-build",
       "consumer": "moshu-build",
       "fields": [
         "CF",
@@ -81,7 +81,7 @@
       ],
       "anchor_docs": [
         "skills/moshu-build/references/workflow-build.md",
-        "skills/moshu-research/references/caifeng-methods.md"
+        "skills/moshu-build/references/caifeng-methods.md"
       ]
     }
   ],

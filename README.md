@@ -96,7 +96,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-setup` | `/moshu-setup` `/准备写书` | 环境部署 · Claude Code（已有配置安全合并） |
 | `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
 | `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 细纲与正文输出、日更续写、大修、卷复盘执行 |
-| `moshu-build` | `/moshu-build` `/建书` | 开书构建 · Stage 1-6 六步流程（理想书评→骨架八列→人物弧线→单元卡→整合→定稿）、三维度评审、采风融合、设定修订、开新卷 |
+| `moshu-build` | `/moshu-build` `/建书` | 开书构建 · Stage 1-6 六步流程（理想书评→骨架八列→人物弧线→单元卡→整合→定稿）、三维度评审、内嵌采风（Stage 1 默认 + 瓶颈触发）、设定修订、开新卷 |
 | `moshu-analyze` | `/moshu-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
 | `moshu-scan` | `/moshu-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
 | `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
@@ -104,7 +104,6 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-import` | `/moshu-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
 | `moshu-review` | `/moshu-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
 | `moshu-cdp` | `/moshu-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
-| `moshu-research` | `/moshu-research` `/采风` | 采风研究 · 五类参照（结构/角色/设定机制/情节/情绪）×七源跨媒介转译防抄，产出项目级 `设定/采风-*.md` |
 
 > `moshu-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
 

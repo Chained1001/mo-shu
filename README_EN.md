@@ -97,7 +97,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-setup` | `/moshu-setup` | Environment setup — Claude Code (safe merge) |
 | `moshu` | `/moshu` / `/moshu dashboard` | Toolbox router plus a local deconstruction/project dashboard |
 | `moshu-write` | `/moshu-write` | Long-form writing — chapter outlines and prose, daily continuation, revision, volume-review execution |
-| `moshu-build` | `/moshu-build` | Book construction — Stage 1-6 six-step flow (ideal review → 8-column skeleton → character arcs → unit cards → integration → finalize), three-dimension review, research fusion, setting revision, new-volume planning |
+| `moshu-build` | `/moshu-build` | Book construction — Stage 1-6 six-step flow (ideal review → 8-column skeleton → character arcs → unit cards → integration → finalize), three-dimension review, embedded research (Stage 1 default + bottleneck-triggered), setting revision, new-volume planning |
 | `moshu-analyze` | `/moshu-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
 | `moshu-scan` | `/moshu-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
 | `moshu-deslop` | `/moshu-deslop` | De-AI-ify — detect and remove AI writing traces |
@@ -105,7 +105,6 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-import` | `/moshu-import` | Reverse import — parse existing novels into standard project structure |
 | `moshu-review` | `/moshu-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian scoring rubrics |
 | `moshu-cdp` | `/moshu-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
-| `moshu-research` | `/moshu-research` `/caifeng` | Reference research — five reference types (structure/character/mechanism/plot/emotion) × seven sources, cross-media translation against plagiarism, project-level `设定/采风-*.md` output |
 
 > `moshu-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
 
