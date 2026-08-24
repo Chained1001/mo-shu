@@ -152,7 +152,7 @@
       "description": "网文写作环境部署。一键部署 hooks、rules、agents、CLAUDE.md 到写作项目，提供会话恢复、一致性检查、提交验证等自动化基础设施。",
       "source": "./",
       "strict": false,
-      "version": "1.4.1",
+      "version": "1.5.0",
       "category": "novel-infra",
       "keywords": [
         "setup",
@@ -230,10 +230,10 @@
     },
     {
       "name": "moshu-research",
-      "description": "采风/找参照——为构建环提供三类动态参照（结构/角色/设定机制），跨媒介转译防抄，产出项目级 设定/采风-*.md。",
+      "description": "采风/找参照——为构建环提供五类动态参照（结构/角色/设定机制/情节/情绪），检索下沉 moshu-researcher agent（fallback 内联），产出项目级 设定/采风-CF*.md。",
       "source": "./",
       "strict": false,
-      "version": "1.0.0",
+      "version": "1.1.0",
       "category": "novel-writing",
       "keywords": [
         "research",

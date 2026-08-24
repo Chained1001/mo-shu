@@ -168,6 +168,17 @@ def test_harvest_proper_names(tmp: Path) -> None:
     assert any("疑似复用来源专名" in c for c in payload["candidate"]), f"应出专名候选: {payload}"
 
 
+def test_unconsumed_caifeng(tmp: Path) -> None:
+    # B21：采风-CF*.md 元数据状态「未消费」→ candidate 且 exit 0
+    project = write_project(tmp, "cf", COMPLIANT)
+    (project / "设定").mkdir()
+    (project / "设定" / "采风-CF001-角色-师爷.md").write_text(
+        "# 采风-CF001-角色-师爷\n## 元数据头\n- 类型/主题：角色/师爷｜触发需求：步 2 人物｜状态：未消费\n## 来源清单\n| 作品 | URL | 日期 | 占比 |\n## 要素表\n| 要素 | 内容 | 来源 URL |\n## 来源专有名词清单\n## 转译三问初答（机制类）\n## 融合与消费记录\n", encoding="utf-8")
+    code, payload = run_check(project)
+    assert code == 0, f"未消费采风为 candidate，应 exit 0，实得 {code}: {payload}"
+    assert any("采风产物未消费" in c for c in payload["candidate"]), f"应出未消费候选: {payload}"
+
+
 def main() -> None:
     work = ROOT / ".tmp" / "tests" / "B18work"
     import shutil
@@ -183,6 +194,7 @@ def main() -> None:
         test_old_structure_downgrade(work)
         test_missing_outline(work)
         test_harvest_proper_names(work)
+        test_unconsumed_caifeng(work)
         test_missing_dark_section(work)
         test_missing_branch_section(work)
     finally:

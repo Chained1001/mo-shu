@@ -17,6 +17,9 @@ import re
 import sys
 from pathlib import Path
 
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
+
 HEADER_KEYWORDS = ["卷", "一句话", "对手", "赌注", "中点", "高潮", "跃迁", "字数"]
 REQUIRED_SECTIONS = ["每卷骨架表", "全书体量与阶段总览", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力"]
 OLD_STRUCTURE_CANDIDATE = "大纲为 B16 前旧结构，建议升级（补势力场/常驻压力/六要素列）"
@@ -297,6 +300,22 @@ def main() -> int:
                         break
             except OutlineError as exc:
                 candidate.append(f"采风记录读取异常：{harvest_path.name}——{exc}")
+
+    # ---------- B21 candidate：采风产物未消费提示（采风-CF*.md 元数据状态） ----------
+    if harvest_dir.is_dir():
+        cf_files = sorted(harvest_dir.glob("采风-CF*.md"))
+        if cf_files:
+            unconsumed = []
+            for cf in cf_files:
+                try:
+                    cf_text = read_text(cf)
+                except OutlineError:
+                    continue
+                status_match = re.search(r"状态[：:]\s*([^\s|｜]+)", cf_text)
+                if status_match and status_match.group(1) in ("未消费", "进行中", "已回"):
+                    unconsumed.append(cf.name)
+            if unconsumed:
+                candidate.append(f"有 {len(unconsumed)} 份采风产物未消费（{'、'.join(unconsumed[:5])}）")
 
     # ---------- l. candidate：常驻压力空/占位 ----------
     pressure_match = re.search(r"常驻压力[：:]\s*[^\n]*", text)
