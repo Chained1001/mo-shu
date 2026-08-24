@@ -71,7 +71,7 @@ if sentinel_exists "$ROOT/.story-deployed"; then
       if [ "$AGENTS_VERSION" -lt 33 ]; then
         OUTPUT+="[WARN] moshu-setup agents_version=$AGENTS_VERSION 低于 v33。重新运行 /moshu-setup 刷新 hooks、agents 和 references（部署后需新开会话）。${NL}${NL}"
         HAS_CONTENT=true
-      elif [ "$AGENTS_VERSION" -gt 30 ]; then
+      elif [ "$AGENTS_VERSION" -gt 33 ]; then
         OUTPUT+="[WARN] moshu-setup agents_version=$AGENTS_VERSION 高于本 hook 支持的 v33。不要降级覆盖；请先更新 mo-shu。${NL}${NL}"
         HAS_CONTENT=true
       fi
