@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest update (v2.0.0):** Construction iteration method (six-step five-facet book-driven build: Snowflake base + setting/emotion facets + benchmark dual-path + ledger v2 + perfect-review/emergence records) + Three-pass writing method (fast-draft / reader-reread / craft-polish + context isolation) + Knowledge curation pipeline (five extracts from *The Skeleton of a Novel*) + Governance consolidation (Audit Method v1.3 + self-contained AGENTS + one of each governance doc) + 3 new guards (reference-closure / route-write / story-numbers extension). See [CHANGELOG.md](CHANGELOG.md) for earlier versions.
+> **Latest (v2.4.0)**: **Create-Review-Research Loop** — Review Agent (moshu-evaluator, 3-dimension read-only, routine at stop points) + Multi-dimension research triggers (Stage 2-6 bottleneck signals + context-specific fusion) + Socratic methodology (design questions replace checklists · fill-in-blank templates) + Stage naming standardization + Machine-check format tolerance + Hot-cold separation optimization + Audit SOP v1.6 (backfill test / label-consumption detection / version-scatter tooling) + Dev Standard v1.2 + agents_version 34 (8 agents). **v2.2-2.3 core**: Five-layer pipeline (8-column skeleton / faction web / darkline layers / stage evolution / subplot+spotlight) + Three-novel reverse extraction + Outline machine-check + Research skill agent-ified + 17 batches.
 
 ## Pipeline Overview
 
