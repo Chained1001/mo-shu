@@ -270,6 +270,24 @@ def run(command: str, root: Path, groups: list[Group]) -> int:
                 print(f"DRIFT [{group.name}] {relative} ({'+'.join(kinds)})")
                 issues += 1
 
+    # （B38：agent-references 全量对账——枚举全部副本文件，未登记且非 setup 内部资产即红；
+    #  根治 B28 类"半边漏登记"盲区：登记完备性由本检查兜底，不依赖人工登记）
+    # setup 内部资产豁免清单（无跨 skill 源副本，仅部署使用；新增内部资产须在此登记理由）
+    agent_ref_internal_exempt = {"shared-output-discipline.md"}
+    agent_ref_dir = root / "skills" / "moshu-setup" / "references" / "agent-references"
+    if command == "check" and agent_ref_dir.is_dir():
+        registered_paths = {g.source.relative_to(root).as_posix() for g in groups}
+        for g in groups:
+            registered_paths.update(t.relative_to(root).as_posix() for t in g.targets)
+        for f in sorted(agent_ref_dir.rglob("*")):
+            if not f.is_file():
+                continue
+            rel = f.relative_to(root).as_posix()
+            if rel in registered_paths or f.name in agent_ref_internal_exempt:
+                continue
+            print(f"UNREGISTERED [{rel}] agent-references 副本未登记 shared-assets（B28 类半边）")
+            issues += 1
+
     if command == "check":
         if issues:
             print(f"FAIL: {issues} managed shared asset(s) are missing or stale")

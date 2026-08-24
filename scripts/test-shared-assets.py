@@ -77,6 +77,18 @@ with tempfile.TemporaryDirectory(prefix="shared-assets-") as tmp:
     clean = run(root, manifest, "check")
     assert clean.returncode == 0, clean.stderr + clean.stdout
 
+    # B38：agent-references 全量对账——未登记副本红、豁免内部资产绿
+    ar_dir = root / "skills" / "moshu-setup" / "references" / "agent-references"
+    ar_dir.mkdir(parents=True)
+    (ar_dir / "unregistered.md").write_text("x", encoding="utf-8")
+    unreg = run(root, manifest, "check")
+    assert unreg.returncode == 1 and "UNREGISTERED" in unreg.stdout, unreg.stdout
+    (ar_dir / "unregistered.md").unlink()
+    (ar_dir / "shared-output-discipline.md").write_text("x", encoding="utf-8")
+    exempt = run(root, manifest, "check")
+    assert exempt.returncode == 0, exempt.stderr + exempt.stdout
+    (ar_dir / "shared-output-discipline.md").unlink()
+
     target.chmod(0o644)
     mode_drift = run(root, manifest, "check")
     assert mode_drift.returncode == 1, mode_drift.stderr + mode_drift.stdout
