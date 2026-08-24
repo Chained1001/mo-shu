@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""章节边界解析器（moshu-analyze Stage 0 标准工具）
+"""章节边界解析器（moshu-analyze Stage 2-1 标准工具）
 
 把原文解析为章节边界表（章号/标题/起始行/字数），做连续性校验，
 组装 _progress.md 骨架（含「章节边界」节，唯一真值）。AI 拆书时直接调用本脚本，
@@ -243,7 +243,7 @@ def main():
 | 4 设定+关系 | pending | — | 4a/4b/4c |
 | 5 汇总报告 | pending | — | 拆文报告.md + 概要全量版 |
 | 6 技法总结 | pending | — | 技法总结.md |
-## 章节边界（Stage 0 章节边界子步骤产物，唯一权威）
+## 章节边界（Stage 2-1 章节边界子步骤产物，唯一权威）
 {chr(10).join(tbl)}
 ## 分块进度
 | 块 | 章节 | 状态 |
@@ -255,7 +255,7 @@ def main():
 ## 角色合并
 | 合并前 | 合并后 | 依据 | 确认 |
 ## 断点
-- 最后处理：Stage 0 | 当前阶段：Stage 1 | 下一操作：拆第1-3章
+- 最后处理：Stage 2-1 | 当前阶段：Stage 2-2 | 下一操作：拆第1-3章
 """
         with io.open(prog_path, 'w', encoding='utf-8') as f:
             f.write(skeleton)

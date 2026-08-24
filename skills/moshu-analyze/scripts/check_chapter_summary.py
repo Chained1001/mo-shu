@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""章节摘要硬检查器（moshu-analyze Stage 2 质量门）
+"""章节摘要硬检查器（moshu-analyze Stage 2-3 质量门）
 
 对 章节/第N章_摘要.md 跑 4 条机械硬检查（对应 analyze-workflow「失败处理」的
 可机械校验项），替代 AI 每次手写 grep 组合。AI 落盘后直接调用本脚本，
@@ -21,7 +21,7 @@
   4. 主题标签枚举 ⊆ {爱情,亲情,友情,权力,金钱,成长,复仇,悬念,搞笑,热血,日常,其他}
      (出现「主题标签：」带冒号或值为基调词均判失败)
   5. 情节点硬下限: P 行数 ≥ 10（agent 模板硬约束的机检兜底）
-  --deep: 额外检查 第*章_深度拆解.md 的必含字段（Stage 1 轻检查）
+  --deep: 额外检查 第*章_深度拆解.md 的必含字段（Stage 2-2 轻检查）
 
 ⚠️ 枚举单一权威: 基调/主题标签枚举以本脚本为唯一权威——
    改动枚举必须先改本脚本, 再同步 agent 模板与文档, 防跨文档漂移误报。
@@ -49,7 +49,7 @@ TOPIC_TAGS = {'爱情', '亲情', '友情', '权力', '金钱', '成长', '复�
 # 基调/标签值到换行即止（值后是换行或下一字段，绝不跨行）
 TONE_VAL = re.compile(r'基调：([^ |\n]+)')
 TAG_LINE = re.compile(r'主题标签([：:]?)([^ |\n]+)')
-# Stage 1 深度拆解必含字段（--deep）
+# Stage 2-2 深度拆解必含字段（--deep）
 DEEP_FIELDS = ['开篇钩子', '人物出场', '世界观铺设', '结构拆解', '爽点分析', '章尾钩子', '可借鉴要素']
 
 
@@ -66,7 +66,7 @@ def check_file(path: Path) -> tuple[list[str], list[str]]:
     if not (p_count == tone_count == desc_count):
         fails.append(f'情节点数不一致: P={p_count} 基调={tone_count} 白描={desc_count}')
     # 审计-V3 AM2：情节点硬下限 10（agent 模板硬约束的机检兜底；下限不足会静默
-    # 拖低 Stage 3 语料密度——haiku 输出 6 条格式全对时旧 4 检仍 PASS）
+    # 拖低 Stage 2-4 语料密度——haiku 输出 6 条格式全对时旧 4 检仍 PASS）
     if p_count < 10:
         fails.append(f'情节点不足: P={p_count}（每章至少 10 个，至多 40 个）')
 
@@ -95,7 +95,7 @@ def check_file(path: Path) -> tuple[list[str], list[str]]:
 
 
 def check_deep(path: Path) -> list[str]:
-    """Stage 1 深度拆解必含字段轻检查"""
+    """Stage 2-2 深度拆解必含字段轻检查"""
     text = path.read_text(encoding='utf-8', errors='replace')
     missing = [f for f in DEEP_FIELDS if f'**{f}**' not in text]
     return [] if not missing else [f'深度拆解缺字段: {missing}']
@@ -133,7 +133,7 @@ def main():
         deep_files = sorted(d.glob('第*章_深度拆解.md')) if args.deep else []
         if not files:
             if args.deep:
-                # Stage 1 场景：目录只有深度拆解文件，允许仅深度检查
+                # Stage 2-2 场景：目录只有深度拆解文件，允许仅深度检查
                 deep_only = True
             else:
                 print(f'[错误] {d} 下没有 第*章_摘要.md', file=sys.stderr)

@@ -1,4 +1,4 @@
-# workflow-chapter.md：单章正文工作流（Stage 4-5 薄壳）
+# workflow-chapter.md：单章正文工作流（Stage 4 薄壳）
 
 本文件是「写指定章」车道的薄壳：13 个子步骤 + 单章特有细节。写前准备/正文/机检收尾/事务提交四段共享内核在 [chapter-core.md](chapter-core.md)，本文件每步只给一行指引，**执行细节一律进 core 对应段**。
 

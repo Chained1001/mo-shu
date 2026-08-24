@@ -258,8 +258,8 @@ def test_hooks_fail_closed_on_invalid_tracking_checkpoints() -> None:
 def test_daily_quality_repairs_close_tracking_before_batch_finish() -> None:
     text = read("skills/moshu-write/references/workflow-daily.md")
     revision = text.index("若本步修文改变了会影响后续的事实")
-    step_four = text.index("## Step 4：批末收尾")
-    require(revision < step_four, "quality repair revision invariant must appear before Step 4")
+    step_four = text.index("## Stage 4-4：批末收尾")
+    require(revision < step_four, "quality repair revision invariant must appear before Stage 4-4")
     require_all(text[revision:step_four], ("mode=revision", "通过 `check`", "纯措辞调整不重复提交"), "daily quality repair closure")
 
 
