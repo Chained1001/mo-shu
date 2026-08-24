@@ -12,9 +12,12 @@
   6. skills/moshu-setup/UPGRADING.md：版本头 agents_version: 33 + 升级步骤行——**排除历史条目**（含「变更」关键词的行不动）
 
 不动：marketplace.json / SKILL.md frontmatter version（插件版本独立轨，本脚本只管 agents_version）。
+另有 --setup-version <旧> <新>：setup_skill_version 独立轨（observer 008）——6 处覆盖（moshu-setup/SKILL.md frontmatter version + 哨兵样例 /
+current-contract.json / UPGRADING.md 版本头 / deploy-manual.md 两处 / deploy.py DEFAULT_SETUP_VERSION 常量 + CLI 帮助），与 agents_version
+独立可只 bump 其一；同一套 diff 预览 → --confirm → 守卫 → 失败回滚（覆盖两类版本）。
 流程：读 current-contract 取当前值 → grep 六类文件 → diff 预览 → --confirm 替换（临时备份）→ 三守卫
 （check-current-skill-contracts / check-moshu-setup-deployment / check-agents-version-sync）→ 全绿提示完成；
-有红 → 从备份还原 → 报错退出（不留半改状态）。
+有红 → 从备份还原 → 报错退出（不留半改状态，agents/setup 任一改动失败即全部回滚）。
 """
 
 from __future__ import annotations
@@ -110,6 +113,47 @@ def collect_edits(root: Path, old: int, new: int) -> list[tuple[Path, int, str, 
     return edits
 
 
+def collect_setup_edits(root: Path, old_setup: str, new_setup: str) -> list[tuple[Path, int, str, str]]:
+    """setup_skill_version 独立轨编辑收集——6 处覆盖（观察 008 待办：bump 1.5.0→1.5.1 漏了 deploy.py 第 6 处）。"""
+    edits: list[tuple[Path, int, str, str]] = []
+    oldq = re.escape(old_setup)
+    # 1/3. moshu-setup/SKILL.md：frontmatter `version:` + 哨兵样例 `setup_skill_version:`
+    sk = root / "skills" / "moshu-setup" / "SKILL.md"
+    if sk.exists():
+        for line_no, line in enumerate(sk.read_text(encoding="utf-8").splitlines(), start=1):
+            for m in re.finditer(rf"^version:\s*{oldq}\s*$", line):
+                edits.append((sk, line_no, m.group(0), f"version: {new_setup}"))
+            for m in re.finditer(rf"setup_skill_version:\s*{oldq}\b", line):
+                edits.append((sk, line_no, m.group(0), m.group(0).replace(old_setup, new_setup)))
+    # 2. current-contract.json
+    cc = root / "scripts" / "current-contract.json"
+    if cc.exists():
+        for line_no, line in enumerate(cc.read_text(encoding="utf-8").splitlines(), start=1):
+            for m in re.finditer(rf'"setup_skill_version"\s*:\s*"{oldq}"', line):
+                edits.append((cc, line_no, m.group(0), m.group(0).replace(old_setup, new_setup)))
+    # 4. UPGRADING.md 版本头（排除含「变更」历史条目）
+    up = root / "skills" / "moshu-setup" / "UPGRADING.md"
+    if up.exists():
+        for line_no, line in enumerate(up.read_text(encoding="utf-8").splitlines(), start=1):
+            if CHANGE_KEYWORD in line:
+                continue
+            for m in re.finditer(rf"setup_skill_version:\s*{oldq}\b", line):
+                edits.append((up, line_no, m.group(0), m.group(0).replace(old_setup, new_setup)))
+    # 5. deploy-manual.md（两处）
+    dm = root / "skills" / "moshu-setup" / "references" / "deploy-manual.md"
+    if dm.exists():
+        for line_no, line in enumerate(dm.read_text(encoding="utf-8").splitlines(), start=1):
+            for m in re.finditer(rf"setup_skill_version:\s*{oldq}\b", line):
+                edits.append((dm, line_no, m.group(0), m.group(0).replace(old_setup, new_setup)))
+    # 6. deploy.py：DEFAULT_SETUP_VERSION 常量 + CLI 帮助
+    dp = root / "skills" / "moshu-setup" / "scripts" / "deploy.py"
+    if dp.exists():
+        for line_no, line in enumerate(dp.read_text(encoding="utf-8").splitlines(), start=1):
+            for m in re.finditer(rf"(DEFAULT_SETUP_VERSION = '{oldq}'|--setup-version {oldq})", line):
+                edits.append((dp, line_no, m.group(0), m.group(0).replace(old_setup, new_setup)))
+    return edits
+
+
 def preview(root: Path, old: int, new: int) -> list[tuple[str, str, str]]:
     return [
         (f"{path.relative_to(root).as_posix()}:{line_no}", old_s, new_s)
@@ -134,7 +178,8 @@ def run_guards(guard_root: Path, guard_command: list[list[str]] | None) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("new_version", type=int, help="目标 agents_version（如 34）")
+    parser.add_argument("new_version", nargs="?", type=int, default=None, help="目标 agents_version（如 34）；与 --setup-version 独立，可只 bump 其一或并用")
+    parser.add_argument("--setup-version", nargs=2, metavar=("OLD", "NEW"), default=None, help="setup_skill_version 独立轨：<旧版本> <新版本>（6 处覆盖）")
     parser.add_argument("--confirm", action="store_true", help="确认执行替换（默认仅预览）")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1], help="仓库根（测试用 fixture 根）")
     parser.add_argument("--guard-root", type=Path, default=None, help="守卫运行根（默认=--root）")
@@ -151,26 +196,44 @@ def main() -> int:
         print(f"ERROR: {contract_path} 不存在", file=sys.stderr)
         return 2
     current = read_current(contract_path)
-    if args.new_version <= current:
-        print(f"新版本 {args.new_version} 不大于当前 {current}——无 diff，退出 0")
-        return 0
 
-    rows = preview(root, current, args.new_version)
-    if not rows:
-        print(f"未发现当前版本 {current} 的字面量（六类文件零命中）——检查是否已 bump 或版本漂移")
+    # 收集两类版本的编辑（独立轨：agents / setup 可只 bump 其一；任一命中都进同一 edits/备份/回滚）
+    edits: list[tuple[Path, int, str, str]] = []
+    messages: list[str] = []
+    if args.new_version is not None:
+        if args.new_version <= current:
+            messages.append(f"agents_version 保持 {current}（{args.new_version} 不大于当前）——无 agents diff")
+        else:
+            edits += collect_edits(root, current, args.new_version)
+    if args.setup_version is not None:
+        old_setup, new_setup = args.setup_version
+        if old_setup == new_setup:
+            messages.append(f"setup_skill_version {old_setup} 未变化——无 setup diff")
+        else:
+            edits += collect_setup_edits(root, old_setup, new_setup)
+
+    if not edits:
+        if args.new_version is None and args.setup_version is None:
+            print("未提供 agents_version 或 --setup-version。", file=sys.stderr)
+            return 2
+        if messages and args.new_version is not None and args.setup_version is None:
+            print(messages[0])
+            return 0  # 只请求 agents 且无变化（保持旧语义：无 diff 退出 0）
+        print("未发现匹配字面量（可能已 bump 或版本漂移）", file=sys.stderr)
         return 1
-    print(f"agents_version {current} → {args.new_version}（{len(rows)} 处，六类文件）")
-    for rel, old_s, new_s in rows:
-        print(f"  {rel}: {old_s} → {new_s}")
 
+    print(f"bump 预览（{len(edits)} 处）：")
+    for path, line_no, old_s, new_s in edits:
+        print(f"  {path.relative_to(root).as_posix()}:{line_no}: {old_s} → {new_s}")
+    for m in messages:
+        print(m)
     if not args.confirm:
         print("预览模式（未改动）。加 --confirm 执行替换+守卫。")
         return 0
 
-    # 执行替换（临时备份，失败回滚）
+    # 执行替换（临时备份，失败回滚——覆盖 agents/setup 两类版本）
     backup = Path(tempfile.mkdtemp(prefix="bump_backup_"))
     try:
-        edits = collect_edits(root, current, args.new_version)
         touched: dict[Path, str] = {}
         for path in {e[0] for e in edits}:
             text = path.read_text(encoding="utf-8")
@@ -191,7 +254,7 @@ def main() -> int:
         if not run_guards(guard_root, guard_cmd):
             for path, original in touched.items():
                 path.write_text(original, encoding="utf-8")
-            print("守卫有红——已回滚全部替换，未留半改状态。", file=sys.stderr)
+            print("守卫有红——已回滚全部替换（agents/setup 均还原），未留半改状态。", file=sys.stderr)
             return 1
 
         print("bump 完成（守卫全绿），可提交。")

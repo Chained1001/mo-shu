@@ -179,6 +179,52 @@ def test_unconsumed_caifeng(tmp: Path) -> None:
     assert any("采风产物未消费" in c for c in payload["candidate"]), f"应出未消费候选: {payload}"
 
 
+def test_percent_annotation_not_caught(tmp: Path) -> None:
+    # B24：占比行尾注「（合计 100%）」不应被 % 正则误捕（应只读表格数据行的 %）
+    outline = COMPLIANT.replace(
+        "开篇期 15% / 发展期 55% / 高潮期 20% / 收尾期 10%",
+        "开篇期 15% / 发展期 55% / 高潮期 20% / 收尾期 10%（合计 100%）")
+    project = write_project(tmp, "pctanno", outline)
+    code, payload = run_check(project)
+    assert code == 0, f"注释 % 不应误捕成 blocking，实得 {code}: {payload}"
+    assert not any("占比加总" in b for b in payload["blocking"]), f"不应报占比加总: {payload}"
+
+
+def test_ladder_chinese_quantifier(tmp: Path) -> None:
+    # B24：升级台阶「4 大阶段 × 100 万字」——容忍数字与×间中文量词（应解析得出，不降 candidate）
+    outline = COMPLIANT.replace("50 档 × 2 卷", "4 大阶段 × 100 万字")
+    project = write_project(tmp, "ladderzh", outline)
+    code, payload = run_check(project)
+    assert code == 0, f"量词阶梯应解析 exit 0，实得 {code}: {payload}"
+    assert not any("无法实算" in c for c in payload["candidate"]), f"量词阶梯应被解析，不应降 candidate 无法实算: {payload}"
+
+
+def test_bullet_bottom_counted(tmp: Path) -> None:
+    # B24：终局底牌条目以 `- ` bullet 开头应被计入（删到 3 条 → blocking <4）
+    outline = COMPLIANT.replace("- 底牌四（解锁卷 2）", "")
+    project = write_project(tmp, "bullet", outline)
+    code, payload = run_check(project)
+    assert code == 1 and any("终局底牌条目数" in b for b in payload["blocking"]), f"bullet 条目应被计入并报 <4: {payload}"
+
+
+def test_power_paren_suffix(tmp: Path) -> None:
+    # B24：势力场势力名带「（描述）」后缀时，互引匹配应去后缀（避免误判单链条）
+    outline = COMPLIANT.replace(
+        "| 甲 | 目的A | 敌对 | 与乙对立 | 1-2 |",
+        "| 甲（情报阁） | 目的A | 敌对 | 与乙对立 | 1-2 |"
+    ).replace(
+        "| 乙 | 目的B | 中立 | 与甲对立 | 1-2 |",
+        "| 乙（官府） | 目的B | 中立 | 与甲对立 | 1-2 |"
+    ).replace(
+        "| 丙 | 目的C | 盟友 | 与甲博弈 | 1-2 |",
+        "| 丙（猎户） | 目的C | 盟友 | 与甲博弈 | 1-2 |"
+    )
+    project = write_project(tmp, "pwrparen", outline)
+    code, payload = run_check(project)
+    assert code == 0, f"括号后缀应去后缀比互引 exit 0，实得 {code}: {payload}"
+    assert not any("疑似单链条" in c for c in payload["candidate"]), f"不应误报单链条: {payload}"
+
+
 def main() -> None:
     work = ROOT / ".tmp" / "tests" / "B18work"
     import shutil
@@ -197,6 +243,10 @@ def main() -> None:
         test_unconsumed_caifeng(work)
         test_missing_dark_section(work)
         test_missing_branch_section(work)
+        test_percent_annotation_not_caught(work)
+        test_ladder_chinese_quantifier(work)
+        test_bullet_bottom_counted(work)
+        test_power_paren_suffix(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
     print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1)")

@@ -181,7 +181,9 @@ def main() -> int:
     pcts = []
     for line in volume_section.splitlines():
         if re.search(r"(开篇|发展|高潮|收尾)期", line):
-            for m in re.findall(r"(\d+(?:\.\d+)?)\s*%", line):
+            # B24：排除括号内注释（如「（合计 100%）」），避免 % 正则误捕注释值（宁可漏拦不可误伤）
+            line_clean = re.sub(r"（[^）]*）", "", line)
+            for m in re.findall(r"(\d+(?:\.\d+)?)\s*%", line_clean):
                 pcts.append(float(m))
     if pcts:
         total_pct = sum(pcts)
@@ -190,7 +192,8 @@ def main() -> int:
 
     # ---------- g. 台阶算术：Σ(档数×卷幅) ≥ 总字数；无法解析 → candidate ----------
     ladder_section = section_text(text, "升级台阶") or ""
-    pairs = re.findall(r"(\d+)\s*(?:×|x|\*)\s*(\d+)", ladder_section)
+    # B24：容忍数字与「×」间夹中文量词（如「4 大阶段 × 100 万字」）——解析不到仍降 candidate，不升 blocking
+    pairs = re.findall(r"(\d+)\s*[^\d\n×x*]{0,8}\s*(?:×|x|\*)\s*(\d+)", ladder_section)
     if pairs:
         ladder_sum = sum(int(a) * int(b) for a, b in pairs)
         if total_words is not None and ladder_sum > 0 and ladder_sum < total_words:
@@ -200,7 +203,15 @@ def main() -> int:
 
     # ---------- h. 终局底牌 ≥4 项且各有解锁卷 ----------
     bottom_section = section_text(text, "终局底牌") or ""
-    bottom_lines = [ln for ln in bottom_section.splitlines() if ln.strip() and not ln.strip().startswith(("#", "|", "-", ">"))]
+    bottom_lines = []
+    for ln in bottom_section.splitlines():
+        s = ln.strip()
+        if not s or s.startswith(("#", "|", ">")) or re.fullmatch(r"-{3,}", s):
+            continue
+        if s.startswith("-"):
+            s = s.lstrip("- ").strip()  # B24：容忍 `- ` bullet 前缀（终局底牌条目常以 bullet 开头）
+        if s:
+            bottom_lines.append(s)
     if bottom_lines:
         entries = [ln for ln in bottom_lines if re.search(r"(底牌|终局|解锁|卷)", ln)]
         if len(entries) < 4:
@@ -283,7 +294,8 @@ def main() -> int:
         names = [row[0] for row in table[1:] if row and row[0] and row[0] != "势力/人物"]
         if len(names) >= 3:
             rel_col = [row[3] if len(row) > 3 else "" for row in table[1:]]
-            mentioned = {n for cell in rel_col for n in names if n in cell}
+            base_names = [n.split("（")[0].strip() for n in names]  # B24：互引匹配去除势力名括号后缀
+            mentioned = {bn for cell in rel_col for bn in base_names if bn in cell}
             if len(mentioned) <= 1:
                 candidate.append("势力场「与其他势力关系」列疑似单链条（互引 ≤1），非网")
         elif names:
