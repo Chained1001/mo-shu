@@ -85,7 +85,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。
 
-**多 agent 协作要先部署再新开会话：** 7 个专业 agent（moshu-architect、moshu-narrative-writer、moshu-consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
+**多 agent 协作要先部署再新开会话：** 8 个专业 agent（moshu-architect、moshu-narrative-writer、moshu-consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 
 **导入续写顺序：** 推荐先在写作项目根运行 `/moshu-setup`（部署 hooks/agents），新开/刷新会话后运行 `/moshu-import` 导入已有小说，再用 `/moshu-write 日更` 或 `/moshu-write 写第N章` 续写。也可以直接运行 `/moshu-import`；它会先检测是否已 setup，未部署时让你选择先去 setup 或继续串行导入。
 
@@ -96,7 +96,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-setup` | `/moshu-setup` `/准备写书` | 环境部署 · Claude Code（已有配置安全合并） |
 | `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
 | `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 细纲与正文输出、日更续写、大修、卷复盘执行 |
-| `moshu-build` | `/moshu-build` `/建书` | 开书构建 · 题材定位、世界观、人物、全书大纲、首卷卷纲、设定/大纲/卷纲修订、开新卷规划 |
+| `moshu-build` | `/moshu-build` `/建书` | 开书构建 · Stage 1-6 六步流程（理想书评→骨架八列→人物弧线→单元卡→整合→定稿）、三维度评审、采风融合、设定修订、开新卷 |
 | `moshu-analyze` | `/moshu-analyze` | 长篇拆文 · 黄金三章、爽点设计、节奏分析 |
 | `moshu-scan` | `/moshu-scan` | 长篇扫榜 · 起点/番茄/晋江市场趋势 |
 | `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
@@ -104,7 +104,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-import` | `/moshu-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
 | `moshu-review` | `/moshu-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
 | `moshu-cdp` | `/moshu-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
-| `moshu-research` | `/moshu-research` `/采风` | 采风研究 · 三类参照（结构/角色/设定机制）跨媒介转译防抄，产出项目级 `设定/采风-*.md` |
+| `moshu-research` | `/moshu-research` `/采风` | 采风研究 · 五类参照（结构/角色/设定机制/情节/情绪）×七源跨媒介转译防抄，产出项目级 `设定/采风-*.md` |
 
 > `moshu-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
 
@@ -123,7 +123,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 ## Agent 体系
 
-写作 skill 内部通过 7 个专业 Agent 协作，各司其职：
+写作 skill 内部通过 8 个专业 Agent 协作，各司其职：
 
 | Agent | 模型 | 职责 |
 |:------|:-----|:-----|
@@ -134,6 +134,7 @@ npx skills add Chained1001/mo-shu -y -g
 | **moshu-researcher** | Sonnet | 资料研究 · CDP 搜索+正文提取、多源交叉验证、结构化参考文件输出 |
 | **moshu-explorer** | Haiku | 故事查询 · 角色/伏笔/设定/进度只读查询，日更上下文快速加载 |
 | **moshu-chapter-extractor** | Haiku | 章节提取 · 摘要+情节点+角色提及，并行拆文核心单元 |
+| **moshu-evaluator** | Sonnet | 创作评审 · 三维度（编辑/作者/读者）只读评审构建产物，停靠屏例行调用 |
 
 Agent 按需加载 `references/` 中的写作理论（角色设计、对话技法、反转工具箱等），部署包 agent-references 含全套方法论文件（数量随版本增长），全仓 references 数百份，不预占上下文。
 
@@ -167,10 +168,20 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 │   ├── 角色/            # 每个人物一个文件（江晨.md、钟嘉嘉.md）
 │   ├── 势力/            # 每个势力/组织一个文件（火箭军文工团.md）
 │   ├── 关系.md          # 角色关系映射
-│   └── 题材定位.md      # 题材核心梗+对标分析
+│   ├── 题材定位.md      # 题材核心梗+对标分析+终局底牌
+│   ├── 理想书评.md      # 全书北极星尺子（Stage 1 产出）
+│   ├── 题材正文提示卡.md  # 题材边界/爽点/禁止漂移
+│   ├── 构建台账.md      # 六步状态/构建态/待定项/浮现记录
+│   ├── 角色弧线.md      # 六角色弧线六阶段+情绪引擎+低压侧
+│   ├── 世界观/          # 背景设定+力量体系
+│   └── 采风-CF*.md      # 采风产物（五类七源·CF 票据制）
 ├── 大纲/
-│   ├── 大纲.md          # 全书卷级结构
-│   ├── 卷纲_第一卷.md   # 每卷一个：爽点节奏+情绪弧线+人物弧线+伏笔+反转
+│   ├── 大纲.md          # 全书骨架（八列表+势力场+暗线+常驻压力+升级台阶）
+│   ├── 角色弧线.md      # 角色弧线（Stage 3 产物，同设定/角色弧线.md）
+│   ├── 单元卡.md        # 首卷剧情单元（BC-ID 章功能+支线登记+配角高光）
+│   ├── 整合记录.md      # 伏笔四态+反转+线索矩阵+动机链+Stage 6 打磨记录
+│   ├── 变更日志.md      # append-only 变更记录
+│   ├── 卷纲_第一卷.md   # 每卷一个：定稿 v1.0
 │   ├── 细纲_第001章.md  # 每章一个：内容概括+多线情节+人物关系/出场顺序+钩子
 │   └── ...
 ├── 正文/
