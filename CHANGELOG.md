@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 ### 变更
 
 - **采风收编 build（B46）**：移除 moshu-research 独立技能（/采风 触发词随技能移除），caifeng-methods 迁 moshu-build/references 为采风手册（契约 producer+锚点同步），README 技能计数 12→11
+- **文档结构重组（B47）**：治理类 8 文档+规格/ 归位 docs/治理/、研究-v5→研究（去版本后缀）、docs/README 地图重写+状态刷新
 
 ## v2.3.6（2026-08-24）
 
