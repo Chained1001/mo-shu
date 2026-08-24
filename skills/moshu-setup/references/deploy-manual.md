@@ -60,7 +60,7 @@
 ```
 deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
 agents_version: 33
-setup_skill_version: 1.5.0
+setup_skill_version: 1.5.1
 target_cli: claude-code
 resolver_strategy: project-local-skill-reference
 references_dir: .claude/skills/moshu-setup/references/agent-references
@@ -76,7 +76,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 2. 验证 rules 路径：`.claude/rules/` 下的规则文件存在且包含 `paths` frontmatter
 3. 验证 agents：`.claude/agents/` 下的 7 个 agent 定义文件存在
 4. 验证 agent reference bundle：`.claude/skills/moshu-setup/references/agent-references/` 下 reference 文件完整；所有 `moshu-setup/references/agent-references/<file>.md` 都能解析到 deployed bundle
-5. 验证部署标记：`.story-deployed` 存在且包含时间戳、`agents_version: 33`、`setup_skill_version: 1.5.0`、`target_cli`、`resolver_strategy`、`references_dir`
+5. 验证部署标记：`.story-deployed` 存在且包含时间戳、`agents_version: 33`、`setup_skill_version: 1.5.1`、`target_cli`、`resolver_strategy`、`references_dir`
 
 ---
 
