@@ -63,6 +63,7 @@
 | `test-writing-pipeline.sh` | 零 LLM 管道契约 e2e：init→commit（伏笔+信息差）→check（含 suspension_warnings）→volume-report（重放 diff 空）→review_tickets write/resolve/list→check-prose-candidates（blocking_count=0），临时目录自清理 | CI；改任一管道脚本后 |
 | `test-impact-scan.py` | 构建资产修订影响分析回归：正向（关键词命中未写细纲+已写正文+追踪三处）+ 反向（干净关键词三清单空）+ 无 state 退出 2 且引导 | CI（调 moshu-build 的 impact_scan.py） |
 | `test-check-outline.py` | 大纲机检回归：合规大纲 0 / 占比·中点·字数·悬空 F·删节 各 blocking 1 / 旧结构版本兼容降级 0 / 缺文件 2。对应运行时脚本 `skills/moshu-build/scripts/check_outline.py`（blocking+candidate 两列，候选永不拦截；退出码 0=通过[含仅 candidate]/1=blocking 违规/2=参数或读文件错误[缺/空/坏]） | CI（调 moshu-build 的 check_outline.py）；改 check_outline.py 后 |
+| `test-bump-agents-version.py` | 版本 bump 回归：六类文件全覆盖（SKILL 反引号+无反引号/current-contract/session-start.sh/deploy-manual/UPGRADING 版本头）/历史条目不动/守卫红回滚还原。对应 `scripts/bump-agents-version.py`（预览 diff+--confirm+三守卫+失败回滚；退出码 0=完成/1=守卫红已回滚/2=参数或文件错误） | CI；改 bump-agents-version.py 后 |
 | `test-deploy.py` | moshu-setup deploy.py 部署执行体回归：deploy→verify 全 PASS、题材子卡缺失时 verify 非零退出（PM2）、agents_version 降级门拒绝 | CI（deploy-check job）；改 deploy.py 后 |
 
 ## 测试纪律
