@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """test-bump-agents-version.py — bump-agents-version.py 正式回归测试
 
-守护对象：agents_version 确定性 bump 脚本（B23）——六类文件全覆盖（SKILL.md 反引号+无反引号/current-contract.json/
-session-start.sh 比较值+措辞/deploy-manual.md/UPGRADING.md 版本头+步骤行）、历史条目排除、--confirm 替换、
-守卫失败回滚（不留半改状态）。禁：断言实现细节/真实上游；fixture 自清理。
+守护对象：agents_version 确定性 bump 脚本（B23；审计-setup-v1 需修 1：阈值形态覆盖 + 历史条目防误伤）——
+六类文件全覆盖（SKILL.md 反引号+无反引号/current-contract.json/session-start.sh 比较值+措辞/
+deploy-manual.md 声明+阈值形态/deploy.py 常量/UPGRADING.md 版本头+步骤行+阈值形态）、
+历史条目排除（含「变更」行即使带版本数字也不动）、--confirm 替换、守卫失败回滚（不留半改状态）。
+禁：断言实现细节/真实上游；fixture 自清理。
 """
 import json
 import shutil
@@ -37,13 +39,17 @@ fi
 """
 DEPLOY_SAMPLE = """验证部署标记：`agents_version: 33` 与 setup_skill_version: 1.5.1
 - `.story-deployed` 含 `agents_version: 33`
+- `agents_version` 缺失、非整数或小于 `33` → 提示更新
+- `agents_version` 大于 `33` → 停止
 - setup_skill_version: 1.5.1
 """
 UPGRADING_SAMPLE = """## 当前版本
 - `agents_version: 33`
 - setup_skill_version: 1.5.1
 
-**v32 → v33 变更**：历史条目（含 agents_version 引用不得动）。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `33`，都视为待更新部署。如项目 `agents_version` 大于 `33`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v33 降级覆盖。
+
+**v32 → v33 变更**：历史条目（含 agents_version 引用与小于 `33` 阈值都不得动）。
 **v31 → v32 变更**：更早条目。
 """
 DEPLOY_PY_SAMPLE = """DEFAULT_AGENTS_VERSION = '33'
@@ -110,9 +116,12 @@ def test_bump_all_six(project: Path) -> None:
     assert "-lt 34" in hook and "-gt 34" in hook and "低于 v34" in hook and "高于本 hook 支持的 v34" in hook, f"hook 应替换: {hook}"
     deploy = (project / "skills/moshu-setup/references/deploy-manual.md").read_text(encoding="utf-8")
     assert deploy.count("agents_version: 34") == 2 and "agents_version: 33" not in deploy, f"deploy-manual 应全替换: {deploy}"
+    assert "小于 `34`" in deploy and "大于 `34`" in deploy and "小于 `33`" not in deploy, f"deploy-manual 阈值形态应替换: {deploy}"
     up = (project / "skills/moshu-setup/UPGRADING.md").read_text(encoding="utf-8")
     assert "- `agents_version: 34`" in up, f"UPGRADING 版本头应替换: {up}"
+    assert "小于 `34`" in up and "大于 `34`" in up and "不得用 v34" in up, f"UPGRADING 阈值形态应替换: {up}"
     assert "v32 → v33 变更" in up and "v31 → v32 变更" in up, f"UPGRADING 历史条目不得动: {up}"
+    assert "小于 `33` 阈值都不得动" in up, f"UPGRADING 变更行内阈值防误伤: {up}"
 
 
 def test_rollback_on_guard_fail(project: Path) -> None:

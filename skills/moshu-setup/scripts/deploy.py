@@ -10,7 +10,7 @@ AskUserQuestion 与结果报告，不再逐条手写 cp/chmod（三层分工：�
   for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
   "$PYBIN" deploy.py --project {项目目录} --name {项目名} [--book {书名}]
                      [--agents-version 34] [--setup-version 1.5.1] [--dry-run]
-  "$PYBIN" deploy.py --verify {项目目录}
+  "$PYBIN" deploy.py verify --project {项目目录}
 
 行为:
   - 幂等: managed 文件 replace；用户状态文件 create-only-if-absent

@@ -9,11 +9,11 @@
 | `skills/moshu-setup/references/templates/CLAUDE.md.tmpl` | `CLAUDE.md` | user+managed | marker/section merge | contains moshu skill routing sections |
 | `skills/moshu-setup/references/templates/hooks/` | `.claude/hooks/` | moshu-setup managed | recursive replace | `session-*.sh`, `detect-story-gaps.sh`, `validate-story-commit.sh`, `guard-outline-before-prose.sh`, `check-prose-after-write.sh`, `pre-compact.sh`, `post-compact.sh`, `story_hook_core.js`, `story_hook_cli.js`, `lib/common.sh`, `lib/sentinel.sh` exist |
 | `skills/moshu-setup/references/templates/rules/*.md` | `.claude/rules/*.md` | moshu-setup managed | replace | every rule contains `paths` frontmatter |
-| `skills/moshu-setup/references/templates/agents/*.md` | `.claude/agents/*.md` | moshu-setup managed | replace | 7 agent files exist |
+| `skills/moshu-setup/references/templates/agents/*.md` | `.claude/agents/*.md` | moshu-setup managed | replace | 8 agent files exist |
 | `skills/moshu-setup/references/agent-references/*.md` | `.claude/skills/moshu-setup/references/agent-references/*.md` | moshu-setup managed | replace | every `moshu-setup/references/agent-references/*.md` reference resolves |
 | `skills/moshu-setup/references/templates/settings-hooks.json` | `.claude/settings.local.json` | user+managed | replace managed registrations by stable hook identity | hook JSON valid；旧 matcher 注册已迁移、当前模板命令各一份、用户 hook 保留 |
 | `skills/moshu-setup/scripts/merge-claude-settings.py` | 部署时执行，不复制到项目 | moshu-setup helper | execute | 替换已知 moshu hook 注册、保留用户 hooks/顶层字段，v24→v26 迁移与重复执行幂等 |
-| generated sentinel | `.story-deployed` | moshu-setup managed | replace | contains `agents_version`, `setup_skill_version`, `target_cli`, `resolver_strategy`, `references_dir` |
+| generated sentinel | `.story-deployed` | moshu-setup managed | replace | contains `deployed_at`, `agents_version`, `setup_skill_version`, `target_cli`, `resolver_strategy`, `references_dir` |
 
 ## Step 2：部署 CLAUDE.md
 
@@ -68,7 +68,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 
 - 此文件供 session-start.sh 和写作 skill 检测部署状态，避免重复提示
 - 同时创建一次性标记文件 `.claude/.agents-pending-restart`（空文件即可）。session-start.sh 在下一个会话启动时据此确认 agents 已随新会话注册，并自动删除该标记——用来向用户确认「重启已生效」。
-- 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `33`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `33` 时已在 Phase 1 停止，不得降级覆盖
+- 如果 `.story-deployed` 已存在但 `agents_version` 缺失、非整数或小于 `34`，按本次流程更新 hooks/agents/rules/reference bundle（具体变更见 `UPGRADING.md`）；大于 `34` 时已在 Phase 1 停止，不得降级覆盖
 
 ## Phase 3 逐项验证（deploy.py verify 不可用时）
 
@@ -95,7 +95,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 1. 优先识别 moshu-setup 管理块标记（如果旧项目已有标记，只替换标记内内容）
 2. 无标记时，读取用户现有 CLAUDE.md，按 `##` 标题切分为 section map
 3. 读取模板 CLAUDE.md.tmpl，同样切分
-4. 模板中的标准 section（Skill 路由表、文件结构、协作规则、Compact 后恢复上下文）**覆盖**用户同名 section
+4. 模板中的标准 section（Skill 路由表、文件结构、协作规则、作者控制点、Compact 后恢复上下文）**覆盖**用户同名 section
 5. 用户独有的 section（自定义内容）**保留**不动
 6. 未知冲突用 AskUserQuestion 让用户选择保留哪个版本
 
@@ -104,5 +104,5 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 - 重部署时已部署项目以 sentinel 里的值为准：`target_cli`、`resolver_strategy`、`references_dir` 沿用 `.story-deployed` 里已有的值，不重新询问、不覆盖为不同值
 - `.story-deployed` 不存在 → 全新安装，Phase 2 全部执行
 - `.story-deployed` 存在且 `agents_version: 34` → 提示已部署，AskUserQuestion 确认是否重新部署；提示里写明重新部署只用当前本地 skill 包刷新项目文件，skill 本身的更新走 `git pull` 或 marketplace
-- `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `33` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / settings.local.json 走合并策略
-- `.story-deployed` 存在且 `agents_version` 大于 `33` → 当前 skill 版本过旧，停止并提示先更新 mo-shu；不覆盖项目中的更新部署
+- `.story-deployed` 存在但 `agents_version` 缺失、非整数或小于 `34` → 提示需要更新，重新执行 Phase 2 覆盖 agents/hooks/rules/reference bundle，CLAUDE.md / settings.local.json 走合并策略
+- `.story-deployed` 存在且 `agents_version` 大于 `34` → 当前 skill 版本过旧，停止并提示先更新 mo-shu；不覆盖项目中的更新部署

@@ -5,11 +5,15 @@
 - `setup_skill_version: 1.5.1`
 - `agents_version: 34`
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `33`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `33`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v33 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `34`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `34`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v34 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
 
 **v33 → v34 变更**：新增 moshu-evaluator 评审 agent 模板（三维度评审[编辑·商业/作者·新鲜度/读者·留存]·只读[禁 Write/Edit/Bash]·审稿令牌回传·JSON 输出；被 moshu-build 停靠屏调用，形成创作→评审→采风→融合→再评闭环）——agent 模板新增，重跑 `/moshu-setup` 并新开会话后生效。
 
-**v32 → v33 变更**：outline-methods agent-references 副本更新（B22「舞台与规则设计」节经 shared-assets 同步进 agent-references）——agent 参考文件变化，重跑 `/moshu-setup` 并新开会话后生效。\n\n**v31 → v32 变更**：moshu-researcher 模板新增采风研究段（五类型[结构/角色/设定机制/情节/情绪]+源七类+采风专属纪律[小说正文不取/来源 URL 防编造/专名清单占比/转译三问初答]；maxTurns 20→30 采风多源交叉场景上调）——agent 模板变化，重跑 `/moshu-setup` 并新开会话后生效。\n\n**v30 → v31 变更**：agent-references 内容更新（B17 三书逆向萃取三节——势力场设计/升级绑弧光/叙事装置，经 shared-assets 同步进 agent-references；题材公式降级头注定位）——agent 参考文件变化，重跑 `/moshu-setup` 并新开会话后生效。
+**v32 → v33 变更**：outline-methods agent-references 副本更新（B22「舞台与规则设计」节经 shared-assets 同步进 agent-references）——agent 参考文件变化，重跑 `/moshu-setup` 并新开会话后生效。
+
+**v31 → v32 变更**：moshu-researcher 模板新增采风研究段（五类型[结构/角色/设定机制/情节/情绪]+源七类+采风专属纪律[小说正文不取/来源 URL 防编造/专名清单占比/转译三问初答]；maxTurns 20→30 采风多源交叉场景上调）——agent 模板变化，重跑 `/moshu-setup` 并新开会话后生效。
+
+**v30 → v31 变更**：agent-references 内容更新（B17 三书逆向萃取三节——势力场设计/升级绑弧光/叙事装置，经 shared-assets 同步进 agent-references；题材公式降级头注定位）——agent 参考文件变化，重跑 `/moshu-setup` 并新开会话后生效。
 
 **v29 → v30 变更**：moshu-explorer 模板的文风两级检查改为正查口径（合规必须见到 `文风可用：是`；「生成记录」整段缺失/被截断/占位 stub 一律 `profile_degenerate`，与主会话手动路径等价）——agent 模板变化，重跑 `/moshu-setup` 并新开会话后生效。
 

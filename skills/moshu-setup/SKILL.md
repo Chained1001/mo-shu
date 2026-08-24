@@ -58,7 +58,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 
 ## Phase 3：验证安装
 
-**优先运行 `deploy.py verify --project {项目}`**（结构化 PASS/FAIL 输出，覆盖 hooks 注册 / rules 路径 / 7 个 agents / agent reference bundle / sentinel 字段五项）；脚本不可用时按 [references/deploy-manual.md](references/deploy-manual.md)「Phase 3 逐项验证」执行。
+**优先运行 `deploy.py verify --project {项目}`**（结构化 PASS/FAIL 输出，覆盖 hooks 注册 / rules 路径 / 8 个 agents / agent reference bundle / settings 合并 / sentinel 字段七项）；脚本不可用时按 [references/deploy-manual.md](references/deploy-manual.md)「Phase 3 逐项验证」执行。
 
 **输出安装报告**：
 - 列出所有已部署的文件与需要注意的事项（如已有配置已合并）
