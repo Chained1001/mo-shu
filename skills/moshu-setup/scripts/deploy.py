@@ -273,7 +273,7 @@ def verify(project: Path) -> list[str]:
         for f in rules.glob('*.md'))
     check('rules 含 paths frontmatter', rules_ok)
     agents = project / '.claude' / 'agents'
-    check('agents 7 个', len(list(agents.glob('*.md'))) == 7)
+    check('agents 8 个', len(list(agents.glob('*.md'))) == 8)
     ref_dst = project / '.claude' / 'skills' / 'moshu-setup' / 'references' / 'agent-references'
     same_path = os.path.realpath(AGENT_REFS) == os.path.realpath(ref_dst)
     ref_ok = same_path or all((ref_dst / f.relative_to(AGENT_REFS)).exists() for f in AGENT_REFS.rglob('*') if f.is_file())
