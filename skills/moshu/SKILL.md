@@ -1,7 +1,7 @@
 ---
 name: moshu
 version: 1.3.0
-description: "网络小说工具箱主入口。根据用户需求自动路由到对应 skill，并可启动本地 Dashboard 查看拆文库、写作项目和编辑文本。触发方式：/moshu、/moshu dashboard、/网文、「我想写小说」「打开工作台」「检查更新」。"
+description: "网络小说工具箱主入口。根据用户需求自动路由到对应 skill，并可启动本地 Dashboard 查看拆文库、写作项目和编辑文本。**首次使用（刚 npx skills add 安装完）**：请新开一个 Claude Code 会话，然后运行 /moshu-setup 部署写作环境——当前会话 skills 不可用且未初始化。触发方式：/moshu、/moshu dashboard、/网文、「我想写小说」「打开工作台」「检查更新」「刚安装完怎么用」。"
 ---
 # moshu：网文工具箱路由
 
