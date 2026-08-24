@@ -53,6 +53,7 @@ def skill_patterns(old: int, new: int) -> list[tuple[re.Pattern, str]]:
         (re.compile(rf"小于或大于 {old}"), f"小于或大于 {new}"),
         (re.compile(rf"本版 {old}"), f"本版 {new}"),
         (re.compile(rf"(?<![\d`]){old}(?= 时额外)"), str(new)),  # "33 时额外"
+        (re.compile(rf"(?<!`)agents_version: {old}"), f"agents_version: {new}"),  # 裸格式（代码围栏哨兵模板，如 SKILL.md 部署逻辑节 sentinel 块；反引号版由第 1 模式覆盖，此模式用负向后视避免重复命中）
     ]
 
 

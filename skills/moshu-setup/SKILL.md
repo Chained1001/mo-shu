@@ -13,16 +13,16 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 ## Phase 1：检测项目状态
 
-**展示版本信息（部署第一步，让用户知道自己跑的是哪个版本）**：读 `skills/moshu/VERSION`（本 skill 包同级，一行纯文本如 `2.3.5`）和本 SKILL.md 部署逻辑段中的 `agents_version: 33`（当前版本号在部署逻辑节内直接可见），在部署输出首行醒目展示：
+**展示版本信息（部署第一步，让用户知道自己跑的是哪个版本）**：读 `skills/moshu/VERSION`（本 skill 包同级，一行纯文本如 `2.3.5`）和本 SKILL.md 部署逻辑段中的 `agents_version: 34`（当前版本号在部署逻辑节内直接可见），在部署输出首行醒目展示：
 > 🚀 **mo-shu v{VERSION}**（agents_version {N} · setup_skill v{本 skill frontmatter version}）
 > 如与预期版本不符，先 `npx skills add Chained1001/mo-shu -y` 更新再跑本 skill。
 
 **先自检参考目录**：以正在执行的本 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对 `agent-references`、`templates` 两个名字是否都在**且都非空**；同级 `scripts/merge-claude-settings.py` 也必须存在（Claude hooks 合并算法依赖它）。**用一条命令完成自检**（如 `ls references/ scripts/` 并核对输出），不要分多轮 Bash 逐步探索。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」和「目录为空」，并给修复指令：「moshu-setup 参考资料包不完整，缺 {目录名}。按你的安装方式重装 mo-shu（git clone 装的在仓库目录 `git pull`，marketplace 装的在面板里重装），再执行 /moshu-setup。」
 
 1. 检查当前目录是否已部署过（存在 `.story-deployed`）
-   - `agents_version` 缺失、非整数或小于 `33` → 标记为待更新，继续执行当前部署
-   - `agents_version: 33` → 使用 AskUserQuestion 确认是否重新部署；提示里写明重新部署只用**当前本地 skill 包**刷新项目文件，要拿 skill 本身的新版本得先更新 mo-shu（`git pull` 或 marketplace），再回来重跑
-   - `agents_version` 大于 `33` → 当前 moshu-setup 比项目部署旧；停止以避免降级覆盖，提示先更新 mo-shu，不写任何部署文件
+   - `agents_version` 缺失、非整数或小于 `34` → 标记为待更新，继续执行当前部署
+   - `agents_version: 34` → 使用 AskUserQuestion 确认是否重新部署；提示里写明重新部署只用**当前本地 skill 包**刷新项目文件，要拿 skill 本身的新版本得先更新 mo-shu（`git pull` 或 marketplace），再回来重跑
+   - `agents_version` 大于 `34` → 当前 moshu-setup 比项目部署旧；停止以避免降级覆盖，提示先更新 mo-shu，不写任何部署文件
 2. 检查是否有书名目录（包含 `追踪/` 子目录的目录，或用户自定义结构）：有 → 识别为长篇项目并显示当前项目信息；无 → 新项目
 3. 检查 `.claude/settings.local.json`：存在 → 读取现有配置，后续合并；不存在 → 后续创建
 4. 检查 `.active-book`：存在 → 显示当前活跃书目；不存在 → 跳过
@@ -47,7 +47,7 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
 
 ```
 deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
-agents_version: 33
+agents_version: 34
 setup_skill_version: 1.5.1
 target_cli: claude-code
 resolver_strategy: project-local-skill-reference
