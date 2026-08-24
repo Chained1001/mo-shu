@@ -241,7 +241,10 @@ def main() -> int:
         if branch_section is None:
             blocking.append("必备节缺失：支线登记")
         else:
-            branch_rows = [r for t in extract_tables(branch_section) for r in t[1:]]
+            branch_tables = extract_tables(branch_section)
+            if branch_tables and not any("配角高光" in "".join(r) for r in branch_tables[0][:1]):
+                blocking.append("支线登记表头缺「配角高光」列（选填列，表头须在）")
+            branch_rows = [r for t in branch_tables for r in t[1:]]
             if not branch_rows:
                 blocking.append("支线登记表无数据行")
             for row in branch_rows:
