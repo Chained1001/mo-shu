@@ -22,7 +22,7 @@ description: "开书构建与设定/大纲/卷纲修订。负责新书开书构�
 |---|---|
 | 开书（新项目/新书：题材定位、世界观、人物、全书大纲、首卷卷纲、追踪 init） | [workflow-build.md](references/workflow-build.md)「开书构建」节 |
 | 修订设定/大纲/卷纲（中途改构建资产） | [revision-workflow.md](references/revision-workflow.md) |
-| 开新卷（消费 `卷复盘_第X卷.md` 的下卷方向候选） | [workflow-build.md](references/workflow-build.md)「开新卷」节 |
+| 开新卷（消费 `卷复盘_第X卷.md` 的下卷方向候选） | [cold-path.md](references/cold-path.md)「开新卷」节（冷路径） |
 
 > 三种入口第一步均先读 `设定/构建台账.md`（存在时）——**先读六步状态节**（见 workflow-build.md「构建台账与进入规则」）。
 
