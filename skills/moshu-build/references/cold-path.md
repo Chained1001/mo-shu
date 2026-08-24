@@ -1,6 +1,6 @@
 # 冷路径（按需加载——开新卷与 agent 辅助）
 
-> 本文件是 workflow-build.md 的低频冷路径下沉（2026-08-24 瘦身）：开新卷仅在 `大纲/卷复盘_第X卷.md` 产出后进入（SKILL.md 路由直达本文件）；Agent 调用仅在结构复杂/主会话方案不稳时按需读取。主线六步流程不加载本文件。
+> 本文件是 workflow-build.md 的低频冷路径下沉（2026-08-24 瘦身）：开新卷仅在 `大纲/卷复盘_第X卷.md` 产出后进入（SKILL.md 路由直达本文件）；Agent 调用仅在结构复杂/主会话方案不稳时按需读取。主线六步流程不加载本文件（文内「进入规则」「与现有机制的关系」等节名指 workflow-build.md 同名节——主线已全量加载）。
 
 ---
 
@@ -31,51 +31,6 @@
 
 ---
 
-## 卡片按需加载清单
-
-| 卡片 | 加载步 | 用途 | 处置 |
-|---|---|---|---|
-| beat-cards（BC-001~012） | 步 3·单元步 | 单元卡"章功能分配"字段引用节拍卡 ID | ✅ 纳入 |
-| 人物主题卡（8 张） | 步 2·人物步 | 角色关系设计时选卡（镜像宿敌/价值自洽反派等） | ✅ 纳入 |
-| genre-writing-formulas | 步 1+3 | 骨架定方向+单元按公式填 | ✅ 纳入 |
-| naming-cards | 步 1（按需） | 起名 | ✅ 保留冷路径 |
-| hooks-suspense | 步 4（按需） | 跨卷悬念设计 | ⚠️ 待评估 |
-| genre-prose-cards | write 侧 | — | ❌ 不进 build |
-| hooks-chapter | write 侧 | — | ❌ 不进 build |
-| scene-cards | write 侧 | — | ❌ 不进 build |
-| craft-cards | write 侧 | — | ❌ 不进 build |
-
----
-
-## 浮现记录机制
-
-步 3（单元步）开始生效——填单元卡时**自然浮现**的线索/伏笔/反转灵感，**随手记不展开**（记入台账附注或卷纲附注）：
-
-```markdown
-## 浮现记录
-| 类型 | 内容 | 处理 |
-|---|---|---|
-| 线索 | 地图线第 3 卷有交叉点 | 待步 4 |
-| 伏笔 | F005 灵感：主角的剑有秘密 | 待步 4 |
-| 反转 | 第 2 卷末可以做一个身份反转 | 待步 4 |
-```
-
-步 4（整合步）**正式化**：逐条处理（落实到单元卡/转待定/放弃），处理后清表。
-
----
-
-## 定稿与 artifact 创建
-
-作者在停靠 3 确认定稿后：
-
-- **写入定稿标记**：卷纲头部加 `定稿：v1.0（YYYY-MM-DD，构建环）` 行——这是构建完成的标记（v1.0），write 侧据此放行细纲/正文；不构成"锁定"（锁定=已有正文章节，见「与现有机制的关系」）。
-- **大纲/大纲.md**：全书卷级鸟瞰（卷名+字数+章数+核心事件+状态变化，一段式汇总）。
-- **大纲/卷纲_第X卷.md**：每卷的剧情单元+情绪弧线（含章节定位）+人物弧线+伏笔+反转+线索矩阵+对标结构坐标（参考 [outline-methods.md](outline-methods.md)「大纲三层结构法」 + [emotional-arc-design.md](emotional-arc-design.md)「六种弧线速查」 + [reversal-toolkit.md](reversal-toolkit.md)「反转类型」）。
-- **追踪事务初始状态**：按 `references/tracking-transaction.md`（write 侧共享副本）构造第 0 章初始化 JSON，执行 `scripts/tracking_commit.py init`（build 侧共享副本），生成检查点（续写状态卡，固定 7 栏）、空的伏笔/时间线视图与目录；核心角色动态快照可在第一次正文事务中创建（write 侧）。
-
-> 追踪 init 后，**事实层归 write**：build 不再写 `追踪/`，只读（修订工作流的边界判定输入）。
-
----
 
 ---
 
@@ -88,3 +43,4 @@
 > **moshu-architect 契约摘要（spawn 时必须原样附带）**：部署的 moshu-architect agent 不认识本 skill 的 `references/reader-contract-and-progression.md`，只能靠 spawn prompt 里带的这段摘要对齐 schema。摘要内容（终局储备边界/透支两问/剧情单元/细纲层字段/读者契约与主角代理权/关键节点四问）与 write 侧同源——从 `references/reader-contract-and-progression.md` 摘取（本文件不复制全文，引用即挂载）。
 
 ---
+
