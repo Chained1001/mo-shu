@@ -327,7 +327,18 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 ### 工单落盘（full / lean / solo 通用）
 
 0. **采纳前逐字比对令牌（full/lean 有 spawn 时必做）**：取每份 reviewer 报告的**第一行**，与本轮 `{token}` 逐字比对。不等、或首行为 `审稿令牌：缺失` → **不采纳该 Agent 的 findings**，按原 prompt 重跑一次；重跑仍不符则在报告 `Fallback` 行记明该视角缺失，未校验的 findings 不写进工单。solo 模式无 spawn，跳过本步。
-1. **整理 findings 为工单 JSON**：主会话把综合后的 findings 整理为数组——`id`（`T\d{3,}`，主会话分配）、`severity`（S1/S2 → `blocking`，S3/S4 → `candidate`——只影响呈报与复审范围，不拦截任何流程）、`dimension`（统一 Findings Schema 的 9 类 category 之一）、`evidence`、`suggestion`、`status: "open"`（**新建工单只允许 open**；处置一律走 `resolve`）；`review_token` = 本轮 Stage 3 生成并注入 reviewer 的 8 位审稿令牌。
+1. **整理 findings 为工单 JSON**：工单 JSON 为**根级 4 字段**——`schema_version: 1`、`chapter_range: [起章, 止章]`（两个整数，1 ≤ 起 ≤ 止）、`review_token`（本轮 Stage 3 生成并注入 reviewer 的 8 位审稿令牌，**归属根级**）、`findings`（数组，每项含 `id`（`T\d{3,}`，主会话分配）、`severity`（S1/S2 → `blocking`，S3/S4 → `candidate`——只影响呈报与复审范围，不拦截任何流程）、`dimension`（统一 Findings Schema 的 9 类 category 之一）、`evidence`、`suggestion`、`status: "open"`（**新建工单只允许 open**；处置一律走 `resolve`）；finding 项内**不出现** `review_token`）。最小示例：
+```json
+{
+  "schema_version": 1,
+  "chapter_range": [12, 14],
+  "review_token": "a1b2c3d4",
+  "findings": [
+    {"id": "T001", "severity": "blocking", "dimension": "continuity",
+     "evidence": "第 12 章…", "suggestion": "…", "status": "open"}
+  ]
+}
+```
 2. **先写临时文件，再走脚本**：把 findings 数组先写到临时 JSON 文件（如 `/.tmp/review-tickets-<时间戳>.json`），再执行 `moshu-review/scripts/review_tickets.py write --project {项目根} --input <临时文件>`——**AI 产出只走文件不走 argv**（移植 v7）。校验（schema/枚举/id 唯一且 `T\d{3,}`/令牌非空）失败时按报错修正后重跑同一 `write`。
 3. **落盘位置**：`{项目根}/.moshu-review/tickets/tickets_{YYYYMMDD-HHMM}_{起章}-{止章}.json`（write 原子写、幂等）。落盘后做一次确定性复核：`moshu-review/scripts/review_tickets.py verify-token --ticket <落盘工单> --token {token}` 必须输出 `token ok`（退出 0）——防工单里的 `review_token` 与本轮实际注入值不一致；不等（退出 2）时修正工单 token 后重跑同一 `write`。
 4. **复审轮只重落 open 项**：同一 `{起章}-{止章}` 已存在工单文件时，本轮属**复审轮**——只把上一轮仍为 `open` 的 finding 重新整理进新数组，已 `fixed`/`dismissed` 的 id **不再进新工单**（否则已处置项会被重新变成 open）。待办真源统一读 `moshu-review/scripts/review_tickets.py list --project {项目根} --status open`，不要按"最新文件"人工挑。

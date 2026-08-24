@@ -8,7 +8,7 @@
 
 1. 新开 Claude Code 会话，输入 `/moshu-review`，确认实际模式（full/lean/solo）。
 2. 审查一轮（spawn reviewer 或 solo），主会话生成 8 位审稿令牌并注入。
-3. 综合裁决后：findings 先写临时文件，再 `review_tickets.py write --project {项目根} --input <临时文件>` 落盘工单。
+3. 综合裁决后：工单 JSON（根级 `schema_version`/`chapter_range`/`review_token` 与 `findings` 数组，见 review-workflow「工单落盘」节）先写临时文件，再 `review_tickets.py write --project {项目根} --input <临时文件>` 落盘工单。
 4. 作者裁决（全部接受/修改后接受/打回重写）后，走 `/moshu-write` 修订流程（`workflow-revision.md` 工单处置节）逐条处置。
 5. 复审：重跑 `/moshu-review`，只验证 open→fixed 项。
 

@@ -27,7 +27,7 @@ description: "多视角对抗式审查。full/lean 模式在已部署 reviewer a
 ## Stage 1：预检与降级（必须先执行）
 
 1. **确定请求模式**：解析用户输入中的 `full`、`lean`、`solo`；未指定时目标模式为 `full`。
-2. **确认是否允许 spawn**：如果当前已经在子代理/Agent 内执行，不再递归 spawn，直接降级为 `solo`。
+2. **确认是否允许 spawn**：如果当前已经在子代理/Agent 内执行，不再递归 spawn，直接降级为 `solo`，报告开头写明 `Fallback: subagent recursion guard -> solo`。
 3. **检查核心 Agent 部署状态**（检查项目内 `.claude/agents/`）：
    - full 必需：`moshu-architect.md`、`moshu-character-designer.md`、`moshu-narrative-writer.md`、`moshu-consistency-checker.md`
    - lean 必需：`moshu-architect.md`、`moshu-consistency-checker.md`
