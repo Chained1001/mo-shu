@@ -23,7 +23,7 @@ flowchart LR
     R -->|本地工作台| Dash[Dashboard]
 
     Setup -->|部署到项目| Hooks[Hooks 自动化]
-    Setup -->|部署到项目| Agents[7 个专业 Agent]
+    Setup -->|部署到项目| Agents[8 个专业 Agent]
     Setup -->|部署到项目| Rules[Rules]
     Setup -->|部署到项目| Claude[CLAUDE.md]
 
@@ -35,7 +35,7 @@ flowchart LR
     Decision --> Write
     Style -->|产出| StyleLib[文风库]
     StyleLib --> Write
-    Research -->|产出| Caifeng[设定/采风-*.md]
+    Build -->|内嵌采风产出| Caifeng[设定/采风-*.md]
 
     Write --> Project
     Review --> Project
@@ -92,7 +92,7 @@ flowchart TB
     subgraph UI[Claude Code 会话层]
         Router[moshu 路由]
         Skills[全部 Skill 入口]
-        Agents[7 个专业 Agent]
+        Agents[8 个专业 Agent]
     end
 
     subgraph Deterministic[确定性脚本层]
@@ -134,5 +134,5 @@ flowchart TB
 - **文件即记忆**：`追踪/_tracking-state.json` 是唯一结构化权威，`上下文.md`/`伏笔.md`/`角色状态/` 等均为派生视图，由 `tracking_commit.py` 统一维护。
 - **Agent 可降级**：custom agent 未部署或 spawn 失败时，所有 skill 自动降级 solo/direct，保证流程不中断。
 - **Hook 是兜底网**：即使主会话漏跑质量收尾，写入前/写入后的 hook 也会拦截或提醒关键问题。
-- **共享资产防漂移**：`scripts/shared-assets.json` 管理 36 组跨 skill 共享副本，`scripts/check-shared-files.sh` 保证字节一致。
+- **共享资产防漂移**：`scripts/shared-assets.json` 管理 76 组跨 skill 共享副本，`scripts/check-shared-files.sh` 保证字节一致。
 - **文档预算防膨胀**：`scripts/doc-budget.json` 限制每次会话必读的热路径文本量。
