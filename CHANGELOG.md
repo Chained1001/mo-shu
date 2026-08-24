@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.3.5（2026-08-24）
+
+> 工程基建——版本 bump 确定性脚本根治观察 024 散射；开发标准入库；CI 修复链闭合。
+
+### 新增
+
+- **bump-agents-version.py**（批B23）：agents_version 版本升级确定性脚本——六类文件全量 grep（SKILL.md 反引号/无反引号/本版四格式 + current-contract.json + session-start.sh 比较值+措辞 + deploy-manual.md + UPGRADING.md 版本头）→ diff 预览 → `--confirm` 一键替换 → 三守卫复跑 → 失败自动回滚。根治观察 024（版本字面量五层散射导致 v2.3.0 发版后 CI 连续三笔修复的教训）
+- **audit-guards.py**（批B23）：守卫有效性盘点一次性工具——56 守卫的 CI 接入状态/修改日期/下线建议报告（只出报告不做修改）
+- **开发标准 docs/开发标准.md**（批B23）：十节工程准入门槛——架构原则/技能设计规范/脚本规范/守卫准入与生命周期/版本管理纪律/shared-assets 使用规范/文档规范/CI 纪律/施工流程/设计原则速查
+
+### 修复
+
+- **v2.3.0 CI 修复链**（5 笔）：current-contract.json 30→33 + 6 处无反引号 spawn 措辞 + setup 哨兵 1.5.0 + session-start.sh 4 处 + deploy-manual 3 处——版本字面量五层散射闭合（观察 024）
+
+> 插件版本不变（无 skill 行为变化）。B14-B23 十批+架构审计收官。
+
 ## v2.3.0（2026-08-24）
 
 > 采风 agent 化 + 第三轮三书对比落地——上游（构建层）打磨收官：壳芯架构、CF 需求票据、五类七源、舞台与暗线层次、情感低压。
