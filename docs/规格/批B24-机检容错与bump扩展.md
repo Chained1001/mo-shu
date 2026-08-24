@@ -14,7 +14,7 @@
    - candidate：升级台阶"4 大阶段 × 100 万字"的中文量词"大阶段"导致档数×卷幅正则不匹配
    - candidate：终局底牌条目以 `- ` bullet 开头被过滤器剔除
    - candidate：势力场势力名带"（描述）"后缀导致互引名字匹配不到完整名
-3. `scripts/bump-agents-version.py` 不含 `--setup-version` 参数——setup_skill_version 变化时 6 处仍靠手工（观察 008：bump 1.5.0→1.5.1 漏了 deploy.py 第 6 处）。
+3. `scripts/bump-agents-version.py` 不含 `--setup-version` 参数——setup_skill_version 变化时 6 处仍靠手工（观察 008：bump 1.5.0→1.5.1 漏了 deploy.py 第 6 处；deploy.py 常量已修为 33/1.5.1，本批不重复修值，只加 bump 脚本覆盖）。
 
 ## 二、设计总纲
 
