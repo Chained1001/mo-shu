@@ -88,7 +88,7 @@
   "flow_anchors": {
     "daily_batch_finalize": {
       "doc": "skills/moshu-write/references/workflow-daily.md",
-      "section": "Stage 4-4：批末收尾"
+      "section": "Stage 4-D4：批末收尾"
     },
     "daily_quality_repair": {
       "doc": "skills/moshu-write/references/workflow-daily.md",

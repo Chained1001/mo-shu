@@ -20,7 +20,7 @@
 | 爽点设计 | plot-emotion-system.md「爽点设计体系」+ plot-core-methods.md「高潮构建公式」 |
 | 人物深化（写人时） | character-design-methods.md（九维/深层动机/人物主题卡 8 张） |
 | 商业性 / 卖点 / 留人 | commercial-core-methods.md（核心方法/用梗/卖点自检） |
-| 格式 / 标点 / 元信息 | format-and-structure.md + workflow-chapter.md Stage 4-10（元信息扫描） |
+| 格式 / 标点 / 元信息 | format-and-structure.md + workflow-chapter.md Stage 4-C10（元信息扫描） |
 | 卡文 / 写不下去 | plot-core-methods.md「卡文对策」+ emotional-methods.md「快速自查」 |
 | 技法卡（多人锚点/爽点停顿/证据投放等） | **`craft-cards.md`（写作技法卡 6 张）**
 | 文字自然度 / 去 AI 味 | anti-ai-writing.md（12 模式/三遍法）+ banned-words.md（禁用词） |

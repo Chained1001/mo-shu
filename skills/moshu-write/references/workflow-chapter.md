@@ -20,7 +20,7 @@
 
 ## 单章特有补充
 
-- **标题预检细则**（Stage 4-5）→ core「B0」——同名/明显重复时按本章核心事件改名，同步细纲标题与正文文件名。
+- **标题预检细则**（Stage 4-C5）→ core「B0」——同名/明显重复时按本章核心事件改名，同步细纲标题与正文文件名。
 - **质量检查**（Stage 5，写后同轮）：core「D1-D3」（三维度 + consistency-checker 过桥 + narrative-writer 去 AI 味审查）；**S1/S2 必须显式过桥**——①已修复 ②进 `continuity_risks` ③进 `next_chapter_commitments` 三选一落盘，未判定不得进入下一章。
 - **写前准备契约**（缺失文件处理/权威优先级/追踪体积）→ core「写前准备契约」；产物映射与项目结构树见 [artifact-protocols.md](artifact-protocols.md) 开头。
 

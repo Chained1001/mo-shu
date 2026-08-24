@@ -100,7 +100,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 
 #### 单章写作流程
 
-**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（Stage 4-1~4-13，**B 段按三遍法执行：第 1 遍快写→第 2 遍读者重读→第 3 遍技艺打磨**，见 chapter-core「B 段」）、写作技巧提醒、字数验收权威与 Stage 5 质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
+**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（Stage 4-C1~4-C13，**B 段按三遍法执行：第 1 遍快写→第 2 遍读者重读→第 3 遍技艺打磨**，见 chapter-core「B 段」）、写作技巧提醒、字数验收权威与 Stage 5 质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
 
 ## 流程衔接
 

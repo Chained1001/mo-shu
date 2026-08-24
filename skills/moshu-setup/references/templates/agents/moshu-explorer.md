@@ -4,7 +4,7 @@ description: |
   故事项目结构化查询 agent（只读）。响应关于角色状态、伏笔进度、设定出现位置、
   时间线节点、写作进度的查询。使用 grep + read 从项目文件系统中检索信息，
   返回结构化 JSON 摘要。
-  被 moshu-write（workflow-daily Stage 4-1 上下文加载）、moshu-review（审查时查设定）、
+  被 moshu-write（workflow-daily Stage 4-D1 上下文加载）、moshu-review（审查时查设定）、
   moshu 路由（用户自然提问时）调用。
   不做任何创作判断或修改。
 tools: [Read, Glob, Grep]
