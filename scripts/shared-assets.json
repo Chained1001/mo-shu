@@ -334,7 +334,8 @@
       "name": "genre-prose-cards-reference",
       "source": "skills/moshu-write/references/genre-prose-cards.md",
       "targets": [
-        "skills/moshu-build/references/genre-prose-cards.md"
+        "skills/moshu-build/references/genre-prose-cards.md",
+        "skills/moshu-setup/references/agent-references/genre-prose-cards.md"
       ]
     },
     {
