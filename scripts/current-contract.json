@@ -17,5 +17,26 @@
     "人物关系和出场顺序",
     "情节细化",
     "结尾设定和钩子"
-  ]
+  ],
+  "deployment_manifest": {
+    "agents_count": 8,
+    "hooks_count": 8,
+    "rules_count": 4,
+    "sentinel_fields": [
+      "deployed_at",
+      "agents_version",
+      "setup_skill_version",
+      "target_cli",
+      "resolver_strategy",
+      "references_dir"
+    ],
+    "claude_md_sections": [
+      "Skill 路由表",
+      "文件结构",
+      "协作规则",
+      "作者控制点",
+      "Compact 后恢复上下文"
+    ],
+    "chapter_range_format": "第{N}-{M}章"
+  }
 }

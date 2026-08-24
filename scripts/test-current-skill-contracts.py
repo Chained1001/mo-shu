@@ -105,6 +105,33 @@ def test_manifest_contract() -> None:
             "incomplete outline-section objects must be rejected",
         )
 
+        # B39：deployment_manifest 结构违规与数字漂移必须被拒
+        dm_wrong = dict(raw)
+        dm_wrong["deployment_manifest"] = dict(raw["deployment_manifest"], agents_count="8")
+        dm_wrong_path = tmpdir / "dm-wrong.json"
+        dm_wrong_path.write_text(json.dumps(dm_wrong, ensure_ascii=False), encoding="utf-8")
+        _, dm_wrong_findings = VALIDATOR.load_manifest(dm_wrong_path)
+        require(
+            "manifest-deployment-type" in finding_codes(dm_wrong_findings),
+            "malformed deployment_manifest must be rejected",
+        )
+
+        dm_drift = dict(raw)
+        dm_drift["deployment_manifest"] = dict(raw["deployment_manifest"], agents_count=9)
+        dm_drift_path = tmpdir / "dm-drift.json"
+        dm_drift_path.write_text(json.dumps(dm_drift, ensure_ascii=False), encoding="utf-8")
+        dm_drift_manifest, dm_drift_findings = VALIDATOR.load_manifest(dm_drift_path)
+        require(
+            not dm_drift_findings and dm_drift_manifest is not None,
+            "drifted deployment_manifest must stay well-formed",
+        )
+        require(
+            "deploy-manual-agent-count" in finding_codes(
+                VALIDATOR.deployment_manifest_findings(REPO_ROOT, dm_drift_manifest)
+            ),
+            "agent count drift from the manifest must be rejected",
+        )
+
         duplicate_artifacts = dict(raw)
         duplicate_artifacts["primary_benchmark_artifacts"] = ["剧情/节奏.md", "剧情/节奏.md"]
         duplicate_path = tmpdir / "duplicate-artifacts.json"

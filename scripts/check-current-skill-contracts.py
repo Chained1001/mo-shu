@@ -27,6 +27,7 @@ EXPECTED_MANIFEST_KEYS = {
     "progress_schema_version",
     "primary_benchmark_artifacts",
     "required_outline_sections",
+    "deployment_manifest",
 }
 SEMVER_RE = re.compile(r"[0-9]+\.[0-9]+\.[0-9]+")
 ARTIFACT_PATH_RE = re.compile(r"(?:[^/\s]+/)+[^/\s]+\.md")
@@ -41,6 +42,7 @@ class ContractManifest:
     progress_schema_version: int
     primary_benchmark_artifacts: Tuple[str, ...]
     required_outline_sections: Tuple[str, ...]
+    deployment_manifest: Optional[Dict[str, Any]]
 
 
 @dataclass(frozen=True)
@@ -344,6 +346,29 @@ def load_manifest(path: Path) -> Tuple[Optional[ContractManifest], List[Finding]
 
     assert isinstance(artifacts, list)
     assert isinstance(sections, list)
+    dm = raw.get("deployment_manifest")
+    dm_valid = (
+        isinstance(dm, dict)
+        and all(_is_int(dm.get(k)) and dm[k] >= 1 for k in ("agents_count", "hooks_count", "rules_count"))
+        and isinstance(dm.get("sentinel_fields"), list)
+        and all(isinstance(s, str) and s.strip() for s in dm.get("sentinel_fields", []))
+        and isinstance(dm.get("claude_md_sections"), list)
+        and all(isinstance(s, str) and s.strip() for s in dm.get("claude_md_sections", []))
+        and isinstance(dm.get("chapter_range_format"), str)
+        and bool(dm.get("chapter_range_format"))
+    )
+    if "deployment_manifest" in raw and not dm_valid:
+        findings.append(
+            Finding(
+                "manifest-deployment-type",
+                "deployment_manifest must carry counts(>=1), string-array fields and chapter_range_format",
+                path,
+            )
+        )
+
+    if findings:
+        return None, findings
+
     manifest = ContractManifest(
         manifest_version=raw["manifest_version"],
         setup_skill_version=raw["setup_skill_version"],
@@ -352,6 +377,7 @@ def load_manifest(path: Path) -> Tuple[Optional[ContractManifest], List[Finding]
         progress_schema_version=raw["progress_schema_version"],
         primary_benchmark_artifacts=tuple(artifacts),
         required_outline_sections=tuple(sections),
+        deployment_manifest=dm if isinstance(dm, dict) else None,
     )
     return manifest, []
 
@@ -1003,6 +1029,8 @@ def progress_schema_pin_findings(repo_root: Path, expected: int) -> List[Finding
         if text is None:
             continue
         for line_number, line_text in enumerate(text.splitlines(), start=1):
+            if "chapter_range" in line_text:
+                continue  # 工单 schema 域（review_tickets.py SCHEMA_VERSION=1，JSON 示例与散文均含 chapter_range），非追踪 schema
             for match in SCHEMA_VERSION_PIN_RE.finditer(line_text):
                 if int(match.group(1)) == expected:
                     continue
@@ -1242,6 +1270,55 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def deployment_manifest_findings(repo_root: Path, manifest: ContractManifest) -> List[Finding]:
+    """B39：部署契约断言——deploy.py 常量/文档数字/next_step 正则/章节范围模板与契约一致。"""
+    dm = manifest.deployment_manifest or {}
+    findings: List[Finding] = []
+
+    def check(code: str, ok: bool, message: str, path: Optional[Path] = None) -> None:
+        if not ok:
+            findings.append(Finding(code, message, path))
+
+    deploy_py = repo_root / "skills" / "moshu-setup" / "scripts" / "deploy.py"
+    src = deploy_py.read_text(encoding="utf-8", errors="ignore")
+    fields = dm.get("sentinel_fields", [])
+    missing_fields = [f for f in fields if "SENTINEL_FIELDS" not in src or f"'{f}'" not in src]
+    check("deploy-sentinel-fields", not missing_fields,
+          "deploy.py SENTINEL_FIELDS 与契约不一致，缺: {}".format(missing_fields), deploy_py)
+    sections = dm.get("claude_md_sections", [])
+    missing_sections = [s for s in sections if f"'{s}'" not in src]
+    check("deploy-managed-sections", not missing_sections,
+          "deploy.py MANAGED_SECTIONS 与契约不一致，缺: {}".format(missing_sections), deploy_py)
+
+    agents = dm.get("agents_count")
+    if agents:
+        manual = repo_root / "skills" / "moshu-setup" / "references" / "deploy-manual.md"
+        mt = manual.read_text(encoding="utf-8", errors="ignore")
+        check("deploy-manual-agent-count", "{} agent files exist".format(agents) in mt,
+              "deploy-manual 应含「{} agent files exist」".format(agents), manual)
+        skill = repo_root / "skills" / "moshu-setup" / "SKILL.md"
+        st = skill.read_text(encoding="utf-8", errors="ignore")
+        check("setup-skill-agent-count", "{} 个 agents".format(agents) in st,
+              "SKILL.md 应含「{} 个 agents」".format(agents), skill)
+
+    crf = dm.get("chapter_range_format", "")
+    if crf:
+        ns = repo_root / "skills" / "moshu" / "scripts" / "next_step.py"
+        nst = ns.read_text(encoding="utf-8", errors="ignore")
+        check("next-step-chapter-prefix", "第" in nst and "[-—~至]" in nst,
+              "next_step.py 章节范围正则应含「第」前缀与 [-—~至] 形态", ns)
+        for rel in ("skills/moshu-build/references/workflow-build.md",
+                    "skills/moshu-write/references/artifact-protocols.md"):
+            doc = repo_root / rel
+            dt = doc.read_text(encoding="utf-8", errors="ignore")
+            lines = [ln for ln in dt.splitlines() if "章节范围：" in ln]
+            bad = [ln for ln in lines if "第" not in ln]
+            check("chapter-range-format-" + rel.split("/")[1],
+                  not bad,
+                  "「章节范围」模板行应含「第」前缀（契约口径 {}）: {}".format(crf, bad), doc)
+    return findings
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = build_parser().parse_args(argv)
     repo_root = args.repo_root.resolve()
@@ -1258,6 +1335,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     assert manifest is not None
     print("  [PASS] manifest schema and declared release values")
     findings = validate_repository(repo_root, manifest)
+    findings.extend(deployment_manifest_findings(repo_root, manifest))
     if findings:
         for finding in findings:
             print("  [FAIL] {}: {}".format(finding.code, finding.detail(repo_root)))
