@@ -29,7 +29,7 @@
     {
       "path": "skills/moshu-write/references/workflow-chapter.md",
       "budget": 1400,
-      "why": "D3 ????????13 ??? + ???????1320 ??????????? chapter-core.md???????????"
+      "why": "workflow-chapter 预算调整记录（原文编码丢失，2026-08-25 审计标注；历史沿革见批B12 施工日志与 git 历史）"
     },
     {
       "path": "skills/moshu-write/references/outline-workflow.md",
@@ -99,7 +99,7 @@
     {
       "path": "skills/moshu-write/references/chapter-core.md",
       "budget": 19600,
-      "why": "D3 ???????13 ??? + ???????1320 ??????????? chapter-core.md???????????. 批B12 显式调高 17100→19600：B 段重构为三遍法（快写→读者重读→技艺打磨）——每遍换帽子（创作帽/读者帽/技艺帽）+方法论书指引块（大师课/小说写作/骨架章节索引）+上下文隔离铁律+四查/五磨操作步骤+卡片按需加载（beat-cards/hooks-chapter/文风库/genre-prose-cards）。先压缩同文件旧文本（写作技巧提醒删 4 行与三遍重叠项[对话/爽点密度/章尾/情绪验证]、三遍方法论书行精简、B4 悬空引用修复）后实测 18604 非空白字符仍超——三遍法为 B12 规格硬性要求（每章写作都付），按 doc-budget 纪律显式调高"
+      "why": "（原文编码丢失，2026-08-25 审计标注；历史沿革见批B12 施工日志与 git 历史）批B12 显式调高 17100→19600：B 段重构为三遍法（快写→读者重读→技艺打磨）——每遍换帽子（创作帽/读者帽/技艺帽）+方法论书指引块（大师课/小说写作/骨架章节索引）+上下文隔离铁律+四查/五磨操作步骤+卡片按需加载（beat-cards/hooks-chapter/文风库/genre-prose-cards）。先压缩同文件旧文本（写作技巧提醒删 4 行与三遍重叠项[对话/爽点密度/章尾/情绪验证]、三遍方法论书行精简、B4 悬空引用修复）后实测 18604 非空白字符仍超——三遍法为 B12 规格硬性要求（每章写作都付），按 doc-budget 纪律显式调高"
     },
     {
       "path": "skills/moshu-build/SKILL.md",
