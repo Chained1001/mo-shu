@@ -227,25 +227,6 @@
       "skills": [
         "./skills/moshu-style"
       ]
-    },
-    {
-      "name": "moshu-research",
-      "description": "采风/找参照——为构建环提供五类动态参照（结构/角色/设定机制/情节/情绪），检索下沉 moshu-researcher agent（fallback 内联），产出项目级 设定/采风-CF*.md。",
-      "source": "./",
-      "strict": false,
-      "version": "1.1.0",
-      "category": "novel-writing",
-      "keywords": [
-        "research",
-        "reference",
-        "caifeng",
-        "采风",
-        "参照",
-        "chinese"
-      ],
-      "skills": [
-        "./skills/moshu-research"
-      ]
     }
   ]
 }
