@@ -111,7 +111,8 @@
       "name": "plot-emotion-system-reference",
       "source": "skills/moshu-write/references/plot-emotion-system.md",
       "targets": [
-        "skills/moshu-build/references/plot-emotion-system.md"
+        "skills/moshu-build/references/plot-emotion-system.md",
+        "skills/moshu-setup/references/agent-references/plot-emotion-system.md"
       ]
     },
     {
