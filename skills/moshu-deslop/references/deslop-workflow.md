@@ -1,6 +1,6 @@
 # deslop-workflow.md：moshu-deslop 完整去AI味流程
 
-本文件承载 moshu-deslop 的完整检测与润色流程（自然文本基准、Phase 1-5）。SKILL.md 只保留定位、核心哲学与 Phase 索引；进入 Phase 1 后按本文件对应节执行。
+本文件承载 moshu-deslop 的完整检测与润色流程（自然文本基准、Stage 1-5）。SKILL.md 只保留定位、核心哲学与 Stage 索引；进入 Stage 1 后按本文件对应节执行。
 
 ## 自然文本基准
 
@@ -33,7 +33,7 @@
 
 ## 检测流程
 
-### Phase 1：AI味扫描
+### Stage 1：AI味扫描
 
 对用户提交的文本做快速扫描，标记AI味浓重的位置：
 
@@ -77,7 +77,7 @@ node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文
 
 ---
 
-### Phase 2：诊断与分级
+### Stage 2：诊断与分级
 
 根据「AI味扫描」检测结果判断AI味程度，决定处理策略：
 
@@ -113,11 +113,11 @@ node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文
 - **Pass 2（去书面化）** 覆盖 Gate A 中的书面腔词、Gate B 的句式套路深化
 - **Pass 3（回自然感）** 覆盖 Gate D 的长短节奏、Gate E 的对话差异化、Gate F 的结尾去升华、补具体感官细节
 
-轻度/中度/重度的处理范围以上方「Phase 2 处理策略」表的 Gate 范围为准；三遍法是执行方式，与 Gate 是覆盖关系、不是 1:1 映射。
+轻度/中度/重度的处理范围以上方「Stage 2 处理策略」表的 Gate 范围为准；三遍法是执行方式，与 Gate 是覆盖关系、不是 1:1 映射。
 
 ---
 
-### Phase 3：逐项清除
+### Stage 3：逐项清除
 
 #### Agent 调用：moshu-narrative-writer（去AI味执行）
 
@@ -298,7 +298,7 @@ AI写作的结尾特征：总想总结、升华、点题。
 
 ---
 
-### Phase 4：确定性收尾（文件模式）
+### Stage 4：确定性收尾（文件模式）
 
 当输入是正文文件路径，且「逐项清除」已落盘修改后，**先**做句式/段落复扫，**再**做机械标点兜底（破折号要按功能改写，故先于机械替换报出）：
 
@@ -319,7 +319,7 @@ node {SKILL_DIR}/scripts/check-outline-copy.js <正文文件...>
 
 ---
 
-### Phase 5：输出润色结果
+### Stage 5：输出润色结果
 
 ```
 ## 去AI味润色报告

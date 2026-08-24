@@ -1,6 +1,6 @@
 # review-workflow.md：moshu-review 完整审查流程
 
-本文件承载 moshu-review 的完整审查流程、基准包、报告模板与追踪维护契约。SKILL.md 只保留模式选择、Phase 0 预检降级与 Phase 1-4 索引；进入 Phase 1 后按本文件对应节执行。
+本文件承载 moshu-review 的完整审查流程、基准包、报告模板与追踪维护契约。SKILL.md 只保留模式选择、Stage 1 预检降级与 Stage 2-5 索引；进入 Stage 2 后按本文件对应节执行。
 
 ## 审查基准与参考资料规则（必须遵守）
 
@@ -103,7 +103,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 ---
 
-## Phase 1：收集待审查内容
+## Stage 2：收集待审查内容
 
 1. **确定审查范围**：
    - 用户指定了章节/文件 → 只审查指定内容。
@@ -171,13 +171,13 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 ---
 
-## Phase 2：并行 Spawn Agent（full/lean 模式）
+## Stage 3：并行 Spawn Agent（full/lean 模式）
 
 使用 Agent/Task 工具并行调用（Claude Code 使用 `subagent_type`）。每个 Agent 不继承父对话上下文，prompt 必须自包含项目路径、审查范围、文件路径、必要摘录、审查基准包摘要、Rubric Source 和统一 Findings Schema。
 
-**调用规则**：执行 Phase 0 后，只有实际模式仍是 full/lean 时才 spawn。不要 spawn 缺失 Agent。
+**调用规则**：执行 Stage 1 后，只有实际模式仍是 full/lean 时才 spawn。不要 spawn 缺失 Agent。
 
-**审稿令牌（防未读输入编造报告）**：spawn 前先生成本轮唯一的 8 位令牌 `{token}`（大写字母+数字，如 `A7K2M9QX`），作为**每个 spawn prompt 的第一行**写入 `审稿令牌：{token}`；同一批次内四个 Agent 共用同一令牌。令牌串同时写进工单 JSON 的 `review_token`（见 Phase 4），供采纳前校验。
+**审稿令牌（防未读输入编造报告）**：spawn 前先生成本轮唯一的 8 位令牌 `{token}`（大写字母+数字，如 `A7K2M9QX`），作为**每个 spawn prompt 的第一行**写入 `审稿令牌：{token}`；同一批次内四个 Agent 共用同一令牌。令牌串同时写进工单 JSON 的 `review_token`（见 Stage 5），供采纳前校验。
 
 **Agent 1: moshu-architect**（subagent_type: moshu-architect）
 - full/lean 均调用。
@@ -189,7 +189,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   你的任务是【找问题】，不是验证正确性。以最严苛的标准审视。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
-  审查基准包摘要：{Phase 1 形成的 rubric / fallback 摘要，必须内联}
+  审查基准包摘要：{Stage 2 形成的 rubric / fallback 摘要，必须内联}
   Rubric Source: file | embedded fallback
   相关文件路径：{设定/大纲/细纲文件路径}
   继承的开放项（分批审查必填，无则写「无」）：{从 追踪/伏笔.md 提取的、预计回收章 ≤ 本批末章的已埋未回收钩子，连同上一批未解决 findings 摘要}
@@ -225,7 +225,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   你的任务是【找问题】，不是验证正确性。以最严苛的标准审视。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
-  审查基准包摘要：{Phase 1 形成的 rubric / fallback 摘要，必须内联}
+  审查基准包摘要：{Stage 2 形成的 rubric / fallback 摘要，必须内联}
   Rubric Source: file | embedded fallback
   相关角色文件：{角色设定文件路径}
   可选补充参考：本 Skill 的 `moshu-review/references/character-relations.md`、`moshu-review/references/dialogue-mastery.md`；若不可读，不影响审查。
@@ -255,7 +255,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   你的任务是【找问题】，不是验证正确性。以最严苛的标准审视。
   项目路径：{项目根}
   审查范围：{文件路径/章节/必要摘录}
-  审查基准包摘要：{Phase 1 形成的 rubric / fallback 摘要，必须内联}
+  审查基准包摘要：{Stage 2 形成的 rubric / fallback 摘要，必须内联}
   Rubric Source: file | embedded fallback
   AI 味 / 禁用词摘要：{从 anti-ai-writing、banned-words 或内置 fallback 提取，必须内联}
   可选补充参考：本 Skill 的 `moshu-review/references/anti-ai-writing.md`、`moshu-review/references/banned-words.md`、`moshu-review/references/quality-checklist.md`；若不可读，不影响审查。
@@ -289,7 +289,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   审查范围：{文件路径/章节/必要摘录}
   已知角色：{从设定文件提取角色列表}
   继承的开放项（分批审查必填，无则写「无」）：{从 追踪/伏笔.md 提取的、预计回收章 ≤ 本批末章的已埋未回收伏笔，连同上一批未解决 findings 摘要}
-  审查基准包摘要：{Phase 1 形成的 rubric / fallback 摘要，必须内联}
+  审查基准包摘要：{Stage 2 形成的 rubric / fallback 摘要，必须内联}
   Rubric Source: file | embedded fallback
   可选补充参考：本 Skill 的 `moshu-review/references/quality-checklist.md`；若不可读，不影响事实冲突扫描。
   检查项：
@@ -310,7 +310,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 ---
 
-## Phase 3：综合裁决
+## Stage 4：综合裁决
 
 1. 收集实际执行的 reviewer VERDICT 和 FINDINGS。
 2. 合并去重：按 `severity` 排序（S1 > S2 > S3 > S4），同级内按影响范围排序。
@@ -322,18 +322,18 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 ---
 
-## Phase 4：输出报告（full / lean 模式）
+## Stage 5：输出报告（full / lean 模式）
 
 ### 工单落盘（full / lean / solo 通用）
 
 0. **采纳前逐字比对令牌（full/lean 有 spawn 时必做）**：取每份 reviewer 报告的**第一行**，与本轮 `{token}` 逐字比对。不等、或首行为 `审稿令牌：缺失` → **不采纳该 Agent 的 findings**，按原 prompt 重跑一次；重跑仍不符则在报告 `Fallback` 行记明该视角缺失，未校验的 findings 不写进工单。solo 模式无 spawn，跳过本步。
-1. **整理 findings 为工单 JSON**：主会话把综合后的 findings 整理为数组——`id`（`T\d{3,}`，主会话分配）、`severity`（S1/S2 → `blocking`，S3/S4 → `candidate`——只影响呈报与复审范围，不拦截任何流程）、`dimension`（统一 Findings Schema 的 9 类 category 之一）、`evidence`、`suggestion`、`status: "open"`（**新建工单只允许 open**；处置一律走 `resolve`）；`review_token` = 本轮 Phase 2 生成并注入 reviewer 的 8 位审稿令牌。
+1. **整理 findings 为工单 JSON**：主会话把综合后的 findings 整理为数组——`id`（`T\d{3,}`，主会话分配）、`severity`（S1/S2 → `blocking`，S3/S4 → `candidate`——只影响呈报与复审范围，不拦截任何流程）、`dimension`（统一 Findings Schema 的 9 类 category 之一）、`evidence`、`suggestion`、`status: "open"`（**新建工单只允许 open**；处置一律走 `resolve`）；`review_token` = 本轮 Stage 3 生成并注入 reviewer 的 8 位审稿令牌。
 2. **先写临时文件，再走脚本**：把 findings 数组先写到临时 JSON 文件（如 `/.tmp/review-tickets-<时间戳>.json`），再执行 `moshu-review/scripts/review_tickets.py write --project {项目根} --input <临时文件>`——**AI 产出只走文件不走 argv**（移植 v7）。校验（schema/枚举/id 唯一且 `T\d{3,}`/令牌非空）失败时按报错修正后重跑同一 `write`。
 3. **落盘位置**：`{项目根}/.moshu-review/tickets/tickets_{YYYYMMDD-HHMM}_{起章}-{止章}.json`（write 原子写、幂等）。落盘后做一次确定性复核：`moshu-review/scripts/review_tickets.py verify-token --ticket <落盘工单> --token {token}` 必须输出 `token ok`（退出 0）——防工单里的 `review_token` 与本轮实际注入值不一致；不等（退出 2）时修正工单 token 后重跑同一 `write`。
 4. **复审轮只重落 open 项**：同一 `{起章}-{止章}` 已存在工单文件时，本轮属**复审轮**——只把上一轮仍为 `open` 的 finding 重新整理进新数组，已 `fixed`/`dismissed` 的 id **不再进新工单**（否则已处置项会被重新变成 open）。待办真源统一读 `moshu-review/scripts/review_tickets.py list --project {项目根} --status open`，不要按"最新文件"人工挑。
 5. **工单与 review-log 分工**：工单=结构化处置真源（复审只验 open 项，处置走 `resolve`）；review-log=既有写作建议审计流（`{章节范围} | {问题} | {建议}` 行式，S3/S4 与 advisory 记录）——**review-log 格式与读点不变**。
 
-只有 `Effective Mode` 确实为 `full` 或 `lean` 时才使用本模板；如果 Phase 0 或运行时失败导致降级 `solo`，必须改用 solo 模式模板。
+只有 `Effective Mode` 确实为 `full` 或 `lean` 时才使用本模板；如果 Stage 1 或运行时失败导致降级 `solo`，必须改用 solo 模式模板。
 
 注意：下列 `Requested Mode`、`Effective Mode`、`Fallback`、`Rubric`、`Rubric Source` 五个英文 key 必须逐字保留；不要改成“请求模式/实际模式/回退/评估标准”等中文 key。
 
@@ -383,7 +383,7 @@ APPROVE(通过) / CONCERNS(有问题) / REJECT(需重写)
 
 ## solo 模式
 
-不 spawn Agent。先按 Phase 1 第 4 步识别目标平台并加载对应 rubric；即使是 solo，也必须用平台 rubric、`moshu-review/references/quality-rubric.md` 或内置审查基准包校准判断。
+不 spawn Agent。先按 Stage 2-4 识别目标平台并加载对应 rubric；即使是 solo，也必须用平台 rubric、`moshu-review/references/quality-rubric.md` 或内置审查基准包校准判断。
 
 solo 必须执行基础检查：
 1. 格式合规性检查（戏剧单元/画面分段、无机械字数切分、无空行、对话格式、主语/角色名节奏）。

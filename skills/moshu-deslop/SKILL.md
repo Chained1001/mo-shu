@@ -47,25 +47,25 @@ AI味不按语法错误处理，也不需要"修正"。它属于风格问题：�
 
 ---
 
-## Phase 1：AI味扫描
+## Stage 1：AI味扫描
 
-**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Phase 1」节**——扫描流程、AI味检测报告模板与确定性句式预检命令见同节。
+**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Stage 1」节**——扫描流程、AI味检测报告模板与确定性句式预检命令见同节。
 
-## Phase 2：诊断与分级
+## Stage 2：诊断与分级
 
-**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Phase 2」节**——量化定档指标、Gate 处理范围与三遍法覆盖关系见同节。
+**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Stage 2」节**——量化定档指标、Gate 处理范围与三遍法覆盖关系见同节。
 
-## Phase 3：逐项清除
+## Stage 3：逐项清除
 
-**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Phase 3」节**——删除优先判断与 Gate A-G 全部规则（禁用词/句式/心理外化/节奏/对话/结尾/解释腔）与白名单机制见同节。
+**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Stage 3」节**——删除优先判断与 Gate A-G 全部规则（禁用词/句式/心理外化/节奏/对话/结尾/解释腔）与白名单机制见同节。
 
-## Phase 4：确定性收尾（文件模式）
+## Stage 4：确定性收尾（文件模式）
 
-**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Phase 4」节**——四脚本复扫命令与作用边界见同节。
+**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Stage 4」节**——四脚本复扫命令与作用边界见同节。
 
-## Phase 5：输出润色结果
+## Stage 5：输出润色结果
 
-**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Phase 5」节**——润色报告模板、字数硬约束与收敛终止规则见同节。
+**执行前先读 [references/deslop-workflow.md](references/deslop-workflow.md) 的「Stage 5」节**——润色报告模板、字数硬约束与收敛终止规则见同节。
 
 ---
 

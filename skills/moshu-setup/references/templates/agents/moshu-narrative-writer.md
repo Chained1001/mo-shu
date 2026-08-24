@@ -3,7 +3,7 @@ name: moshu-narrative-writer
 description: |
   叙事文本创作与去AI味专家。负责正文写作（三维度揉进、感知/反应）、
   情绪弧线执行、开篇/收尾、去AI味（禁用词替换、句式去套路、节奏调整）。
-  被 moshu-write（Phase 4-5）调用。
+  被 moshu-write（Stage 4-5）调用。
   也可执行完整去AI味流程和格式合规检查。
 tools: [Read, Glob, Grep, Write, Edit, Bash]
 # Bash 用于自查字数/句长/细纲照搬：三项都要确定性数值，缺工具时规则整条空转。

@@ -828,7 +828,7 @@ def extract_sentinel_fields(text: str) -> Optional[dict[str, str]]:
     section_start: Optional[int] = None
     heading_level = 0
     for index, line in enumerate(lines):
-        match = re.match(r"^(#{2,6})\s+Step\s+[A-Za-z0-9]+[：:]\s*创建部署标记\s*$", line)
+        match = re.match(r"^(#{2,6})\s+(?:Step\s+[A-Za-z0-9]+|Stage\s+[A-Za-z0-9-]+)[：:]\s*创建部署标记\s*$", line)
         if match:
             section_start = index + 1
             heading_level = len(match.group(1))
@@ -1064,7 +1064,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
             )
         )
     setup_text = read_text(setup_skill) or ""
-    # 审计-V3 D2 后 Step 1-7 细节在 deploy-manual.md；sentinel 契约的 Step 7 标题+字段块随架构迁移到那里，
+    # 审计-V3 D2 后 Stage 2 子步骤细节在 deploy-manual.md；sentinel 契约的 Stage 2-7 标题+字段块随架构迁移到那里，
     # 与 SKILL.md 的锚点字段块合并检查（两处字段必须一致）
     deploy_manual = repo_root / "skills/moshu-setup/references/deploy-manual.md"
     manual_text = read_text(deploy_manual) or ""
@@ -1084,7 +1084,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
 
     topic_file = repo_root / "skills/moshu-scan/references/topic-decision.md"
     topic_text = read_text(topic_file) or ""
-    topic_match = re.search(r"Phase\s+([0-9]+)[^\n]*产出\s*`选题决策\.md`", topic_text)
+    topic_match = re.search(r"Stage\s+([0-9]+)[^\n]*产出\s*`选题决策\.md`", topic_text)
     if not topic_match or int(topic_match.group(1)) != manifest.topic_decision_phase:
         findings.append(
             Finding(
@@ -1100,9 +1100,9 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
     findings.extend(
         require_pattern(
             scan_skill,
-            r"^#{{2,6}}\s+Phase\s+{}[：:]\s*选题决策\s*$".format(manifest.topic_decision_phase),
+            r"^#{{2,6}}\s+Stage\s+{}[：:]\s*选题决策\s*$".format(manifest.topic_decision_phase),
             "topic-decision-phase-heading",
-            "moshu-scan must expose topic decision as Phase {}".format(manifest.topic_decision_phase),
+            "moshu-scan must expose topic decision as Stage {}".format(manifest.topic_decision_phase),
         )
     )
     for path in iter_files(repo_root / "skills"):
@@ -1112,10 +1112,10 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
         for line_number, line_text in enumerate(text.splitlines(), start=1):
             if "选题决策" not in line_text:
                 continue
-            # 技能名在本包的房子风格是反引号包裹（`moshu-scan` Phase 5），裸 token 匹配
+            # 技能名在本包的房子风格是反引号包裹（`moshu-scan` Stage 5），裸 token 匹配
             # 跨不过反引号，会漏掉一半引用；两种写法都要拦。
             for match in re.finditer(
-                r"`?moshu-scan`?[\s`]*Phase\s+([0-9]+)", line_text
+                r"`?moshu-scan`?[\s`]*Stage\s+([0-9]+)", line_text
             ):
                 value = int(match.group(1))
                 if value == manifest.topic_decision_phase:
@@ -1123,7 +1123,7 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
                 findings.append(
                     Finding(
                         "stale-topic-decision-phase-reference",
-                        "moshu-scan topic-decision references must use Phase {}".format(
+                        "moshu-scan topic-decision references must use Stage {}".format(
                             manifest.topic_decision_phase
                         ),
                         path,

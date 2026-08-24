@@ -35,21 +35,21 @@ description: "逆向导入已有小说。将已写好的小说（半成品或完
 
 ---
 
-## Phase 1：确认导入源
+## Stage 1：确认导入源
 
-**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Phase 1」节**，按其中 Step 1-6 执行（导入续写入口顺序、旧追踪项目迁移、意图确认、输入识别、基本信息、环境检测、原文备份）。
+**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Stage 1」节**，按其中 Stage 1-1~1-6 执行（导入续写入口顺序、旧追踪项目迁移、意图确认、输入识别、基本信息、环境检测、原文备份）。
 
-## Phase 2：深度分析
+## Stage 2：深度分析
 
-**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Phase 2」节**——驱动 moshu-analyze 完整拆解管道（Stage 0-6），调用契约、拆文库结构、恢复机制与质量检查见同节。
+**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Stage 2」节**——驱动 moshu-analyze 完整拆解管道（Stage 2-1~2-7），调用契约、拆文库结构、恢复机制与质量检查见同节。
 
-## Phase 3：结构迁移
+## Stage 3：结构迁移
 
-**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Phase 3」「Phase 3-L」节**——长篇统一走 3-L 迁移，完整步骤（骨架/正文标准化/角色/关系/设定/大纲/细纲/追踪初始化/题材定位/对标同步/技法总结）见同节与 `references/structure-mapping-long.md`。
+**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Stage 3」「Stage 3-L」节**——长篇统一走 3-L 迁移，完整步骤（骨架/正文标准化/角色/关系/设定/大纲/细纲/追踪初始化/题材定位/对标同步/技法总结）见同节与 `references/structure-mapping-long.md`。
 
-## Phase 4：项目激活
+## Stage 4：项目激活
 
-**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Phase 4」节**——质量检查、完成报告模板与项目激活见同节。
+**执行前先读 [references/import-workflow.md](references/import-workflow.md) 的「Stage 4」节**——质量检查、完成报告模板与项目激活见同节。
 
 ## 大型作品处理（>200 章）
 

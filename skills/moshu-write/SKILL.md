@@ -45,7 +45,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 | 场景 | 触发条件 | 执行流程 |
 |------|----------|----------|
 | **开书/设定/大纲/卷纲** | "帮我开书" / 项目目录为空 | → `/moshu-build` 开书构建（题材定位、世界观、人物、全书大纲、首卷卷纲）；本 skill 接力**细纲与写作**（见 [outline-workflow.md](references/outline-workflow.md)） |
-| **写指定章** | "写第 N 章" / "写第1章" / "开书并写首章" | Phase 4 单章写作；只写用户点名的章节，写完 Phase 5 检查后停止。空项目/无细纲（如"开书并写首章"）先经 /moshu-build 建纲再写点名章 |
+| **写指定章** | "写第 N 章" / "写第1章" / "开书并写首章" | Stage 4 单章写作；只写用户点名的章节，写完 Stage 5 检查后停止。空项目/无细纲（如"开书并写首章"）先经 /moshu-build 建纲再写点名章 |
 | **补纲/扩纲** | "出细纲/补细纲/规划下一段剧情/接下来写XX剧情（先出细纲）" **且**项目已有大纲 | [outline-workflow.md](references/outline-workflow.md)「中途补纲/扩纲小流程」：选同类剧情单元→追加剧情单元卡→按剧情批滚动补细纲；**默认停在细纲交付，不自动写正文** |
 | **日更续写** | 关键词（"日更"/"续写"/"继续写"）**且**项目已有正文+追踪 | 加载 `references/workflow-daily.md` |
 | **大修** | "修改第X章" / "回炉" / "重写第X章" | 加载 `references/workflow-revision.md` |
@@ -78,21 +78,21 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 
 ---
 
-### Phase 1：确认选题方向
+### Stage 1：确认选题方向
 
 > **本 Phase（选题/对标/题材定位构建）已移 `/moshu-build`**；本 skill 不再执行开书构建，细纲与正文在此接力。
 
-### Phase 2：核心设定
+### Stage 2：核心设定
 
 > **本 Phase（核心设定/设定建档）已移 `/moshu-build`**；细纲后设定补全见 [outline-workflow.md](references/outline-workflow.md)「细纲后设定补全」。
 
-### Phase 3：大纲搭建
+### Stage 3：大纲搭建
 
 > **卷级大纲/卷纲构建已移 `/moshu-build`**；细纲（全书每章）模板、七检/审查、分批建纲、中途补纲见 [outline-workflow.md](references/outline-workflow.md)。
 
 ---
 
-### Phase 4：正文写作辅助
+### Stage 4：正文写作辅助
 
 #### 项目文件结构
 
@@ -100,7 +100,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 
 #### 单章写作流程
 
-**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（步骤 1-13，**B 段按三遍法执行：第 1 遍快写→第 2 遍读者重读→第 3 遍技艺打磨**，见 chapter-core「B 段」）、写作技巧提醒、字数验收权威与 Phase 5 质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
+**执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)**，按其中的单章写作流程（Stage 4-1~4-13，**B 段按三遍法执行：第 1 遍快写→第 2 遍读者重读→第 3 遍技艺打磨**，见 chapter-core「B 段」）、写作技巧提醒、字数验收权威与 Stage 5 质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
 
 ## 流程衔接
 
@@ -121,7 +121,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 
 各场景的完整步骤按需加载，本文件只保留场景路由、项目文件结构与产物契约、参考索引。
 
-### Phase 1：选题方向
+### Stage 1：选题方向
 
 | 场景 | 加载文件 |
 |------|---------|
@@ -131,7 +131,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 | 特殊题材考量 | `references/plot-special-topics.md` |
 | 女频长篇（题材/文案/平台/感情线） | `references/female-audience-writing.md` |
 
-### Phase 2：核心设定
+### Stage 2：核心设定
 
 | 场景 | 加载文件 |
 |------|---------|
@@ -141,7 +141,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 | 创建 artifact | `references/artifact-protocols.md` |
 | 读者契约与主角高光 | `references/reader-contract-and-progression.md` |
 
-### Phase 3：大纲搭建
+### Stage 3：大纲搭建
 
 | 场景 | 加载文件 |
 |------|---------|
@@ -157,7 +157,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 | 契约/终局储备/剧情单元安全审查 | `references/reader-contract-and-progression.md` |
 | 反转设计 | `references/reversal-toolkit.md` |
 
-### Phase 4：正文写作
+### Stage 4：正文写作
 
 | 场景 | 加载文件 |
 |------|---------|
@@ -176,7 +176,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 | 状态追踪协议 | `references/state-tracking.md` |
 | 当前剧情单元与契约校准 | `references/reader-contract-and-progression.md` |
 
-### Phase 5：质量检查
+### Stage 5：质量检查
 
 | 场景 | 加载文件 |
 |------|---------|

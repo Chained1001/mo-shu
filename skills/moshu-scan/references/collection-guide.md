@@ -1,6 +1,6 @@
-# collection-guide.md：扫榜采集指南（Phase 2 细节）
+# collection-guide.md：扫榜采集指南（Stage 2 细节）
 
-> SKILL.md Phase 2 路由到本文件。核心哲学三原则 + 各平台采集目标 + 命令示例 + 输出目录约定 + 采集质量检查。
+> SKILL.md Stage 2 路由到本文件。核心哲学三原则 + 各平台采集目标 + 命令示例 + 输出目录约定 + 采集质量检查。
 
 ## 核心哲学
 

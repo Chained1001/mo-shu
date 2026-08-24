@@ -1,8 +1,8 @@
-# workflow-chapter.md：单章正文工作流（Phase 4-5 薄壳）
+# workflow-chapter.md：单章正文工作流（Stage 4-5 薄壳）
 
-本文件是「写指定章」车道的薄壳：13 步骨架 + 单章特有细节。写前准备/正文/机检收尾/事务提交四段共享内核在 [chapter-core.md](chapter-core.md)，本文件每步只给一行指引，**执行细节一律进 core 对应段**。
+本文件是「写指定章」车道的薄壳：13 个子步骤 + 单章特有细节。写前准备/正文/机检收尾/事务提交四段共享内核在 [chapter-core.md](chapter-core.md)，本文件每步只给一行指引，**执行细节一律进 core 对应段**。
 
-## 单章写作流程（13 步骨架）
+## 单章写作流程（13 个子步骤）
 
 1. **检查细纲** → core「A1 检查细纲」（缺必需字段必须先补建，不允许跳过细纲直接写作）
 2. **读取上下文** → core「A2 读取上下文」（13 项清单 + explorer 快捷路径）
@@ -20,8 +20,8 @@
 
 ## 单章特有补充
 
-- **标题预检细则**（第 5 步）→ core「B0」——同名/明显重复时按本章核心事件改名，同步细纲标题与正文文件名。
-- **质量检查**（Phase 5，写后同轮）：core「D1-D3」（三维度 + consistency-checker 过桥 + narrative-writer 去 AI 味审查）；**S1/S2 必须显式过桥**——①已修复 ②进 `continuity_risks` ③进 `next_chapter_commitments` 三选一落盘，未判定不得进入下一章。
+- **标题预检细则**（Stage 4-5）→ core「B0」——同名/明显重复时按本章核心事件改名，同步细纲标题与正文文件名。
+- **质量检查**（Stage 5，写后同轮）：core「D1-D3」（三维度 + consistency-checker 过桥 + narrative-writer 去 AI 味审查）；**S1/S2 必须显式过桥**——①已修复 ②进 `continuity_risks` ③进 `next_chapter_commitments` 三选一落盘，未判定不得进入下一章。
 - **写前准备契约**（缺失文件处理/权威优先级/追踪体积）→ core「写前准备契约」；产物映射与项目结构树见 [artifact-protocols.md](artifact-protocols.md) 开头。
 
 ## 质量检查节索引

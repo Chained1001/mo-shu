@@ -13,13 +13,13 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 
 ## 扫榜流程
 
-### Phase 1：确认平台和方向
+### Stage 1：确认平台和方向
 
 问用户：**「你想看哪个平台？（起点/番茄/晋江/七猫/其他）有没有关注的题材方向？」**
 
 - 用户已有方向 → 针对该方向做深度扫榜；无方向 → 全榜概览 + 找趋势；想跨平台比较 → 平台对比分析。
 
-### Phase 2：确定数据来源
+### Stage 2：确定数据来源
 
 | 优先级 | 模式 | 说明 | 何时用 |
 |--------|------|------|--------|
@@ -31,17 +31,17 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 
 **采集硬性要求**：晋江必须有详情页核心指标（收藏/营养液/积分/字数）；每个采集文件头部必须含 `数据质量：[OK/存在问题]`、`有效条目`、`问题摘要` 三行。
 
-### Phase 3：数据分析
+### Stage 3：数据分析
 
 **优先运行** `node {SKILL_DIR}/scripts/scan-analyze.js --dir {扫榜目录} [--genre {题材}] [--dup] [--full]` 做确定性提取，**禁止临时写内联解析脚本**（AI 手写 grep 会把「玄幻·东方玄幻」重复计数；脚本按条目计数）。4 平台通用提取（按文件头自动识别）：全平台可提取排名/书名/作者；起点字段最全；番茄提取字数/在读/题材/标签；晋江提取收藏/字数（题材固有缺失标 `[待补]`）；七猫提取热度/字数/题材。`--dup` 跨平台聚合（同一本书多平台上榜 = 交叉验证信号）。刺猬猫不在支持范围。
 
 各平台分析维度与通用维度清单见 [references/analysis-guide.md](references/analysis-guide.md)。晋江数据若标 `[仅列表-无核心指标]` 视为不合格，不足以支撑分析。
 
-### Phase 4：输出扫榜报告
+### Stage 4：输出扫榜报告
 
 报告模板见 [references/analysis-guide.md](references/analysis-guide.md)「扫榜报告模板」节，写入 `{扫榜目录}/扫榜报告_{平台}{方向}_{YYYYMMDD}.md`。
 
-### Phase 5：选题决策
+### Stage 5：选题决策
 
 把扫榜结果变成能直接用的选题建议，产出**本次扫榜输出目录** `{outdir}/选题决策.md`。完整方法（选题四步 + 可行性判断 + 输出模板）见 [references/topic-decision.md](references/topic-decision.md)。收尾只问一个决策：「倾向哪个选题，或都不满意？」选定后针对该题问素材匹配；**不问计划字数**（平台+方向已定则篇幅由市场定义）；拆文验证保持用户独立决定，不自动衔接。
 
@@ -79,14 +79,14 @@ description: "长篇网文扫榜。分析起点、番茄、晋江等平台排行
 
 | 文件 | 何时加载 |
 |------|----------|
-| [references/collection-guide.md](references/collection-guide.md) | Phase 2 采集：平台榜单表/命令示例/输出目录约定/质量检查四步/核心哲学三原则 |
-| [references/analysis-guide.md](references/analysis-guide.md) | Phase 3/4：各平台分析维度 + 通用维度 + 扫榜报告模板 |
+| [references/collection-guide.md](references/collection-guide.md) | Stage 2 采集：平台榜单表/命令示例/输出目录约定/质量检查四步/核心哲学三原则 |
+| [references/analysis-guide.md](references/analysis-guide.md) | Stage 3/4：各平台分析维度 + 通用维度 + 扫榜报告模板 |
 | [references/topic-decision.md](references/topic-decision.md) | 「选题决策」：选题四步 + 可行性判断 + 选题决策.md 模板 |
 | [references/reader-profiling.md](references/reader-profiling.md) | 需要分析目标读者画像时 |
 | [references/genre-trends.md](references/genre-trends.md) | 查看题材趋势候选、切入约束和样本校验规则时 |
 | [references/publishing-guide.md](references/publishing-guide.md) | 平台适配+推荐机制校验+数据指标+简介设计 |
 | [references/scan-output-format.md](references/scan-output-format.md) | 脚本/CDP 采集字段定义+输出模板 |
-| [scripts/scan-analyze.js](scripts/scan-analyze.js) | 4 平台通用提取，Phase 3 分析入口 |
+| [scripts/scan-analyze.js](scripts/scan-analyze.js) | 4 平台通用提取，Stage 3 分析入口 |
 | [scripts/cdp-utils.js](scripts/cdp-utils.js) | CDP 公共工具函数（ab/openWithRetry/evalJSON(Base64)/scrollLoad/getArg/runCli 等） |
 | [scripts/qidian-rank-scraper.js](scripts/qidian-rank-scraper.js) | 起点榜单采集（默认移动端 SSR，PC/CDP 回退） |
 | [scripts/fanqie-rank-scraper.js](scripts/fanqie-rank-scraper.js) | 番茄榜单采集（字体反爬解码 + 连通性自检 + 标题解析率标注） |

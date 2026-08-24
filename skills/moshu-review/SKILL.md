@@ -24,7 +24,7 @@ description: "多视角对抗式审查。full/lean 模式在已部署 reviewer a
 
 ---
 
-## Phase 0：预检与降级（必须先执行）
+## Stage 1：预检与降级（必须先执行）
 
 1. **确定请求模式**：解析用户输入中的 `full`、`lean`、`solo`；未指定时目标模式为 `full`。
 2. **确认是否允许 spawn**：如果当前已经在子代理/Agent 内执行，不再递归 spawn，直接降级为 `solo`。
@@ -41,21 +41,21 @@ description: "多视角对抗式审查。full/lean 模式在已部署 reviewer a
 
 ---
 
-## Phase 1：收集待审查内容
+## Stage 2：收集待审查内容
 
-**执行前先读 [references/review-workflow.md](references/review-workflow.md) 的「Phase 1」节**，按其中步骤执行；「统一 Findings Schema」在同文件「统一 Findings Schema」节，所有 reviewer（含 solo）必须使用。
+**执行前先读 [references/review-workflow.md](references/review-workflow.md) 的「Stage 2」节**，按其中步骤执行；「统一 Findings Schema」在同文件「统一 Findings Schema」节，所有 reviewer（含 solo）必须使用。
 
-## Phase 2：并行 Spawn Agent（full/lean 模式）
+## Stage 3：并行 Spawn Agent（full/lean 模式）
 
-**执行前先读 [references/review-workflow.md](references/review-workflow.md) 的「Phase 2」节**，按其中 4 个 Agent 的完整提示指令 spawn；「审查基准包摘要」「Rubric Source」「跨批审查契约」在同文件「审查基准与参考资料规则」节。
+**执行前先读 [references/review-workflow.md](references/review-workflow.md) 的「Stage 3」节**，按其中 4 个 Agent 的完整提示指令 spawn；「审查基准包摘要」「Rubric Source」「跨批审查契约」在同文件「审查基准与参考资料规则」节。
 
-## Phase 3：综合裁决
+## Stage 4：综合裁决
 
-**执行前先读 [references/review-workflow.md](references/review-workflow.md) 的「Phase 3」节**，按其中裁决步骤综合。
+**执行前先读 [references/review-workflow.md](references/review-workflow.md) 的「Stage 4」节**，按其中裁决步骤综合。
 
-## Phase 4：输出报告（full / lean 模式）
+## Stage 5：输出报告（full / lean 模式）
 
-**报告模板（含五个英文 key）与 solo 模式模板见 [references/review-workflow.md](references/review-workflow.md) 的「Phase 4」「solo 模式」节**；降级为 solo 时用同文件 solo 模板。
+**报告模板（含五个英文 key）与 solo 模式模板见 [references/review-workflow.md](references/review-workflow.md) 的「Stage 5」「solo 模式」节**；降级为 solo 时用同文件 solo 模板。
 
 ## 追踪文件维护（长篇工程，审查收尾时执行）
 

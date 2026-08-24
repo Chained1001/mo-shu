@@ -1,6 +1,6 @@
-# analysis-guide.md：扫榜分析指南（Phase 3/4 细节）
+# analysis-guide.md：扫榜分析指南（Stage 3/4 细节）
 
-> SKILL.md Phase 3/4 路由到本文件。各平台分析维度 + 通用维度 + 扫榜报告模板。
+> SKILL.md Stage 3/4 路由到本文件。各平台分析维度 + 通用维度 + 扫榜报告模板。
 
 ## 各平台分析维度
 

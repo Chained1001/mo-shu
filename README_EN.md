@@ -189,7 +189,7 @@ The file system separates settings, outlines, prose, and tracking into independe
 │       ├── 角色/            # Structured character profiles (synced from analyze)
 │       ├── 剧情/            # Structured plot lines/pacing/emotion modules (synced from analyze)
 │       ├── 设定/            # Structured world settings (synced from analyze)
-│       ├── 技法总结.md      # Analyze Stage 6 output (emotion alternation/techniques/imitating layers)
+│       ├── 技法总结.md      # Analyze Stage 2-7 output (emotion alternation/techniques/imitating layers)
 │       └── 拆文报告.md      # Analyze skill output
 ├── 文风库/ (Style)       # Writing style (/moshu-style generates; recalled before each chapter)
 │   └── 文风.md            # Sentence length/punctuation/dialogue anchors (learnable from any text)

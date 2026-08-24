@@ -20,7 +20,7 @@
 | 爽点设计 | plot-emotion-system.md「爽点设计体系」+ plot-core-methods.md「高潮构建公式」 |
 | 人物深化（写人时） | character-design-methods.md（九维/深层动机/人物主题卡 8 张） |
 | 商业性 / 卖点 / 留人 | commercial-core-methods.md（核心方法/用梗/卖点自检） |
-| 格式 / 标点 / 元信息 | format-and-structure.md + workflow-chapter.md 步骤 10（元信息扫描） |
+| 格式 / 标点 / 元信息 | format-and-structure.md + workflow-chapter.md Stage 4-10（元信息扫描） |
 | 卡文 / 写不下去 | plot-core-methods.md「卡文对策」+ emotional-methods.md「快速自查」 |
 | 技法卡（多人锚点/爽点停顿/证据投放等） | **`craft-cards.md`（写作技法卡 6 张）**
 | 文字自然度 / 去 AI 味 | anti-ai-writing.md（12 模式/三遍法）+ banned-words.md（禁用词） |
@@ -40,7 +40,7 @@
 - 本文件只管「贯穿道具的三次出现编排规则」，不管「羁绊铺设」（羁绊功能见 emotional-methods.md）
 - 对话相关（含权力博弈的规则/模式/示例/操作指令）一律见 dialogue-mastery.md，本文件不重复
 - 本文件只管「开头事件密度指令」，不管「开头设计」（开头设计见 opening-design.md）
-- 本文件第 8 节「场景写法（三维度揉进）」是 Phase 3 的写作方法，正文格式规范见 format-and-structure.md
+- 本文件第 8 节「场景写法（三维度揉进）」是 Stage 3 的写作方法，正文格式规范见 format-and-structure.md
 - 本文件「贯穿道具系统」只规定物件的三次出现编排时机和意义翻转规则；物件的初始情感含义设计（选什么物件、承载什么羁绊）由 emotional-methods.md 负责（信物型物件与羁绊铺设功能重叠，但视角不同）
 
 ---
