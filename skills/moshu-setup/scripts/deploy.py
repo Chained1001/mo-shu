@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""moshu-setup 一键部署器（Phase 2+3 的确定性部分）
+"""moshu-setup 一键部署器（Stage 2-3 的确定性部分）
 
 把 hooks/rules/agents/agent-references/settings/sentinel/CLAUDE.md 的
 复制、chmod、同路径检测、合并、校验一次跑完——AI 只保留探测判断、
@@ -49,7 +49,9 @@ MERGE_HELPER = SKILL_DIR / 'scripts' / 'merge-claude-settings.py'
 # CLAUDE.md 模板标准 section 列表（合并时这些标题由模板权威覆盖）
 MANAGED_SECTIONS = ('Skill 路由表', '文件结构', '协作规则', '作者控制点',
                     'Compact 后恢复上下文')
-SECTION_RE = re.compile(r'^##\s+(.+?)\s*$', re.M)
+# 标题匹配不跨行（[ \t] 而非 \s）：re.M 下 \s*$ 会贪婪吃掉标题行尾换行，导致 split_sections
+# 的 body 丢失一个 \n、合并输出与模板渲染不一致（幂等破坏，候选 4）
+SECTION_RE = re.compile(r'^##[ \t]+(.+?)[ \t]*$', re.M)
 
 DEFAULT_AGENTS_VERSION = '34'
 DEFAULT_SETUP_VERSION = '1.5.1'
@@ -74,7 +76,8 @@ def find_python():
 
 def render_claude_md(name: str, book: str) -> str:
     tmpl = (TEMPLATES / 'CLAUDE.md.tmpl').read_text(encoding='utf-8')
-    return tmpl.replace('{项目名}', name).replace('{书名}', book)
+    # 统一 LF 行尾：模板文件可能 CRLF（Windows 工作区），生成/合并两路径必须字节一致才幂等（候选 4）
+    return tmpl.replace('{项目名}', name).replace('{书名}', book).replace('\r\n', '\n')
 
 
 def split_sections(text: str):
@@ -93,6 +96,9 @@ def split_sections(text: str):
 
 def merge_claude_md(existing: str, template_rendered: str) -> str:
     """模板 section 覆盖同名，用户独有 section 保留（无 marker 时的 section 合并）"""
+    # 统一 LF 行尾后再合并：老项目 CLAUDE.md 可能 CRLF，规范化保证输出与生成路径一致（幂等，候选 4）
+    existing = existing.replace('\r\n', '\n')
+    template_rendered = template_rendered.replace('\r\n', '\n')
     tpl_sections = split_sections(template_rendered)
     if not tpl_sections:
         return template_rendered
@@ -102,12 +108,14 @@ def merge_claude_md(existing: str, template_rendered: str) -> str:
     first = SECTION_RE.search(template_rendered)
     head = template_rendered[:first.start()] if first else template_rendered
     kept_usr = [(t, b) for t, b in usr_sections if t not in tpl_titles]
-    blocks = [head]
+    # 各 block rstrip 后以 \n\n 统一 join：与模板渲染输出字节一致 → 合并是幂等不动点
+    # （审计-setup-v1 候选 4：旧实现 body 原样拼接导致首次合并多出空行、SKILL.md「重复执行结果一致」声明不成立）
+    blocks = [head.rstrip()]
     for t, b in tpl_sections:
-        blocks.append(f'## {t}{b}')
+        blocks.append(f'## {t}{b.rstrip()}')
     for t, b in kept_usr:
-        blocks.append(f'## {t}{b}')
-    return '\n'.join(blocks).rstrip('\n') + '\n'
+        blocks.append(f'## {t}{b.rstrip()}')
+    return '\n\n'.join(blocks) + '\n'
 
 
 def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
@@ -115,7 +123,7 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
     logs: list[str] = []
     fatal: list[str] = []
 
-    # 版本门禁：禁止降级覆盖（与 moshu-setup SKILL.md Phase 1 口径一致）
+    # 版本门禁：禁止降级覆盖（与 moshu-setup SKILL.md Stage 1 口径一致）
     sentinel = project / '.story-deployed'
     if sentinel.exists():
         try:
@@ -314,6 +322,17 @@ def verify(project: Path) -> list[str]:
         check('sentinel 6 字段且版本值正确', fields_ok and values_ok)
     else:
         check('sentinel 6 字段且版本值正确', False)
+
+    # CLAUDE.md 标准节检查（审计-setup-v1 候选 5：CONFLICT 未解决时机械暴露——纯自定义 CLAUDE.md 走 CONFLICT 后 verify 必须能看出「未部署完整」）
+    md_path = project / 'CLAUDE.md'
+    if md_path.is_file():
+        md_lines = md_path.read_text(encoding='utf-8', errors='ignore').splitlines()
+        # 前缀匹配：模板节标题可带后缀（如「作者控制点（你只负责这几件事）」），等值匹配会误报缺失
+        missing_sections = [s for s in MANAGED_SECTIONS if not any(l.strip().startswith(f'## {s}') for l in md_lines)]
+        check('CLAUDE.md 含全部模板标准节', not missing_sections,
+              f'缺失标准节: {missing_sections}' if missing_sections else '')
+    else:
+        check('CLAUDE.md 含全部模板标准节', False, 'CLAUDE.md 不存在')
     checks.append('RESULT: ' + ('ALL PASS' if ok else 'HAS FAILURE'))
     return checks
 
@@ -328,7 +347,7 @@ def main():
     d.add_argument('--agents-version', default=DEFAULT_AGENTS_VERSION)
     d.add_argument('--setup-version', default=DEFAULT_SETUP_VERSION)
     d.add_argument('--dry-run', action='store_true')
-    v = sub.add_parser('verify', help='Phase 3 验证')
+    v = sub.add_parser('verify', help='Stage 3 验证')
     v.add_argument('--project', required=True)
     args = ap.parse_args()
 

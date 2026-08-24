@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""deploy.py 部署/验证行为的正式回归（审计-V3 PM6）。
+"""deploy.py 部署/验证行为的正式回归（审计-V3 PM6；审计-setup-v1 候选 4/5 扩展）。
 
-守护对象：moshu-setup 部署执行体 deploy.py 的确定性行为——部署→验证全 PASS、
-验证失败退出码非 0（PM1）、agent-references 题材子卡纳入完整性校验（PM2）、
-agents_version 降级门拒绝。禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
+守护对象：moshu-setup 部署执行体 deploy.py 的确定性行为——部署→验证全 PASS（含 CLAUDE.md 标准节检查）、
+验证失败退出码非 0（PM1）、agent-references 题材子卡纳入完整性校验（PM2）、agents_version 降级门拒绝、
+CLAUDE.md 重复部署字节幂等（候选 4）、CONFLICT 未解决时 verify 机械暴露（候选 5）。
+禁：断言实现细节/真实上游/脆弱快照（scripts/README.md 测试纪律）。
 """
 
 from __future__ import annotations
@@ -55,6 +56,24 @@ class DeployTests(unittest.TestCase):
         verified = self.run_deploy("verify", "--project", str(self.project))
         self.assertEqual(verified.returncode, 0, verified.stdout + verified.stderr)
         self.assertIn("RESULT: ALL PASS", verified.stdout)
+        self.assertIn("CLAUDE.md 含全部模板标准节", verified.stdout, "正常部署后 CLAUDE.md 标准节检查必须 PASS")
+
+    def test_deploy_claude_md_idempotent(self) -> None:
+        # 候选 4：merge_claude_md 规范化后，重复部署 CLAUDE.md 字节必须稳定（SKILL.md「重复执行结果一致」）
+        self.run_deploy("deploy", "--project", str(self.project), "--name", "审计书")
+        first = (self.project / "CLAUDE.md").read_bytes()
+        self.run_deploy("deploy", "--project", str(self.project), "--name", "审计书")
+        second = (self.project / "CLAUDE.md").read_bytes()
+        self.assertEqual(first, second, "重复部署 CLAUDE.md 必须字节一致（幂等）")
+
+    def test_verify_fails_when_claude_md_conflict(self) -> None:
+        # 候选 5：纯自定义 CLAUDE.md（无 ## section）走 CONFLICT 后，verify 必须机械暴露未部署完整
+        self.run_deploy("deploy", "--project", str(self.project), "--name", "审计书")
+        (self.project / "CLAUDE.md").write_text("# 我的项目\n\n这是我的自定义说明。\n", encoding="utf-8")
+        verified = self.run_deploy("verify", "--project", str(self.project))
+        self.assertEqual(verified.returncode, 1, "CLAUDE.md 缺模板标准节时 verify 必须非零退出（候选 5）")
+        self.assertIn("CLAUDE.md 含全部模板标准节", verified.stdout)
+        self.assertIn("RESULT: HAS FAILURE", verified.stdout)
 
     def test_verify_fails_nonzero_when_card_missing(self) -> None:
         self.run_deploy("deploy", "--project", str(self.project), "--name", "审计书")

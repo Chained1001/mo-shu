@@ -171,7 +171,7 @@ done < <(find "$HOOKS_DIR" -maxdepth 1 \( -name '*.sh' -o -name '*.js' \) -type 
 echo "  OK TS1b session-start self-check lists all hook scripts and node cores"
 
 # TS2 — Deployment checklist/manifest parseability
-# （审计-V3 D2：清单表与 Step 1-7 兜底指引已下沉 references/deploy-manual.md，
+# （审计-V3 D2：清单表与 Stage 2 子步骤兜底指引已下沉 references/deploy-manual.md，
 #   断言目标随架构演进指向该文件；SKILL.md 保留递归复制与 sentinel 字段块锚点）
 MANUAL="$SKILL_DIR/references/deploy-manual.md"
 for header in 'Source path' 'Target path' 'Owner class' 'Merge mode' 'Validation check'; do
@@ -482,20 +482,20 @@ assert_grep 'Notice: agents bundle 版本不匹配' "$REPO_ROOT/skills/moshu-rev
 assert_grep "大于 $CURRENT_AGENTS_VERSION 时额外提示先更新 mo-shu" "$REPO_ROOT/skills/moshu-review/SKILL.md" "moshu-review must tell newer deployments to update the package first"
 assert_grep "^version:[[:space:]]*$CURRENT_SETUP_VERSION$" "$SKILL_FILE" "moshu-setup frontmatter must match the deployed setup version"
 
-# Phase 1 自检的目录名单是硬编码的，必须与实际 references/ 子目录集合一致。
+# Stage 1 自检的目录名单是硬编码的，必须与实际 references/ 子目录集合一致。
 # 漏写一个 → 半装的包检不出；名单里多出已删除的目录 → 完好的包被判残缺，fail-closed 卡死所有部署。
 selfcheck_line="$(grep -n '先自检参考目录' "$SKILL_FILE" | head -1 | cut -d: -f1)"
-[ -n "$selfcheck_line" ] || fail "moshu-setup Phase 1 reference self-check paragraph not found"
+[ -n "$selfcheck_line" ] || fail "moshu-setup Stage 1 reference self-check paragraph not found"
 selfcheck_text="$(sed -n "${selfcheck_line}p" "$SKILL_FILE")"
 for ref_dir in "$SKILL_DIR"/references/*/; do
   ref_name="$(basename "$ref_dir")"
   case "$selfcheck_text" in
     *"\`$ref_name\`"*) ;;
-    *) fail "moshu-setup Phase 1 self-check list is missing reference dir: $ref_name" ;;
+    *) fail "moshu-setup Stage 1 self-check list is missing reference dir: $ref_name" ;;
   esac
 done
 ref_dir_count="$(find "$SKILL_DIR/references" -maxdepth 1 -mindepth 1 -type d | wc -l | tr -d ' ')"
-[ "$ref_dir_count" -eq 2 ] || fail "moshu-setup references/ now has $ref_dir_count subdirs (expected 2); update the Phase 1 self-check list and this assertion"
+[ "$ref_dir_count" -eq 2 ] || fail "moshu-setup references/ now has $ref_dir_count subdirs (expected 2); update the Stage 1 self-check list and this assertion"
 assert_grep '剧情/情绪模块\.md.*missing_primary_contract|missing_primary_contract.*剧情/情绪模块\.md' "$SKILL_DIR/references/templates/agents/moshu-explorer.md" "moshu-explorer must require the current emotion-module artifact"
 assert_grep '剧情/节奏\.md.*missing_primary_contract|missing_primary_contract.*剧情/节奏\.md' "$SKILL_DIR/references/templates/agents/moshu-explorer.md" "moshu-explorer must require the current rhythm artifact"
 assert_no_grep 'legacy_deconstruction|contract_version.*legacy|pre-v12' "$SKILL_DIR/references/templates/agents/moshu-explorer.md" "moshu-explorer must not keep legacy benchmark branches"

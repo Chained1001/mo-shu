@@ -11,7 +11,7 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 ---
 
-## Phase 1：检测项目状态
+## Stage 1：检测项目状态
 
 **展示版本信息（部署第一步，让用户知道自己跑的是哪个版本）**：读 `skills/moshu/VERSION`（本 skill 包同级，一行纯文本如 `2.3.5`）和本 SKILL.md 部署逻辑段中的 `agents_version: 34`（当前版本号在部署逻辑节内直接可见），在部署输出首行醒目展示：
 > 🚀 **mo-shu v{VERSION}**（agents_version {N} · setup_skill v{本 skill frontmatter version}）
@@ -27,23 +27,23 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 3. 检查 `.claude/settings.local.json`：存在 → 读取现有配置，后续合并；不存在 → 后续创建
 4. 检查 `.active-book`：存在 → 显示当前活跃书目；不存在 → 跳过
 
-## Phase 2：部署基础设施
+## Stage 2：部署基础设施
 
 使用 AskUserQuestion 确认部署位置后，依次执行。
 
 **优先一键执行（三层分工：脚本做确定性的）**：确定性步骤全部由 `scripts/deploy.py` 完成——
 `deploy.py deploy --project {项目目录} --name {项目名} [--book {书名}]` 一次完成 hooks 复制+chmod、
 rules/agents 复制、agent-references 同路径检测、CLAUDE.md 生成/section 合并、
-settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记；`deploy.py verify --project {项目}` 完成 Phase 3 机械验证。
-脚本输出 CONFLICT（CLAUDE.md 无 `##` section 的用户自定义文件）或 FAIL 时，按 [references/deploy-manual.md](references/deploy-manual.md) 对应步骤人工处理；脚本成功则直接进入 Phase 3。
+settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记；`deploy.py verify --project {项目}` 完成 Stage 3 机械验证。
+脚本输出 CONFLICT（CLAUDE.md 无 `##` section 的用户自定义文件）或 FAIL 时，按 [references/deploy-manual.md](references/deploy-manual.md) 对应步骤人工处理；脚本成功则直接进入 Stage 3。
 
-**Step 1-7 兜底指引**（部署清单表、逐步执行规则、模板占位符、CLAUDE.md 合并策略、重新部署口径）见 [references/deploy-manual.md](references/deploy-manual.md)——正常路径不逐条手写执行，仅脚本不可用/冲突时查阅。
+**Stage 2-1~2-7 兜底指引**（部署清单表、逐步执行规则、模板占位符、CLAUDE.md 合并策略、重新部署口径）见 [references/deploy-manual.md](references/deploy-manual.md)——正常路径不逐条手写执行，仅脚本不可用/冲突时查阅。
 
-> **hooks 部署必须递归复制完整目录树**（`templates/hooks/` → `.claude/hooks/`，含 `lib/` 子目录），见 deploy-manual Step 3。
+> **hooks 部署必须递归复制完整目录树**（`templates/hooks/` → `.claude/hooks/`，含 `lib/` 子目录），见 deploy-manual Stage 2-3。
 
 ## 部署标记（sentinel）
 
-创建 `.story-deployed`（sentinel），写入以下字段（YAML `key: value`，hook 经 `lib/sentinel.sh` 读取；其余说明见 [references/deploy-manual.md](references/deploy-manual.md) Step 7）：
+创建 `.story-deployed`（sentinel），写入以下字段（YAML `key: value`，hook 经 `lib/sentinel.sh` 读取；其余说明见 [references/deploy-manual.md](references/deploy-manual.md) Stage 2-7）：
 
 ```
 deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
@@ -54,11 +54,11 @@ resolver_strategy: project-local-skill-reference
 references_dir: .claude/skills/moshu-setup/references/agent-references
 ```
 
-整个 Phase 2 幂等：目录复制、文件写入和合并算法重复执行结果一致。因环境原因（工具不可用、权限被拒、网络失败）中途失败时，直接从头重跑本 Phase，不需要先清理半成品；`create only if absent` 的用户状态文件不会被二次覆盖。
+整个 Stage 2 幂等：目录复制、文件写入和合并算法重复执行结果一致。因环境原因（工具不可用、权限被拒、网络失败）中途失败时，直接从头重跑本 Stage，不需要先清理半成品；`create only if absent` 的用户状态文件不会被二次覆盖。
 
-## Phase 3：验证安装
+## Stage 3：验证安装
 
-**优先运行 `deploy.py verify --project {项目}`**（结构化 PASS/FAIL 输出，覆盖 hooks 注册 / rules 路径 / 8 个 agents / agent reference bundle / settings 合并 / sentinel 字段七项）；脚本不可用时按 [references/deploy-manual.md](references/deploy-manual.md)「Phase 3 逐项验证」执行。
+**优先运行 `deploy.py verify --project {项目}`**（结构化 PASS/FAIL 输出，覆盖 hooks 注册 / rules 路径 / 8 个 agents / agent reference bundle / settings 合并 / CLAUDE.md 标准节 / sentinel 字段八项）；脚本不可用时按 [references/deploy-manual.md](references/deploy-manual.md)「Stage 3 逐项验证」执行。
 
 **输出安装报告**：
 - 列出所有已部署的文件与需要注意的事项（如已有配置已合并）
@@ -79,7 +79,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 
 | 文件 | 用途 |
 |------|------|
-| [references/deploy-manual.md](references/deploy-manual.md) | Phase 2 Step 1-7 兜底指引：部署清单表 / 模板占位符 / CLAUDE.md 合并策略 / 重新部署口径 / Phase 3 逐项验证 |
+| [references/deploy-manual.md](references/deploy-manual.md) | Stage 2 子步骤兜底指引：部署清单表 / 模板占位符 / CLAUDE.md 合并策略 / 重新部署口径 / Stage 3 逐项验证 |
 | references/templates/hooks/ | 8 个 hook 脚本模板 + `story_hook_core.js`（正文网/字数/大纲守卫/连续性/commit 侦测的共享实现）+ `story_hook_cli.js`（bash hook 调核的 node 桥）+ `lib/common.sh`/`lib/sentinel.sh`（正文兜底 `check-prose-after-write.sh` 限 PostToolUse Write/Edit） |
 
 ---
