@@ -72,6 +72,8 @@ list_reference_basenames() {
   local path
   while IFS= read -r path; do
     case "$path" in
+      # .gitkeep 是目录占位符，不算共享内容文件（2026-08-25 注记：skills/ 内占位符已清，
+      # 豁免保留以兼容 otherMaterials/referProject/ 等目录的既有 .gitkeep——F8 审核注记）
       */.gitkeep) ;;
       *) printf '%s\n' "${path##*/}" ;;
     esac

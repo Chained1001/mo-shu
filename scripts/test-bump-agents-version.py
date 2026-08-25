@@ -28,7 +28,8 @@ name: moshu-setup
 version: 1.5.1
 ---
 - `agents_version` 缺失、非整数或小于 `33` → 标记为待更新
-- `agents_version` 等于 `33` → 弹窗确认重部署
+- `agents_version` 等于 `33` → 弹窗确认重部署（反引号形态）
+- agents_version 等于 33 → 弹窗确认重部署（裸形态，v2.3.7 漏改同款）
 - `agents_version` 大于 `33` → 停止
 - setup_skill_version: 1.5.1
 """
@@ -122,6 +123,8 @@ def test_bump_all_six(project: Path) -> None:
     assert "`agents_version: 34`" in sk and "大于 34" in sk, f"SKILL 反引号+无反引号应替换: {sk}"
     setup = (project / "skills/moshu-setup/SKILL.md").read_text(encoding="utf-8")
     assert "小于 `34`" in setup and "等于 `34`" in setup and "大于 `34`" in setup, f"setup SKILL 判定门（含等于态）应替换: {setup}"
+    # F2：裸「等于 N」形态必须由新增模式替换（v2.3.7 漏改同款——fixture 同时含反引号与裸两种形态）
+    assert "等于 34 →" in setup and "等于 `33`" not in setup, f"setup SKILL 裸等于形态应替换（F2）: {setup}"
     hook = (project / "skills/moshu-setup/references/templates/hooks/session-start.sh").read_text(encoding="utf-8")
     assert "-lt 34" in hook and "-gt 34" in hook and "低于 v34" in hook and "高于本 hook 支持的 v34" in hook, f"hook 应替换: {hook}"
     deploy = (project / "skills/moshu-setup/references/deploy-manual.md").read_text(encoding="utf-8")
@@ -138,11 +141,12 @@ def test_bump_all_six(project: Path) -> None:
 
 
 def test_rollback_on_guard_fail(project: Path) -> None:
-    # 守卫必红 → 替换后回滚 → 文件还原替换前值（33）
+    # 守卫必红 → 替换后回滚 → 文件还原替换前值（33）；部署物指纹一并还原（F9）
     code = run_bump(project, "34", [PY, "-c", "exit(1)"])
     assert code == 1, f"守卫红应退出 1，实得 {code}"
     cc = json.loads((project / "scripts/current-contract.json").read_text(encoding="utf-8"))
     assert cc["agents_version"] == 33, f"回滚后 current-contract 应还原 33: {cc}"
+    assert cc["deployment_manifest"]["deployment_fingerprint"] == "stale-fingerprint", "回滚后部署物指纹应还原登记值（F9）"
     sk = (project / "skills/moshu/SKILL.md").read_text(encoding="utf-8")
     assert "agents_version: 33" in sk and "agents_version: 34" not in sk, f"回滚后 SKILL 应还原: {sk}"
     hook = (project / "skills/moshu-setup/references/templates/hooks/session-start.sh").read_text(encoding="utf-8")

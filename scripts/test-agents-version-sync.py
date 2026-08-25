@@ -128,6 +128,29 @@ with tempfile.TemporaryDirectory(prefix="fingerprint-") as tmp:
         print(result.stderr)
         fails += 1
 
+# CRLF/LF 收敛回归（审核 F1 补）：同一内容两种行尾形态指纹必须相等——CI 全 LF 环境，
+# 若归一化被删 CI 照样绿、只有 CRLF 工作区 Windows 本地再次恒红（假绿遮蔽复发面）
+with tempfile.TemporaryDirectory(prefix="fingerprint-eol-") as tmp:
+    base = Path(tmp)
+    crlf_root = base / "crlf"
+    lf_root = base / "lf"
+    for r in (crlf_root, lf_root):
+        (r / "skills/moshu-setup/references/templates/agents").mkdir(parents=True)
+        (r / "skills/moshu-setup/scripts").mkdir(parents=True)
+    (crlf_root / "skills/moshu-setup/references/templates/agents/a.md").write_bytes(b"line1\r\nline2\r\n")
+    (crlf_root / "skills/moshu-setup/scripts/deploy.py").write_bytes(b"x = 1\r\n")
+    (lf_root / "skills/moshu-setup/references/templates/agents/a.md").write_bytes(b"line1\nline2\n")
+    (lf_root / "skills/moshu-setup/scripts/deploy.py").write_bytes(b"x = 1\n")
+    spec = importlib.util.spec_from_file_location("cas2", str(CHECKER))
+    cas2 = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(cas2)
+    fp_crlf = cas2.compute_deployment_fingerprint(crlf_root)
+    fp_lf = cas2.compute_deployment_fingerprint(lf_root)
+    if fp_crlf != fp_lf:
+        print(f"FAIL: CRLF/LF 两形态指纹不等（归一化缺失?）: {fp_crlf} vs {fp_lf}")
+        fails += 1
+
 if fails:
     print(f"Agents-version-sync tests FAILED ({fails}).")
     sys.exit(1)

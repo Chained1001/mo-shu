@@ -24,7 +24,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 VERSION_RE = re.compile(r"agents_version:\s*(\d+)")
 AUTHORITY_FILE = "skills/moshu-setup/UPGRADING.md"
-# 部署物指纹覆盖面（agents_version 的「部署物变更面」——文档/CI/README 变更不 bump，故不在指纹面）
+# 部署物指纹覆盖面（agents_version 的「部署物变更面」——文档/CI/README 变更不 bump，故不在指纹面；
+# UPGRADING.md 维持排除：它是版本权威文档，bump 必改其版本头，入面会成「每次 bump 都为它重登记」
+# 的无信息循环，且措辞级文档改动会误触发 bump 义务——边界定义，2026-08-25 审核 F1/F3 轮确认）
 DEPLOYMENT_PATHS = (
     "skills/moshu-setup/references/templates",
     "skills/moshu-setup/references/agent-references",
@@ -34,7 +36,13 @@ DEPLOYMENT_PATHS = (
 
 
 def compute_deployment_fingerprint(root: Path) -> str:
-    """部署物集合的确定性指纹：排序相对路径 + 文件内容 sha256 聚合（跳过 __pycache__/*.pyc）。"""
+    """部署物集合的确定性指纹：排序相对路径 + 文件内容 sha256 聚合（跳过 __pycache__/*.pyc）。
+
+    换行归一化（CRLF→LF）：.gitattributes 声明 eol=lf，但 autocrlf=true 的 Windows 工作区
+    检出为 CRLF——按原始字节聚合会让登记值绑定本机工作区形态，CI Linux（LF 检出）算出不同
+    指纹、推送后必红（2026-08-25 审核 F1 实证：登记值=CRLF 字节，git archive 的 LF 树不同）。
+    归一化后两侧收敛，不再依赖工作区行尾形态。
+    """
     h = hashlib.sha256()
     files: list[Path] = []
     for rel in DEPLOYMENT_PATHS:
@@ -50,7 +58,7 @@ def compute_deployment_fingerprint(root: Path) -> str:
     for f in sorted(set(files)):
         h.update(f.relative_to(root).as_posix().encode("utf-8"))
         h.update(b"\0")
-        h.update(f.read_bytes())
+        h.update(f.read_bytes().replace(b"\r\n", b"\n"))
     return h.hexdigest()
 
 

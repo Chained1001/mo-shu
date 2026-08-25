@@ -89,29 +89,36 @@ if found != expected:
 print(f"  OK marketplace maps all {len(found)} skills exactly once (name+skills+version 与 SKILL.md 一致)")
 
 # 路由表命令 ∈ description 触发词（v4 触发收缩残留根因的防复发断言：改 description 必须同步
-# CLAUDE.md.tmpl 路由表，反之亦然——派生副本漂移当场红，不再等走查）
+# CLAUDE.md.tmpl 路由表，反之亦然——派生副本漂移当场红，不再等走查）。
+# F5：仅解析 frontmatter 的 description 行（全文子串会漏报「触发词移入正文」的漂移）。
 route_tmpl = repo_root / "skills" / "moshu-setup" / "references" / "templates" / "CLAUDE.md.tmpl"
 route_text = route_tmpl.read_text(encoding="utf-8")
 route_failures: list[str] = []
-route_rows = 0
+route_skills: set[str] = set()
 for line in route_text.splitlines():
     m = re.match(r"\|\s*([^|]+?)\s*\|\s*([a-z][a-z0-9-]*)\s*\|", line)
     if not m or m.group(2) == "Skill":
         continue
-    route_rows += 1
     triggers_raw, skill = m.group(1), m.group(2)
+    route_skills.add(skill)
     triggers = [t[0] or t[1] for t in re.findall(r"`([^`]+)`|「([^」]+)」", triggers_raw)]
     desc_file = repo_root / "skills" / skill / "SKILL.md"
     if not desc_file.is_file():
         route_failures.append(f"路由表引用不存在的技能: {skill}")
         continue
-    desc_text = desc_file.read_text(encoding="utf-8")
+    desc_m = re.search(r'^description:\s*"(.+)"\s*$', desc_file.read_text(encoding="utf-8").split("---")[1], re.M)
+    desc_text = desc_m.group(1) if desc_m else ""
     for t in triggers:
         if t not in desc_text:
             route_failures.append(f"{skill}: 路由表触发词「{t}」不在 description 中（改 description 必须同步路由表）")
+# 反向断言（审核边界② + F6）：marketplace 技能全集必须全部进路由表（防新技能漏登记——
+# 本次 build 漏行的同族事故）；路由表 0 行时 route_skills 为空 → 差集非空即红，根治摆设绿
+route_missing = sorted(found - route_skills)
+if route_missing:
+    route_failures.append(f"技能未进路由表（新技能/漏登记）：{route_missing}")
 if route_failures:
     raise SystemExit("FAIL: 路由表命令 ∈ description 触发词断言失败:\n  " + "\n  ".join(route_failures))
-print(f"  OK 路由表 {route_rows} 行触发词全部 ∈ 对应 description")
+print(f"  OK 路由表 {len(route_skills)} 行触发词全部 ∈ 对应 description，且 {len(found)} 技能全部在路由表（双向一致）")
 PY
 
 if [ "${CLAUDE_REAL_CHECK:-0}" = "1" ]; then

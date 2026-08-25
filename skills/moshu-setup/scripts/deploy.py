@@ -296,10 +296,12 @@ def verify(project: Path) -> list[str]:
 
     hooks = project / '.claude' / 'hooks'
     # 动态枚举模板 .sh（与 F 的 agents 动态化同模式）：新增/删除 hook 自动跟随，
-    # 不再维护写死 8 文件名第三份名单（P2 成对一致性修复的漏网——模板增 hook 会漏检、删 hook 会误报）
-    check('hooks 顶层脚本可执行', all(
+    # 不再维护写死 8 文件名第三份名单（P2 成对一致性修复的漏网——模板增 hook 会漏检、删 hook 会误报）；
+    # bool(tpl_sh) 防空模板假绿（审核 F4：空 glob 时 all() 对空迭代为 True）
+    tpl_sh = list((TEMPLATES / 'hooks').glob('*.sh'))
+    check('hooks 顶层脚本可执行', bool(tpl_sh) and all(
         (hooks / f.name).is_file() and os.access(hooks / f.name, os.X_OK)
-        for f in (TEMPLATES / 'hooks').glob('*.sh')))
+        for f in tpl_sh))
     check('hooks lib 在位', (hooks / 'lib' / 'common.sh').is_file() and (hooks / 'lib' / 'sentinel.sh').is_file())
     rules = project / '.claude' / 'rules'
     rules_ok = rules.is_dir() and all(

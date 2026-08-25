@@ -68,7 +68,7 @@ def skill_patterns(old: int, new: int) -> list[tuple[re.Pattern, str]]:
         (re.compile(rf"`agents_version: {old}`"), f"`agents_version: {new}`"),  # Spawn 提示段反引号版
         (re.compile(rf"`{old}`"), f"`{new}`"),  # setup 判定门 `33`
         (re.compile(rf"小于或大于 {old}"), f"小于或大于 {new}"),
-        (re.compile(rf"等于 {old}"), f"等于 {new}"),  # 三分支「等于 N」态（v2.3.7 发版后复核判因：bump 漏此形态致 SKILL.md 三分支口径断裂）
+        (re.compile(rf"等于 {old}(?!\d)"), f"等于 {new}"),  # 三分支「等于 N」态（v2.3.7 发版后复核判因：bump 漏此形态致 SKILL.md 三分支口径断裂；词边界防「等于 340」误匹配）
         (re.compile(rf"本版 {old}"), f"本版 {new}"),
         (re.compile(rf"(?<![\d`]){old}(?= 时额外)"), str(new)),  # "33 时额外"
         (re.compile(rf"(?<!`)agents_version: {old}"), f"agents_version: {new}"),  # 裸格式（代码围栏哨兵模板，如 SKILL.md 部署逻辑节 sentinel 块；反引号版由第 1 模式覆盖，此模式用负向后视避免重复命中）
