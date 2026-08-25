@@ -37,7 +37,8 @@
       "作者控制点",
       "Compact 后恢复上下文"
     ],
-    "chapter_range_format": "第{N}-{M}章"
+    "chapter_range_format": "第{N}-{M}章",
+    "deployment_fingerprint": "03a824b8d3aaf0844e9c314cef98d3f6de53583d39f1c6b244bd31fa813ad5bf"
   },
   "artifact_contracts": [
     {

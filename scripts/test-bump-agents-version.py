@@ -74,7 +74,8 @@ def make_fixture(tmp: Path) -> Path:
     (project / "skills/moshu-setup/references").mkdir(parents=True, exist_ok=True)
     (project / "skills/moshu-setup/scripts").mkdir(parents=True, exist_ok=True)
     (project / "scripts/current-contract.json").write_text(
-        json.dumps({"agents_version": 33, "setup_skill_version": "1.5.1"}), encoding="utf-8")
+        json.dumps({"agents_version": 33, "setup_skill_version": "1.5.1",
+                    "deployment_manifest": {"deployment_fingerprint": "stale-fingerprint"}}), encoding="utf-8")
     (project / "skills/moshu/SKILL.md").write_text(SKILL_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/SKILL.md").write_text(SETUP_SKILL_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/templates/hooks/session-start.sh").write_text(HOOK_SAMPLE, encoding="utf-8")
@@ -116,6 +117,7 @@ def test_bump_all_six(project: Path) -> None:
     assert code == 0, f"bump 34 应成功，实得 {code}"
     cc = json.loads((project / "scripts/current-contract.json").read_text(encoding="utf-8"))
     assert cc["agents_version"] == 34, f"current-contract 应 34: {cc}"
+    assert cc["deployment_manifest"]["deployment_fingerprint"] != "stale-fingerprint", "bump 应更新部署物指纹（bump 义务守卫登记面）"
     sk = (project / "skills/moshu/SKILL.md").read_text(encoding="utf-8")
     assert "`agents_version: 34`" in sk and "大于 34" in sk, f"SKILL 反引号+无反引号应替换: {sk}"
     setup = (project / "skills/moshu-setup/SKILL.md").read_text(encoding="utf-8")

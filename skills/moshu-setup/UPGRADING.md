@@ -5,6 +5,8 @@
 - `setup_skill_version: 1.5.1`
 - `agents_version: 35`
 
+> **别名注记（版本地图乱点②处置）**：sentinel 字段 `setup_skill_version` 与 moshu-setup SKILL.md frontmatter `version` 是**同一版本号的两个名字**（别名关系，值恒等）——`bump-agents-version.py --setup-version` 唯一合法修改；deploy.py verify 校验 sentinel 写入值 == 常量、TS10 校验 frontmatter == current-contract，双向一致。
+
 `.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `35`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `35`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v35 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
 
 **v34 → v35 变更**：agent-references 方法论内容修订（outline 系去编号化/outline-rhythm/genre-writing-formulas 等）与 CLAUDE.md 模板路由表触发词对齐（/准备写书→「部署墨枢写作环境」、/导入→「导入小说」）——agent 参考文件与 CLAUDE.md 模板变化，重跑 `/moshu-setup` 并新开会话后生效。

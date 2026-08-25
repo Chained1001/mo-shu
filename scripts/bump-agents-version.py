@@ -36,6 +36,22 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
+# 部署物指纹（bump 义务守卫的登记面）：复用 check-agents-version-sync 的单副本实现。
+# 文件名带连字符无法直接 import，用 importlib 按路径加载（模块无副作用，main 不执行）
+import importlib.util
+
+
+def _load_fingerprint():
+    path = Path(__file__).resolve().parent / "check-agents-version-sync.py"
+    spec = importlib.util.spec_from_file_location("check_agents_version_sync", path)
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module.compute_deployment_fingerprint
+
+
+compute_deployment_fingerprint = _load_fingerprint()
+
 CHANGE_KEYWORD = "变更"
 
 
@@ -268,6 +284,21 @@ def main() -> int:
             dest = backup / rel
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_text(original, encoding="utf-8")
+
+        # 部署物指纹登记（bump 义务守卫）：contract 已有 fingerprint 字段时更新为当前部署物指纹
+        # （无字段的旧 contract/fixture 不新增——兼容）；touched 含替换前文本，回滚一并还原
+        cc_path = root / "scripts" / "current-contract.json"
+        if cc_path.exists() and cc_path not in touched:
+            touched[cc_path] = cc_path.read_text(encoding="utf-8")
+        if cc_path.exists():
+            try:
+                cc = json.loads(cc_path.read_text(encoding="utf-8"))
+                manifest = cc.setdefault("deployment_manifest", {})
+                if "deployment_fingerprint" in manifest:
+                    manifest["deployment_fingerprint"] = compute_deployment_fingerprint(root)
+                    cc_path.write_text(json.dumps(cc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            except (json.JSONDecodeError, OSError):
+                pass  # contract 损坏时跳过指纹更新（版本替换本身仍继续）
 
         if not run_guards(guard_root, guard_cmd):
             for path, original in touched.items():

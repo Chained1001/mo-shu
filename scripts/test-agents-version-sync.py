@@ -6,6 +6,8 @@
 
 from __future__ import annotations
 
+import importlib.util
+import json
 import re
 import shutil
 import subprocess
@@ -85,6 +87,44 @@ with tempfile.TemporaryDirectory(prefix="agents-version-") as tmp:
         fails += 1
     elif "fake-workflow.md" not in result.stderr:
         print("FAIL: 失败信息未指向 references 文件")
+        print(result.stderr)
+        fails += 1
+
+# 指纹反向（bump 义务守卫）：fixture 登记指纹后改部署物 → 必须失败
+with tempfile.TemporaryDirectory(prefix="fingerprint-") as tmp:
+    root = Path(tmp)
+    (root / "skills/moshu-setup/references/templates/agents").mkdir(parents=True)
+    (root / "skills/moshu-setup/scripts").mkdir(parents=True)
+    (root / "scripts").mkdir(parents=True)
+    agent = root / "skills/moshu-setup/references/templates/agents/moshu-architect.md"
+    agent.write_text("x", encoding="utf-8")
+    authority_dst = root / AUTHORITY
+    authority_dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(REPO_ROOT / AUTHORITY, authority_dst)
+    spec = importlib.util.spec_from_file_location("cas", str(CHECKER))
+    cas = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(cas)
+    fp = cas.compute_deployment_fingerprint(root)
+    contract = root / "scripts" / "current-contract.json"
+    contract.write_text(
+        json.dumps({"agents_version": expected, "deployment_manifest": {"deployment_fingerprint": fp}}),
+        encoding="utf-8",
+    )
+    # 正向：指纹一致 → 绿
+    result = run(root)
+    if result.returncode != 0:
+        print("FAIL: 指纹一致时检查未通过")
+        print(result.stderr)
+        fails += 1
+    # 反向：改部署物 → 指纹不一致 → 红
+    agent.write_text("y", encoding="utf-8")
+    result = run(root)
+    if result.returncode == 0:
+        print("FAIL: 部署物变更而指纹未更新，检查仍通过（应失败）")
+        fails += 1
+    elif "部署物指纹不一致" not in result.stderr:
+        print("FAIL: 指纹失败信息不明确")
         print(result.stderr)
         fails += 1
 
