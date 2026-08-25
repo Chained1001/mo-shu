@@ -303,7 +303,7 @@ Agent 降级链（未部署/spawn 失败/子代理上下文→solo/direct+标注
 2. **能否挂现有收口**？shared-assets 同步/behavior-contracts/capability-wiring/既有守卫清单→挂上。
 3. **必须新开文件**？→ 正式回归测试+CI 登记+scripts/README 索引，缺一不合并。
 4. **触不碰不学清单**（14 条）？触碰即停，先改 AGENTS.md §6 经作者确认。
-5. **五问收口**：热路径预算付得起吗（doc-budget）？冷热分离了吗（低频节下沉）？契约要加域吗（artifact_contracts/flow_anchors）？守卫要加断言吗（防漂移复发）？marketplace 要同步吗（增删/改名技能）？
+5. **五问收口**：热路径预算付得起吗（doc-budget）？冷热分离了吗（低频节下沉）？契约要加域吗（artifact_contracts/flow_anchors）？守卫要加断言吗（防漂移复发）？marketplace 要同步吗（增删/改名技能）？manifest 计数要同步吗（agent 增删/改名 → deployment_manifest.agents_count）？
 6. **提交前三对**：守卫全绿？版本 bump 走脚本？文档数字与实测一致？
 
 ---

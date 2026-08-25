@@ -77,7 +77,16 @@ def find_python():
 def render_claude_md(name: str, book: str) -> str:
     tmpl = (TEMPLATES / 'CLAUDE.md.tmpl').read_text(encoding='utf-8')
     # 统一 LF 行尾：模板文件可能 CRLF（Windows 工作区），生成/合并两路径必须字节一致才幂等（候选 4）
-    return tmpl.replace('{项目名}', name).replace('{书名}', book).replace('\r\n', '\n')
+    rendered = tmpl.replace('{项目名}', name).replace('{书名}', book).replace('\r\n', '\n')
+    # 残留校验：模板若出现未替换的 {占位符}（模板新增字段而 render 未跟进），生成的 CLAUDE.md
+    # 会把字面占位符带进用户项目——fatal 拦截而不是静默产出坏文件
+    leftover = re.search(r'\{[^}]*\}', rendered)
+    if leftover:
+        raise DeployFatal(
+            f'CLAUDE.md 模板存在未替换占位符：{leftover.group(0)}——'
+            '检查 templates/CLAUDE.md.tmpl 与 render_claude_md 的占位符集合'
+        )
+    return rendered
 
 
 def split_sections(text: str):
@@ -151,18 +160,25 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
     agents_dst = project / '.claude' / 'agents'
 
     # --- hooks（递归复制 + 顶层 *.sh chmod；lib 不要求执行位） ---
+    # managed 目录清空重建（replace 语义）：rmtree 防旧版本残留文件留在用户项目被误执行
     if not dry_run:
         try:
-            shutil.copytree(hooks_src, hooks_dst, dirs_exist_ok=True)
+            if hooks_dst.exists():
+                shutil.rmtree(hooks_dst)
+            shutil.copytree(hooks_src, hooks_dst)
             for sh in hooks_dst.glob('*.sh'):
                 sh.chmod(sh.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
         except OSError as e:
             fatal.append(f'hooks 复制失败: {e}')
     logs.append(f'hooks: {len(list(hooks_dst.glob("*.sh")))} 脚本 + lib/ (chmod 顶层 *.sh)')
 
-    # --- rules / agents（replace） ---
+    # --- rules / agents（replace：清空重建） ---
     if not dry_run:
         try:
+            if rules_dst.exists():
+                shutil.rmtree(rules_dst)
+            if agents_dst.exists():
+                shutil.rmtree(agents_dst)
             rules_dst.mkdir(parents=True, exist_ok=True)
             agents_dst.mkdir(parents=True, exist_ok=True)
             for f in rules_src.glob('*.md'):
@@ -178,10 +194,12 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
     same_path = os.path.realpath(AGENT_REFS) == os.path.realpath(ref_dst)
     if not dry_run and not same_path:
         try:
+            if ref_dst.exists():
+                shutil.rmtree(ref_dst)
             ref_dst.mkdir(parents=True, exist_ok=True)
             for f in AGENT_REFS.glob('*'):
                 if f.is_dir():
-                    shutil.copytree(f, ref_dst / f.name, dirs_exist_ok=True)
+                    shutil.copytree(f, ref_dst / f.name)
                 else:
                     shutil.copy2(f, ref_dst / f.name)
         except OSError as e:
@@ -206,15 +224,23 @@ def deploy(project: Path, name: str, book: str, agents_ver: str, setup_ver: str,
         except OSError as e:
             fatal.append(f'CLAUDE.md 读取失败: {e}')
             existing = ''
-        if SECTION_RE.search(existing):
+        if existing.strip() and SECTION_RE.search(existing):
             if not dry_run:
                 try:
                     md_path.write_text(merge_claude_md(existing, rendered), encoding='utf-8')
                 except OSError as e:
                     fatal.append(f'CLAUDE.md 写入失败: {e}')
             logs.append('CLAUDE.md: 已按 section 合并（模板覆盖同名，用户独有保留）')
-        else:
+        elif existing.strip():
             logs.append('CLAUDE.md: CONFLICT 无 ## section，未覆盖（交由 AI 按合并策略处理）')
+        else:
+            # 空文件（无用户数据）→ 生成覆盖安全（此前误判 CONFLICT 逼 AI 人工处理）
+            if not dry_run:
+                try:
+                    md_path.write_text(rendered, encoding='utf-8')
+                except OSError as e:
+                    fatal.append(f'CLAUDE.md 写入失败: {e}')
+            logs.append('CLAUDE.md: 已生成（空文件覆盖）')
 
     # --- settings.local.json（复用 merge helper） ---
     settings_path = project / '.claude' / 'settings.local.json'
@@ -281,7 +307,7 @@ def verify(project: Path) -> list[str]:
         for f in rules.glob('*.md'))
     check('rules 含 paths frontmatter', rules_ok)
     agents = project / '.claude' / 'agents'
-    check('agents 8 个', len(list(agents.glob('*.md'))) == 8)
+    check('agents 模板齐全（源目标一致）', len(list(agents.glob('*.md'))) == len(list((TEMPLATES / 'agents').glob('*.md'))))
     ref_dst = project / '.claude' / 'skills' / 'moshu-setup' / 'references' / 'agent-references'
     same_path = os.path.realpath(AGENT_REFS) == os.path.realpath(ref_dst)
     ref_ok = same_path or all((ref_dst / f.relative_to(AGENT_REFS)).exists() for f in AGENT_REFS.rglob('*') if f.is_file())

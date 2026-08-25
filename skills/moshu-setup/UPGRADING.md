@@ -45,6 +45,8 @@
 - `.claude/rules/` — 所有 path-scoped 规则
 - `.claude/skills/moshu-setup/references/agent-references/` — Agent 参考资料副本
 
+> **清空重建警示**：重部署为清空重建（replace 语义）——上述目录先清空再写入当前模板，旧版本残留文件（如已移除的 hook/agent/规则）会被清除，不会留在项目里。请勿把自定义内容放进这些目录（自定义 hooks/rules 请用自有目录或 settings 用户注册）。
+
 ### 用户与 moshu-setup 共同维护，只合并管理块
 
 这些文件可能含用户自定义内容：

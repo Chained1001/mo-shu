@@ -6,7 +6,7 @@
 
 | Source path | Target path | Owner class | Merge mode | Validation check |
 |-------------|-------------|-------------|------------|------------------|
-| `skills/moshu-setup/references/templates/CLAUDE.md.tmpl` | `CLAUDE.md` | user+managed | marker/section merge | contains moshu skill routing sections |
+| `skills/moshu-setup/references/templates/CLAUDE.md.tmpl` | `CLAUDE.md` | user+managed | section merge | contains moshu skill routing sections |
 | `skills/moshu-setup/references/templates/hooks/` | `.claude/hooks/` | moshu-setup managed | recursive replace | `session-*.sh`, `detect-story-gaps.sh`, `validate-story-commit.sh`, `guard-outline-before-prose.sh`, `check-prose-after-write.sh`, `pre-compact.sh`, `post-compact.sh`, `story_hook_core.js`, `story_hook_cli.js`, `lib/common.sh`, `lib/sentinel.sh` exist |
 | `skills/moshu-setup/references/templates/rules/*.md` | `.claude/rules/*.md` | moshu-setup managed | replace | every rule contains `paths` frontmatter |
 | `skills/moshu-setup/references/templates/agents/*.md` | `.claude/agents/*.md` | moshu-setup managed | replace | 8 agent files exist |
@@ -91,12 +91,12 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 
 ## CLAUDE.md 合并策略
 
-用户已有 CLAUDE.md 时，按 marker/section 合并：
-1. 优先识别 moshu-setup 管理块标记（如果旧项目已有标记，只替换标记内内容）
-2. 无标记时，读取用户现有 CLAUDE.md，按 `##` 标题切分为 section map
-3. 读取模板 CLAUDE.md.tmpl，同样切分
-4. 模板中的标准 section（Skill 路由表、文件结构、协作规则、作者控制点、Compact 后恢复上下文）**覆盖**用户同名 section
-5. 用户独有的 section（自定义内容）**保留**不动
+用户已有 CLAUDE.md 时，按 section 合并：
+1. 读取用户现有 CLAUDE.md，按 `##` 标题切分为 section map
+2. 读取模板 CLAUDE.md.tmpl，同样切分
+3. 模板中的标准 section（Skill 路由表、文件结构、协作规则、作者控制点、Compact 后恢复上下文）**覆盖**用户同名 section
+4. 用户独有的 section（自定义内容）**保留**不动
+5. 文件头部（第一个 `##` 之前，如 `# {项目名} — 网文写作工具集` 标题）由模板权威覆盖——用户 CLAUDE.md 的头部内容不保留（无 section 归属的自定义头部文本随合并被替换）
 6. 未知冲突用 AskUserQuestion 让用户选择保留哪个版本
 
 ## 重新部署

@@ -241,6 +241,11 @@ cmp -s "$TMP_DIR/claude-v25.json" "$TMP_DIR/claude-v25-again.json" \
 
 # 重部署时 sentinel 的 target_cli 是权威：不认它就会每次重问。
 assert_grep '已部署项目以 sentinel 里的值为准' "$SKILL_FILE" "moshu-setup must reuse the deployed target_cli on redeploy"
+
+# F：templates/agents 目录计数必须与 manifest 一致（agent 增删只改 manifest + 模板，verify 自动跟随）
+MANIFEST_AGENTS_COUNT="$(node -e 'process.stdout.write(String(require(process.argv[1]).deployment_manifest.agents_count))' "$SCRIPT_DIR/current-contract.json")"
+actual_agents_count="$(find "$SKILL_DIR/references/templates/agents" -maxdepth 1 -name '*.md' | wc -l | tr -d ' ')"
+[ "$actual_agents_count" = "$MANIFEST_AGENTS_COUNT" ] || fail "templates/agents 目录 $actual_agents_count 个 .md ≠ manifest.agents_count=$MANIFEST_AGENTS_COUNT——新增/删除 agent 模板须同步 current-contract.json deployment_manifest.agents_count"
 echo "  OK TS2 deployment manifest"
 
 # TS3 — Agent reference bundle integrity
@@ -483,10 +488,11 @@ assert_grep "大于 $CURRENT_AGENTS_VERSION 时额外提示先更新 mo-shu" "$R
 assert_grep "^version:[[:space:]]*$CURRENT_SETUP_VERSION$" "$SKILL_FILE" "moshu-setup frontmatter must match the deployed setup version"
 
 # Stage 1 自检的目录名单是硬编码的，必须与实际 references/ 子目录集合一致。
-# 漏写一个 → 半装的包检不出；名单里多出已删除的目录 → 完好的包被判残缺，fail-closed 卡死所有部署。
-selfcheck_line="$(grep -n '先自检参考目录' "$SKILL_FILE" | head -1 | cut -d: -f1)"
-[ -n "$selfcheck_line" ] || fail "moshu-setup Stage 1 reference self-check paragraph not found"
-selfcheck_text="$(sed -n "${selfcheck_line}p" "$SKILL_FILE")"
+# 锚点随 v3 结构统一迁至 setup-workflow.md（SKILL.md 瘦身后不再含自检段；本地曾被 :188
+# python3 假红挡在 TS10 之前 + 提交未推送 CI 未跑，此漂移未被发现——本地验收抓出）。
+selfcheck_line="$(grep -n '先自检参考目录' "$SKILL_DIR/references/setup-workflow.md" | head -1 | cut -d: -f1)"
+[ -n "$selfcheck_line" ] || fail "moshu-setup Stage 1 reference self-check paragraph not found (setup-workflow.md)"
+selfcheck_text="$(sed -n "${selfcheck_line}p" "$SKILL_DIR/references/setup-workflow.md")"
 for ref_dir in "$SKILL_DIR"/references/*/; do
   ref_name="$(basename "$ref_dir")"
   case "$selfcheck_text" in
@@ -721,6 +727,43 @@ restart_out="$(run_from_nested "$restart_root" session-start.sh || true)"
 echo "$restart_out" | grep -q '现已注册可用' || fail "session-start did not confirm agents registered after restart flag"
 [ ! -f "$restart_root/.claude/.agents-pending-restart" ] || fail "session-start did not clear the one-shot .agents-pending-restart flag"
 echo "  OK TS12 restart-flag confirmation"
+
+# TS13 — deploy.py 行为回归（Stage 2 深挖修复批 A/C/E）
+deploy_root="$TMP_DIR/deploy-behavior"
+mkdir -p "$deploy_root"
+setup_git_repo "$deploy_root"
+# A：空的 CLAUDE.md 视为不存在 → 生成（不 CONFLICT）
+: > "$deploy_root/CLAUDE.md"
+python3 "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name 测试项目 >/dev/null 2>&1 \
+  || fail "deploy.py deploy failed with empty CLAUDE.md"
+grep -q '网文写作工具集' "$deploy_root/CLAUDE.md" || fail "empty CLAUDE.md was not generated (expected generate path, not CONFLICT)"
+# E：managed 目录清空重建——塞残留文件后重部署，残留必须被清
+printf 'stale\n' > "$deploy_root/.claude/hooks/stale-old-hook.sh"
+printf 'stale\n' > "$deploy_root/.claude/agents/stale-old-agent.md"
+printf 'stale\n' > "$deploy_root/.claude/rules/stale-old-rule.md"
+python3 "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name 测试项目 >/dev/null 2>&1 \
+  || fail "re-deploy failed"
+[ ! -f "$deploy_root/.claude/hooks/stale-old-hook.sh" ] || fail "stale hook survived re-deploy (replace semantics broken)"
+[ ! -f "$deploy_root/.claude/agents/stale-old-agent.md" ] || fail "stale agent survived re-deploy (replace semantics broken)"
+[ ! -f "$deploy_root/.claude/rules/stale-old-rule.md" ] || fail "stale rule survived re-deploy (replace semantics broken)"
+# C：render 占位符残留校验——坏模板（含未处理占位符）必须 DeployFatal
+bad_tmpl="$TMP_DIR/bad-tmpl"
+mkdir -p "$bad_tmpl"
+printf '# {项目名} {新占位符}\n' > "$bad_tmpl/CLAUDE.md.tmpl"
+python3 - "$SKILL_DIR/scripts" "$bad_tmpl" <<'PY' || fail "render placeholder leftover was not rejected"
+import sys
+from pathlib import Path
+sys.path.insert(0, sys.argv[1])
+import deploy
+deploy.TEMPLATES = Path(sys.argv[2])
+try:
+    deploy.render_claude_md("n", "b")
+except deploy.DeployFatal:
+    pass
+else:
+    sys.exit(1)
+PY
+echo "  OK TS13 deploy.py behavior regression (empty-CLAUDE.md / replace-clean / placeholder-fatal)"
 
 echo ""
 echo "OK: moshu-setup deployment checks passed"

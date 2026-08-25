@@ -17,6 +17,7 @@ All notable changes to this project will be documented in this file.
 - **采风收编 build（B46）**：移除 moshu-research 独立技能（/采风 触发词随技能移除），caifeng-methods 迁 moshu-build/references 为采风手册（契约 producer+锚点同步），README 技能计数 12→11
 - **文档结构重组（B47）**：治理类 8 文档+规格/ 归位 docs/治理/、研究-v5→研究（去版本后缀）、docs/README 地图重写+状态刷新
 - **新增《mo-shu 项目 - 产品需求与详细设计文档（PRD+FSD）》v3.0（单文件，docs/mo-shu项目-产品需求与详细设计文档（PRD+FSD）.md）**：设计理念+概念词典（小白可读）/PRD/FSD/文件级全流程走查（npx→setup→扫榜→拆书→开书两分支→导入→日更→审查→开新卷→升级）/工程辅助设施一览/新增能力自检清单/全仓文件清单；**architecture.md 吸收并入后移除**（引用同步）
+- **部署语义（Stage 2 深挖修复批）**：managed 目录（hooks/rules/agents/agent-references）改**清空重建**真 replace——删源重部署后旧残留文件被清除；空 CLAUDE.md 视为不存在走生成（不再误判 CONFLICT）；模板占位符残留 fatal 拦截（不再静默产出带 `{占位符}` 字面的文件）；verify agents 计数动态化（源目标一致，不写死 8）；manifest 计数守卫（agent 增删须同步 deployment_manifest.agents_count）
 
 ## v2.3.6（2026-08-24）
 
