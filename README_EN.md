@@ -99,7 +99,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-write` | `/moshu-write` | Long-form writing — chapter outlines and prose, daily continuation, revision, volume-review execution |
 | `moshu-build` | `/moshu-build` | Book construction — Stage 1-6 six-step flow (ideal review → 8-column skeleton → character arcs → unit cards → integration → finalize), three-dimension review, embedded research (Stage 1 default + bottleneck-triggered), setting revision, new-volume planning |
 | `moshu-analyze` | `/moshu-analyze` | Long-form deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
-| `moshu-scan` | `/moshu-scan` | Long-form trend scan — Qidian/Fanqie/Jinjiang market trends |
+| `moshu-scan` | `/moshu-scan` | Web novel trend scan — Qidian/Fanqie/Jinjiang market trends |
 | `moshu-deslop` | `/moshu-deslop` | De-AI-ify — detect and remove AI writing traces |
 | `moshu-style` | `/moshu-style` | Style learning — extract a writing-style baseline (sentence length / punctuation / dialogue technique / anchor excerpts) from any amount of source text into `文风库/文风.md` |
 | `moshu-import` | `/moshu-import` | Reverse import — parse existing novels into standard project structure |
