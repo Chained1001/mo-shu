@@ -87,6 +87,31 @@ if found != expected:
     raise SystemExit(f"FAIL: marketplace/skills mismatch; missing={missing}, extra={extra}")
 
 print(f"  OK marketplace maps all {len(found)} skills exactly once (name+skills+version 与 SKILL.md 一致)")
+
+# 路由表命令 ∈ description 触发词（v4 触发收缩残留根因的防复发断言：改 description 必须同步
+# CLAUDE.md.tmpl 路由表，反之亦然——派生副本漂移当场红，不再等走查）
+route_tmpl = repo_root / "skills" / "moshu-setup" / "references" / "templates" / "CLAUDE.md.tmpl"
+route_text = route_tmpl.read_text(encoding="utf-8")
+route_failures: list[str] = []
+route_rows = 0
+for line in route_text.splitlines():
+    m = re.match(r"\|\s*([^|]+?)\s*\|\s*([a-z][a-z0-9-]*)\s*\|", line)
+    if not m or m.group(2) == "Skill":
+        continue
+    route_rows += 1
+    triggers_raw, skill = m.group(1), m.group(2)
+    triggers = [t[0] or t[1] for t in re.findall(r"`([^`]+)`|「([^」]+)」", triggers_raw)]
+    desc_file = repo_root / "skills" / skill / "SKILL.md"
+    if not desc_file.is_file():
+        route_failures.append(f"路由表引用不存在的技能: {skill}")
+        continue
+    desc_text = desc_file.read_text(encoding="utf-8")
+    for t in triggers:
+        if t not in desc_text:
+            route_failures.append(f"{skill}: 路由表触发词「{t}」不在 description 中（改 description 必须同步路由表）")
+if route_failures:
+    raise SystemExit("FAIL: 路由表命令 ∈ description 触发词断言失败:\n  " + "\n  ".join(route_failures))
+print(f"  OK 路由表 {route_rows} 行触发词全部 ∈ 对应 description")
 PY
 
 if [ "${CLAUDE_REAL_CHECK:-0}" = "1" ]; then
