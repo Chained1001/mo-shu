@@ -130,6 +130,24 @@ def main() -> int:
                 "部署物已变更而 agents_version 未 bump（运行 bump-agents-version.py 后重跑）",
                 file=sys.stderr,
             )
+            # 差异定位辅助（CI 判因用）：逐文件打印归一化 sha256 前 12 位，与本地同跑对比定位差异文件
+            import hashlib as _hashlib
+
+            for rel in DEPLOYMENT_PATHS:
+                base = root / rel
+                if base.is_dir():
+                    files = sorted(
+                        p
+                        for p in base.rglob("*")
+                        if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+                    )
+                elif base.is_file():
+                    files = [base]
+                else:
+                    continue
+                for f in files:
+                    h = _hashlib.sha256(f.read_bytes().replace(b"\r\n", b"\n")).hexdigest()[:12]
+                    print(f"    {h}  {f.relative_to(root).as_posix()}", file=sys.stderr)
             return 1
         print(f"部署物指纹一致（{registered[:12]}…）")
     return 0
