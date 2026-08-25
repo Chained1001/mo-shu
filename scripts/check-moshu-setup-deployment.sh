@@ -13,6 +13,13 @@ SKILL_FILE="$SKILL_DIR/SKILL.md"
 SETTINGS_FILE="$SKILL_DIR/references/templates/settings-hooks.json"
 CLAUDE_MERGE="$SKILL_DIR/scripts/merge-claude-settings.py"
 TMP_DIR="$(mktemp -d)"
+# Python 探测（同 deploy.py find_python 模式）：Windows 本地无 python3（Store 占位程序 exit 49），
+# 统一 python3→python→py 探测——根治本地恒红假红（旧实现直接调 python3，本地必红、CI 才绿）
+PYBIN=""
+for cand in python3 python py; do
+  if "$cand" -c "" >/dev/null 2>&1; then PYBIN="$cand"; break; fi
+done
+[ -n "$PYBIN" ] || { echo "FAIL: 未找到可用 Python 解释器（python3/python/py）" >&2; exit 1; }
 CURRENT_AGENTS_VERSION="$(node -e 'process.stdout.write(String(require(process.argv[1]).agents_version))' "$SCRIPT_DIR/current-contract.json")"
 PREVIOUS_AGENTS_VERSION=$((CURRENT_AGENTS_VERSION - 1))
 NEXT_AGENTS_VERSION=$((CURRENT_AGENTS_VERSION + 1))
@@ -185,7 +192,7 @@ assert_grep 'resolver_strategy' "$SKILL_FILE" "sentinel resolver_strategy must b
 assert_grep 'target_cli' "$SKILL_FILE" "sentinel target_cli must be documented"
 
 # Claude Code 的 Bash 正文写入必须进入同一 pre-guard；只注册 Write/Edit 会让 cat>/tee/cp 绕过。
-python3 - "$SKILL_DIR/references/templates/settings-hooks.json" <<'PY' || fail "Claude Bash prose pre-guard is not registered"
+"$PYBIN" - "$SKILL_DIR/references/templates/settings-hooks.json" <<'PY' || fail "Claude Bash prose pre-guard is not registered"
 import json, sys
 from pathlib import Path
 hooks = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))["hooks"]["PreToolUse"]
@@ -217,8 +224,8 @@ cat > "$TMP_DIR/claude-v24.json" <<'JSON'
   }
 }
 JSON
-python3 "$CLAUDE_MERGE" --existing "$TMP_DIR/claude-v24.json" --template "$SETTINGS_FILE" --output "$TMP_DIR/claude-v25.json"
-python3 - "$TMP_DIR/claude-v25.json" <<'PY' || fail "Claude v24→v25 hook migration failed"
+"$PYBIN" "$CLAUDE_MERGE" --existing "$TMP_DIR/claude-v24.json" --template "$SETTINGS_FILE" --output "$TMP_DIR/claude-v25.json"
+"$PYBIN" - "$TMP_DIR/claude-v25.json" <<'PY' || fail "Claude v24→v25 hook migration failed"
 import json, sys
 doc=json.load(open(sys.argv[1],encoding="utf-8"))
 assert doc["permissions"] == {"allow":["Read"]} and doc["customTop"] == "keep"
@@ -235,7 +242,7 @@ assert hits[0][0]=="PreToolUse" and hits[0][1]=="Bash|Write|Edit|MultiEdit", hit
 assert hits[0][2].get("timeout")==10, hits
 assert len(user)==1 and user[0][0]=="PreToolUse" and user[0][1]=="Write|Edit|MultiEdit", user
 PY
-python3 "$CLAUDE_MERGE" --existing "$TMP_DIR/claude-v25.json" --template "$SETTINGS_FILE" --output "$TMP_DIR/claude-v25-again.json"
+"$PYBIN" "$CLAUDE_MERGE" --existing "$TMP_DIR/claude-v25.json" --template "$SETTINGS_FILE" --output "$TMP_DIR/claude-v25-again.json"
 cmp -s "$TMP_DIR/claude-v25.json" "$TMP_DIR/claude-v25-again.json" \
   || fail "Claude settings merge is not idempotent"
 
@@ -540,10 +547,10 @@ if echo "$cont_out2" | grep -q '章标题重复'; then fail "gaps: duplicate tit
 echo "  OK TS8b gap-detection four-item coverage"
 
 # TS9 — Settings JSON remains valid
-python3 -m json.tool "$SETTINGS_FILE" >/dev/null
+"$PYBIN" -m json.tool "$SETTINGS_FILE" >/dev/null
 # P2：模板命令的 hook 脚本名集合 == merge 脚本 MANAGED_HOOK_SCRIPTS 集合（双向差集即红——
 # 模板新增 hook 而名单没加 → 新 hook 的历史注册不被剥离、脱离管理；名单多了 → 模板缺失的幽灵条目）
-python3 - "$SETTINGS_FILE" "$CLAUDE_MERGE" <<'PY' || fail "settings 模板命令与 MANAGED_HOOK_SCRIPTS 名单不一致（新增/删除 hook 须同步 merge-claude-settings.py）"
+"$PYBIN" - "$SETTINGS_FILE" "$CLAUDE_MERGE" <<'PY' || fail "settings 模板命令与 MANAGED_HOOK_SCRIPTS 名单不一致（新增/删除 hook 须同步 merge-claude-settings.py）"
 import json, re, sys
 from pathlib import Path
 tpl = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
@@ -583,7 +590,7 @@ assert_grep "^version:[[:space:]]*$CURRENT_SETUP_VERSION$" "$SKILL_FILE" "moshu-
 
 # Stage 1 自检的目录名单是硬编码的，必须与实际 references/ 子目录集合一致。
 # 锚点随 v3 结构统一迁至 setup-workflow.md（SKILL.md 瘦身后不再含自检段；本地曾被 :188
-# python3 假红挡在 TS10 之前 + 提交未推送 CI 未跑，此漂移未被发现——本地验收抓出）。
+# python3 假红挡在 TS10 之前 + 提交未推送 CI 未跑，此漂移未被发现——本地验收抓出（已根治：统一探测形态））。
 selfcheck_line="$(grep -n '先自检参考目录' "$SKILL_DIR/references/setup-workflow.md" | head -1 | cut -d: -f1)"
 [ -n "$selfcheck_line" ] || fail "moshu-setup Stage 1 reference self-check paragraph not found (setup-workflow.md)"
 selfcheck_text="$(sed -n "${selfcheck_line}p" "$SKILL_DIR/references/setup-workflow.md")"
@@ -644,7 +651,7 @@ run_guard() {
 run_bash_guard() {
   # $1 = Bash command ; prints the hook exit code (0 allow, 2 block)
   local command_text="$1" ec=0 payload
-  payload="$(PYTHONIOENCODING=utf-8 python3 - "$command_text" <<'PY'
+  payload="$(PYTHONIOENCODING=utf-8 "$PYBIN" - "$command_text" <<'PY'
 import json, sys
 print(json.dumps({"tool_name": "Bash", "tool_input": {"command": sys.argv[1]}}, ensure_ascii=False))
 PY
@@ -710,7 +717,7 @@ if command -v node >/dev/null 2>&1; then
   # 相对 Bash 目标必须按 hook cwd 解，不得总按项目根；根 book 有第8章细纲，nested/book 没有。
   : > "$guard_root/book/大纲/细纲_第8章.md"
   mkdir -p "$guard_root/nested/book/正文"
-  cwd_payload="$(PYTHONIOENCODING=utf-8 python3 - "$guard_root/nested" <<'PY'
+  cwd_payload="$(PYTHONIOENCODING=utf-8 "$PYBIN" - "$guard_root/nested" <<'PY'
 import json, sys
 print(json.dumps({"cwd": sys.argv[1], "tool_name": "Bash", "tool_input": {"command": "cat > book/正文/第8章_x.md"}}, ensure_ascii=False))
 PY
@@ -723,7 +730,7 @@ PY
   # 共享核损坏时保持 fail-open，但必须显式告警，不能把运行时错误伪装成“无写入目标”。
   cp "$guard_root/.claude/hooks/story_hook_core.js" "$guard_root/.claude/hooks/story_hook_core.js.bak"
   printf '%s\n' 'throw new Error("broken core fixture")' > "$guard_root/.claude/hooks/story_hook_core.js"
-  broken_payload="$(PYTHONIOENCODING=utf-8 python3 - <<'PY'
+  broken_payload="$(PYTHONIOENCODING=utf-8 "$PYBIN" - <<'PY'
 import json
 print(json.dumps({"tool_name": "Bash", "tool_input": {"command": "cat > book/正文/第8章_x.md"}}, ensure_ascii=False))
 PY
@@ -838,7 +845,7 @@ mkdir -p "$deploy_root"
 setup_git_repo "$deploy_root"
 # A：空的 CLAUDE.md 视为不存在 → 生成（不 CONFLICT）
 : > "$deploy_root/CLAUDE.md"
-python3 "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name 测试项目 >/dev/null 2>&1 \
+"$PYBIN" "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name 测试项目 >/dev/null 2>&1 \
   || fail "deploy.py deploy failed with empty CLAUDE.md"
 grep -q '网文写作工具集' "$deploy_root/CLAUDE.md" || fail "empty CLAUDE.md was not generated (expected generate path, not CONFLICT)"
 # E：managed 目录清空重建——塞残留文件后重部署，残留必须被清
@@ -847,7 +854,7 @@ printf 'stale\n' > "$deploy_root/.claude/agents/stale-old-agent.md"
 printf 'stale\n' > "$deploy_root/.claude/rules/stale-old-rule.md"
 mkdir -p "$deploy_root/.claude/skills/moshu-setup/references/agent-references/genre-prose-cards"
 printf 'stale\n' > "$deploy_root/.claude/skills/moshu-setup/references/agent-references/genre-prose-cards/stale-卡.md"
-python3 "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name 测试项目 >/dev/null 2>&1 \
+"$PYBIN" "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name 测试项目 >/dev/null 2>&1 \
   || fail "re-deploy failed"
 [ ! -f "$deploy_root/.claude/hooks/stale-old-hook.sh" ] || fail "stale hook survived re-deploy (replace semantics broken)"
 [ ! -f "$deploy_root/.claude/agents/stale-old-agent.md" ] || fail "stale agent survived re-deploy (replace semantics broken)"
@@ -857,7 +864,7 @@ python3 "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name �
 bad_tmpl="$TMP_DIR/bad-tmpl"
 mkdir -p "$bad_tmpl"
 printf '# {项目名} {新占位符}\n' > "$bad_tmpl/CLAUDE.md.tmpl"
-python3 - "$SKILL_DIR/scripts" "$bad_tmpl" <<'PY' || fail "render placeholder leftover was not rejected"
+"$PYBIN" - "$SKILL_DIR/scripts" "$bad_tmpl" <<'PY' || fail "render placeholder leftover was not rejected"
 import sys
 from pathlib import Path
 sys.path.insert(0, sys.argv[1])
