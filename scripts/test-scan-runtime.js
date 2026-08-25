@@ -315,7 +315,7 @@ function testCdpUtils(modulePath) {
     process.env.AGENT_BROWSER_STDERR = "CDP connection refused\n";
     process.env.AGENT_BROWSER_EXIT = "7";
     assert.throws(
-      () => utils.ab(9222, "open", "https://example.com"),
+      () => utils.ab(9222, "eval", "https://example.com"),
       /agent-browser failed.*CDP connection refused/
     );
 
@@ -390,7 +390,7 @@ function testAgentBrowserEnOentHint(modulePath) {
     const msg = "agent-browser failed:";
     const err = (() => {
       try {
-        utils.ab(9222, "open", "https://example.com");
+        utils.ab(9222, "eval", "https://example.com");
       } catch (e) {
         return e;
       }

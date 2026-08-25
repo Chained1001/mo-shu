@@ -34,7 +34,8 @@ function detectPlatform(text) {
   const head = text.split(/\r?\n/, 5).join("\n");
   const m = head.match(/^#\s*(起点|番茄|晋江|七猫|刺猬猫)/m);
   if (m && !PLATFORMS.includes(m[1])) return m[1]; // 刺猬猫等：识别但无适配器
-  return m && PLATFORMS.includes(m[1]) ? m[1] : "起点";
+  // 识别失败返回「未知」（不静默套起点——无头文件是超规输入，仅通用字段+警告；C1 审核确认）
+  return m && PLATFORMS.includes(m[1]) ? m[1] : "未知";
 }
 
 // ---- 通用条目解析：`## #1 书名` / `### #1 书名` / `#1 书名`，记录所在块（番茄/晋江的 `## 品类 — N 本`） ----
@@ -191,10 +192,14 @@ function main() {
       console.error(`[警告] ${f}: 未解析到任何条目（条目行需形如 ## #1 书名）`);
       continue;
     }
+    // 平台未识别：明示（仅通用字段），不套平台适配器、不触发平台特有缺失警告（C1 审核调整）
+    if (platform === "未知") {
+      console.error(`[警告] ${f}: 平台未识别（文件头须含「起点/番茄/晋江/七猫」），仅通用字段（排名/书名/作者）`);
+    }
     const missing = [];
     if (platform === "起点" && items.every((it) => it.words === "[待补]")) missing.push("字数");
     if (platform === "起点" && items.every((it) => it.rec === "[待补]")) missing.push("总推荐");
-    if (platform !== "起点" && items.every((it) => it.metric === "[待补]")) missing.push("平台核心指标");
+    if (platform !== "起点" && platform !== "未知" && items.every((it) => it.metric === "[待补]")) missing.push("平台核心指标");
     if (platform === "晋江" && items.every((it) => it.genre === "[待补]"))
       missing.push("题材（晋江平台固有缺失）");
     if (missing.length > 0) {
@@ -207,6 +212,7 @@ function main() {
 // --- 题材分布 ---
   if (DIST) {
     console.log("## 题材分布");
+    // 15 类粗分类（mo-shu 自定口径），未列题材归「其他」——展示辅助非契约（C2 口径注记）
     const genres = ["玄幻", "仙侠", "武侠", "都市", "科幻", "游戏", "历史", "奇幻", "悬疑", "诸天", "体育", "现实", "军事", "二次元", "其他"];
     for (const [f, { platform, items }] of Object.entries(data)) {
       const counts = {};

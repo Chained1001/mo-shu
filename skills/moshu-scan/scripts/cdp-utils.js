@@ -82,25 +82,23 @@ function buildAgentBrowserInvocation(port, args, platform = process.platform) {
  * @param  {...string} args - agent-browser 参数
  * @returns {string} stdout（trim 后）
  *
- * 注意：导航请用 openWithRetry（eval 导航），不要直接调 ab(port, "open", url)
- * ——agent-browser 的 open 等待页面"稳定"，番茄等页面永不满足会挂起并阻塞
- * daemon。此处 open 分支保留超时放宽仅为防御性（无调用方）。
+ * 注意：open 命令不可用——agent-browser 的 open 等待页面"稳定"（load + 无持续活动），
+ * 番茄等页面有轮询/埋点/字体加载永不满足会挂起并阻塞 daemon；导航必须走
+ * openWithRetry（eval 导航，立即返回，页面异步加载由调用方 sleep+probePage 兜底）。
+ * 本函数不再保留 open 分支（C3 死代码清理）。
  */
 function ab(port, ...args) {
   const invocation = buildAgentBrowserInvocation(port, args);
-  const isOpen = args[0] === "open";
   try {
     return execFileSync(
       invocation.file,
       invocation.args,
       {
         encoding: "utf-8",
-        timeout: isOpen ? 40000 : 20000,
+        timeout: 20000,
         env: {
           ...process.env,
-          AGENT_BROWSER_DEFAULT_TIMEOUT: isOpen
-            ? "30000"
-            : process.env.AGENT_BROWSER_DEFAULT_TIMEOUT || "25000",
+          AGENT_BROWSER_DEFAULT_TIMEOUT: process.env.AGENT_BROWSER_DEFAULT_TIMEOUT || "25000",
         },
         stdio: ["pipe", "pipe", "pipe"],
         windowsHide: true,

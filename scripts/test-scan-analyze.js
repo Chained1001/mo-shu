@@ -10,10 +10,13 @@
 const { test } = require("node:test");
 const assert = require("node:assert");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
+const { spawnSync } = require("node:child_process");
 
 const { detectPlatform, parseBlocks, adapt, parseDir, findDuplicates } = require("../skills/moshu-scan/scripts/scan-analyze.js");
 const FIXTURES = path.join(__dirname, "..", "tests", "fixtures", "scan");
+const SCAN_ANALYZE = path.join(__dirname, "..", "skills", "moshu-scan", "scripts", "scan-analyze.js");
 
 const read = (name) => fs.readFileSync(path.join(FIXTURES, name), "utf-8");
 const parse = (name) => parseBlocks(read(name)).map((b) => adapt(detectPlatform(read(name)), b));
@@ -190,4 +193,53 @@ test("契约：qimao renderMarkdown 真实输出能被 detectPlatform/adapt 解�
   const items = parseBlocks(markdown).map((b) => adapt("七猫", b));
   assert.strictEqual(items.length, 1);
   assert.strictEqual(items[0].author, "契约作者二");
+});
+
+test("平台识别：无平台头文件 → 未知（C1 不静默套起点）", () => {
+  assert.strictEqual(detectPlatform("# 我自己的书单\n\n## #1 测试书名\n*作者A*\n"), "未知");
+  assert.strictEqual(detectPlatform("# 起点 · 月票榜\n"), "起点"); // 有头仍正常识别
+});
+
+test("字段缺失警告：缺总推荐字段的起点文件 → stderr 含「字段缺失」（C4 补回归）", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "scan-warn-"));
+  try {
+    fs.writeFileSync(
+      path.join(dir, "起点字段缺失.md"),
+      [
+        "# 起点 · 测试榜",
+        "- 数据质量：[OK]",
+        "- 有效条目：1 / 1",
+        "- 问题摘要：无",
+        "",
+        "---",
+        "",
+        "## #1 测试书名",
+        "*作者A · 都市 · 连载中 · 已签约 · VIP · 100万字*",
+        "",
+        "[作品页](https://example.com)",
+      ].join("\n"),
+      "utf-8"
+    );
+    const r = spawnSync(process.execPath, [SCAN_ANALYZE, "--dir", dir], { encoding: "utf-8" });
+    assert.match(r.stderr, /字段缺失/, "缺总推荐字段应触发字段缺失警告");
+    assert.match(r.stderr, /总推荐/, "警告应点名缺失字段");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test("平台未识别警告：无平台头文件 → stderr 含「平台未识别」且不套起点适配器（C1）", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "scan-nohdr-"));
+  try {
+    fs.writeFileSync(
+      path.join(dir, "自定义书单.md"),
+      ["# 我自己的书单", "", "## #1 测试书名", "*作者A*", "", "[作品页](https://example.com)"].join("\n"),
+      "utf-8"
+    );
+    const r = spawnSync(process.execPath, [SCAN_ANALYZE, "--dir", dir], { encoding: "utf-8" });
+    assert.match(r.stderr, /平台未识别/, "无头文件应明示平台未识别");
+    assert.doesNotMatch(r.stderr, /（起点）/, "不应把未识别文件标注成起点（C1 静默降级修复）");
+  } finally {
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
 });
