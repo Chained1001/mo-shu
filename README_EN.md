@@ -141,8 +141,8 @@ Agents load writing theory from `references/` on demand (character design, dialo
 | Hook | Trigger | Function |
 |:-----|:---------|:---------|
 | session-start.sh | Session start | Display branch, progress snapshot, deconstruction status |
-| session-end.sh | Session end | Log session to `追踪/session-log.txt` |
-| detect-story-gaps.sh | Session start | Detect setting gaps, missing outlines, foreshadowing breaks |
+| session-end.sh | Session end | Log session to `追踪/session-log.txt` (opt-in via `STORY_SESSION_LOG=1`, off by default) |
+| detect-story-gaps.sh | Session start | Detect six writing gaps: prose-setting imbalance / abnormal foreshadowing / missing outline / incomplete deconstruction / continuity staleness / duplicate titles |
 | pre-compact.sh | Before context compaction | Save progress snapshot path and line-count summary |
 | post-compact.sh | After context compaction | Prompt to read progress snapshot for context recovery |
 | validate-story-commit.sh | git commit | Check hardcoded attributes, setting required fields (warning only, non-blocking) |

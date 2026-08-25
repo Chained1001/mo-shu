@@ -144,8 +144,8 @@ Agent 按需加载 `references/` 中的写作理论（角色设计、对话技�
 | Hook | 触发时机 | 功能 |
 |:-----|:---------|:-----|
 | session-start.sh | 会话开始 | 显示分支、进度快照、拆文状态 |
-| session-end.sh | 会话结束 | 记录会话日志到 `追踪/session-log.txt` |
-| detect-story-gaps.sh | 会话开始 | 检测设定缺口、大纲缺失、伏笔断线 |
+| session-end.sh | 会话结束 | 记录会话日志到 `追踪/session-log.txt`（默认关闭，`STORY_SESSION_LOG=1` 启用） |
+| detect-story-gaps.sh | 会话开始 | 检测六项写作缺口：正文-设定失衡/伏笔异常/大纲缺失/拆文未完成/连续性 staleness/标题去重 |
 | pre-compact.sh | 上下文压缩前 | 保存进度快照路径和行数摘要 |
 | post-compact.sh | 上下文压缩后 | 提示读取进度快照恢复上下文 |
 | validate-story-commit.sh | git commit 时 | 检查硬编码属性、设定必填字段（仅警告，不阻断） |

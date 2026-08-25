@@ -29,7 +29,8 @@ echo "Python Invocation Guard"
 echo "======================="
 
 # skills/ 文档 + 部署模板 hook（CI scripts 自身允许用任意写法，不扫）
-hits="$(grep -rnE "$PATTERN" "$REPO_ROOT/skills" 2>/dev/null | grep -vF "$ALLOW" || true)"
+# -I 忽略二进制（.pyc 编译缓存会 grep 误报）；--exclude-dir=__pycache__ 双保险（本地跑过部署脚本后 pyc 常驻工作区）
+hits="$(grep -rnIE "$PATTERN" --exclude-dir=__pycache__ --exclude='*.pyc' "$REPO_ROOT/skills" 2>/dev/null | grep -vF "$ALLOW" || true)"
 
 if [ -n "$hits" ]; then
   echo "FAIL: 发现裸调 python3（Windows 上会 exit 49）："

@@ -58,7 +58,7 @@
 - **doc-budget**：热路径文本量预算（单文件+路径组两级，node UTF-16 口径）——防止「每次会话全量加载」的文档无限膨胀。
 - **marketplace**：`.claude-plugin/marketplace.json`，11 插件条目，是 npx 安装与 Claude 插件市场的分发清单。
 - **sentinel**：`.story-deployed`，部署标记文件（6 字段），所有技能的部署检测入口。
-- **agents_version**：部署物版本号（当前 34）——实管全部部署物（agent 模板+hooks+规则+方法论副本），名字偏窄；散布 48 处，由 bump 脚本唯一合法修改。**机器闸门号**：比大小决定「重部署提醒/禁止降级」，与包版本两轴正交不重复（见 Ⅲ.13 版本地图）。
+- **agents_version**：部署物版本号（当前 34）——实管全部部署物（agent 模板+hooks+规则+方法论副本），名字偏窄；散布全仓 40+ 处（以 bump 预览实测为准），由 bump 脚本唯一合法修改。**机器闸门号**：比大小决定「重部署提醒/禁止降级」，与包版本两轴正交不重复（见 Ⅲ.13 版本地图）。
 - **幂等**：重复执行结果一致（部署/合并/事务都要求），失败可从头重跑。
 - **断言（assertion）**：测试脚本里的一句检查「某事实必须成立」（如 SKILL.md 必须含「8 个 agents」），实现多为 grep。
 - **锚点（anchor）**：被断言盯住的文字片段——内容迁移时锚点须留在原地或连断言一起搬，否则测试红；「部署锚点」即 SKILL.md 中被 TS 套件钉住的几段。
@@ -185,7 +185,7 @@ flowchart TD
 
 ## 3.12 自动化规格
 
-**Hook（8）**：session-start/end（分支/进度快照/会话日志）、detect-story-gaps（设定缺口/伏笔断线）、pre/post-compact（压缩前后保存/恢复）、validate-story-commit（commit 校验仅警告）、guard-outline-before-prose（**细纲门禁，唯一阻断**，node 缺席时追踪门 fail-open、纲门纯 bash 仍拦）、check-prose-after-write（截断/工程词/字数欠账提醒）。
+**Hook（8）**：session-start/end（分支/进度快照/会话日志——session-end 默认不写文件，`STORY_SESSION_LOG=1` 才写 `追踪/session-log.txt`）、detect-story-gaps（六项缺口：正文-设定失衡/伏笔异常/大纲缺失/拆文未完成/连续性 staleness/标题去重）、pre/post-compact（压缩前后保存/恢复）、validate-story-commit（commit 校验仅警告）、guard-outline-before-prose（**细纲门禁，唯一阻断**，node 缺席时追踪门 fail-open、纲门纯 bash 仍拦）、check-prose-after-write（截断/工程词/字数欠账提醒）。
 
 **机检（护作品）**：check_outline（blocking 9：结构完备/八列表头/行数/字数和±5%/阶段占比/台阶算术/终局底牌≥4/伏笔闭合/暗线支线；candidate 5：单链势力/采风专名/CF 未消费/常驻压力/反转覆盖；旧结构整体降级单 candidate）；check-ai-patterns（blocking 句式）；check-degeneration（复读/截断）；check-outline-copy（细纲照搬>15 字）；check-prose-candidates（候选：字数/文风/信息差）；normalize-punctuation（唯一改写型）。**候选永不拦截**，机检共享 2 轮自动修复预算。
 
@@ -193,7 +193,7 @@ flowchart TD
 
 ## 3.13 部署与分发
 
-分发：marketplace 11 插件（版本须与 SKILL.md frontmatter 一致）+ npx。部署（deploy.py 一键）：hooks/rules/agents/agent-references 复制→CLAUDE.md 三分支（生成/section 合并/纯自定义 CONFLICT 不覆盖）→settings 按 command 身份合并（剥离受管注册再追加，原子写幂等）→sentinel（6 字段）+重启标记。版本三分支：<34 更新/=34 询问/>34 禁止降级。verify 八项机械验证。**重新部署后必须新开会话**（agent 启动时注册）。版本管理：bump 脚本覆盖 7 类文件 48 处+setup 独立轨 6 处，--confirm 带三守卫失败回滚。
+分发：marketplace 11 插件（版本须与 SKILL.md frontmatter 一致）+ npx。部署（deploy.py 一键）：hooks/rules/agents/agent-references 复制→CLAUDE.md 三分支（生成/section 合并/纯自定义 CONFLICT 不覆盖）→settings 按 command 身份合并（剥离受管注册再追加，原子写幂等）→sentinel（6 字段）+重启标记。版本三分支：<34 更新/=34 询问/>34 禁止降级。verify 八项机械验证。**重新部署后必须新开会话**（agent 启动时注册）。版本管理：bump 脚本覆盖全仓 40+ 处（六类文件，以 bump 预览实测为准）+setup 独立轨 6 处，--confirm 带三守卫失败回滚。
 
 
 ### 版本地图（四层版本体系——回答新手必问的"为什么这么多版本号"）
@@ -218,12 +218,12 @@ flowchart TD
 |---|---|---|---|---|
 | 包版本 | 2.3.6 | 「我装的**工具**是哪版？」 | skills/moshu/VERSION、marketplace metadata、CHANGELOG | 人（下载/发版） |
 | 技能版本 | write 1.7.0 等 11 个 | 「这个插件演到哪版？」 | 各 SKILL.md frontmatter ↔ marketplace plugins[]（adapter 守卫核一致） | 插件市场 |
-| agents_version | 34 | 「**你写作项目里**部署的装备是第几代？要重部署吗？」 | 技能包内 48 处（bump 脚本唯一合法修改）＋每个写作项目 .story-deployed 快照 | 机器（比大小：重部署提醒/禁降级） |
+| agents_version | 34 | 「**你写作项目里**部署的装备是第几代？要重部署吗？」 | 技能包内 40+ 处（bump 脚本唯一合法修改，以预览实测为准）＋每个写作项目 .story-deployed 快照 | 机器（比大小：重部署提醒/禁降级） |
 | schema 版本 | progress 2 等 | 「数据文件是什么格式？」 | 数据文件头/契约常量 | 读写兼容与迁移（带备份） |
 
 **为什么 agents_version 与包版本不重复（两轴正交）**：包版本沿「发布轴」走——发版才动，一次发布里什么都有（文档/CI/README 都算）；agents_version 沿「部署物变更面轴」走——只有部署到你项目里的东西变了才动。权威类比：Android 的 versionName（营销版本，人看）与 versionCode（单调整数，商店机器比大小决定升级）——同一模式。通俗版：**包版本=说明书印到第几版（下载时看）；agents_version=你家装机单编号（部署时盖章）**——说明书再版≠你家要重新装修，只有装修方案变了才需要师傅再来。双向实例：①B30 加 evaluator→33→34 而包版本停在 2.3.6（git 用户立刻感知）；②B31-B47 几十笔文档/CI 提交全进 v2.4.0 而 34 纹丝不动（文档变更零误报重部署提醒）。若强行合一的代价：任一 README 修复都会让全部已部署项目误报「请重部署」，或部署物变更在发版前对已部署项目不可见。
 
-**已知乱点（记录待裁决，暂不修）**：①命名误导——agents_version 实管全部部署物（agent 模板+hooks+规则+方法论副本），名字偏窄，本节即别名说明（真改名成本：48 处+老项目 sentinel 兼容）；②同轨双名——setup_skill_version（sentinel 字段名）与 moshu-setup frontmatter version 是同一个数的两个名字；③bump 义务靠纪律——守卫查「48 处一致」，查不出「该 bump 没 bump」（候选守卫：部署物变更而版本未动即红）；④版本地图即本节（已补齐）。
+**已知乱点（记录待裁决，暂不修）**：①命名误导——agents_version 实管全部部署物（agent 模板+hooks+规则+方法论副本），名字偏窄，本节即别名说明（真改名成本：全仓 40+ 处+老项目 sentinel 兼容）；②同轨双名——setup_skill_version（sentinel 字段名）与 moshu-setup frontmatter version 是同一个数的两个名字；③bump 义务靠纪律——守卫查「全仓版本一致」，查不出「该 bump 没 bump」（候选守卫：部署物变更而版本未动即红）；④版本地图即本节（已补齐）。
 
 ## 3.14 数据契约与同步
 
