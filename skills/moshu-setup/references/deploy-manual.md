@@ -97,7 +97,7 @@ references_dir: .claude/skills/moshu-setup/references/agent-references
 3. 模板中的标准 section（Skill 路由表、文件结构、协作规则、作者控制点、Compact 后恢复上下文）**覆盖**用户同名 section
 4. 用户独有的 section（自定义内容）**保留**不动
 5. 文件头部（第一个 `##` 之前，如 `# {项目名} — 网文写作工具集` 标题）由模板权威覆盖——用户 CLAUDE.md 的头部内容不保留（无 section 归属的自定义头部文本随合并被替换）
-6. 未知冲突用 AskUserQuestion 让用户选择保留哪个版本
+6. 未知冲突用 AskUserQuestion 让用户选择保留哪个版本——弹窗规格化：问题「项目已有 CLAUDE.md 且为纯自定义（无 `##` 节），无法自动合并。保留哪个版本？」选项①保留我的版本（不部署 CLAUDE.md，其余照常）②用 mo-shu 模板覆盖（用户自定义内容丢失）③手动合并（AI 按上述规则逐步执行，用户逐条确认）
 
 ## 重新部署
 
