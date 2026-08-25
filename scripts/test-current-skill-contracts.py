@@ -126,10 +126,10 @@ def test_manifest_contract() -> None:
             "drifted deployment_manifest must stay well-formed",
         )
         require(
-            "deploy-manual-agent-count" in finding_codes(
+            "setup-skill-agent-count" in finding_codes(
                 VALIDATOR.deployment_manifest_findings(REPO_ROOT, dm_drift_manifest)
             ),
-            "agent count drift from the manifest must be rejected",
+            "agent count drift from the manifest must be rejected (SKILL.md 锚拦截；deploy-manual 已声明动态口径)",
         )
 
         # B40：artifact_contracts 结构违规与字段缺失必须被拒

@@ -1344,8 +1344,11 @@ def deployment_manifest_findings(repo_root: Path, manifest: ContractManifest) ->
     if agents:
         manual = repo_root / "skills" / "moshu-setup" / "references" / "deploy-manual.md"
         mt = manual.read_text(encoding="utf-8", errors="ignore")
-        check("deploy-manual-agent-count", "{} agent files exist".format(agents) in mt,
-              "deploy-manual 应含「{} agent files exist」".format(agents), manual)
+        # D2 后文档声明动态口径（source-target count identical，不写死数量）——断言升级：
+        # 文档须含动态表述且不含写死数字形态（防回退写死；agents 数量漂移由下方 SKILL.md 锚拦）
+        check("deploy-manual-agent-count",
+              "source-target count identical" in mt and re.search(r"\d+ agent files exist", mt) is None,
+              "deploy-manual 应声明动态 agents 口径（source-target count identical）且不含写死数字", manual)
         skill = repo_root / "skills" / "moshu-setup" / "SKILL.md"
         st = skill.read_text(encoding="utf-8", errors="ignore")
         check("setup-skill-agent-count", "{} 个 agents".format(agents) in st,
