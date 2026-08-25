@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """章节摘要硬检查器（moshu-analyze Stage 2-3 质量门）
 
-对 章节/第N章_摘要.md 跑 4 条机械硬检查（对应 analyze-workflow「失败处理」的
+对 章节/第N章_摘要.md 跑 4 条机械硬检查（+1 条花括号提示，不判 FAIL；对应 analyze-workflow「失败处理」的
 可机械校验项），替代 AI 每次手写 grep 组合。AI 落盘后直接调用本脚本，
 按 PASS/FAIL 处理，不再逐条自写检查命令。
 
