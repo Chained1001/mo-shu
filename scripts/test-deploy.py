@@ -104,6 +104,23 @@ class DeployTests(unittest.TestCase):
         self.assertEqual(redeployed.returncode, 1, "项目 agents_version 高于当前时 deploy 必须拒绝降级")
         self.assertIn("大于当前", redeployed.stdout + redeployed.stderr)
 
+    def test_same_path_skips_copy_without_rmtree(self) -> None:
+        # TS 补测批 P1：same_path 分支（符号链接安装场景）——源与目标 realpath 相同时
+        # 跳过复制且不得 rmtree 源（E 清空重建引入 rmtree 后，误删源会毁掉技能包本体）。
+        # 等价构造：把 AGENT_REFS monkeypatch 成目标路径自身，realpath 恒相等。
+        sys.path.insert(0, str(SRC_DEPLOY.parent))
+        import deploy  # noqa: PLC0415
+
+        ref_dst = self.project / ".claude/skills/moshu-setup/references/agent-references"
+        deploy.AGENT_REFS = ref_dst
+        ref_dst.mkdir(parents=True)
+        (ref_dst / "writing-craft.md").write_text("x", encoding="utf-8")
+
+        logs, fatal = deploy.deploy(self.project, "n", "n", "34", "1.5.1", dry_run=False)
+        self.assertEqual(fatal, [], f"same_path 部署不应 fatal: {fatal}")
+        self.assertTrue(any("同路径跳过复制" in line for line in logs), logs)
+        self.assertTrue((ref_dst / "writing-craft.md").exists(), "same_path 分支误删了源文件")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

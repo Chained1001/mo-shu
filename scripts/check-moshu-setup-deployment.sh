@@ -255,9 +255,16 @@ while IFS= read -r ref; do
   [ -n "$ref" ] || continue
   assert_file "$AGENT_REFS_DIR/$ref"
   assert_file "$refs_tmp/.claude/skills/moshu-setup/references/agent-references/$ref"
-done < <(grep -RhoE 'moshu-setup/references/agent-references/[A-Za-z0-9_-]+\.md' \
+done < <(grep -RhoE 'moshu-setup/references/agent-references/[A-Za-z0-9_一-龥-]+\.md' \
   "$SKILL_DIR/references/templates/agents" "$AGENT_REFS_DIR" "$SKILL_DIR/references/templates/rules" 2>/dev/null \
   | sed 's|.*/||' | sort -u)
+# P3：genre-prose-cards/ 子卡全集 == genre-prose-cards.md 索引所列（中文题材卡引用可达性的确定性断言）
+while IFS= read -r card; do
+  [ -n "$card" ] || continue
+  assert_file "$AGENT_REFS_DIR/genre-prose-cards/$card"
+  assert_file "$refs_tmp/.claude/skills/moshu-setup/references/agent-references/genre-prose-cards/$card"
+done < <(grep -RhoE 'genre-prose-cards/[A-Za-z0-9_一-龥-]+\.md' "$AGENT_REFS_DIR/genre-prose-cards.md" 2>/dev/null \
+  | sed 's|genre-prose-cards/||' | sort -u)
 echo "  OK TS3 agent reference integrity"
 
 # TS4 — Hook root resolution from nested cwd
@@ -470,8 +477,94 @@ long_count="$(printf '%s\n' "$multi_out" | grep -c '^检查：long$' || true)"
 [ "$long_count" -eq 1 ] || fail "detect-story-gaps reported long project $long_count times; expected exactly once"
 echo "  OK TS8 multi-book gap detection"
 
+# TS8b — detect-story-gaps 四项缺口补测（TS 补测批 P5：正文-设定失衡 / 伏笔异常 / 大纲缺失 / 连续性 staleness+标题去重）
+# 正文-设定失衡（正）：>10 章 && 设定 <3
+bal_root="$TMP_DIR/gaps-balance"
+mkdir -p "$bal_root/book/正文" "$bal_root/book/设定"
+setup_git_repo "$bal_root"
+copy_hooks "$bal_root"
+for i in $(seq 1 11); do printf 'x\n' > "$bal_root/book/正文/第${i}章_节.md"; done
+printf 'x\n' > "$bal_root/book/设定/设定1.md"
+bal_out="$(run_from_nested "$bal_root" detect-story-gaps.sh || true)"
+echo "$bal_out" | grep -q '正文 11 章，但设定文件只有 1 个' || fail "gaps: prose-setting imbalance not reported"
+# 负向：设定 >= 3 不报
+printf 'x\n' > "$bal_root/book/设定/设定2.md"
+printf 'x\n' > "$bal_root/book/设定/设定3.md"
+bal_out2="$(run_from_nested "$bal_root" detect-story-gaps.sh || true)"
+if echo "$bal_out2" | grep -q '但设定文件只有'; then fail "gaps: prose-setting imbalance false positive"; fi
+
+# 伏笔异常（正）：状态列非合法枚举（已埋/已回收/放弃）
+fsh_root="$TMP_DIR/gaps-foreshadow"
+mkdir -p "$fsh_root/book/正文" "$fsh_root/book/追踪"
+setup_git_repo "$fsh_root"
+copy_hooks "$fsh_root"
+printf 'x\n' > "$fsh_root/book/正文/第1章_节.md"
+printf '%s\n' '| F004 | 过期伏笔 | 第1章 | 第2章 | 已过期 | 高 |' > "$fsh_root/book/追踪/伏笔.md"
+fsh_out="$(run_from_nested "$fsh_root" detect-story-gaps.sh || true)"
+echo "$fsh_out" | grep -q '伏笔.md 中检测到过期或异常的伏笔条目' || fail "gaps: abnormal foreshadowing not reported"
+# 负向：全部合法状态不报
+printf '%s\n' '| F002 | 正常开放伏笔 | 第1章 | 第20章 | 已埋 | 高 |' > "$fsh_root/book/追踪/伏笔.md"
+fsh_out2="$(run_from_nested "$fsh_root" detect-story-gaps.sh || true)"
+if echo "$fsh_out2" | grep -q '伏笔.md 中检测到过期或异常的伏笔条目'; then fail "gaps: abnormal foreshadowing false positive"; fi
+
+# 大纲缺失（正）：有正文+追踪但无大纲
+out_root="$TMP_DIR/gaps-outline"
+mkdir -p "$out_root/book/正文" "$out_root/book/追踪"
+setup_git_repo "$out_root"
+copy_hooks "$out_root"
+printf 'x\n' > "$out_root/book/正文/第1章_节.md"
+out_gaps="$(run_from_nested "$out_root" detect-story-gaps.sh || true)"
+echo "$out_gaps" | grep -q '缺少 大纲/' || fail "gaps: missing outline not reported"
+# 负向：有大纲目录不报
+mkdir -p "$out_root/book/大纲"
+out_gaps2="$(run_from_nested "$out_root" detect-story-gaps.sh || true)"
+if echo "$out_gaps2" | grep -q '缺少 大纲/'; then fail "gaps: missing outline false positive"; fi
+
+# 连续性 staleness + 标题去重（正）：章号超追踪 + 同标题两章
+cont_root="$TMP_DIR/gaps-continuity"
+mkdir -p "$cont_root/book/正文" "$cont_root/book/追踪"
+setup_git_repo "$cont_root"
+copy_hooks "$cont_root"
+printf 'x\n' > "$cont_root/book/正文/第1章_开端.md"
+printf 'x\n' > "$cont_root/book/正文/第2章_开端.md"
+printf '{"schema_version":5,"state_revision":0,"last_committed_chapter":1}\n' > "$cont_root/book/追踪/_tracking-state.json"
+cont_out="$(run_from_nested "$cont_root" detect-story-gaps.sh || true)"
+echo "$cont_out" | grep -q '正文已写到第2章，但追踪只提交到第1章' || fail "gaps: continuity staleness not reported"
+echo "$cont_out" | grep -q '章标题重复' || fail "gaps: duplicate titles not reported"
+# 负向：追踪跟上 + 标题不重复不报
+printf '{"schema_version":5,"state_revision":0,"last_committed_chapter":2}\n' > "$cont_root/book/追踪/_tracking-state.json"
+mv "$cont_root/book/正文/第2章_开端.md" "$cont_root/book/正文/第2章_暗流.md"
+cont_out2="$(run_from_nested "$cont_root" detect-story-gaps.sh || true)"
+if echo "$cont_out2" | grep -q '正文已写到第2章，但追踪只提交到'; then fail "gaps: continuity staleness false positive"; fi
+if echo "$cont_out2" | grep -q '章标题重复'; then fail "gaps: duplicate titles false positive"; fi
+echo "  OK TS8b gap-detection four-item coverage"
+
 # TS9 — Settings JSON remains valid
 python3 -m json.tool "$SETTINGS_FILE" >/dev/null
+# P2：模板命令的 hook 脚本名集合 == merge 脚本 MANAGED_HOOK_SCRIPTS 集合（双向差集即红——
+# 模板新增 hook 而名单没加 → 新 hook 的历史注册不被剥离、脱离管理；名单多了 → 模板缺失的幽灵条目）
+python3 - "$SETTINGS_FILE" "$CLAUDE_MERGE" <<'PY' || fail "settings 模板命令与 MANAGED_HOOK_SCRIPTS 名单不一致（新增/删除 hook 须同步 merge-claude-settings.py）"
+import json, re, sys
+from pathlib import Path
+tpl = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+cmds = [
+    hook.get("command", "")
+    for blocks in tpl.get("hooks", {}).values()
+    for b in blocks if isinstance(b, dict)
+    for hook in b.get("hooks", []) if isinstance(hook, dict)
+]
+tpl_names = set()
+for c in cmds:
+    mm = re.search(r"([^/\"]+\.(?:sh|js))", c)
+    if mm:
+        tpl_names.add(mm.group(1))
+src = Path(sys.argv[2]).read_text(encoding="utf-8")
+m = re.search(r"MANAGED_HOOK_SCRIPTS = frozenset\(\s*\{(.*?)\}", src, re.S)
+assert m, "merge-claude-settings.py 无 MANAGED_HOOK_SCRIPTS 定义"
+managed = set(re.findall(r'"([^"]+)"', m.group(1)))
+diff = tpl_names ^ managed
+assert not diff, f"模板命令 {sorted(tpl_names)} vs 名单 {sorted(managed)} 差集: {sorted(diff)}"
+PY
 echo "  OK TS9 settings JSON"
 
 # TS10 — Version threshold + deployed-behavior anchors
@@ -726,6 +819,16 @@ touch "$restart_root/.claude/.agents-pending-restart"
 restart_out="$(run_from_nested "$restart_root" session-start.sh || true)"
 echo "$restart_out" | grep -q '现已注册可用' || fail "session-start did not confirm agents registered after restart flag"
 [ ! -f "$restart_root/.claude/.agents-pending-restart" ] || fail "session-start did not clear the one-shot .agents-pending-restart flag"
+# P4 负向：无 .agents-pending-restart 标记时 session-start 不得输出「已注册/重启生效」类确认
+noflag_root="$TMP_DIR/restart-noflag"
+mkdir -p "$noflag_root/.claude"
+setup_git_repo "$noflag_root"
+copy_hooks "$noflag_root"
+write_sentinel "$noflag_root"
+noflag_out="$(run_from_nested "$noflag_root" session-start.sh || true)"
+if echo "$noflag_out" | grep -q '现已注册可用'; then
+  fail "session-start confirmed agent registration without .agents-pending-restart flag"
+fi
 echo "  OK TS12 restart-flag confirmation"
 
 # TS13 — deploy.py 行为回归（Stage 2 深挖修复批 A/C/E）
@@ -741,11 +844,14 @@ grep -q '网文写作工具集' "$deploy_root/CLAUDE.md" || fail "empty CLAUDE.m
 printf 'stale\n' > "$deploy_root/.claude/hooks/stale-old-hook.sh"
 printf 'stale\n' > "$deploy_root/.claude/agents/stale-old-agent.md"
 printf 'stale\n' > "$deploy_root/.claude/rules/stale-old-rule.md"
+mkdir -p "$deploy_root/.claude/skills/moshu-setup/references/agent-references/genre-prose-cards"
+printf 'stale\n' > "$deploy_root/.claude/skills/moshu-setup/references/agent-references/genre-prose-cards/stale-卡.md"
 python3 "$SKILL_DIR/scripts/deploy.py" deploy --project "$deploy_root" --name 测试项目 >/dev/null 2>&1 \
   || fail "re-deploy failed"
 [ ! -f "$deploy_root/.claude/hooks/stale-old-hook.sh" ] || fail "stale hook survived re-deploy (replace semantics broken)"
 [ ! -f "$deploy_root/.claude/agents/stale-old-agent.md" ] || fail "stale agent survived re-deploy (replace semantics broken)"
 [ ! -f "$deploy_root/.claude/rules/stale-old-rule.md" ] || fail "stale rule survived re-deploy (replace semantics broken)"
+[ ! -f "$deploy_root/.claude/skills/moshu-setup/references/agent-references/genre-prose-cards/stale-卡.md" ] || fail "stale agent-reference card survived re-deploy (replace semantics broken)"
 # C：render 占位符残留校验——坏模板（含未处理占位符）必须 DeployFatal
 bad_tmpl="$TMP_DIR/bad-tmpl"
 mkdir -p "$bad_tmpl"
