@@ -180,6 +180,31 @@ def test_setup_rollback_on_guard_fail(project: Path) -> None:
     assert "DEFAULT_SETUP_VERSION = '1.5.1'" in dp and "1.6.0" not in dp, f"回滚后 deploy.py 应还原: {dp}"
 
 
+def test_re_register_fingerprint(project: Path) -> None:
+    # 无版本变化的确认性重登记（整改批/补漏修复场景的合法路径，消除「手工改 contract」口径漂移）：
+    # 改部署物 → 预览提示 → --confirm 重登记 → 指纹更新 + 守卫绿
+    hook = project / "skills/moshu-setup/references/templates/hooks/session-start.sh"
+    hook.write_text(hook.read_text(encoding="utf-8") + "\n# changed\n", encoding="utf-8")
+    # 预览：无 --confirm → 提示
+    r = subprocess.run(
+        [PY, str(SCRIPT), "--root", str(project), "--re-register-fingerprint"],
+        capture_output=True, text=True, encoding="utf-8",
+    )
+    assert r.returncode == 0 and "加 --confirm" in r.stdout, f"预览应提示 confirm: {r.stdout} {r.stderr}"
+    cc = json.loads((project / "scripts/current-contract.json").read_text(encoding="utf-8"))
+    assert cc["deployment_manifest"]["deployment_fingerprint"] == "stale-fingerprint", "预览不得改动指纹"
+    # 确认：重登记 + 守卫绿（guard_cmd 恒绿）
+    r = subprocess.run(
+        [PY, str(SCRIPT), "--root", str(project), "--guard-root", str(project),
+         "--guard-command", " ".join([PY, "-c", "exit(0)"]),
+         "--re-register-fingerprint", "--confirm"],
+        capture_output=True, text=True, encoding="utf-8",
+    )
+    assert r.returncode == 0, f"重登记应成功: {r.stdout} {r.stderr}"
+    cc = json.loads((project / "scripts/current-contract.json").read_text(encoding="utf-8"))
+    assert cc["deployment_manifest"]["deployment_fingerprint"] != "stale-fingerprint", "重登记应更新指纹"
+
+
 def main() -> None:
     work = ROOT / ".tmp" / "tests" / "B23work"
     shutil.rmtree(work, ignore_errors=True)
@@ -194,9 +219,11 @@ def main() -> None:
         test_bump_setup_only(p_setup)
         p_setup2 = make_fixture(work / "setup2")
         test_setup_rollback_on_guard_fail(p_setup2)
+        p_reg = make_fixture(work / "re-register")
+        test_re_register_fingerprint(p_reg)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: bump-agents-version (预览无diff 0 / agents 六类全替换 / setup 六处独立轨 / 历史条目不动 / 守卫红回滚还原[agents+setup])")
+    print("OK: bump-agents-version (预览无diff 0 / agents 六类全替换 / setup 六处独立轨 / 历史条目不动 / 守卫红回滚还原[agents+setup] / 指纹重登记)")
 
 
 if __name__ == "__main__":

@@ -194,6 +194,23 @@ def preview(root: Path, old: int, new: int) -> list[tuple[str, str, str]]:
     ]
 
 
+def _update_fingerprint(cc_path: Path, root: Path) -> str | None:
+    """更新 current-contract 的部署物指纹；返回替换前文本（用于回滚）；无字段/损坏返回 None。"""
+    if not cc_path.exists():
+        return None
+    try:
+        original = cc_path.read_text(encoding="utf-8")
+        cc = json.loads(original)
+        manifest = cc.setdefault("deployment_manifest", {})
+        if "deployment_fingerprint" not in manifest:
+            return None
+        manifest["deployment_fingerprint"] = compute_deployment_fingerprint(root)
+        cc_path.write_text(json.dumps(cc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        return original
+    except (json.JSONDecodeError, OSError):
+        return None
+
+
 def run_guards(guard_root: Path, guard_command: list[list[str]] | None) -> bool:
     if guard_command is None:
         guard_command = [
@@ -213,6 +230,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("new_version", nargs="?", type=int, default=None, help="目标 agents_version（如 34）；与 --setup-version 独立，可只 bump 其一或并用")
     parser.add_argument("--setup-version", nargs=2, metavar=("OLD", "NEW"), default=None, help="setup_skill_version 独立轨：<旧版本> <新版本>（6 处覆盖）")
+    parser.add_argument("--re-register-fingerprint", action="store_true", help="无版本变化的确认性重登记：仅重算并更新 current-contract 的部署物指纹（整改批/补漏修复场景的合法路径，替代手工改 contract；与 --confirm 并用）")
     parser.add_argument("--confirm", action="store_true", help="确认执行替换（默认仅预览）")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1], help="仓库根（测试用 fixture 根）")
     parser.add_argument("--guard-root", type=Path, default=None, help="守卫运行根（默认=--root）")
@@ -221,9 +239,35 @@ def main() -> int:
 
     root = args.root.resolve()
     guard_root = (args.guard_root or root).resolve()
+
     guard_cmd: list[list[str]] | None = None
     if args.guard_command:
         guard_cmd = [shlex.split(args.guard_command, posix=False)]
+
+    # 独立模式：无版本变化的确认性重登记（--re-register-fingerprint，须 --confirm）
+    if args.re_register_fingerprint:
+        cc_path = root / "scripts" / "current-contract.json"
+        if not cc_path.exists():
+            print("current-contract.json 不存在，无法重登记。", file=sys.stderr)
+            return 2
+        try:
+            original = cc_path.read_text(encoding="utf-8")
+        except OSError as e:
+            print(f"无法读取 current-contract.json: {e}", file=sys.stderr)
+            return 2
+        if not args.confirm:
+            print("将重登记部署物指纹（无版本变化，按实测重算）；加 --confirm 执行。")
+            return 0
+        if _update_fingerprint(cc_path, root) is None:
+            print("current-contract 无 deployment_fingerprint 字段（无字段合约不新增），无需重登记。", file=sys.stderr)
+            return 0
+        if not run_guards(guard_root, guard_cmd):
+            cc_path.write_text(original, encoding="utf-8")
+            print("守卫有红——已还原指纹登记值，未留半改状态。", file=sys.stderr)
+            return 1
+        print("指纹重登记完成（守卫全绿），可提交。")
+        return 0
+
     contract_path = root / "scripts" / "current-contract.json"
     if not contract_path.exists():
         print(f"ERROR: {contract_path} 不存在", file=sys.stderr)
@@ -290,15 +334,7 @@ def main() -> int:
         cc_path = root / "scripts" / "current-contract.json"
         if cc_path.exists() and cc_path not in touched:
             touched[cc_path] = cc_path.read_text(encoding="utf-8")
-        if cc_path.exists():
-            try:
-                cc = json.loads(cc_path.read_text(encoding="utf-8"))
-                manifest = cc.setdefault("deployment_manifest", {})
-                if "deployment_fingerprint" in manifest:
-                    manifest["deployment_fingerprint"] = compute_deployment_fingerprint(root)
-                    cc_path.write_text(json.dumps(cc, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-            except (json.JSONDecodeError, OSError):
-                pass  # contract 损坏时跳过指纹更新（版本替换本身仍继续）
+        _update_fingerprint(cc_path, root)
 
         if not run_guards(guard_root, guard_cmd):
             for path, original in touched.items():
