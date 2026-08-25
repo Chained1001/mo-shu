@@ -193,7 +193,7 @@ flowchart TD
 
 ## 3.13 部署与分发
 
-分发：marketplace 11 插件（版本须与 SKILL.md frontmatter 一致）+ npx。部署（deploy.py 一键）：hooks/rules/agents/agent-references 复制→CLAUDE.md 三分支（生成/section 合并/纯自定义 CONFLICT 不覆盖）→settings 按 command 身份合并（剥离受管注册再追加，原子写幂等）→sentinel（6 字段）+重启标记。版本三分支：<34 更新/=34 询问/>34 禁止降级。verify 八项机械验证。**重新部署后必须新开会话**（agent 启动时注册）。版本管理：bump 脚本覆盖全仓 40+ 处（六类文件，以 bump 预览实测为准）+setup 独立轨 6 处，--confirm 带三守卫失败回滚。
+分发：marketplace 11 插件（版本须与 SKILL.md frontmatter 一致）+ npx。部署（deploy.py 一键）：hooks/rules/agents/agent-references 复制→CLAUDE.md 三分支（生成/section 合并/纯自定义 CONFLICT 不覆盖）→settings 按 command 身份合并（剥离受管注册再追加，原子写幂等）→sentinel（6 字段）+重启标记。版本三分支：<35 更新/=35 询问/>35 禁止降级。verify 八项机械验证。**重新部署后必须新开会话**（agent 启动时注册）。版本管理：bump 脚本覆盖全仓 40+ 处（六类文件，以 bump 预览实测为准）+setup 独立轨 6 处，--confirm 带三守卫失败回滚。
 
 
 ### 版本地图（四层版本体系——回答新手必问的"为什么这么多版本号"）
@@ -218,7 +218,7 @@ flowchart TD
 |---|---|---|---|---|
 | 包版本 | 2.3.6 | 「我装的**工具**是哪版？」 | skills/moshu/VERSION、marketplace metadata、CHANGELOG | 人（下载/发版） |
 | 技能版本 | write 1.7.0 等 11 个 | 「这个插件演到哪版？」 | 各 SKILL.md frontmatter ↔ marketplace plugins[]（adapter 守卫核一致） | 插件市场 |
-| agents_version | 34 | 「**你写作项目里**部署的装备是第几代？要重部署吗？」 | 技能包内 40+ 处（bump 脚本唯一合法修改，以预览实测为准）＋每个写作项目 .story-deployed 快照 | 机器（比大小：重部署提醒/禁降级） |
+| agents_version | 35 | 「**你写作项目里**部署的装备是第几代？要重部署吗？」 | 技能包内 40+ 处（bump 脚本唯一合法修改，以预览实测为准）＋每个写作项目 .story-deployed 快照 | 机器（比大小：重部署提醒/禁降级） |
 | schema 版本 | progress 2 等 | 「数据文件是什么格式？」 | 数据文件头/契约常量 | 读写兼容与迁移（带备份） |
 
 **为什么 agents_version 与包版本不重复（两轴正交）**：包版本沿「发布轴」走——发版才动，一次发布里什么都有（文档/CI/README 都算）；agents_version 沿「部署物变更面轴」走——只有部署到你项目里的东西变了才动。权威类比：Android 的 versionName（营销版本，人看）与 versionCode（单调整数，商店机器比大小决定升级）——同一模式。通俗版：**包版本=说明书印到第几版（下载时看）；agents_version=你家装机单编号（部署时盖章）**——说明书再版≠你家要重新装修，只有装修方案变了才需要师傅再来。双向实例：①B30 加 evaluator→33→34 而包版本停在 2.3.6（git 用户立刻感知）；②B31-B47 几十笔文档/CI 提交全进 v2.3.7 而 34 纹丝不动（文档变更零误报重部署提醒）。若强行合一的代价：任一 README 修复都会让全部已部署项目误报「请重部署」，或部署物变更在发版前对已部署项目不可见。
@@ -312,25 +312,124 @@ Agent 降级链（未部署/spawn 失败/子代理上下文→solo/direct+标注
 
 > 每条链的读法：`主线程动作 → 调用文件/Agent（→ 它再依赖什么 → 依赖的目的）`。分支与降级以「⚡」标注。
 
-## Ⅳ.19 安装与部署
+## Ⅳ.19 安装与部署（moshu-setup 深度）
+
+### 19.0 整个过程本身的含义
+
+**setup 在产品流程中的定位：初始化（最前置）**——一切写作工作的地基。它回答三个问题：
+
+1. **部署状态**：这个写作项目部署过没？（`.story-deployed` 存在与否）
+2. **部署版本**：项目里装的是第几代装备？（`agents_version` 比大小）
+3. **部署形态**：项目是用什么方式装的？（`target_cli`/`resolver_strategy`/`references_dir`——重部署时沿用）
+
+**三层分工在 setup 的体现**：脚本做确定性（deploy.py 的复制/合并/验证全部机械执行）、AI 做语义（探测判断/弹窗交互/安装报告）、作者做品味（部署位置确认/重部署裁决/CONFLICT 版本选择）。**铁律：不覆盖用户已有配置，合并而非替换**——这是整个部署器的行为底线，由文件所有权三分类（可替换/只合并/不覆盖）落地。
+
+**快速走查（紧凑版）**：
 
 ```
 npx skills add Chained1001/mo-shu -y -g（读 .claude-plugin/marketplace.json → 11 插件装入 skills/）
 → ⚡关窗重开（技能会话启动时加载，安装会话不可用）
 → /moshu-setup（skills/moshu-setup/SKILL.md）
-   Stage 1：版本展示（读 skills/moshu/VERSION + SKILL.md 内 agents_version:34 → 用户知道跑的哪版）
+   Stage 1：版本展示（读 skills/moshu/VERSION + SKILL.md 内 agents_version:35 → 用户知道跑的哪版）
           参考包自检（references/agent-references、templates、scripts/merge-claude-settings.py 存在且非空 → 缺即停不写文件）
-          版本三分支（sentinel <34 更新 / =34 询问 / >34 停止防降级）
-   Stage 2：deploy.py deploy --project（一次完成 8 件事）
-     hooks 复制（templates/hooks/ → .claude/hooks/，含 lib/；chmod）
-     rules/agents 复制（templates/{rules,agents}/ → .claude/）
-     agent-references 复制（→ .claude/skills/moshu-setup/references/agent-references/，供 8 agent 按需加载方法论）
-     CLAUDE.md（templates/CLAUDE.md.tmpl 占位符替换 → 三分支：生成/section 合并/纯自定义 CONFLICT 交人工）
-     settings 合并（merge-claude-settings.py：按 command 身份剥离旧受管注册再追加 → 用户 hook 保留、幂等、原子写）
-     sentinel .story-deployed（6 字段）+ .agents-pending-restart
-   Stage 3：deploy.py verify（八项：hooks 可执行/lib/agents 8/rules paths/CLAUDE.md 节/agent-references/settings 无重复/sentinel）
+          状态四查 + 版本三分支（sentinel <35 更新 / =35 询问 / >35 停止防降级）
+   Stage 2：deploy.py deploy --project（一次完成 8 件事，见 19.2）
+   Stage 3：deploy.py verify（八项机械验证，见 19.2）→ 安装报告 + ⚡重启提示
 → ⚡再次新开会话（agent 会话启动时注册）→ /moshu-build 开书
 ```
+
+### 19.1 调用图谱
+
+**部署时正向链**（setup 执行期，谁调用谁）：
+
+```mermaid
+flowchart LR
+    U[用户输入 /moshu-setup] -->|触发词匹配| SK[SKILL.md 全文注入]
+    SK -->|执行前先读| SW[references/setup-workflow.md<br/>流程权威 Stage 1-3]
+    SW -->|Stage 2 一键执行| DP[scripts/deploy.py deploy]
+    DP -->|复制| H[templates/hooks/ 含 lib/]
+    DP -->|复制| R[templates/rules/]
+    DP -->|复制| A[templates/agents/ 8 个]
+    DP -->|复制| AR[agent-references/ 33+32]
+    DP -->|渲染+合并| CM[templates/CLAUDE.md.tmpl]
+    DP -->|subprocess 调用| MG[scripts/merge-claude-settings.py<br/>settings 合并算法]
+    DP -->|写入| SN[.story-deployed 6 字段 + .agents-pending-restart]
+    SW -->|Stage 3 验证| V[deploy.py verify 八项]
+```
+
+**部署后运行时链**（写作期，谁读谁）：
+
+```mermaid
+flowchart LR
+    SS[session-start.sh<br/>每次会话启动] -->|source| LB[lib/common.sh<br/>project_root/发现书目]
+    SS -->|source| LS[lib/sentinel.sh<br/>读 .story-deployed]
+    LS -->|读 6 字段| SN[.story-deployed]
+    SS -->|重启确认| PR[.agents-pending-restart<br/>一次性标记→确认后删除]
+    AG[写作技能 spawn agent] -->|canonical 路径| AR[.claude/skills/moshu-setup/<br/>references/agent-references/]
+    DP2[deploy.py 版本门禁] -->|读 agents_version| SN
+```
+
+**四条消费链**：①session-start 自检链（hook → lib → sentinel → 版本比对/重启确认）②agent 方法论链（spawn → canonical 路径 → agent-references）③版本门禁链（deploy.py → sentinel → 防降级）④写作技能部署检测链（技能入口 → sentinel 存在性）。
+
+### 19.2 流程链条（每步的含义与目的）
+
+**Stage 1 检测项目状态**——部署前侦察，目的：让 AI 和用户知道「这是什么项目、什么状态、该不该部署」。
+
+| 步骤 | 含义 | 目的 |
+|---|---|---|
+| 版本展示 | 读 VERSION（包版本）+ agents_version（部署物版本）+ setup_skill_version，首行 🚀 展示 | 用户知情权——跑的是哪版，不对就先更新再部署 |
+| 参考包自检 | 一条命令核对 agent-references/templates/merge-claude-settings.py 存在且非空 | 防「半套包部署出半吊子项目」——缺即停不写文件，报告区分缺/空 |
+| 状态四查 | ①`.story-deployed` 存在？②书名目录？③settings.local.json？④.active-book？ | ①决定三分支（唯一改变决策的检查）②-④为展示性检查（不改变决策，一条命令完成） |
+| 版本三分支 | `<35` 待更新继续 / `=35` 弹窗确认 / `>35` 停止防降级 | 旧了升级、相同问用户、项目更新就停手——保护已部署项目不被误降级 |
+
+**Stage 2 部署基础设施**——8 件事，全部由 deploy.py 机械执行（三层分工的集大成）。
+
+| # | 动作 | 含义与目的 |
+|---|---|---|
+| 1 | hooks 复制（**递归整树** + chmod 顶层 *.sh） | `lib/` 是 hook 的公共函数库（common.sh/sentinel.sh），漏复制 → 所有 hook source 失败 → **静默退化**（历史上踩过的坑，SKILL.md 立碑） |
+| 2 | rules 复制 | path-scoped 规则（按路径自动加载） |
+| 3 | agents 复制 | 8 个 agent 定义——**只在会话启动时注册**，所以部署后必须新开会话 |
+| 4 | agent-references 复制（**同路径检测**） | 符号链接安装时源=目标则跳过复制（自复制无意义）——agent 的方法论书架，spawn 时按 canonical 路径读取 |
+| 5 | CLAUDE.md 三分支 | 不存在→占位符替换生成 / 存在含 `##` 节→section 合并（模板标准节覆盖同名、用户独有节保留、头部模板权威）/ 纯自定义→CONFLICT 不覆盖交人工。**空文件视为不存在走生成** |
+| 6 | settings 合并（merge-claude-settings.py） | 按 command 身份剥离旧受管注册再追加——用户 hook 保留、幂等、原子写 |
+| 7 | sentinel 写入（6 字段） | 部署的「出生证明」——只有全部步骤 PASS 才写（fatal 时不写=部署未完成） |
+| 8 | .agents-pending-restart 标记 | 一次性重启确认——新会话 session-start 确认 agents 已注册后自动删除 |
+
+**幂等与清空重建**：整个 Stage 2 幂等（重复执行结果一致）；managed 目录（hooks/rules/agents/agent-references）为**清空重建**（rmtree+重拷）——旧版本残留文件被清除，防「删了部署物旧文件还留在用户项目」。
+
+**Stage 3 验证安装**——八项机械验证（部署后必须成立的事实，失败非零退出暴露）。
+
+| # | 检查项 | 防什么 |
+|---|---|---|
+| 1 | hooks 顶层脚本可执行（**模板枚举动态化**，不写死数量） | hook 调用时 Permission denied |
+| 2 | hooks lib 在位 | lib 缺失 → 所有 hook 静默退化 |
+| 3 | rules 含 paths frontmatter | 规则不加载 |
+| 4 | agents 模板齐全（源目标一致） | 部署丢 agent → spawn 拿不到 |
+| 5 | agent-references 在位（含子卡） | agent 读不到方法论 |
+| 6 | settings JSON 有效 + 模板命令齐全无重复 | hook 注册坏/重复执行 |
+| 7 | sentinel 6 字段且版本值正确 | 部署标记错 → 版本门禁误判 |
+| 8 | CLAUDE.md 含全部模板标准节 | CONFLICT 未解决时机械暴露 |
+
+之后 AI 输出安装报告（已部署文件 + 注意事项）+ **⚠️ 重启提示**（必须新开会话：agent 只在会话启动时注册；判断生效 = `/moshu-review` 报告头 `Effective Mode: full/lean` vs `Fallback: ... -> solo`）+ 新项目下一步推荐（扫榜/拆书/开书/导入）。
+
+### 19.3 引用内容含义（概念详解）
+
+| 概念 | 是什么 | 含义与目的 |
+|---|---|---|
+| **sentinel**（`.story-deployed`） | 部署标记文件，6 字段 | 部署的「出生证明」+ 项目形态的「身份证」。字段分两类：**快照类**（deployed_at/agents_version/setup_skill_version——部署那一刻的事实记录，版本门禁读它）与**形态类**（target_cli/resolver_strategy/references_dir——决定项目怎么装的，**重部署时沿用不覆盖**，改了引用就断） |
+| **lib/common.sh** | hook 公共函数库（project_root/discover_active_book/discover_all_books/拆文完成判定） | 所有 hook 的定位底座——项目根解析、书目发现、拆文状态判定 |
+| **lib/sentinel.sh** | sentinel 字段读取（awk 单进程解析，YAML key:value） | hook 与脚本读部署状态的统一入口（版本比对/自检） |
+| **agent-references**（33 方法论 + 32 题材卡） | agent 的方法论书架 | agent 是子代理读不到主会话技能包——部署时复制进项目，spawn 时按 canonical 路径（`.claude/skills/moshu-setup/references/agent-references/`）按需读取 |
+| **templates/ 结构** | agents/×8 + hooks/×12（8 sh + core.js + cli.js + lib×2）+ rules/×4 + CLAUDE.md.tmpl + settings-hooks.json | 部署的「原料库」——setup 的全部部署物从这里复制/渲染 |
+| **分层详略**（SKILL.md/setup-workflow/deploy-manual/UPGRADING） | 四层文档各司其职 | SKILL.md=索引+锚点（触发瞬间认知）→ setup-workflow=流程权威（正常路径执行细节）→ deploy-manual=兜底指引（异常路径规则手册）→ UPGRADING=版本权威+变更档案 |
+| **幂等** | 重复执行结果一致 + 失败从头重跑 + create-only-if-absent | 三个承诺：重复部署安全（replace/清空重建）、失败重跑安全（fatal 不写 sentinel=没部署过）、用户文件不碰 |
+
+### 19.4 版本与升级语义
+
+- **agents_version（35）vs 包版本（2.3.7）两轴正交**：包版本=说明书印到第几版（人看）；agents_version=装机单编号（机器比大小决定重部署提醒/禁降级）。文档/CI 变更零误报，部署物变更才 bump。
+- **UPGRADING.md 双角色**：版本权威（check-agents-version-sync 的 AUTHORITY）+ 部署物变更档案（vN→vN+1 条目：改了什么、用户要做什么——重跑 /moshu-setup + 新开会话）。
+- **bump 义务守卫（指纹）**：current-contract 登记部署物集合指纹（templates/agent-references/deploy.py/merge-claude-settings.py 的归一化聚合哈希）——部署物变更而 agents_version 未 bump 即红（「该 bump 没 bump」从纪律变机器检查）；`--re-register-fingerprint` 提供无版本变化的确认性重登记（补漏修复场景）。
+- **版本三分支五处同步**：SKILL.md 索引表/setup-workflow/deploy.py/session-start/UPGRADING——bump 脚本唯一合法修改（覆盖面含 SKILL.md/current-contract/session-start/deploy-manual/setup-workflow/deploy.py/UPGRADING 全部阈值形态，含「等于 N」态）。
 
 ## Ⅳ.20 准备期三技能
 
@@ -478,6 +577,7 @@ write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_
 | Ⅰ 词典 | AGENTS.md §9 术语表（工程口径）；本文为小白向扩写 |
 | Ⅲ.9 架构 | 本文吸收自原 docs/architecture.md（已删）；状态机真源 skills/moshu/scripts/next_step.py |
 | Ⅲ.10/Ⅳ.21 构建 | skills/moshu-build/references/{workflow-build,cold-path,caifeng-methods,revision-workflow}.md |
+| Ⅳ.19 安装与部署 | skills/moshu-setup/{SKILL.md,references/setup-workflow.md,references/deploy-manual.md,scripts/deploy.py,UPGRADING.md} |
 | Ⅳ.20.2/Ⅳ.22 | skills/moshu-analyze/references/analyze-workflow.md、skills/moshu-import/references/import-workflow.md |
 | Ⅳ.23-24 写作 | skills/moshu-write/references/{chapter-core,workflow-*}.md |
 | Ⅳ.25 审查 | skills/moshu-review/references/review-workflow.md |
