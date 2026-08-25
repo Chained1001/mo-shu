@@ -2,8 +2,8 @@
 """test-bump-agents-version.py — bump-agents-version.py 正式回归测试
 
 守护对象：agents_version 确定性 bump 脚本（B23；审计-setup-v1 需修 1：阈值形态覆盖 + 历史条目防误伤）——
-六类文件全覆盖（SKILL.md 反引号+无反引号/current-contract.json/session-start.sh 比较值+措辞/
-deploy-manual.md 声明+阈值形态/deploy.py 常量/UPGRADING.md 版本头+步骤行+阈值形态）、
+全覆盖（SKILL.md 反引号+无反引号/current-contract.json/session-start.sh 比较值+措辞/
+deploy-manual.md 声明+阈值形态/setup-workflow.md 声明+阈值形态/deploy.py 常量/UPGRADING.md 版本头+步骤行+阈值形态）、
 历史条目排除（含「变更」行即使带版本数字也不动）、--confirm 替换、守卫失败回滚（不留半改状态）。
 禁：断言实现细节/真实上游；fixture 自清理。
 """
@@ -43,6 +43,12 @@ DEPLOY_SAMPLE = """验证部署标记：`agents_version: 33` 与 setup_skill_ver
 - `agents_version` 大于 `33` → 停止
 - setup_skill_version: 1.5.1
 """
+SETUP_WORKFLOW_SAMPLE = """## Stage 1：检测项目状态
+
+- `agents_version` 缺失、非整数或小于 `33` → 标记为待更新，继续执行当前部署
+- `agents_version: 33` → 使用 AskUserQuestion 确认是否重新部署
+- `agents_version` 大于 `33` → 当前 moshu-setup 比项目部署旧；停止以避免降级覆盖
+"""
 UPGRADING_SAMPLE = """## 当前版本
 - `agents_version: 33`
 - setup_skill_version: 1.5.1
@@ -72,6 +78,7 @@ def make_fixture(tmp: Path) -> Path:
     (project / "skills/moshu-setup/SKILL.md").write_text(SETUP_SKILL_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/templates/hooks/session-start.sh").write_text(HOOK_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/deploy-manual.md").write_text(DEPLOY_SAMPLE, encoding="utf-8")
+    (project / "skills/moshu-setup/references/setup-workflow.md").write_text(SETUP_WORKFLOW_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/scripts/deploy.py").write_text(DEPLOY_PY_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/UPGRADING.md").write_text(UPGRADING_SAMPLE, encoding="utf-8")
     return project
@@ -117,6 +124,9 @@ def test_bump_all_six(project: Path) -> None:
     deploy = (project / "skills/moshu-setup/references/deploy-manual.md").read_text(encoding="utf-8")
     assert deploy.count("agents_version: 34") == 2 and "agents_version: 33" not in deploy, f"deploy-manual 应全替换: {deploy}"
     assert "小于 `34`" in deploy and "大于 `34`" in deploy and "小于 `33`" not in deploy, f"deploy-manual 阈值形态应替换: {deploy}"
+    workflow = (project / "skills/moshu-setup/references/setup-workflow.md").read_text(encoding="utf-8")
+    assert workflow.count("agents_version: 34") == 1 and "agents_version: 33" not in workflow, f"setup-workflow 声明应替换: {workflow}"
+    assert "小于 `34`" in workflow and "大于 `34`" in workflow and "小于 `33`" not in workflow, f"setup-workflow 阈值形态应替换: {workflow}"
     up = (project / "skills/moshu-setup/UPGRADING.md").read_text(encoding="utf-8")
     assert "- `agents_version: 34`" in up, f"UPGRADING 版本头应替换: {up}"
     assert "小于 `34`" in up and "大于 `34`" in up and "不得用 v34" in up, f"UPGRADING 阈值形态应替换: {up}"

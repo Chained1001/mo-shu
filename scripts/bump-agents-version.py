@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
 """bump-agents-version.py — agents_version 确定性 bump 脚本（替代手工 grep+replace）
 
-守护对象：agents_version 字面量六类文件全覆盖（观察 024 五层散射教训：CI 连续三笔修复）。
-六类文件与格式（正则覆盖反引号/无反引号/JSON 数字/shell 比较值四种格式）：
+守护对象：agents_version 字面量全覆盖（观察 024 五层散射教训：CI 连续三笔修复；v2.3.7 发版判因：v3 新增 setup-workflow.md 未登记致守卫红回滚）。
+文件与格式（正则覆盖反引号/无反引号/JSON 数字/shell 比较值四种格式）：
   1. skills/**/SKILL.md（Spawn 版本提示段）：反引号 `33` + 无反引号 "33 时额外" 两种格式
   2. scripts/current-contract.json：JSON 数字（agents_version 字段）
   3. skills/moshu-setup/SKILL.md：部署判定门反引号 `33`
   4. skills/moshu-setup/references/templates/hooks/session-start.sh：-lt 33 / -gt 33 / 低于 v33 / 高于 v33
   5. skills/moshu-setup/references/deploy-manual.md：agents_version: 33 反引号/无反引号 + 阈值形态（小于/大于 `33`）
-  6. skills/moshu-setup/scripts/deploy.py：DEFAULT_AGENTS_VERSION 常量 + CLI 帮助
-  7. skills/moshu-setup/UPGRADING.md：版本头 agents_version: 33 + 升级步骤行——**排除历史条目**（含「变更」关键词的行不动）；阈值形态（小于/大于 `33`、不得用 v33）
+  6. skills/moshu-setup/references/setup-workflow.md：声明 + 阈值形态（同 deploy-manual；v3 补建流程权威）
+  7. skills/moshu-setup/scripts/deploy.py：DEFAULT_AGENTS_VERSION 常量 + CLI 帮助
+  8. skills/moshu-setup/UPGRADING.md：版本头 agents_version: 33 + 升级步骤行——**排除历史条目**（含「变更」关键词的行不动）；阈值形态（小于/大于 `33`、不得用 v33）
 
 不动：marketplace.json / SKILL.md frontmatter version（插件版本独立轨，本脚本只管 agents_version）。
 另有 --setup-version <旧> <新>：setup_skill_version 独立轨（observer 008）——6 处覆盖（moshu-setup/SKILL.md frontmatter version + 哨兵样例 /
@@ -97,6 +98,14 @@ def collect_edits(root: Path, old: int, new: int) -> list[tuple[Path, int, str, 
                 edits.append((dm, line_no, m.group(0), m.group(0).replace(str(old), str(new))))
             for m in re.finditer(rf"(小于|大于) `{old}`", line):
                 edits.append((dm, line_no, m.group(0), m.group(0).replace(str(old), str(new))))
+    # setup-workflow.md（v3 补建流程权威：声明 + 阈值形态，同 deploy-manual；v2.3.7 发版判因补入）
+    sw = root / "skills" / "moshu-setup" / "references" / "setup-workflow.md"
+    if sw.exists():
+        for line_no, line in enumerate(sw.read_text(encoding="utf-8").splitlines(), start=1):
+            for m in re.finditer(rf"`?agents_version: {old}`?", line):
+                edits.append((sw, line_no, m.group(0), m.group(0).replace(str(old), str(new))))
+            for m in re.finditer(rf"(小于|大于) `{old}`", line):
+                edits.append((sw, line_no, m.group(0), m.group(0).replace(str(old), str(new))))
     # deploy.py（DEFAULT_AGENTS_VERSION / DEFAULT_SETUP_VERSION 常量 + CLI 帮助）
     dp = root / "skills" / "moshu-setup" / "scripts" / "deploy.py"
     if dp.exists():

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased（v2.4.0 待发，2026-08-25）
+## v2.3.7（2026-08-25）
 
 > 全仓审计修复闭环 + 治理批（B31-B45）
 
