@@ -30,7 +30,7 @@
 `deploy.py deploy --project {项目目录} --name {项目名} [--book {书名}]` 一次完成 hooks 复制+chmod、
 rules/agents 复制、agent-references 同路径检测、CLAUDE.md 生成/section 合并、
 settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记；`deploy.py verify --project {项目}` 完成 Stage 3 机械验证。
-脚本输出 CONFLICT（CLAUDE.md 无 `##` section 的用户自定义文件）或 FAIL 时，按 [deploy-manual.md](deploy-manual.md) 对应步骤人工处理；脚本成功则直接进入 Stage 3。
+脚本输出 CONFLICT（CLAUDE.md 无 `##` section 的用户自定义文件——**空 CLAUDE.md 视为不存在走生成，不报 CONFLICT**）或 FAIL 时，按 [deploy-manual.md](deploy-manual.md) 对应步骤人工处理；脚本成功则直接进入 Stage 3。
 
 **Stage 2-1~2-7 兜底指引**（部署清单表、逐步执行规则、模板占位符、CLAUDE.md 合并策略、重新部署口径）见 [deploy-manual.md](deploy-manual.md)——正常路径不逐条手写执行，仅脚本不可用/冲突时查阅。
 
@@ -38,7 +38,7 @@ settings 合并（复用 merge-claude-settings.py）、sentinel+restart 标记�
 
 ## Stage 3：验证安装
 
-**优先运行 `deploy.py verify --project {项目}`**（结构化 PASS/FAIL 输出，覆盖 hooks 注册 / rules 路径 / 8 个 agents / agent reference bundle / settings 合并 / CLAUDE.md 标准节 / sentinel 字段八项）；脚本不可用时按 [deploy-manual.md](deploy-manual.md)「Stage 3 逐项验证」执行。
+**优先运行 `deploy.py verify --project {项目}`**（结构化 PASS/FAIL 输出，八项机械验证：hooks 顶层可执行 / hooks lib 在位 / rules paths / agents 模板齐全[源目标一致] / agent-references 在位 / settings JSON 有效且模板命令齐全 / sentinel 6 字段 / CLAUDE.md 标准节）；脚本不可用时按 [deploy-manual.md](deploy-manual.md)「Stage 3 逐项验证」执行。
 
 **输出安装报告**：
 - 列出所有已部署的文件与需要注意的事项（如已有配置已合并）
