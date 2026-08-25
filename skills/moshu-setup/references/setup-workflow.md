@@ -8,7 +8,9 @@
 > 🚀 **mo-shu v{VERSION}**（agents_version {N} · setup_skill v{本 skill frontmatter version}）
 > 如与预期版本不符，先 `npx skills add Chained1001/mo-shu -y` 更新再跑本 skill。
 
-**先自检参考目录**：以正在执行的 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对 `agent-references`、`templates` 两个名字是否都在**且都非空**；同级 `scripts/merge-claude-settings.py` 也必须存在（Claude hooks 合并算法依赖它）。**用一条命令完成自检**（如 `ls references/ scripts/` 并核对输出），不要分多轮 Bash 逐步探索。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」和「目录为空」，并给修复指令：「moshu-setup 参考资料包不完整，缺 {目录名}。按你的安装方式重装 mo-shu（git clone 装的在仓库目录 `git pull`，marketplace 装的在面板里重装），再执行 /moshu-setup。」
+**先自检参考目录**：以正在执行的 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对 `agent-references`、`templates` 两个名字是否都在**且都非空**；同级 `scripts/merge-claude-settings.py` 也必须存在（Claude hooks 合并算法依赖它）。**用一条命令完成自检**（如 `ls references/ scripts/` 并核对输出），不要分多轮 Bash 逐步探索。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」和「目录为空」，并给修复指令：「moshu-setup 参考资料包不完整，缺 {目录名}。按你的安装方式重装 mo-shu（git pull 或 marketplace 面板重装），再执行 /moshu-setup。」
+
+**状态四查**（第 2-4 查为展示性检查，不改变部署决策；四项用一条命令完成，如 `cat .story-deployed 2>/dev/null; ls -d */追踪 .claude/settings.local.json .active-book 2>/dev/null`，不要分多轮 Bash）：
 
 1. 检查当前目录是否已部署过（存在 `.story-deployed`）
    - `agents_version` 缺失、非整数或小于 `34` → 标记为待更新，继续执行当前部署
