@@ -42,6 +42,11 @@ def compute_deployment_fingerprint(root: Path) -> str:
     检出为 CRLF——按原始字节聚合会让登记值绑定本机工作区形态，CI Linux（LF 检出）算出不同
     指纹、推送后必红（2026-08-25 审核 F1 实证：登记值=CRLF 字节，git archive 的 LF 树不同）。
     归一化后两侧收敛，不再依赖工作区行尾形态。
+
+    排序显式 posix key：pathlib 的 Path 默认排序在 Python 3.13+ 改为按 parts 比较
+    （3.12 按字符串），且 Windows str(Path) 用反斜杠——默认排序跨版本/跨平台不一致，
+    曾致 CI（3.14/Linux）与本地（3.12/Windows）聚合顺序不同、指纹不同（2026-08-25
+    CI 红判因：逐文件哈希全同、文件集全同，仅聚合顺序差异）。显式 key 消除该依赖。
     """
     h = hashlib.sha256()
     files: list[Path] = []
@@ -49,13 +54,18 @@ def compute_deployment_fingerprint(root: Path) -> str:
         base = root / rel
         if base.is_dir():
             files.extend(
-                p
-                for p in sorted(base.rglob("*"))
-                if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+                sorted(
+                    (
+                        p
+                        for p in base.rglob("*")
+                        if p.is_file() and "__pycache__" not in p.parts and p.suffix != ".pyc"
+                    ),
+                    key=lambda p: p.relative_to(root).as_posix(),
+                )
             )
         elif base.is_file():
             files.append(base)
-    for f in sorted(set(files)):
+    for f in sorted(set(files), key=lambda p: p.relative_to(root).as_posix()):
         h.update(f.relative_to(root).as_posix().encode("utf-8"))
         h.update(b"\0")
         h.update(f.read_bytes().replace(b"\r\n", b"\n"))
