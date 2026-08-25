@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 
 - **采风收编 build（B46）**：移除 moshu-research 独立技能（/采风 触发词随技能移除），caifeng-methods 迁 moshu-build/references 为采风手册（契约 producer+锚点同步），README 技能计数 12→11
 - **文档结构重组（B47）**：治理类 8 文档+规格/ 归位 docs/治理/、研究-v5→研究（去版本后缀）、docs/README 地图重写+状态刷新
-- **新增产品文档（PRD+FSD）**：docs/产品文档.md v2.0——PRD（定位/用户/能力全景/旅程/哲学/边界）+ FSD（架构四层/核心管线规格 Stage 1-6·三 lane·追踪事务·S0-S6·审查闭环·采风/Agent 8 规格/自动化/部署/数据契约/性能预算/降级容错）+ 真源对照表；顺带修 architecture.md 三处陈旧（8 agent/76 组/采风产出线挂 build）
+- **新增《mo-shu 项目 - 产品需求与详细设计文档（PRD+FSD）》v3.0（单文件，docs/mo-shu项目-产品需求与详细设计文档（PRD+FSD）.md）**：设计理念+概念词典（小白可读）/PRD/FSD/文件级全流程走查（npx→setup→扫榜→拆书→开书两分支→导入→日更→审查→开新卷→升级）/工程辅助设施一览/新增能力自检清单/全仓文件清单；**architecture.md 吸收并入后移除**（引用同步）
 
 ## v2.3.6（2026-08-24）
 

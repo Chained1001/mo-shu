@@ -65,7 +65,7 @@ flowchart LR
     write_l --> deslop
 ```
 
-> 完整架构图（Skill/Agent/Hook/数据层与状态机）见 [docs/architecture.md](docs/architecture.md)。
+> 完整架构与项目全书见 [产品需求与详细设计文档（PRD+FSD）](docs/mo-shu项目-产品需求与详细设计文档（PRD+FSD）.md)（理念与概念词典/全流程走查/全仓清单，单文件）。
 
 ## 安装（三步走）
 
@@ -93,7 +93,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 | Skill | 触发 | 说明 |
 |:------|:-----|:-----|
-| `moshu-setup` | `/moshu-setup` `/准备写书` | 环境部署 · Claude Code（已有配置安全合并） |
+| `moshu-setup` | `/moshu-setup` 「部署墨枢写作环境」 | 环境部署 · Claude Code（已有配置安全合并） |
 | `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
 | `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 细纲与正文输出、日更续写、大修、卷复盘执行 |
 | `moshu-build` | `/moshu-build` `/建书` | 开书构建 · Stage 1-6 六步流程（理想书评→骨架八列→人物弧线→单元卡→整合→定稿）、三维度评审、内嵌采风（Stage 1 默认 + 瓶颈触发）、设定修订、开新卷 |

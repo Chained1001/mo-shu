@@ -18,7 +18,7 @@ description: "网络小说工具箱主入口。根据用户需求自动路由到
 | 选题决策 | 写什么能爆、帮我选题、选题方向 | `/moshu-scan` |
 | 去AI味 | 去AI味、太 AI、去味 | `/moshu-deslop` |
 | 审查稿件 | 审查、审稿、帮我审一下、一致性检查、看看有没有问题 | `/moshu-review` |
-| 环境部署 | 准备写书、搭环境、初始化 | `/moshu-setup` |
+| 环境部署 | 部署墨枢写作环境、准备写书、搭环境、初始化 | `/moshu-setup` |
 | 浏览器操控 | 浏览器、抓取、登录态 | `/moshu-cdp` |
 | 导入小说 | 导入小说、导入书籍、反向解析、把我的书导进来 | `/moshu-import` |
 | 学文风 | 学文风、这本书的文风、文风怎么样、风格 | `/moshu-style` |
@@ -41,7 +41,7 @@ for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
 
 脚本返回单行 JSON DTO（`step` / `interrupt` / `evidence` / `last_committed_chapter` / `next_action` / `suggested_skill`），按返回 DTO 行动——不再逐条读下方判定表。脚本不可用（Python 缺失/项目根不存在）时回退下表，判定语义与脚本一致（**命中即停**，不继续往下问）。
 
-**优先中断项（与序位无关，命中即引导并停）**：① `拆文库/*/_progress.md` 最终状态非 completed → `/moshu-analyze` 续跑（断点恢复）；② `{项目根}/.moshu-review/` 下存在未完成审查状态（state 文件）→ `/moshu-review` 续批。这两项是"从进行中状态插入的中断"，先于下方序位检查（与 `docs/architecture.md` §3 的虚线边语义一致）。
+**优先中断项（与序位无关，命中即引导并停）**：① `拆文库/*/_progress.md` 最终状态非 completed → `/moshu-analyze` 续跑（断点恢复）；② `{项目根}/.moshu-review/` 下存在未完成审查状态（state 文件）→ `/moshu-review` 续批。这两项是"从进行中状态插入的中断"，先于下方序位检查（与《产品需求与详细设计文档》Ⅲ.9 状态机图的虚线边语义一致）。
 
 | 序 | 判定条件（文件证据） | 引导 |
 |---|---|---|
