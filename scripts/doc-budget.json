@@ -154,6 +154,14 @@
         "skills/moshu-build/references/revision-workflow.md"
       ],
       "why": "2026-08-26 scan 反哺衔接提示吸收（workflow-build 增「能爆的原因未拆文验证」提示，实测组 30543，调 30600）。"
+    },
+    {
+      "label": "长篇拆解",
+      "budget": 15500,
+      "files": [
+        "skills/moshu-analyze/references/analyze-workflow.md"
+      ],
+      "why": "管道会话触发即全量加载（14.7K 实测，2026-08-26 审计 N3 登记）；拆解会话小时级摊薄，防膨胀守卫"
     }
   ]
 }
