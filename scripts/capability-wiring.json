@@ -69,8 +69,8 @@
       "producer": "moshu-style 的文风库/文风.md 模板字段（平均句长/文风可用）",
       "rationale": "文风产物是写作每章必读的风格基准——生产侧字段与两个消费侧解析口径必须逐字对齐",
       "consumers": [
-        {"file": "skills/moshu-style/SKILL.md", "must_contain": "平均句长 N 字"},
-        {"file": "skills/moshu-style/SKILL.md", "must_contain": "文风可用：是"},
+        {"file": "skills/moshu-style/references/style-learn-sop.md", "must_contain": "平均句长"},
+        {"file": "skills/moshu-style/references/style-learn-sop.md", "must_contain": "文风可用：是"},
         {"file": "skills/moshu-write/scripts/check-prose-candidates.js", "must_contain": "平均句长"},
         {"file": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md", "must_contain": "平均句长"}
       ]
