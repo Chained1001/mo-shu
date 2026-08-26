@@ -97,7 +97,7 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
 | `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 细纲与正文输出、日更续写、大修、卷复盘执行 |
 | `moshu-build` | `/moshu-build` `/建书` | 开书构建 · Stage 1-6 六步流程（理想书评→骨架八列→人物弧线→单元卡→整合→定稿）、三维度评审、内嵌采风（Stage 1 默认 + 瓶颈触发）、设定修订、开新卷 |
-| `moshu-analyze` | `/moshu-analyze` 「网文拆书」 | 网文拆书 · 黄金三章、爽点设计、节奏分析 |
+| `moshu-analyze` | `/moshu-analyze` 『进行拆书』 | 网文拆书 · 黄金三章、爽点设计、节奏分析 |
 | `moshu-scan` | `/moshu-scan` 「网文扫榜」 | 网文扫榜 · 起点/番茄/晋江市场趋势 |
 | `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
 | `moshu-style` | `/moshu-style` `/学文风` | 文风学习 · 从任意量原文提取写作风格基准（句长/标点/对话技法/锚点），产出 `文风库/文风.md` |

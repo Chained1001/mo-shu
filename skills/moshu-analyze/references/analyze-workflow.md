@@ -205,6 +205,8 @@ Agent(
 ```
 
 > 上面的 `[情节点格式要求]` / `[输出前自检]` 两段由主线程在 spawn 时拼进 prompt，**不依赖项目里已部署的 agent 文件版本**——老项目不重新跑 `/moshu-setup` 也能拿到这份格式约束。sonnet 升级重试沿用同一段。
+>
+> 格式快照注记：本 prompt 内嵌格式为**快照**——权威在部署包 agent 模板 `moshu-chapter-extractor.md` 与 `scripts/check_chapter_summary.py` 枚举，漂移以后者为准。
 
 ### 批量策略
 

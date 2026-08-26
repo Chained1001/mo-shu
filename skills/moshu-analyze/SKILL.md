@@ -1,7 +1,7 @@
 ---
 name: moshu-analyze
 version: 1.1.1
-description: "网文拆书。深度拆解爆款网文的黄金三章、人设架构、爽点设计、节奏控制。单一深度拆解管道：跑完黄金三章（Stage 2-2）后产出快速预览报告并询问是否继续全量拆解，确认后从 Stage 2-3 续跑逐章摘要、聚合分析、设定关系、汇总报告、技法总结，全程产物落盘 拆文库/{书名}/。触发方式：/moshu-analyze、「网文拆书」；提供小说文本文件路径同样进入管道。"
+description: "网文拆书。深度拆解爆款网文的黄金三章、人设架构、爽点设计、节奏控制。触发方式：/moshu-analyze、「进行拆书」；提供小说文本文件路径同样进入管道。"
 ---
 # moshu-analyze：网文拆书
 
@@ -27,6 +27,8 @@ description: "网文拆书。深度拆解爆款网文的黄金三章、人设架
 **执行前先读 [references/analyze-workflow.md](references/analyze-workflow.md) 的「Stage 1」节**——询问拆解对象、统一入口与无文本路径处理见同节。
 
 ## Stage 2：深度拆解管道
+
+**管道概览**：单一深度拆解管道——黄金三章（Stage 2-2）后停靠产出快速预览报告，确认后从 Stage 2-3 续跑至技法总结，产物落盘 `拆文库/{书名}/`。
 
 **执行前先读 [references/analyze-workflow.md](references/analyze-workflow.md) 的「Stage 2」节**——输出目录、已有分析利用、原文备份、拆文库结构、Stage 2-1~2-7 管道表、章节边界子步骤、Stage 2-2 停靠点、选题决策回填、技法总结与并行执行见同节；「质量检查概要」「Stage 2-3 并行 Agent 策略」「恢复机制」节也在同文件。
 
