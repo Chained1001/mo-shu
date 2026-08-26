@@ -40,7 +40,7 @@
 - **moshu-architect + moshu-character-designer（Stage 2-3 骨架与人物）**：结构复杂/反转链多/角色关系密时辅助骨架与角色设定（任务类型：核心设定/角色设定）。spawn prompt 必须原样附带「moshu-architect 契约摘要」。
 - **moshu-architect（Stage 4-6 卷级）**：只有结构复杂、反转链多或主会话方案不稳时，才调用辅助卷级结构（卷级大纲、钩子/反转/情绪弧线设计）。**首批细纲的产出不在本工作流**（归 write，B1b）。
 
-> **moshu-architect 契约摘要（spawn 时必须原样附带）**：部署的 moshu-architect agent 不认识本 skill 的 `references/reader-contract-and-progression.md`，只能靠 spawn prompt 里带的这段摘要对齐 schema。摘要内容（终局储备边界/透支两问/剧情单元/细纲层字段/读者契约与主角代理权/关键节点四问）与 write 侧同源——从 `references/reader-contract-and-progression.md` 摘取（本文件不复制全文，引用即挂载）。
+> **moshu-architect 契约摘要（spawn 时必须原样附带）**：部署的 moshu-architect agent 不认识本 skill 的 `references/reader-contract-and-progression.md`，只能靠 spawn prompt 里带的这段摘要对齐 schema。摘要内容（终局储备边界/透支两问/剧情单元/细纲层字段/读者契约与主角代理权/关键节点四问）与 write 侧同源——从 `references/reader-contract-and-progression.md` 摘取（本文件不复制全文，引用即挂载）。模板承接见 moshu-architect「契约摘要承接」段。
 
 ---
 

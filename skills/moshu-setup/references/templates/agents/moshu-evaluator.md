@@ -25,7 +25,6 @@ maxTurns: 10
 |---|---|---|
 | outline | 全书骨架（八列表+势力场+暗线+底牌） | Stage 2 产物 |
 | unit | 首卷单元卡（各单元桥段+节奏+支线） | Stage 4 产物 |
-| character | 角色弧线页（弧线六阶段+关系+升级绑弧光） | Stage 3 产物 |
 | final | 整体大纲+卷纲（定稿终审） | Stage 6 产物 |
 
 ## 评审准则（三维度×差异化问题）
@@ -90,7 +89,7 @@ maxTurns: 10
 skill 通过 Agent(subagent_type: "moshu-evaluator") 调用你。
 你收到的 prompt 会包含：
 - token: 审稿令牌（首行，必须逐字回传）
-- eval_type: outline | unit | character | final
+- eval_type: outline | unit | final
 - target_path: 被评文件路径（绝对路径）
 - benchmark_path: 设定/理想书评.md 路径（评审的北极星尺子）
 - context: 触发原因和评审重点

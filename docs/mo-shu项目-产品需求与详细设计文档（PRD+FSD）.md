@@ -172,7 +172,7 @@ flowchart TD
 
 | Agent | 模型 | 工具面 | 关键纪律 |
 |---|---|---|---|
-| architect | 高阶 | 读为主 | 契约摘要随 spawn 附带 |
+| architect | 高阶 | 读为主 | 契约摘要随 spawn 附带（模板含承接段，消费有指引） |
 | character-designer | 中阶 | 读为主 | 升级绑弧光、弱绑定回退 |
 | narrative-writer | 中阶 | Read/Glob/Grep/Write/Edit/Bash（Bash 仅字数句长自查） | 7 Gate、细纲消费两分法（内容层严格/形状层自由）、审稿令牌 |
 | consistency-checker | 轻量 | 读 | S1-S4 分级 |

@@ -3,11 +3,13 @@
 ## 当前版本
 
 - `setup_skill_version: 1.5.1`
-- `agents_version: 35`
+- `agents_version: 36`
 
 > **别名注记（版本地图乱点②处置）**：sentinel 字段 `setup_skill_version` 与 moshu-setup SKILL.md frontmatter `version` 是**同一版本号的两个名字**（别名关系，值恒等）——`bump-agents-version.py --setup-version` 唯一合法修改；deploy.py verify 校验 sentinel 写入值 == 常量、TS10 校验 frontmatter == current-contract，双向一致。
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `35`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `35`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v35 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `36`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `36`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v36 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+
+**v35 → v36 变更**：architect 模板称谓修正（「被 moshu-write（Stage 1-3）调用」→「被 moshu-build（cold-path 卷级辅助）与 moshu-write（细纲批）调用」）与「契约摘要承接」段新增（六项摘要说明+使用方式）；evaluator 模板 eval_type 清单收紧（character 移除——Stage 3 为自动步无评审，合法值收为 outline/unit/final）——agent 模板变更，重跑 `/moshu-setup` 并新开会话后生效。
 
 **v34 → v35 变更**：agent-references 方法论内容修订（outline 系去编号化/outline-rhythm/genre-writing-formulas 等）与 CLAUDE.md 模板路由表触发词对齐（/准备写书→「部署墨枢写作环境」、/导入→「导入小说」）——agent 参考文件与 CLAUDE.md 模板变化，重跑 `/moshu-setup` 并新开会话后生效。
 
@@ -106,7 +108,7 @@
 ## 升级步骤
 
 1. 在项目根目录重新运行 moshu-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 35` 与 `setup_skill_version: 1.5.1`。
+2. 确认 `.story-deployed` 写入 `agents_version: 36` 与 `setup_skill_version: 1.5.1`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。
