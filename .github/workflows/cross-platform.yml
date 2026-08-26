@@ -100,6 +100,10 @@ jobs:
         run: node scripts/test-scan-analyze.js
       - name: Merge-chapter-summaries regression
         run: node scripts/test-merge-summaries.js
+      - name: Chapter-boundary regression
+        run: python3 scripts/test-chapter-boundary.py
+      - name: Chapter-summary hard-check regression
+        run: python3 scripts/test-chapter-summary.py
       - name: AI-pattern detector regression
         run: bash scripts/test-ai-patterns.sh
       - name: Outline-copy detector regression

@@ -132,6 +132,8 @@ node scripts/test-normalize-punctuation.js
 node scripts/test-scan-runtime.js
 node scripts/test-scan-analyze.js
 node scripts/test-merge-summaries.js
+python3 scripts/test-chapter-boundary.py
+python3 scripts/test-chapter-summary.py
 bash scripts/test-ai-patterns.sh
 bash scripts/test-outline-copy.sh
 bash scripts/test-degeneration.sh

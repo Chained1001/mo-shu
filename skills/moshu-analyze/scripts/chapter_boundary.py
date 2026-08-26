@@ -206,12 +206,11 @@ def main():
     print(f'首章: 第{rows[0][0]}章 {rows[0][1]} @行{rows[0][2]} | 末章: 第{rows[-1][0]}章 {rows[-1][1]} @行{rows[-1][2]}')
     if issue:
         print(f'[警告] {issue}', file=sys.stderr)
-        # 审计-V3 AC2：--dry-run 遇连续性问题也必须以非零退出码暴露（落盘保护由分支自身保证）
-        if args.dry_run:
-            sys.exit(3)
+        # 审计-V3 AC2（2026-08-26 扩展）：任何模式（含纯报告）遇连续性问题
+        # 均以非零退出码暴露——纯报告模式不再假绿；落盘保护由 outdir 分支自身保证
         if args.outdir:
             print('[提示] 问题未解决前不落盘边界表（防止污染切片真值）', file=sys.stderr)
-            sys.exit(3)
+        sys.exit(3)
 
     if args.dry_run or not args.outdir:
         return
