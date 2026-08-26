@@ -353,9 +353,22 @@ Stage {N}·{名称} {面}——{正在做什么}
 
 **卡片**：起名（书名/卷名）按需加载 [naming-cards.md](naming-cards.md)（冷路径）。
 
-#### 停靠 1（Stage 2 后，🔴）
+#### 停靠屏协议（停靠 1/2/3 共用）
 
-> **机检（停靠呈报前必跑）**：产物落盘后先跑 `scripts/check_outline.py --project {项目根}`——blocking 命中先修再呈报；仅 candidate 时照常呈报并附「机检结果附屏」（候选永不拦截）。
+> 三处停靠（Stage 2/4/6 后）的「机检→评审→令牌→主选择」四步同构，统一按本协议执行；各停靠块只保留各自特有的展示内容与分支差异。
+
+1. **机检（停靠呈报前必跑）**：产物落盘后先跑 `scripts/check_outline.py --project {项目根}`——blocking 命中先修再呈报；仅 candidate 时照常呈报并附「机检结果附屏」（候选永不拦截）。
+2. **独立评审（spawn moshu-evaluator）**：按下方参数表取值 spawn（token 每次新生成 8 位令牌，context 按停靠号填）→ 评审报告回来 → 附屏展示（编辑/作者/读者三维度 + if_one_change + overall）→ 采纳前用 `review_tickets.py verify-token` 校验令牌（回传不符 → 弃用报告）。
+
+| 停靠 | eval_type | target_path | benchmark_path | context |
+|---|---|---|---|---|
+| 停靠 1（Stage 2 后） | outline | 大纲/大纲.md | 设定/理想书评.md | 停靠1·Stage 2 骨架产物评审 |
+| 停靠 2（Stage 4 后） | unit | 大纲/卷纲_第X卷.md（单元卡内联） | 设定/理想书评.md | 停靠2·Stage 4 单元产物评审 |
+| 停靠 3（Stage 6 后） | final | 大纲/大纲.md + 大纲/卷纲_第X卷.md | 设定/理想书评.md | 停靠3·Stage 6 定稿终审 |
+
+3. **主选择（AskUserQuestion）**：✅ 确认 ｜ 🔧 按评审建议调整（AI 按报告改进 → 重新展示本屏）｜ 🔄 触发采风（CF 票据登记，检索评审弱项对应维度 → 融合后重新展示本屏）｜ 📝 我自己改（作者给出修改 → 重新展示本屏）。各停靠的确认文案、前置弹窗与收尾动作见对应停靠块。
+
+#### 停靠 1（Stage 2 后，🔴）
 
 
 
@@ -392,24 +405,7 @@ Stage {N}·{名称} {面}——{正在做什么}
 
 对照检查：每卷的赌注是否递升？对手是排队坐庄还是互相博弈？常驻压力贯穿了吗？怎么调？"
 
-🔍 独立评审（spawn moshu-evaluator）：
-spawn Agent(subagent_type: "moshu-evaluator", prompt: "
-  token: {8位令牌}
-  eval_type: outline
-  target_path: 大纲/大纲.md
-  benchmark_path: 设定/理想书评.md
-  context: 停靠1·Stage 2 骨架产物评审
-  project_dir: {项目目录}
-")
-→ 评审报告回来 → 附屏展示（编辑/作者/读者三维度 + if_one_change + overall）
-→ 采纳前用 review_tickets.py verify-token 校验令牌（回传不符 → 弃用报告）
-
-→ AskUserQuestion 主选择（停靠 1）：✅ 确认进下一步 ｜ 🔧 按评审建议调整（AI 按报告改进）｜ 🔄 触发采风（评审弱项定向补弱）｜ 📝 我自己改
-→ ✅ 确认进下一步 → 进 Stage 3
-→ 🔧 按评审建议调整 → AI 按报告改进 → 修改后重新展示本屏（四件套受影响则同步更新）
-→ 🔄 触发采风 → 进入采风触发流程（CF 票据登记，检索评审弱项对应维度）→ 融合后重新展示本屏
-→ 📝 我自己改 → 作者给出修改 → 重新展示本屏
-→ ❓ "某卷不确定" → 记入台账待定项，进 Stage 3（后续可回改）
+→ 评审与主选择按「停靠屏协议」执行（eval_type: outline）；确认 → 进 Stage 3；「某卷不确定」→ 记入台账待定项，进 Stage 3（后续可回改）
 ```
 
 ---
@@ -519,8 +515,6 @@ spawn Agent(subagent_type: "moshu-evaluator", prompt: "
 
 #### 停靠 2（Stage 4 后，🔴）
 
-> **机检（停靠呈报前必跑）**：产物落盘后先跑 `scripts/check_outline.py --project {项目根}`——blocking 命中先修再呈报；仅 candidate 时照常呈报并附「机检结果附屏」（候选永不拦截）。
-
 
 ```
 [AI 完成单元卡+角色弧线段+浮现记录]
@@ -556,25 +550,8 @@ spawn Agent(subagent_type: "moshu-evaluator", prompt: "
 
 怎么处理？"
 
-🔍 独立评审（spawn moshu-evaluator）：
-spawn Agent(subagent_type: "moshu-evaluator", prompt: "
-  token: {8位令牌}
-  eval_type: unit
-  target_path: 大纲/卷纲_第X卷.md（单元卡内联）
-  benchmark_path: 设定/理想书评.md
-  context: 停靠2·Stage 4 单元产物评审
-  project_dir: {项目目录}
-")
-→ 评审报告回来 → 附屏展示（编辑/作者/读者三维度 + if_one_change + overall）
-→ 采纳前用 review_tickets.py verify-token 校验令牌（回传不符 → 弃用报告）
-
-→ **先弹待定项（若有）**：AskUserQuestion 逐条问"你倾向哪个方案？"——答完即出表（已收敛区同步）
-→ **再弹主确认**：AskUserQuestion ✅ 确认内容（进 Stage 5）｜ 🔧 按评审建议调整（AI 按报告改进）｜ 🔄 触发采风（评审弱项定向补弱）｜ 📝 我自己改
-→ 🔧 按评审建议调整 → AI 按报告改进 → 浮现记录与角色弧线段受影响则同步 → 重新展示本屏
-→ 🔄 触发采风 → 进入采风触发流程（CF 票据登记，检索评审弱项对应维度）→ 融合后重新展示本屏
-→ 📝 我自己改 → 作者给出修改 → 重新展示本屏
-
-📎 附块（只展示不落盘，B15 纪律）：本卷支线登记进展（{支线}：{进展 1 行}）｜暗线设计推进（{暗线}：{本卷推进格 1 行}）
+→ 评审与主选择按「停靠屏协议」执行（eval_type: unit）；**先弹待定项（若有）**：AskUserQuestion 逐条问"你倾向哪个方案？"——答完即出表（已收敛区同步）；确认 → 进 Stage 5
+→ 📎 附块（只展示不落盘，B15 纪律）：本卷支线登记进展（{支线}：{进展 1 行}）｜暗线设计推进（{暗线}：{本卷推进格 1 行}）
 ```
 
 ---
@@ -681,8 +658,6 @@ spawn Agent(subagent_type: "moshu-evaluator", prompt: "
 
 #### 停靠 3（Stage 6 后，🔴）
 
-> **机检（停靠呈报前必跑）**：产物落盘后先跑 `scripts/check_outline.py --project {项目根}`——blocking 命中先修再呈报；仅 candidate 时照常呈报并附「机检结果附屏」（候选永不拦截）。
-
 
 ```
 [AI 完成对标回流+LOCK+配比]
@@ -723,26 +698,8 @@ spawn Agent(subagent_type: "moshu-evaluator", prompt: "
 
 定稿并转 /moshu-write？"
 
-🔍 独立评审（spawn moshu-evaluator）：
-spawn Agent(subagent_type: "moshu-evaluator", prompt: "
-  token: {8位令牌}
-  eval_type: final
-  target_path: 大纲/大纲.md + 大纲/卷纲_第X卷.md
-  benchmark_path: 设定/理想书评.md
-  context: 停靠3·Stage 6 定稿终审
-  project_dir: {项目目录}
-")
-→ 评审报告回来 → 附屏展示（编辑/作者/读者三维度 + if_one_change + overall）
-→ 采纳前用 review_tickets.py verify-token 校验令牌（回传不符 → 弃用报告）
-
-→ AskUserQuestion 主选择（停靠 3）：🔒 确认定稿 ｜ 🔧 按评审建议调整（AI 按报告改进）｜ 🔄 触发采风（评审弱项定向补弱）｜ 📝 我自己改
-→ 🔒 确认定稿 → 写入定稿标记+执行 tracking init（构建态置「定稿」）→ "卷纲已定稿，可以 /moshu-write 开始写第一章了"
-   （收尾边界：只提示转 /moshu-write；不即兴建议 /moshu-setup（部署前置已由 skill 入口检查）或修订/开新卷（作者主动触发，路由词见 SKILL.md））
-→ 🔧 按评审建议调整 → AI 按报告改进 → 回到对应步修改 → 重新展示本屏
-→ 🔄 触发采风 → 进入采风触发流程（CF 票据登记，检索评审弱项对应维度）→ 融合后重新展示本屏
-→ 📝 我自己改 → 作者给出修改 → 重新展示本屏
-
-📎 附块（只展示不落盘，B15 纪律）：本卷支线收束（{支线}：{收束 1 行}）｜暗线全揭状态（{暗线}：{全揭/留悬念 1 行}）
+→ 评审与主选择按「停靠屏协议」执行（eval_type: final）；确认选项为 **🔒 确认定稿** → 写入定稿标记+执行 tracking init（构建态置「定稿」）→ "卷纲已定稿，可以 /moshu-write 开始写第一章了"（收尾边界：只提示转 /moshu-write；不即兴建议 /moshu-setup 或修订/开新卷）
+→ 📎 附块（只展示不落盘，B15 纪律）：本卷支线收束（{支线}：{收束 1 行}）｜暗线全揭状态（{暗线}：{全揭/留悬念 1 行}）
 ```
 
 #### 停靠评审 Fallback（自评四问）
