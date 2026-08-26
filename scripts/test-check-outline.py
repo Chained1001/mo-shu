@@ -225,6 +225,31 @@ def test_power_paren_suffix(tmp: Path) -> None:
     assert not any("疑似单链条" in c for c in payload["candidate"]), f"不应误报单链条: {payload}"
 
 
+def test_virtual_benchmark_unconsumed(tmp: Path) -> None:
+    # B53：虚拟对标.md 存在但大纲零引用其锚点关键词 → candidate 且 exit 0
+    project = write_project(tmp, "vbench", COMPLIANT)
+    (project / "设定").mkdir()
+    (project / "设定" / "虚拟对标.md").write_text(
+        "# 虚拟对标\n## 节奏目标\n- 爆发密度：每 5 章一个小高潮\n- 伏笔密度：每卷埋 4 条 / 收 3 条参考\n", encoding="utf-8")
+    code, payload = run_check(project)
+    assert code == 0, f"虚拟对标未消费为 candidate，应 exit 0，实得 {code}: {payload}"
+    assert any("虚拟对标" in c and "零引用" in c for c in payload["candidate"]), f"应出虚拟对标未消费候选: {payload}"
+
+
+def test_virtual_benchmark_consumed(tmp: Path) -> None:
+    # B53：大纲显式引用虚拟对标锚点（如「每 5 章一个小高潮」）→ 不出候选
+    outline = COMPLIANT.replace(
+        "> 定稿：v1.0（2026-08-24，构建环）",
+        "> 定稿：v1.0（2026-08-24，构建环）\n> 参照虚拟对标：每 5 章一个小高潮（全书节奏目标）")
+    project = write_project(tmp, "vbenchok", outline)
+    (project / "设定").mkdir()
+    (project / "设定" / "虚拟对标.md").write_text(
+        "# 虚拟对标\n## 节奏目标\n- 爆发密度：每 5 章一个小高潮\n", encoding="utf-8")
+    code, payload = run_check(project)
+    assert code == 0, f"已消费应 exit 0，实得 {code}: {payload}"
+    assert not any("零引用" in c for c in payload["candidate"]), f"已引用不应报零引用候选: {payload}"
+
+
 def main() -> None:
     work = ROOT / ".tmp" / "tests" / "B18work"
     import shutil
@@ -247,9 +272,11 @@ def main() -> None:
         test_ladder_chinese_quantifier(work)
         test_bullet_bottom_counted(work)
         test_power_paren_suffix(work)
+        test_virtual_benchmark_unconsumed(work)
+        test_virtual_benchmark_consumed(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1)")
+    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 虚拟对标未消费+已消费)")
 
 
 if __name__ == "__main__":

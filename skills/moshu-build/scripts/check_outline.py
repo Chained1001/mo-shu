@@ -339,6 +339,20 @@ def main() -> int:
         if not val or val in ("{}", "待补充", "TBD"):
             candidate.append("常驻压力行为空或占位，建议补充")
 
+    # ---------- B53 candidate：虚拟对标消费提示（设定/虚拟对标.md 存在时） ----------
+    virtual_path = project / "设定" / "虚拟对标.md"
+    if virtual_path.exists():
+        try:
+            vtext = read_text(virtual_path)
+            # 提取虚拟对标中的可锚定关键词（节奏目标/结构要点节的数字+名词短语，简单口径：
+            # 抽「每 N 章」「N 条」与 >2 字中文词），命中任一即算已消费
+            anchors = set(re.findall(r"每\s*\d+\s*章|伏笔密度|\d+\s*条", vtext))
+            consumed = any(a in text for a in anchors) if anchors else None
+            if consumed is False:
+                candidate.append("存在 虚拟对标.md 但大纲/卷纲零引用其节奏目标或结构要点关键词——可能未消费（候选提示，请人工确认）")
+        except OutlineError as exc:
+            candidate.append(f"虚拟对标读取异常：{exc}")
+
     # ---------- m. candidate：反转类型覆盖统计（整合记录） ----------
     if integration_path.exists():
         try:

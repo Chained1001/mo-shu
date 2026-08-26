@@ -15,7 +15,7 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 | Stage | 做什么 | 关键点 |
 |---|---|---|
-| Stage 1 检测项目状态 | 版本展示 → 参考包自检 → 状态四查 | sentinel `agents_version` 三分支：缺失/非整数或小于 `36` → 待更新继续；等于 36 → 弹窗确认重部署；大于 `36` → 停止防降级覆盖 |
+| Stage 1 检测项目状态 | 版本展示 → 参考包自检 → 状态四查 | sentinel `agents_version` 三分支：缺失/非整数或小于 `37` → 待更新继续；等于 37 → 弹窗确认重部署；大于 `37` → 停止防降级覆盖 |
 | Stage 2 部署基础设施 | AskUserQuestion 确认部署位置 → `deploy.py deploy` 一键执行 | CONFLICT/FAIL 时按 deploy-manual 对应步骤人工处理 |
 | Stage 3 验证安装 | `deploy.py verify` 八项机械验证（hooks/rules 路径/8 个 agents/agent-references/settings/CLAUDE.md 节/sentinel）→ 安装报告+重启提示 | agents 只在会话启动时注册，部署完必须新开会话 |
 
@@ -27,7 +27,7 @@ description: "网文写作工具集基础设施部署。为 Claude Code 部署 h
 
 ```
 deployed_at: <date -u +"%Y-%m-%dT%H:%M:%SZ">
-agents_version: 36
+agents_version: 37
 setup_skill_version: 1.5.1
 target_cli: claude-code
 resolver_strategy: project-local-skill-reference

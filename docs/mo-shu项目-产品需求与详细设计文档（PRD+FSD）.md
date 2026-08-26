@@ -487,18 +487,16 @@ Stage 5 选题：references/topic-decision.md（四步+可行性三档）→ 选
 
 ## Ⅳ.21 开书（moshu-build）
 
-**分支：有对标 vs 无对标**——判定在 Stage 1 四轮式：用户提及参考作品→登记主对标（`对标/{书名}/`，通常从拆文库复制子集）→ 后续 A3(c)(e) 召回链走 `对标/` 优先、回退 `拆文库/`；无对标→不强制（「无对标也能开书」），采风与方法论库兜底。两分支共用同一 Stage 1-6 主干：
+**分支：有对标 vs 无对标**——判定在 Stage 1：用户登记主对标 → 走 `对标/{书名}/` 召回链（回退 `拆文库/`），虚拟对标跳过；无对标 → 采风产物合成**虚拟对标**（`设定/虚拟对标.md`，三类设计目标：节奏/情绪/结构）承担设计约束参照。两分支共用 Phase A/B 主干：
 
-| Stage | 主线程 | 读/调用 | 产出 |
+| Phase | 内容 | 读/调用 | 产出 |
 |---|---|---|---|
-| 1 四轮式 | 定调+档位 | 轮 1 默认采风（⚡spawn moshu-researcher caifeng-structure → 产物六节 → 融合四步本 Stage 内执行，细则 references/caifeng-methods.md）；理想书评 | 核心设定表、构建台账 |
-| 2 骨架 | 八列表+势力场 | references/workflow-build.md 骨架节+方法论副本索引（outline-methods 等按需）；**停靠 1**（check_outline.py 机检前置 → spawn moshu-evaluator → 裁决） | 大纲骨架、停靠 1 屏 |
-| 3 人物（自动） | 角色档案+弧线 | character-design-methods；⚡瓶颈信号可触发采风 | 设定/角色/ |
-| 4 单元 | 单元卡+卷纲 | beat-cards（BC-ID 节拍）；**停靠 2**（同协议） | 卷纲、剧情单元卡 |
-| 5 整合（自动） | 一致性检验 | check_outline.py（blocking 9/candidate 5）、伏笔四态 | 整合记录、伏笔表、线索矩阵 |
-| 6 定稿 | 卷级五问 | **停靠 3** → tracking_commit.py init | 定稿卷纲（v1.0）、追踪初始化 |
+| **A·快速生成** Stage 1 | 四轮式（定调+参考偏好采集→定形六问[含情绪基调/更新频率/雷点]→理想书评结构化三维度量化目标→档位）；采风默认执行（query 按参考偏好分流定向/泛化）；虚拟对标合成（无对标时，CF 票据标已消费） | ⚡spawn moshu-researcher；caifeng-methods（融合四步+第五步合成） | 核心设定表（含参考偏好/读者偏好段）、理想书评.md、虚拟对标.md、构建台账 v3 |
+| A Stage 2-6 全速 | 方法论照用不停靠不评审（骨架八列表+势力场→人物档案+弧线页→单元卡+卷纲[BC-ID]→整合检验伏笔四态/线索矩阵→定稿写完全部 artifact）；不确定处标 ⚠️ 入台账 | 方法论副本索引按需；beat-cards；check_outline.py（Stage 2 后 blocking-only、Stage 6 后全量） | 大纲、角色档案、卷纲、整合记录 |
+| **A→B 弹窗** | 产物清单+⚠️待打磨项汇总+机检结果 → ✅进入打磨/📋先看产出/⏸️暂存 | — | 台账构建态翻「Phase B 打磨中」 |
+| **B·深度打磨环** | ① evaluator 全局评审（eval_type: full，target_paths=完整粗稿，对照 virtual_benchmark_path+benchmark_path 出三维度 JSON+score+research_needed+summary+recommendation）② 打磨屏（评审报告九格+⚠️汇总）③ 五选项：✅确认定稿(tracking init)/🔧按建议改进/🔄采风补强(research_needed 精准检索→更新虚拟对标→re-spawn)/📡逐维度打磨(结构/桥段/节奏/情绪/角色五选一,各映射方法论文件与对照锚点)/📝作者自改 ④ 级联纪律：影响声明→作者确认→一次改完→重跑 check_outline→re-spawn→打磨记录落台账(append-only) | ⚡spawn moshu-evaluator / moshu-researcher；review_tickets.py verify-token；check_outline.py 重跑 | 打磨记录轮次追加、改后产物、tracking init |
 
-修订流：scripts/impact_scan.py（三清单：未写细纲/已写正文/追踪域）→ AskUserQuestion 裁决 → 变更日志 append → stale 级联。开新卷见 Ⅳ.26。
+断点恢复：新会话读台账构建态「Phase B 打磨中」→读打磨记录最后一条→汇报断点→继续打磨环。开新卷见 Ⅳ.26（Phase A 从 Stage 4 起增量，虚拟对标沿用）。修订流：scripts/impact_scan.py（三清单：未写细纲/已写正文/追踪域）→ AskUserQuestion 裁决 → 变更日志 append → stale 级联。
 
 ## Ⅳ.22 导入（moshu-import）
 
