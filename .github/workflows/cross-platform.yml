@@ -104,6 +104,8 @@ jobs:
         run: python3 scripts/test-chapter-boundary.py
       - name: Chapter-summary hard-check regression
         run: python3 scripts/test-chapter-summary.py
+      - name: Style-profile regression
+        run: python3 scripts/test-style-profile.py
       - name: AI-pattern detector regression
         run: bash scripts/test-ai-patterns.sh
       - name: Outline-copy detector regression

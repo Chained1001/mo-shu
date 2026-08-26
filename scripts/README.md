@@ -49,6 +49,7 @@
 | `test-merge-summaries.js` | merge-chapter-summaries 回归：自然排序/拼接完整/无损校验失败删文件/空目录/CRLF 兼容 | CI（调 moshu-analyze 拼接脚本） | 摘要拼接 | 未登记-待体检 |
 | `test-chapter-boundary.py` | 章节边界解析器回归：中文/阿拉伯/混合章号、多卷重编号（卷名前置消歧）、连续性退出码（AC2 扩展：任何模式 exit 3）、BOM 剥离、落盘幂等 | CI（调 moshu-analyze chapter_boundary） | 切片真值 | 2026-08-26（analyze 走查修复批） |
 | `test-chapter-summary.py` | 摘要硬检查器回归：4 硬检查（检查项 1/3/4/5）判 FAIL、花括号仅提示、N<10 硬下限、--file/--deep 深度字段路径 | CI（调 moshu-analyze check_chapter_summary） | 摘要质量门 | 2026-08-26（analyze 走查修复批） |
+| `test-style-profile.py` | 文风画像脚本回归：句长分布/段落节奏/标点密度谱/对话比/bigram/虚词密度精确值（合成 fixture）、读失败三分类、<800 字 warning、compare 相对差 | CI（调 moshu-style style_profile） | 文风画像确定性层 | 2026-08-26（B49：style 走查预习——确定性层薄（AI 手搓 one-liner）+2509.14543 分布锚依据） |
 | `test-charcount-portable.sh` | 跨平台字符统计命令在三平台 + Windows 的正确性 | CI（调 check-python-invocation） | 跨平台字数 | 未登记-待体检 |
 | `test-hook-encoding-portable.sh` | 部署 hook 在 Windows 中文系统的编码健壮性 | CI | GBK hook 编码 | 未登记-待体检 |
 | `test-skill-numbering.sh` | Step 重排级联安全、锚点 fail-closed、代码块引用、验证零写入/提交回滚、dry-run/write/幂等性 | Linux / Windows Git Bash / macOS CI | 编号级联 | 未登记-待体检 |

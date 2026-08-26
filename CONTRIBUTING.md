@@ -134,6 +134,7 @@ node scripts/test-scan-analyze.js
 node scripts/test-merge-summaries.js
 python3 scripts/test-chapter-boundary.py
 python3 scripts/test-chapter-summary.py
+python3 scripts/test-style-profile.py
 bash scripts/test-ai-patterns.sh
 bash scripts/test-outline-copy.sh
 bash scripts/test-degeneration.sh
