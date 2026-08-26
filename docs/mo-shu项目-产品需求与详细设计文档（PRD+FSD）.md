@@ -13,7 +13,7 @@
 1. **三层分工：脚本做确定性、AI 做语义、作者做品味。** 字数统计、格式检查、状态写入这类可判定的事交给脚本；写作、审查、大纲设计交给 AI；确认、裁决、复盘永远留给作者。违反样式：让 AI「自觉」数字数、让脚本「判断」剧情好坏——前者会漂移，后者会误伤。
 2. **文件即真相：状态不在对话记忆里。** 几十万字后的设定/伏笔/时间线全部落在文件系统，按维度独立维护；对话只负责创作。违反样式：靠会话上下文记「谁知道了什么」——压缩一次就失忆。
 3. **候选永不拦截。** 机器的疑似发现（candidate）只呈报作者，永不阻断流程、不影响退出码；只有确定性错误（blocking）才拦。违反样式：把「疑似 AI 味」设成红门——作者被误报卡住，弃用。
-4. **方法论苏格拉底化。** 设计环节用问句强迫表态（「这一卷对主题主张是辩护还是质问？」），答不出说明设计未完成（build 侧 12 苏式节/67 方法论节——B25 存量+B52 批③五文件 11 处）；模板用填空 `{____}` 而非空格子。违反样式：清单式打勾——全部勾完但骨架是空的。
+4. **方法论苏格拉底化。** 设计环节用问句强迫表态（「这一卷对主题主张是辩护还是质问？」），答不出说明设计未完成（build 侧 12 苏式节/67 方法论节——B25 存量+B52 批③五文件 11 处；Phase B 逐维度打磨时按维度加载对应方法论苏式节）；模板用填空 `{____}` 而非空格子。违反样式：清单式打勾——全部勾完但骨架是空的。
 5. **工具不审问作者。** 不向内挖作者私人经历/情感做素材；动态参照用向外的跨媒介采风获取。违反样式：访谈式提问作者童年阴影——工具越界成了心理医生。
 6. **确定性优先：一切可数的都工具化。** 版本号散射、契约、计数全部脚本维护单一真源，禁止手工 grep 式维护。违反样式：改一个版本号手工搜全仓——漏一处，CI 红，返工三轮。
 
@@ -66,6 +66,12 @@
 - **正则（grep 模式）**：描述文字匹配模式的语法；残留清点/断言的底层手段。
 - **SKILL.md**：技能的「散文 main()」——frontmatter（name/version/description=路由匹配依据）给系统读，正文（角色/铁律/流程索引/锚点）在触发时全文注入 AI 上下文；确定性动作不写在它里面，由它指挥 AI 调脚本执行。
 - **触发两层分工**：moshu 路由管模糊意图（自然语言→建议技能），技能自身只保留精确触发（命令+一条规范短语，如 setup 的「部署墨枢写作环境」）——防松短语误触发。
+- **虚拟对标**：无对标路线的设计约束参照——采风产物合成为三类设计目标（节奏目标/情绪基准/结构要点），落盘 设定/虚拟对标.md，Phase A 设计时参照、Phase B 打磨时作为 evaluator 评分锚点。有对标时跳过（对标/节奏.md+情绪模块.md 提供更精确约束）。
+- **参考偏好**：0-3 部作品+各自偏好维度（如"诡秘的悬疑氛围"）——学习神韵非模仿结构（对标=拆文产物直接 fail-fast）。采风的定向检索锚点（有参考→精准搜，无→泛化搜）。
+- **Phase A/B**：build 内部的双 Phase 架构——Phase A 快速生成（Stage 1 交互+Stage 2-6 全速不停靠），Phase B 深度打磨（evaluator 全局评审→逐维度改进→循环直到确认）。
+- **打磨环**：Phase B 的大停靠——内含五选项主屏（确认/按建议改进/触发采风/逐维度打磨/自己改）+ 级联变更协议 + append-only 打磨记录（台账 v3）。
+- **打磨记录**：构建台账 v3 的 append-only 节——每轮打磨的 evaluator 报告摘要/score/作者选择/改动文件/影响级联/check_outline 重跑结果。多天打磨的断点恢复唯一真相源。
+- **research_needed**：evaluator JSON 输出字段——null（评审完成不需额外参照）或具体查询（"需要同题材中点设计实例"）。非 null 时🔄触发采风选项自动填充检索需求，采风目标从模糊变精准。
 - **上下文注入**：技能触发时 SKILL.md 全文进入 AI 对话上下文的机制——AI 读到指令才开始按它行动。
 - **evals**：两层评测资产——samples（缺陷/干净样本对，CI 端到端回归）+ scenarios（人工带 agent 走查的场景剧本，CI 只做静态校验不跑 LLM）。
 
@@ -154,7 +160,7 @@ flowchart TD
 
 ## 3.10 核心管线规格
 
-**3.10.1 构建（build，Stage 1-6）**：Stage 1 四轮式信息采集（轮 1 定调+默认采风，可跳过须降级声明）→ Stage 2 骨架八列表+势力场（停靠 1）→ Stage 3 人物（自动步）→ Stage 4 单元卡+卷纲（停靠 2）→ Stage 5 整合检验（自动步，伏笔表/线索矩阵）→ Stage 6 打磨定稿（停靠 3）→ `tracking_commit.py init` 交接 write。停靠协议=通用协议段（四步+参数差异表，B51 批②抽取）：机检前置（check_outline blocking 先修）→ spawn evaluator（三维度只读评审）→ 作者裁决。修订流：impact_scan 三清单→AskUserQuestion 裁决→变更日志 append→stale 级联标记。开新卷：卷复盘输入→Stage 4 起增量（Stage 1-3 全书级不重做）。
+**3.10.1 构建（build，Phase A/B 双 Phase 架构）**：Phase A「快速生成」——Stage 1 信息采集（轮 1 定调+参考偏好+采风定向→虚拟对标合成；轮 2 五问批量弹窗[体量/平台/终局/情绪基调/更新频率+雷点]；轮 3 理想书评结构化[三维度量化目标]；轮 4 档位弹窗）→ Stage 2-6 全速走完（方法论照用、不停靠不评审、⚠️ 标注不确定处、Stage 2 后跑 check_outline blocking 自动、Stage 6 后跑全量 blocking 须清零）→ Phase A→B 弹窗（粗稿摘要+✅进入打磨/📋先看产出/⏸️暂存）。Phase B「深度打磨环」——spawn evaluator（全局评审：读完整粗稿+虚拟对标+理想书评，三维度评审+score+research_needed+summary+recommendation）→ 打磨屏五选项（✅确认定稿/🔧按建议改进/🔄触发采风[research_needed 精准检索→融合→更新虚拟对标→re-spawn]/📡逐维度打磨[结构/桥段/节奏/情绪/角色五选一→聚焦该维度方法论深度检查→改进→re-spawn 聚焦]/📝自己改）→ 每轮级联变更（先声明影响文件→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录落台账 append-only）。断点恢复：台账构建态「Phase B 打磨中」→ 读打磨记录最后一条→继续打磨环。确认出口：tracking init→构建态翻「定稿」。修订流：revision-workflow 五步（定稿后改动，与 Phase B 生命周期不同）。开新卷：Phase A 从 Stage 4 起增量，Phase B 照旧。
 
 **3.10.2 写作（write，三 lane）**：见 Ⅳ.23 全链走查。
 
@@ -181,7 +187,7 @@ flowchart TD
 | researcher | 中阶 | 检索 | 双模式（采风禁取正文/事实查证可取）、无来源丢弃、maxTurns 30 |
 | explorer | 轻量 | 只读 | 文风两级正查、gaps 六分支 |
 | chapter-extractor | 轻量 | Read/Glob/Grep（禁写） | 固定材料声明前缀、失败 haiku 重试→sonnet 升级→标记跳过 |
-| evaluator | 中阶 | 只读（禁 Write/Edit/Bash） | 三维度、令牌回传、JSON 输出 |
+| evaluator | 中阶 | 只读（禁 Write/Edit/Bash），maxTurns 15 | 三维度+对照虚拟对标/理想书评评分+research_needed+summary/recommendation、令牌回传、JSON 输出、eval_type 含 full（Phase B 全局评审） |
 
 共性：方法论从部署包 agent-references 按需加载；产出纪律引用单副本 `shared-output-discipline.md`（禁模板互引）；审稿类带令牌；全部有主线降级。
 
@@ -233,7 +239,7 @@ current-contract.json 四域（deployment_manifest 6 键/artifact_contracts 3 �
 
 ## 3.15 性能预算
 
-doc-budget 单文件+路径组两级（node UTF-16 口径）；超限处理序：删等量旧文本→下沉冷路径→显式调高注明理由。当前关键预算：workflow-build 26000/构建路径组 29900（B51 收敛批②后锁定）。冷热分离：SKILL.md 薄入口+references 按需+低频节下沉 cold-path。**指纹纪律（B50/B51 教训）**：shared-assets 组内容任何变更（含 sync 到 setup 副本）都改变部署物指纹——bump 后再动 shared-assets 须 --re-register-fingerprint。
+doc-budget 单文件+路径组两级（node UTF-16 口径）；超限处理序：删等量旧文本→下沉冷路径→显式调高注明理由。当前关键预算：workflow-build 26000/构建路径组 29900（B51 收敛后锁定；B53 Phase A/B 重构后待实测调整）。冷热分离：SKILL.md 薄入口+references 按需+低频节下沉 cold-path。**指纹纪律（B50/B51 教训）**：shared-assets 组内容任何变更（含 sync 到 setup 副本）都改变部署物指纹——bump 后再动 shared-assets 须 --re-register-fingerprint。
 
 ## 3.16 降级与容错
 
