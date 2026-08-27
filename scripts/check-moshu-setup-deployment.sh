@@ -534,12 +534,12 @@ setup_git_repo "$cont_root"
 copy_hooks "$cont_root"
 printf 'x\n' > "$cont_root/book/正文/第1章_开端.md"
 printf 'x\n' > "$cont_root/book/正文/第2章_开端.md"
-printf '{"schema_version":5,"state_revision":0,"last_committed_chapter":1}\n' > "$cont_root/book/追踪/_tracking-state.json"
+printf '{"schema_version":6,"state_revision":0,"last_committed_chapter":1}\n' > "$cont_root/book/追踪/_tracking-state.json"
 cont_out="$(run_from_nested "$cont_root" detect-story-gaps.sh || true)"
 echo "$cont_out" | grep -q '正文已写到第2章，但追踪只提交到第1章' || fail "gaps: continuity staleness not reported"
 echo "$cont_out" | grep -q '章标题重复' || fail "gaps: duplicate titles not reported"
 # 负向：追踪跟上 + 标题不重复不报
-printf '{"schema_version":5,"state_revision":0,"last_committed_chapter":2}\n' > "$cont_root/book/追踪/_tracking-state.json"
+printf '{"schema_version":6,"state_revision":0,"last_committed_chapter":2}\n' > "$cont_root/book/追踪/_tracking-state.json"
 mv "$cont_root/book/正文/第2章_开端.md" "$cont_root/book/正文/第2章_暗流.md"
 cont_out2="$(run_from_nested "$cont_root" detect-story-gaps.sh || true)"
 if echo "$cont_out2" | grep -q '正文已写到第2章，但追踪只提交到'; then fail "gaps: continuity staleness false positive"; fi
@@ -669,7 +669,7 @@ PY
 # last_committed 取一个大于本节所有用例章号的值：章号已在追踪范围内即跳过顺序校验，
 # 于是 第1/7/123/124 章都只被细纲门判定。
 mkdir -p "$guard_root/book/追踪"
-printf '{"schema_version":5,"state_revision":0,"last_committed_chapter":200}\n' > "$guard_root/book/追踪/_tracking-state.json"
+printf '{"schema_version":6,"state_revision":0,"last_committed_chapter":200}\n' > "$guard_root/book/追踪/_tracking-state.json"
 printf '> 状态修订：0。\n' > "$guard_root/book/追踪/上下文.md"
 [ "$(run_guard 'book/正文/第1章_开端.md')" = "0" ] || fail "guard wrongly blocked long prose when 细纲 present"
 # 追踪门本身：state 移走即拦（Claude 端此前静默放行，写出无追踪正文）

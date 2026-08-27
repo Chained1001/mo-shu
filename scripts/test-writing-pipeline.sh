@@ -81,7 +81,8 @@ cat > "$WORK/commit.json" <<'EOF'
 EOF
 "$PYBIN" "$TRACKING_TOOL" commit --project "$PROJECT" --input "$WORK/commit.json" >/dev/null 2>&1 || fail "tracking commit"
 STATE="$PROJECT/追踪/_tracking-state.json"
-grep -q '"schema_version": 5' "$STATE" || fail "state schema_version != 5"
+SCHEMA_V="$("$PYBIN" -c 'import os,sys; sys.path.insert(0, os.path.dirname(os.path.abspath(sys.argv[1]))); import tracking_commit as t; print(t.TRACKING_SCHEMA_VERSION)' "$TRACKING_TOOL")"
+grep -q "\"schema_version\": $SCHEMA_V" "$STATE" || fail "state schema_version != $SCHEMA_V（版本无关断言，随工具常量）"
 grep -q '"last_committed_chapter": 1' "$STATE" || fail "last_committed_chapter != 1"
 
 # ---------- 3. check（含 suspension_warnings 候选字段） ----------

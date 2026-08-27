@@ -52,7 +52,7 @@ class NextStepTests(unittest.TestCase):
     def init_state(self, project: Path, last: int) -> None:
         self.write(
             project / "追踪/_tracking-state.json",
-            json.dumps({"schema_version": 5, "last_committed_chapter": last, "state_revision": 1}, ensure_ascii=False),
+            json.dumps({"schema_version": 6, "last_committed_chapter": last, "state_revision": 1}, ensure_ascii=False),
         )
 
     def test_s0_when_not_deployed(self) -> None:
