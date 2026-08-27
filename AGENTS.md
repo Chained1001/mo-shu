@@ -35,7 +35,7 @@
 1. 新脚本/模板是否接入现有机制（shared-assets / behavior-contracts / doc-budget / current-contract / CI 三处同步）？
 2. 跨 skill 副本是否经 `sync-shared-assets.py` 同步（`check-shared-files.sh` 全绿）？
 3. agent 模板变更是否 bump `agents_version` + 更新 `UPGRADING.md`？
-4. schema 变更是否带 migrate + 备份 + write/import/review 三端同步？
+4. schema 变更是否带 migrate + 备份 + 四副本同步（write/build/import/review），并全仓 grep 涟漪面（hook 拒旧常量与消息文本/契约断言文本/fixture/shell e2e/守卫 JSON 标记——含 .json，B58 两轮 CI 红判因链）？
 5. 新增测试是正式回归（长期守护）还是临时验证（已删）？测试文件顶部是否带"守护对象"声明？
 6. 文档数字与代码一致？（skill 数/脚本数/版本号——`check-story-numbers.sh` 守护；"清单类断言最易过期"）
 7. 参考项目只读遵守了吗？旧规划目录零接触了吗？
