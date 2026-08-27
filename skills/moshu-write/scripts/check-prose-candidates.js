@@ -1,16 +1,21 @@
 #!/usr/bin/env node
-// check-prose-candidates.js — 正文层候选类机检（高频意象 / 句式偏离 / 信息差兑现）
+// check-prose-candidates.js — 正文层候选类机检（高频意象 / 句式偏离 / 信息差兑现 / 成稿长度）
 // 候选永不拦截：输出结构硬编码 blocking_count=0 且无 blocking 字段数组，
 // 退出码恒 0（仅参数/文件错误=2）；缺 --style/--gaps 时降级提示，不失败。
 // 零 LLM、零网络、只读（不写任何文件）。
 "use strict";
 
 const fs = require("fs");
+const path = require("path");
 
 // mo-shu 自定：同窗（2-4 字）出现次数阈值，--threshold 可覆盖。
 const IMAGERY_REPEAT_THRESHOLD = 5;
 // mo-shu 自定：句式偏离容差，基线区间 ±30%。
 const DRIFT_TOLERANCE = 0.3;
+// mo-shu 自定（B62a）：成稿长度比率候选阈值——细纲「字数目标」与成稿非空白字符数的
+// 比率超出 [0.7, 1.3] 出候选；--length-floor/--length-ceiling 可覆盖。
+const LENGTH_FLOOR_RATIO = 0.7;
+const LENGTH_CEILING_RATIO = 1.3;
 const WINDOW_LENGTHS = [2, 3, 4];
 
 // 内建停用词（虚词/高频功能字，约 60 个）：全停用词的窗口不算意象。
@@ -150,6 +155,63 @@ function gapTouchCandidates(prose, gapsText) {
   return candidates;
 }
 
+// B62a 长度候选：非空白字符数 vs 细纲「字数目标」。
+function nonwsLen(text) {
+  return text.replace(/\s/g, "").length;
+}
+
+// 从 prose 路径定位书根（正文/ 在书根下一级 → 书根 = prose 目录的父目录）与本章细纲文件。
+function locateOutline(prosePath) {
+  const resolved = path.resolve(prosePath);
+  const bookRoot = path.basename(path.dirname(resolved)) === "正文"
+    ? path.dirname(path.dirname(resolved))
+    : path.dirname(resolved);
+  const chapterMatch = path.basename(resolved).match(/^第0*(\d+)章/);
+  if (!chapterMatch) return null;
+  const chapter = parseInt(chapterMatch[1], 10);
+  const outlineDir = path.join(bookRoot, "大纲");
+  if (!fs.existsSync(outlineDir)) return null;
+  const padded = String(chapter).padStart(3, "0");
+  const plain = String(chapter);
+  for (const pattern of [`细纲_第${padded}章`, `细纲_第${plain}章`]) {
+    for (const name of fs.readdirSync(outlineDir)) {
+      if (name.startsWith(pattern)) return path.join(outlineDir, name);
+    }
+  }
+  return null;
+}
+
+function lengthCandidate(proseText, prosePath, floor, ceiling) {
+  const outlinePath = locateOutline(prosePath);
+  if (!outlinePath) {
+    return { skipped: "length_check: skipped_no_outline" };
+  }
+  let outlineText;
+  try {
+    outlineText = fs.readFileSync(outlinePath, "utf8");
+  } catch (error) {
+    return { skipped: "length_check: skipped_no_outline" };
+  }
+  const match = outlineText.match(/字数目标[：:]\s*\{?(\d+)\s*字?\}?/);
+  if (!match) {
+    return {
+      candidate: { type: "length", detail: "细纲无字数目标，长度未检" },
+    };
+  }
+  const target = parseInt(match[1], 10);
+  const actual = nonwsLen(proseText);
+  const ratio = target > 0 ? Math.round((actual / target) * 100) / 100 : 0;
+  if (ratio < floor || ratio > ceiling) {
+    return {
+      candidate: {
+        type: "length",
+        detail: `成稿长度 ${actual} 字 vs 目标 ${target}（比率 ${ratio}，越界 [${floor},${ceiling}]）`,
+      },
+    };
+  }
+  return { ok: `length_check: ok（${actual}/${target}）` };
+}
+
 function analyzeProse(proseText, styleText, gapsText, options = {}) {
   const threshold = options.threshold ?? IMAGERY_REPEAT_THRESHOLD;
   const candidates = [];
@@ -180,6 +242,8 @@ function main(argv) {
   let gapsPath = null;
   let asJson = false;
   let threshold = IMAGERY_REPEAT_THRESHOLD;
+  let lengthFloor = LENGTH_FLOOR_RATIO;
+  let lengthCeiling = LENGTH_CEILING_RATIO;
   for (let index = 0; index < argv.length; index++) {
     const argument = argv[index];
     if (argument === "--prose") prosePath = argv[++index];
@@ -187,6 +251,8 @@ function main(argv) {
     else if (argument === "--gaps") gapsPath = argv[++index];
     else if (argument === "--json") asJson = true;
     else if (argument === "--threshold") threshold = parseInt(argv[++index], 10);
+    else if (argument === "--length-floor") lengthFloor = parseFloat(argv[++index]);
+    else if (argument === "--length-ceiling") lengthCeiling = parseFloat(argv[++index]);
     else {
       process.stderr.write(`ERROR: unknown argument ${argument}\n`);
       return 2;
@@ -198,6 +264,10 @@ function main(argv) {
   }
   if (!Number.isFinite(threshold) || threshold < 1) {
     process.stderr.write("ERROR: --threshold must be an integer >= 1\n");
+    return 2;
+  }
+  if (!Number.isFinite(lengthFloor) || !Number.isFinite(lengthCeiling) || lengthFloor <= 0 || lengthCeiling < lengthFloor) {
+    process.stderr.write("ERROR: --length-floor/--length-ceiling must be 0 < floor <= ceiling\n");
     return 2;
   }
   let proseText;
@@ -226,9 +296,16 @@ function main(argv) {
     }
   }
   const result = analyzeProse(proseText, styleText, gapsText, { threshold });
+  const length = lengthCandidate(proseText, prosePath, lengthFloor, lengthCeiling);
   if (asJson) {
-    console.log(JSON.stringify(result, null, 2));
+    console.log(JSON.stringify({ ...result, length }, null, 2));
     return 0;
+  }
+  if (length.skipped) {
+    console.log(length.skipped);
+  }
+  if (length.candidate) {
+    result.candidates.push(length.candidate);
   }
   if (result.candidates.length === 0) {
     console.log("prose candidates: none");
@@ -238,9 +315,14 @@ function main(argv) {
       console.log(`[imagery] "${candidate.text}" 出现 ${candidate.count} 次`);
     } else if (candidate.type === "style_drift") {
       console.log(`[style_drift] ${candidate.metric}: 实际 ${candidate.actual}, 基线 ${candidate.baseline}`);
+    } else if (candidate.type === "length") {
+      console.log(`[length] ${candidate.detail}`);
     } else {
       console.log(`[gap_touch] ${candidate.gap_id} 关键词 "${candidate.keyword}" 命中正文（${candidate.hint}）`);
     }
+  }
+  if (length.ok) {
+    console.log(length.ok);
   }
   for (const item of result.degraded) {
     console.log(`[degraded] ${item}`);
@@ -249,7 +331,14 @@ function main(argv) {
   return 0;
 }
 
-module.exports = { analyzeProse, IMAGERY_REPEAT_THRESHOLD, DRIFT_TOLERANCE };
+module.exports = {
+  analyzeProse,
+  lengthCandidate,
+  IMAGERY_REPEAT_THRESHOLD,
+  DRIFT_TOLERANCE,
+  LENGTH_FLOOR_RATIO,
+  LENGTH_CEILING_RATIO,
+};
 
 if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
