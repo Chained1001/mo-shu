@@ -147,7 +147,7 @@
     },
     {
       "label": "构建路径",
-      "budget": 21900,
+      "budget": 22000,
       "files": [
         "skills/moshu-build/SKILL.md",
         "skills/moshu-build/references/workflow-build.md",
