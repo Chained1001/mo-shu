@@ -1080,7 +1080,7 @@ def progress_schema_pin_findings(repo_root: Path, expected: int) -> List[Finding
             continue
         for line_number, line_text in enumerate(text.splitlines(), start=1):
             if "chapter_range" in line_text:
-                continue  # 工单 schema 域（review_tickets.py SCHEMA_VERSION=1，JSON 示例与散文均含 chapter_range），非追踪 schema
+                continue  # 工单 schema 域（review_tickets.py SCHEMA_VERSION=2（B60 bump），JSON 示例与散文均含 chapter_range），非追踪 schema
             for match in SCHEMA_VERSION_PIN_RE.finditer(line_text):
                 if int(match.group(1)) == expected:
                     continue
