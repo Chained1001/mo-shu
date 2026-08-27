@@ -130,7 +130,8 @@
 | Stage 3 | 雪花法→弧线六阶段→角色一页 | 同左 + **读节奏校准灾难级别** |
 | Stage 4 | 五步法→单元卡（题材公式仅离线兜底） | 同左 + **读对标单元参考功能/密度** |
 | Stage 5 | 伏笔/线索/因果+可证伪 | 同左 + **读情绪模块校准密度** |
-| Stage 6 | 八节点占比+LOCK+定稿 | **对标回流**+LOCK+定稿 |
+| Stage 6 | 八节点占比+LOCK+定稿 | **对标回流**（五步，见 Stage 6 节）+LOCK+定稿 |
+| Phase B | evaluator 用虚拟对标做评审锚点 | evaluator 用对标拆文产物做评审锚点（精确度更高） |
 
 #### 交互时点（v4.0：三停靠折叠为打磨环）
 
@@ -290,7 +291,14 @@
 
 ### Phase A Stage 6·定稿（Phase A 意义上的"写完"）
 
-> 方法论照常加载：LOCK 四查 / 卷级五问 / 八节点占比；对标回流（有主对标时做——坐标表+锚点，模板同 v3.0 对标结构坐标节）。
+> 方法论照常加载：LOCK 四查 / 卷级五问 / 八节点占比。
+
+**对标回流**（有主对标时做，B55 恢复为五步——仍是 Phase A 自动步骤，不停靠）：
+1. 读对标 `剧情/节奏.md` → 提取爆发密度/爽点循环/追读锚点
+2. 对照骨架每卷高潮位 → 排「对标结构坐标表」（卷/对标高潮位/本书高潮位/偏差/调整建议）
+3. 偏差大的卷 → 读对标对应单元的结构手法
+4. 每卷选 2-3 个对标锚点 → 写入卷纲「对标结构坐标」节
+5. 坐标表+锚点入台账产物表（Phase B 打磨时可深入调整）
 
 **产出**：写完所有 artifact 文件（大纲/卷纲/整合记录含伏笔表线索矩阵）；字数配比核对。
 
@@ -348,9 +356,16 @@ eval_type: full          ← Phase B 专用，评完整粗稿
 target_paths: [大纲/大纲.md, 大纲/卷纲_第X卷.md, 设定/角色/*.md, 角色弧线页]
 benchmark_path: 设定/理想书评.md（结构化三维度）
 virtual_benchmark_path: 设定/虚拟对标.md   ← 无对标时传入，有对标时省略
+benchmark_book_paths: [对标/{书名}/剧情/节奏.md, 对标/{书名}/剧情/情绪模块.md]   ← 仅有主对标时传入（拆文精确数据，优先级最高）
 context: "Phase B 第 N 轮打磨——上一轮改了 X，本轮重点检查 Y"
 project_dir: {项目目录}
 ```
+
+**参照优先级（B55）**：
+- 有主对标 → 用 benchmark_book_paths，virtual_benchmark_path 省略（不双重传入）
+- 无对标 → 用 virtual_benchmark_path，benchmark_book_paths 省略
+- 两者都无 → 仅用 benchmark_path（理想书评——最弱参照，evaluator 应在 research_needed 中标注缺少参照）
+
 → 报告回来先用 review_tickets.py verify-token 校验令牌（回传不符 → 弃用报告重 spawn）
 → evaluator 输出三维度 JSON（score/research_needed/summary/recommendation 字段定义见 agent 模板）
 

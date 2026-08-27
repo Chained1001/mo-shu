@@ -58,7 +58,7 @@
 - **doc-budget**：热路径文本量预算（单文件+路径组两级，node UTF-16 口径）——防止「每次会话全量加载」的文档无限膨胀。
 - **marketplace**：`.claude-plugin/marketplace.json`，11 插件条目，是 npx 安装与 Claude 插件市场的分发清单。
 - **sentinel**：`.story-deployed`，部署标记文件（6 字段），所有技能的部署检测入口。
-- **agents_version**：部署物版本号（当前 36）——实管全部部署物（agent 模板+hooks+规则+方法论副本），名字偏窄；散布全仓 40+ 处（以 bump 预览实测为准），由 bump 脚本唯一合法修改。**机器闸门号**：比大小决定「重部署提醒/禁止降级」，与包版本两轴正交不重复（见 Ⅲ.13 版本地图）。
+- **agents_version**：部署物版本号（权威在 UPGRADING.md；本词典实例随批校正）——实管全部部署物（agent 模板+hooks+规则+方法论副本），名字偏窄；散布全仓 40+ 处（以 bump 预览实测为准），由 bump 脚本唯一合法修改。**机器闸门号**：比大小决定「重部署提醒/禁止降级」，与包版本两轴正交不重复（见 Ⅲ.13 版本地图）。
 - **幂等**：重复执行结果一致（部署/合并/事务都要求），失败可从头重跑。
 - **断言（assertion）**：测试脚本里的一句检查「某事实必须成立」（如 SKILL.md 必须含「8 个 agents」），实现多为 grep。
 - **锚点（anchor）**：被断言盯住的文字片段——内容迁移时锚点须留在原地或连断言一起搬，否则测试红；「部署锚点」即 SKILL.md 中被 TS 套件钉住的几段。
@@ -160,7 +160,7 @@ flowchart TD
 
 ## 3.10 核心管线规格
 
-**3.10.1 构建（build，Phase A/B 双 Phase 架构）**：Phase A「快速生成」——Stage 1 信息采集（轮 1 定调+参考偏好+采风定向→虚拟对标合成；轮 2 五问批量弹窗[体量/平台/终局/情绪基调/更新频率+雷点]；轮 3 理想书评结构化[三维度量化目标]；轮 4 档位弹窗）→ Stage 2-6 全速走完（方法论照用、不停靠不评审、⚠️ 标注不确定处、Stage 2 后跑 check_outline blocking 自动、Stage 6 后跑全量 blocking 须清零）→ Phase A→B 弹窗（粗稿摘要+✅进入打磨/📋先看产出/⏸️暂存）。Phase B「深度打磨环」——spawn evaluator（全局评审：读完整粗稿+虚拟对标+理想书评，三维度评审+score+research_needed+summary+recommendation）→ 打磨屏五选项（✅确认定稿/🔧按建议改进/🔄触发采风[research_needed 精准检索→融合→更新虚拟对标→re-spawn]/📡逐维度打磨[结构/桥段/节奏/情绪/角色五选一→聚焦该维度方法论深度检查→改进→re-spawn 聚焦]/📝自己改）→ 每轮级联变更（先声明影响文件→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录落台账 append-only）。断点恢复：台账构建态「Phase B 打磨中」→ 读打磨记录最后一条→继续打磨环。确认出口：tracking init→构建态翻「定稿」。修订流：revision-workflow 五步（定稿后改动，与 Phase B 生命周期不同）。开新卷：Phase A 从 Stage 4 起增量，Phase B 照旧。
+**3.10.1 构建（build，Phase A/B 双 Phase 架构）**：Phase A「快速生成」——Stage 1 信息采集（轮 1 定调+参考偏好+采风定向→虚拟对标合成；轮 2 五问批量弹窗[体量/平台/终局/情绪基调/更新频率+雷点]；轮 3 理想书评结构化[三维度量化目标]；轮 4 档位弹窗）→ Stage 2-6 全速走完（方法论照用、不停靠不评审、⚠️ 标注不确定处、Stage 2 后跑 check_outline blocking 自动、Stage 6 后跑全量 blocking 须清零）→ Phase A→B 弹窗（粗稿摘要+✅进入打磨/📋先看产出/⏸️暂存）。Phase B「深度打磨环」——spawn evaluator（全局评审：读完整粗稿+虚拟对标+理想书评，三维度评审+score+research_needed+summary+recommendation）→ 打磨屏五选项（✅确认定稿/🔧按建议改进/🔄触发采风[research_needed 精准检索→融合→更新虚拟对标→re-spawn]/📡逐维度打磨[结构/桥段/节奏/情绪/角色五选一→聚焦该维度方法论深度检查→改进→re-spawn 聚焦]/📝自己改）→ 每轮级联变更（先声明影响文件→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录落台账 append-only）。断点恢复：台账构建态「Phase B 打磨中」→ 读打磨记录最后一条→继续打磨环。有对标路线：evaluator 收 benchmark_book_paths（对标/剧情/节奏.md+情绪模块.md 拆文精确数据，最高优先级参照；传入时省略 virtual_benchmark_path）——双路统一打磨环只是参照精度不同。确认出口：tracking init→构建态翻「定稿」。修订流：revision-workflow 五步（定稿后改动，与 Phase B 生命周期不同）。开新卷：Phase A 从 Stage 4 起增量，Phase B 照旧。
 
 **3.10.2 写作（write，三 lane）**：见 Ⅳ.23 全链走查。
 
@@ -226,10 +226,10 @@ flowchart TD
 |---|---|---|---|---|
 | 包版本 | 2.3.6 | 「我装的**工具**是哪版？」 | skills/moshu/VERSION、marketplace metadata、CHANGELOG | 人（下载/发版） |
 | 技能版本 | write 1.7.0 等 11 个 | 「这个插件演到哪版？」 | 各 SKILL.md frontmatter ↔ marketplace plugins[]（adapter 守卫核一致） | 插件市场 |
-| agents_version | 35 | 「**你写作项目里**部署的装备是第几代？要重部署吗？」 | 技能包内 40+ 处（bump 脚本唯一合法修改，以预览实测为准）＋每个写作项目 .story-deployed 快照 | 机器（比大小：重部署提醒/禁降级） |
+| agents_version | 38 | 「**你写作项目里**部署的装备是第几代？要重部署吗？」 | 技能包内 40+ 处（bump 脚本唯一合法修改，以预览实测为准）＋每个写作项目 .story-deployed 快照 | 机器（比大小：重部署提醒/禁降级） |
 | schema 版本 | progress 2 等 | 「数据文件是什么格式？」 | 数据文件头/契约常量 | 读写兼容与迁移（带备份） |
 
-**为什么 agents_version 与包版本不重复（两轴正交）**：包版本沿「发布轴」走——发版才动，一次发布里什么都有（文档/CI/README 都算）；agents_version 沿「部署物变更面轴」走——只有部署到你项目里的东西变了才动。权威类比：Android 的 versionName（营销版本，人看）与 versionCode（单调整数，商店机器比大小决定升级）——同一模式。通俗版：**包版本=说明书印到第几版（下载时看）；agents_version=你家装机单编号（部署时盖章）**——说明书再版≠你家要重新装修，只有装修方案变了才需要师傅再来。双向实例：①B30 加 evaluator→33→34 而包版本停在 2.3.6（git 用户立刻感知）；②B31-B47 几十笔文档/CI 提交全进 v2.3.7 而 34 纹丝不动（文档变更零误报重部署提醒）。若强行合一的代价：任一 README 修复都会让全部已部署项目误报「请重部署」，或部署物变更在发版前对已部署项目不可见。
+**为什么 agents_version 与包版本不重复（两轴正交）**：包版本沿「发布轴」走——发版才动，一次发布里什么都有（文档/CI/README 都算）；agents_version 沿「部署物变更面轴」走——只有部署到你项目里的东西变了才动。权威类比：Android 的 versionName（营销版本，人看）与 versionCode（单调整数，商店机器比大小决定升级）——同一模式。通俗版：**包版本=说明书印到第几版（下载时看）；agents_version=你家装机单编号（部署时盖章）**——说明书再版≠你家要重新装修，只有装修方案变了才需要师傅再来。双向实例：①B30 加 evaluator→33→34 而包版本停在 2.3.6（git 用户立刻感知）；②B31-B47 几十笔文档/CI 提交全进 v2.3.7 而 34 纹丝不动（文档变更零误报重部署提醒）；⑤B55 evaluator 三档优先级对照→37→38。若强行合一的代价：任一 README 修复都会让全部已部署项目误报「请重部署」，或部署物变更在发版前对已部署项目不可见。
 
 **已知乱点（记录待裁决，暂不修）**：①命名误导——agents_version 实管全部部署物（agent 模板+hooks+规则+方法论副本），名字偏窄，本节即别名说明（真改名成本：全仓 40+ 处+老项目 sentinel 兼容）；②同轨双名——setup_skill_version（sentinel 字段名）与 moshu-setup frontmatter version 是同一个数的两个名字；③bump 义务靠纪律——守卫查「全仓版本一致」，查不出「该 bump 没 bump」（候选守卫：部署物变更而版本未动即红）；④版本地图即本节（已补齐）。
 
