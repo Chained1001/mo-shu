@@ -364,6 +364,37 @@ def main() -> int:
         if dangling:
             candidate.append(f"事件关系边引用了未定义的剧情单元：{'、'.join(dangling[:8])}（悬空引用，请核对单元卡或修正边表）")
 
+    # ---------- B58b candidate：细纲「伏笔操作」行悬空 ID（只读大纲域，不读追踪 state） ----------
+    # 细纲「伏笔操作：{埋设|强化|回收}·{F/G ID}…」引用的 ID 需在本书信息差登记（追踪/信息差.md
+    # 派生文本）或卷纲/整合记录的伏笔文本中存在；只查 F/G 前缀合法 ID，悬空提示不拦截。
+    outline_dir = project / "大纲"
+    if outline_dir.is_dir():
+        gap_text = ""
+        gap_path = project / "追踪" / "信息差.md"
+        if gap_path.exists():
+            try:
+                gap_text = read_text(gap_path)
+            except OutlineError:
+                gap_text = ""
+        foreshadow_known = set(re.findall(r"F\d+", text + (integration_text if integration_path.exists() else "")))
+        gaps_known = set(re.findall(r"G\d+", gap_text))
+        for detail_path in sorted(outline_dir.glob("细纲_第*章*.md")):
+            try:
+                dt = read_text(detail_path)
+            except OutlineError:
+                continue
+            for op_match in re.finditer(r"伏笔操作[：:][^\n]*", dt):
+                op_line = op_match.group(0)
+                if "无" in op_line and not re.search(r"[FG]\d+", op_line):
+                    continue
+                for oid in re.findall(r"\b([FG]\d+)\b", op_line):
+                    if oid.startswith("F") and oid not in foreshadow_known:
+                        candidate.append(f"悬空伏笔操作：{detail_path.name} 引用 {oid}，未见于卷纲/整合记录伏笔登记（候选提示，请人工核对）")
+                        break
+                    if oid.startswith("G") and gaps_known and oid not in gaps_known:
+                        candidate.append(f"悬空伏笔操作：{detail_path.name} 引用 {oid}，未见于信息差登记（候选提示，请人工核对）")
+                        break
+
     # ---------- m. candidate：反转类型覆盖统计（整合记录） ----------
     if integration_path.exists():
         try:

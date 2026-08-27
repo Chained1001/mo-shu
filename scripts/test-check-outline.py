@@ -292,6 +292,28 @@ def test_event_edge_ok(tmp: Path) -> None:
     assert not any("未定义的剧情单元" in c for c in payload["candidate"]), f"已定义不应报悬空: {payload}"
 
 
+def test_foreshadow_op_dangling(tmp: Path) -> None:
+    # B58b：细纲「伏笔操作」引用 F999（卷纲/整合记录均无）→ candidate 且 exit 0
+    project = write_project(tmp, "fopdang", COMPLIANT)
+    detail = project / "大纲" / "细纲_第005章.md"
+    detail.write_text("# 第5章 细\n- 伏笔操作：埋设·F999（认知颠覆星级1-5：4；情感基调迁移：轻松→悬疑）\n", encoding="utf-8")
+    code, payload = run_check(project)
+    assert code == 0, f"悬空伏笔操作为 candidate，应 exit 0，实得 {code}: {payload}"
+    assert any("悬空伏笔操作" in c and "F999" in c for c in payload["candidate"]), f"应出悬空候选: {payload}"
+
+
+def test_foreshadow_op_ok(tmp: Path) -> None:
+    # B58b：引用 F001（整合记录有登记）→ 不出悬空候选
+    project = write_project(tmp, "fopok", COMPLIANT)
+    integration = project / "大纲" / "整合记录.md"
+    integration.write_text("# 整合记录\n| F001 | 计划埋 |\n", encoding="utf-8")
+    detail = project / "大纲" / "细纲_第005章.md"
+    detail.write_text("# 第5章 细\n- 伏笔操作：强化·F001（认知颠覆星级1-5：3；情感基调迁移：信任→怀疑）\n", encoding="utf-8")
+    code, payload = run_check(project)
+    assert code == 0, f"合法伏笔操作应 exit 0，实得 {code}: {payload}"
+    assert not any("悬空伏笔操作" in c for c in payload["candidate"]), f"已登记不应报悬空: {payload}"
+
+
 def main() -> None:
     work = ROOT / ".tmp" / "tests" / "B18work"
     import shutil
@@ -318,9 +340,11 @@ def main() -> None:
         test_virtual_benchmark_consumed(work)
         test_event_edge_dangling(work)
         test_event_edge_ok(work)
+        test_foreshadow_op_dangling(work)
+        test_foreshadow_op_ok(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 虚拟对标未消费+已消费 / 事件边悬空+正常)")
+    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 虚拟对标未消费+已消费 / 事件边悬空+正常 / 伏笔操作悬空+合法)")
 
 
 if __name__ == "__main__":

@@ -34,7 +34,7 @@
     {
       "path": "skills/moshu-write/references/outline-workflow.md",
       "budget": 7400,
-      "why": "细纲工作流（自 write 侧开书工作流细纲段拆分，V2.1 B1b；细纲/中途补纲/设定补全路径每次会话付，预算=实测×1.05 取整）。B56 细纲质量要求补「章节定位供 A 段场景卡召回消费」句，实测 7042，6986→7400"
+      "why": "细纲工作流（自 write 侧开书工作流细纲段拆分，V2.1 B1b；细纲/中途补纲/设定补全路径每次会话付，预算=实测×1.05 取整）。B56 细纲质量要求补「章节定位供 A 段场景卡召回消费」句，实测 7042，6986→7400。B58b 细纲模板加「伏笔操作」行+reveal_chapter 对齐句（伏笔剧透锁设计层登记），单文件实测 7230、预算 7400 不变（组随动见组条目）"
     },
     {
       "path": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
@@ -129,11 +129,12 @@
     },
     {
       "label": "长篇开书",
-      "budget": 16400,
+      "budget": 16700,
       "files": [
         "skills/moshu-write/SKILL.md",
         "skills/moshu-write/references/outline-workflow.md"
-      ]
+      ],
+      "why": "。B58b 伏笔操作行增量（outline-workflow 7042→7230，组实测 16544 超 16400，调 16400→16700 吸收）"
     },
     {
       "label": "正文 agent 上下文",

@@ -24,7 +24,7 @@ from typing import Any
 
 
 INPUT_SCHEMA_VERSION = 2
-TRACKING_SCHEMA_VERSION = 5
+TRACKING_SCHEMA_VERSION = 6
 DELTA_TARGET_BYTES = 1536
 DELTA_MAX_BYTES = 3072
 CONTEXT_TARGET_BYTES = 8192
@@ -538,7 +538,7 @@ def normalize_information_gap_change(
     row = as_mapping(value, label)
     require_known_keys(
         row,
-        {"action", "id", "knowers", "reader_known", "keywords", "status", "note"},
+        {"action", "id", "knowers", "reader_known", "keywords", "status", "note", "reveal_chapter"},
         label,
     )
     action = clean_text(row.get("action", default_action), f"{label}.action", max_bytes=24)
@@ -547,6 +547,13 @@ def normalize_information_gap_change(
     require(GAP_ID.fullmatch(identifier) is not None, f"{label}.id must look like G001")
     if action == "retire":
         return {"action": action, "id": identifier}
+    # B58b：reveal_chapter 可选字段（最早揭示章；null=未定）。register/update 可带，retire 不带。
+    raw_reveal = row.get("reveal_chapter")
+    reveal_chapter: int | None
+    if raw_reveal is None:
+        reveal_chapter = None
+    else:
+        reveal_chapter = as_int(raw_reveal, f"{label}.reveal_chapter", minimum=1, maximum=9999)
     reader_known = clean_text(row.get("reader_known"), f"{label}.reader_known", max_bytes=12)
     require(reader_known in READER_KNOWN, f"{label}.reader_known must be one of {READER_KNOWN}")
     status = clean_text(row.get("status"), f"{label}.status", max_bytes=24)
@@ -561,6 +568,7 @@ def normalize_information_gap_change(
         "keywords": clean_string_list(row.get("keywords", []), f"{label}.keywords", item_max_bytes=192),
         "status": status,
         "note": clean_text(row.get("note"), f"{label}.note", max_bytes=360),
+        "reveal_chapter": reveal_chapter,
     }
 
 
@@ -573,8 +581,8 @@ def normalize_information_gap_state(value: object, last_chapter: int) -> dict[st
         require_known_keys(
             row,
             {
-                "id", "knowers", "reader_known", "keywords", "status",
-                "first_recorded_chapter", "updated_chapter", "note",
+                "id", "knowers", "reader_known", "keywords", "status", "note", "reveal_chapter",
+                "first_recorded_chapter", "updated_chapter",
             },
             f"tracking state.information_gaps.{identifier}",
         )
@@ -609,23 +617,43 @@ def normalize_information_gap_state(value: object, last_chapter: int) -> dict[st
     return normalized
 
 
-def render_information_gaps(gaps: dict[str, dict[str, Any]], revision: int) -> str:
+def is_spoiler_locked(row: dict[str, Any], current_chapter: int) -> bool:
+    """B58b 剧透锁：reader_known=否 且 reveal_chapter 非空且 > 当前章 → 锁定（不渲染 note/keywords）。
+
+    reveal_chapter 为 null → 不锁（保守方向：不锁=照旧全量）。
+    """
+    reveal = row.get("reveal_chapter")
+    return bool(reveal) and row.get("reader_known") == "否" and int(reveal) > current_chapter
+
+
+def render_information_gaps(
+    gaps: dict[str, dict[str, Any]], revision: int, current_chapter: int = 0
+) -> str:
     lines = [
         "# 信息差当前登记",
         "",
         f"> 状态修订：{revision}。登记「谁知道什么」：知情人 × 读者已知 × 关键词；历史变化见 `逐章记录/`。",
         "",
-        "| ID | 知情人 | 读者已知 | 关键词 | 状态 | 首次登记章 | 最近变更章 | 备注 |",
-        "|---|---|---|---|---|---|---|---|",
+        "| ID | 知情人 | 读者已知 | 关键词 | 状态 | 首次登记章 | 最近变更章 | 最早揭示章 | 备注 |",
+        "|---|---|---|---|---|---|---|---|---|",
     ]
     for identifier in sorted(gaps):
         row = gaps[identifier]
+        if is_spoiler_locked(row, current_chapter):
+            knowers = "、".join(row["knowers"]) or "—"
+            lines.append(
+                f"| {identifier} | {knowers} | {row['reader_known']} | 🔒内容锁定（第{row['reveal_chapter']}章揭示） | "
+                f"{row['status']} | 第{row['first_recorded_chapter']}章 | 第{row['updated_chapter']}章 | "
+                f"{row.get('reveal_chapter') or '—'} | — |"
+            )
+            continue
         knowers = "、".join(row["knowers"]) or "—"
         keywords = "、".join(row["keywords"]) or "—"
         note = row["note"] or "—"
         lines.append(
             f"| {identifier} | {knowers} | {row['reader_known']} | {keywords} | {row['status']} | "
-            f"第{row['first_recorded_chapter']}章 | 第{row['updated_chapter']}章 | {note} |"
+            f"第{row['first_recorded_chapter']}章 | 第{row['updated_chapter']}章 | "
+            f"{row.get('reveal_chapter') or '—'} | {note} |"
         )
     return "\n".join(lines) + "\n"
 
@@ -812,7 +840,16 @@ def build_roll_call_section(
     else:
         lines.append(f"涉及设定：{involved_settings}")
     lines.append("活跃伏笔：全量见下方「## 活跃伏笔」节（悬置防遗忘防线，不在本节重复筛减）")
-    lines.append("信息差锁定标记：（B58b 子步填充）")
+    # B58b 剧透锁标记：reveal_chapter>当前章 且 reader_known=否 的条目 ID（无则「无」）
+    current_chapter = state.get("last_committed_chapter", 0)
+    locked_ids = [
+        identifier
+        for identifier, row in state.get("information_gaps", {}).items()
+        if is_spoiler_locked(row, current_chapter)
+    ]
+    lines.append(
+        "信息差锁定标记：" + ("、".join(sorted(locked_ids)) if locked_ids else "无")
+    )
     lines.append("永不裁剪项：本章承诺 / 上一章结尾段 / 出场名单 / 时间锚")
 
     # 双闸降级序：按出场顺序逐个把完整展开行降级为「列名+硬状态」，两闸同时收敛才停
@@ -1139,36 +1176,48 @@ def load_state(project: Path) -> dict[str, Any]:
     return normalize_state(read_json(path))
 
 
-def migrate_v4_state(project: Path) -> None:
-    """写入路径的一次性 v4→v5 迁移：先备份原文件，再原地升版并补空 information_gaps 域。
+def migrate_state(project: Path) -> None:
+    """写入路径的一次性 schema 迁移：先备份原文件，再原地升版补默认键（零丢失）。
 
-    仅当 schema_version==4 且缺 information_gaps 域时触发；备份命名
-    `追踪/_备份/schema-v4-<YYYYMMDD-HHMMSS>.json`（同秒冲突追加随机后缀）。
-    迁移失败不写任何文件；老键原样保留，零丢失。
+    v4→v5：缺 information_gaps 域时补空域。
+    v5→v6（B58b）：每条 information_gaps 条目补 `reveal_chapter: null`（可选字段默认不锁）。
+    备份命名 `追踪/_备份/schema-v{N}-<YYYYMMDD-HHMMSS>.json`（同秒冲突追加随机后缀）。
+    迁移失败不写任何文件；老键原样保留，零丢失。连续迁移链：v4 先升 v5 再升 v6。
     """
     path = state_path(project)
     if not path.exists():
         return
     document = read_json(path)
-    if not (
-        isinstance(document, dict)
-        and document.get("schema_version") == TRACKING_SCHEMA_VERSION - 1
-        and "information_gaps" not in document
-    ):
+    if not isinstance(document, dict):
         return
+    version = document.get("schema_version")
     tracking = tracking_root(project)
     backup_dir = tracking / "_备份"
+    if version not in (4, 5) or version == TRACKING_SCHEMA_VERSION:
+        return
+    # 链式迁移：v4 先补空 information_gaps 升 v5，再补 reveal_chapter 升 v6；一次备份覆盖全链
     backup_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-    backup = backup_dir / f"schema-v4-{stamp}.json"
+    backup = backup_dir / f"schema-v{version}-{stamp}.json"
     while backup.exists():
-        backup = backup_dir / f"schema-v4-{stamp}-{os.urandom(2).hex()}.json"
+        backup = backup_dir / f"schema-v{version}-{stamp}-{os.urandom(2).hex()}.json"
     atomic_write_text(backup, json_payload(document))
     migrated = dict(document)
+    if version == 4:
+        migrated.setdefault("information_gaps", {})
+    migrated["information_gaps"] = {
+        identifier: {**row, "reveal_chapter": row.get("reveal_chapter")}
+        if isinstance(row, dict)
+        else row
+        for identifier, row in migrated.get("information_gaps", {}).items()
+    }
     migrated["schema_version"] = TRACKING_SCHEMA_VERSION
-    migrated["information_gaps"] = {}
     atomic_write_text(path, json_payload(migrated))
-    emit(f"NOTE: tracking state migrated v4→v5; backup at 追踪/_备份/{backup.name}", error=True)
+    emit(f"NOTE: tracking state migrated v{version}→v{TRACKING_SCHEMA_VERSION}; backup at 追踪/_备份/{backup.name}", error=True)
+
+
+# 兼容旧名（B57 及之前的调用点）
+migrate_v4_state = migrate_state
 
 
 def normalize_initial_document(document: object) -> dict[str, Any]:
@@ -1390,7 +1439,9 @@ def render_views(
     views = {
         "上下文.md": render_context(state, appearing, involved_settings, injection_budget),
         "伏笔.md": render_foreshadow(state["foreshadow"], revision),
-        "信息差.md": render_information_gaps(state["information_gaps"], revision),
+        "信息差.md": render_information_gaps(
+            state["information_gaps"], revision, state.get("last_committed_chapter", 0)
+        ),
     }
     author, reader = render_timeline_views(state["timeline"], revision)
     views["时间线/作者真相.md"] = author

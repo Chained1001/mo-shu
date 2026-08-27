@@ -143,6 +143,9 @@ def load_tool_module():
 
 
 class TrackingCommitTests(unittest.TestCase):
+    # B58b：schema 断言跟随工具常量（v5→v6 reveal_chapter；后续 bump 不再破用例）
+    SCHEMA_VERSION = 6
+
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.project = Path(self.temporary.name) / "让你管账号，你高燃混剪炸全网"
@@ -191,7 +194,7 @@ class TrackingCommitTests(unittest.TestCase):
         tracking = self.project / "追踪"
         state = self.read_state()
 
-        self.assertEqual(state["schema_version"], 5)
+        self.assertEqual(state["schema_version"], self.SCHEMA_VERSION)
         self.assertEqual(state["state_revision"], 0)
         self.assertEqual(state["characters"], {})
         self.assertEqual(state["foreshadow"], {})
@@ -581,7 +584,7 @@ class TrackingCommitTests(unittest.TestCase):
         self.run_tool("commit", transaction(1))
         state_path = self.project / "追踪/_tracking-state.json"
         state = self.read_state()
-        self.assertEqual(state["schema_version"], 5)
+        self.assertEqual(state["schema_version"], self.SCHEMA_VERSION)
         state["schema_version"] = 4
         state.pop("information_gaps")
         state_path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
@@ -589,7 +592,7 @@ class TrackingCommitTests(unittest.TestCase):
         self.run_tool("commit", transaction(2))
 
         migrated = self.read_state()
-        self.assertEqual(migrated["schema_version"], 5)
+        self.assertEqual(migrated["schema_version"], self.SCHEMA_VERSION)
         self.assertEqual(migrated["information_gaps"], {})
         self.assertEqual(migrated["last_committed_chapter"], 2)
         self.assertEqual(migrated["book_title"], state["book_title"])
