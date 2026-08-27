@@ -24,7 +24,7 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 TICKET_ID = re.compile(r"^T\d{3,}$")
 SEVERITIES = ("blocking", "candidate")
 STATUSES = ("open", "fixed", "dismissed")
@@ -93,6 +93,21 @@ def clean_text(value: object, label: str, *, allow_empty: bool = False, max_byte
     return cleaned
 
 
+def clean_string_list(
+    value: object, label: str, *, maximum: int = 20, item_max_bytes: int = 360
+) -> list[str]:
+    """B60 新增：字符串列表槽位校验（数量上限 + 单项字节上限），供 preserve 等可选键复用。"""
+    require(isinstance(value, list), f"{label} must be a list")
+    cleaned: list[str] = []
+    for index, item in enumerate(value):
+        cleaned.append(clean_text(item, f"{label}[{index}]", max_bytes=item_max_bytes))
+    require(
+        len(cleaned) <= maximum,
+        f"{label} must contain at most {maximum} items, got {len(cleaned)}",
+    )
+    return cleaned
+
+
 def tickets_dir(project: Path) -> Path:
     return project.resolve() / ".moshu-review" / "tickets"
 
@@ -102,7 +117,11 @@ def normalize_finding(value: object, index: int) -> dict[str, Any]:
     require(isinstance(finding, dict), f"findings[{index}] must be an object")
     require_known_keys(
         finding,
-        {"id", "severity", "dimension", "evidence", "suggestion", "status", "status_note"},
+        {
+            "id", "severity", "dimension", "evidence", "suggestion", "status", "status_note",
+            # B60 可选键：problem 结构化问题陈述 / preserve 保留清单 / length_coefficient 字数系数
+            "problem", "preserve", "length_coefficient",
+        },
         f"findings[{index}]",
     )
     identifier = clean_text(finding.get("id"), f"findings[{index}].id", max_bytes=24)
@@ -116,6 +135,37 @@ def normalize_finding(value: object, index: int) -> dict[str, Any]:
     # write 只接受新建态：处置一律走 resolve（单向 open→fixed/dismissed），
     # 禁止用 write 直接落 fixed/dismissed 绕过处置证据（批6 禁止事项 4）。
     require(status == "open", f"findings[{index}].status must be open on write; use resolve to change status")
+
+    # B60 可选键（全可选、旧工单兼容）：
+    # problem = 结构化问题陈述 {现象, 位置, 为什么是问题} 三段各 ≤200B；
+    # preserve = 作者保留清单（≤10 条、每条 ≤120B）——填写权只在作者与 [需复核] 转正，
+    #            reviewer/deslop 不得自填（防「自我保留」架空整改）；
+    # length_coefficient = 字数系数 float 0.5-2.0（默认 1.0=不约束）。
+    problem: dict[str, Any] | None = None
+    raw_problem = finding.get("problem")
+    if raw_problem is not None:
+        require(isinstance(raw_problem, dict), f"findings[{index}].problem must be an object")
+        require_known_keys(raw_problem, {"现象", "位置", "为什么是问题"}, f"findings[{index}].problem")
+        problem = {
+            key: clean_text(raw_problem.get(key), f"findings[{index}].problem.{key}", max_bytes=200)
+            for key in ("现象", "位置", "为什么是问题")
+        }
+    preserve: list[str] | None = None
+    raw_preserve = finding.get("preserve")
+    if raw_preserve is not None:
+        preserve = clean_string_list(raw_preserve, f"findings[{index}].preserve", maximum=10, item_max_bytes=120)
+    raw_coefficient = finding.get("length_coefficient")
+    length_coefficient: float | None = None
+    if raw_coefficient is not None:
+        require(
+            isinstance(raw_coefficient, (int, float)) and not isinstance(raw_coefficient, bool),
+            f"findings[{index}].length_coefficient must be a number",
+        )
+        length_coefficient = float(raw_coefficient)
+        require(
+            0.5 <= length_coefficient <= 2.0,
+            f"findings[{index}].length_coefficient must be within [0.5, 2.0]",
+        )
     return {
         "id": identifier,
         "severity": severity,
@@ -126,6 +176,9 @@ def normalize_finding(value: object, index: int) -> dict[str, Any]:
         "status_note": clean_text(
             finding.get("status_note", ""), f"findings[{index}].status_note", allow_empty=True, max_bytes=240
         ),
+        **({"problem": problem} if problem is not None else {}),
+        **({"preserve": preserve} if preserve is not None else {}),
+        **({"length_coefficient": length_coefficient} if length_coefficient is not None else {}),
     }
 
 
@@ -134,7 +187,7 @@ def normalize_document(document: object) -> dict[str, Any]:
     require(isinstance(root, dict), "input must be a JSON object")
     require_known_keys(
         root,
-        {"schema_version", "chapter_range", "review_token", "findings"},
+        {"schema_version", "chapter_range", "review_token", "findings", "decision_points"},
         "ticket document",
     )
     require(root.get("schema_version") == SCHEMA_VERSION, "ticket schema_version is unsupported")
@@ -159,11 +212,29 @@ def normalize_document(document: object) -> dict[str, Any]:
         "findings contain duplicate IDs",
     )
     findings.sort(key=lambda item: item["id"])
+    # B60 decision_points（可选）：reviewer 间冲突意见的结构化标记，
+    # a/b = findings 数组索引（0-based，越界拒绝）；question ≤240B。
+    raw_decision_points = root.get("decision_points", [])
+    require(isinstance(raw_decision_points, list), "decision_points must be an array")
+    decision_points: list[dict[str, Any]] = []
+    for index, raw in enumerate(raw_decision_points):
+        require(isinstance(raw, dict), f"decision_points[{index}] must be an object")
+        require_known_keys(raw, {"a", "b", "question"}, f"decision_points[{index}]")
+        a = raw.get("a")
+        b = raw.get("b")
+        for label, value in (("a", a), ("b", b)):
+            require(
+                isinstance(value, int) and not isinstance(value, bool) and 0 <= value < len(findings),
+                f"decision_points[{index}].{label} must be a findings index within range",
+            )
+        question = clean_text(raw.get("question"), f"decision_points[{index}].question", max_bytes=240)
+        decision_points.append({"a": a, "b": b, "question": question})
     return {
         "schema_version": SCHEMA_VERSION,
         "chapter_range": [start, end],
         "review_token": token,
         "findings": findings,
+        "decision_points": decision_points,
     }
 
 
@@ -206,6 +277,20 @@ def resolve_command(project: Path, ticket_path: Path, identifier: str, status: s
         f"ticket {identifier} is already {finding.get('status')}; only open tickets can be resolved",
     )
     require(status in RESOLVE_STATUSES, f"status must be one of {RESOLVE_STATUSES}")
+    # B60 编辑决策点：该 finding 被 decision_points 引用时，resolution 必须引用作者裁决
+    # （status_note 含「作者裁决：」前缀）——分歧不自动妥协，裁决权在作者。
+    if isinstance(root.get("decision_points"), list):
+        in_conflict = any(
+            isinstance(dp, dict) and isinstance(dp.get("a"), int) and isinstance(dp.get("b"), int)
+            and findings[dp["a"]].get("id") == identifier
+            for dp in root["decision_points"]
+            if isinstance(dp.get("a"), int) and dp["a"] < len(findings) and dp["b"] < len(findings)
+        )
+        if in_conflict:
+            require(
+                note.startswith("作者裁决："),
+                f"finding {identifier} is a decision point (编辑决策点); status_note must cite the author's ruling with prefix 作者裁决：",
+            )
     finding["status"] = status
     finding["status_note"] = clean_text(note, "note", max_bytes=240)
     findings.sort(key=lambda item: item["id"])
@@ -232,6 +317,8 @@ def list_command(project: Path, status_filter: str | None) -> list[dict[str, Any
                 "file": path.name,
                 "chapter_range": root.get("chapter_range"),
                 "findings": findings,
+                # B60 编辑决策点：list 输出单列，供呈报作者裁决
+                "decision_points": root.get("decision_points", []),
             }
         )
     return result

@@ -161,7 +161,14 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   evidence: "引用原文或具体证据"
   issue: "问题描述"
   fix: "可执行修改建议"
+  # B60 可选键（工单 schema v2）：
+  problem: {现象: "...", 位置: "...", 为什么是问题: "..."}   # 结构化问题陈述（各段 ≤200B；issue 保留兼容）
+  preserve: ["句段引文/事实表述", ...]                        # 保留清单 ≤10 条——作者点名不许动的内容
+  length_coefficient: 1.0                                     # 字数系数 0.5-2.0，整改后期望=原×系数
 ```
+
+> **保留清单填写权红线（B60）**：`preserve` 只有**作者**与 `[需复核]` 转正两个来源——审查启动时作者输入采集优先；reviewer/deslop **不得自填**（防「自我保留」架空整改）。
+> **整改执行**：作者裁决后的整改遵守 deslop-workflow「外科手术纪律」（章级两轮/保留清单 grep 在位/事实保真/字数系数），不在此复制。
 
 严重度定义：
 - **S1**：会破坏主线、角色动机、世界规则或读者信任，需优先修。
@@ -315,7 +322,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 1. 收集实际执行的 reviewer VERDICT 和 FINDINGS。
 2. 合并去重：按 `severity` 排序（S1 > S2 > S3 > S4），同级内按影响范围排序。
 3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 `.claude/agents/moshu-researcher.md` 已部署时，才可额外 spawn `moshu-researcher` 搜索验证；`solo`、missing/malformed/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
-4. **分歧呈现**：如果 reviewer 间有冲突意见，明确呈现分歧让用户裁决；不要自动妥协。
+4. **分歧呈现（B60 结构化）**：reviewer 间冲突意见写入工单 `decision_points`（[{a, b, question}]，a/b 为冲突 findings 的数组索引）——write 时可选携带，list 输出单列「编辑决策点」节；resolve 对应 finding 时 status_note 必须以「作者裁决：」开头（引用作者裁决，不自动妥协）。
 5. 输出综合审查报告。报告必须列出实际模式、fallback 原因、使用的 rubric、Rubric Source、审查范围和证据不足项。
 6. **作者裁决点（必须输出）**：报告末尾列出作者三项裁决——**全部接受 / 修改后接受 / 打回重写**（打回需指明从哪章重写）。用户未当场裁决前不得把审查发现视作已处理；裁决结果同步进 `.moshu-review/review-log`（写作建议）与追踪事务（S1/S2）。
 7. **must_keep 保底（每条修改建议必带）**：每条修改建议必须显式注明「不得破坏」项——修复时禁止改动的内容（已埋伏笔、既定代价、人物锚点、读者已建立的认知、情绪节奏等）。修复是修问题不是重写；缺 must_keep 的修改建议视为不完整，作者裁决时可退回补充。
@@ -379,6 +386,9 @@ APPROVE(通过) / CONCERNS(有问题) / REJECT(需重写)
 
 ## Agent 分歧（如有）
 {列出 reviewer 间不同意见和证据}
+
+## 编辑决策点（如有）
+{decision_points 逐条：finding a 与 finding b 的冲突摘要 + question——呈报作者裁决，不自动妥协}
 
 ## 证据不足 / 需补充
 {缺失设定、缺失大纲、无法核查事实等}

@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TOOL = ROOT / "skills/moshu-review/scripts/review_tickets.py"
 
 VALID_DOCUMENT = {
-    "schema_version": 1,
+    "schema_version": 2,
     "chapter_range": [10, 12],
     "review_token": "a1b2c3d4",
     "findings": [
@@ -101,7 +101,7 @@ class ReviewTicketsTests(unittest.TestCase):
         payloads = [self.read_ticket(path) for path in files]
         for payload in payloads[1:]:
             self.assertEqual(payload, payloads[0])
-        self.assertEqual(payloads[0]["schema_version"], 1)
+        self.assertEqual(payloads[0]["schema_version"], 2)
         self.assertEqual(payloads[0]["chapter_range"], [10, 12])
         self.assertEqual(payloads[0]["review_token"], "a1b2c3d4")
         self.assertEqual([item["id"] for item in payloads[0]["findings"]], ["T001", "T002"])

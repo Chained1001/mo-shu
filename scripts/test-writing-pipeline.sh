@@ -101,7 +101,7 @@ diff -q "$WORK/report-first.md" "$REPORT" >/dev/null || fail "volume-report é‡æ
 # ---------- 5. review_tickets write/resolve/list ----------
 cat > "$WORK/findings.json" <<'EOF'
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "chapter_range": [1, 1],
   "review_token": "p1pe8tok",
   "findings": [
