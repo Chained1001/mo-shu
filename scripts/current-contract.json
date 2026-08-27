@@ -82,6 +82,7 @@
       ],
       "anchor_docs": [
         "skills/moshu-build/references/workflow-build.md",
+        "skills/moshu-build/references/ledger-template.md",
         "skills/moshu-build/references/caifeng-methods.md"
       ]
     }

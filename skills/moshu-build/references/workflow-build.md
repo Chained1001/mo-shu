@@ -32,7 +32,7 @@
 
 ### 台账模板（书项目产物 `设定/构建台账.md`，v3——Phase 状态机）
 
-> 模板见 [ledger-template.md](ledger-template.md)（方法论声明/五态状态机表/产物表/打磨记录 append-only 等完整格式）。台账语义要点：① 构建态五态流转以模板内「进入条件/退出条件」两列为准；② **打磨记录 append-only**——每轮追加、不改历史，是 Phase B 断点恢复的唯一真相源；③ 产物表的 ⚠️ 待打磨项列由 Phase A 各步汇总，作为 Phase B 打磨的初始清单。
+> 模板见 [ledger-template.md](ledger-template.md)（方法论声明/五态状态机表/产物表/打磨记录 append-only 等完整格式）。台账语义要点：① 构建态五态流转以模板内「进入条件/退出条件」两列为准；② **打磨记录 append-only**——每轮追加、不改历史，是 Phase B 断点恢复的唯一真相源；③ 产物表的 ⚠️ 待打磨项列由 Phase A 各步汇总，作为 Phase B 打磨的初始清单；④ 采风需求节用 CF 票据四列（CF 编号｜需求描述｜类型｜状态），与 [caifeng-methods.md](caifeng-methods.md) 台账登记口径一致。
 
 ### 流程规则（六条）
 
