@@ -92,7 +92,7 @@
       "producer": "tracking_commit.py 的 TRACKING_SCHEMA_VERSION 常量（三副本字节一致）",
       "rationale": "部署 hook 的 schema 校验必须跟随状态版本——批3a 曾漏改 hook 致真实项目写正文被拦死",
       "consumers": [
-        {"file": "skills/moshu-setup/references/templates/hooks/story_hook_core.js", "must_contain": "schema_version !== 5"}
+        {"file": "skills/moshu-setup/references/templates/hooks/story_hook_core.js", "must_contain": "schema_version !== 6"}
       ]
     },
     {
