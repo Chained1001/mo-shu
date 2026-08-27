@@ -160,6 +160,7 @@ bash scripts/check-story-numbers.sh
 python3 scripts/test-story-numbers.py
 node scripts/test-prose-candidates.js
 python3 scripts/test-review-tickets.py
+python3 scripts/test-design-fingerprints.py
 python3 scripts/test-deploy.py
 bash scripts/check-agent-template-rules.sh
 python3 scripts/test-agent-template-rules.py
