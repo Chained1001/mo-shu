@@ -562,7 +562,7 @@ write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_
 
 **tests/（8）**：dashboard-server.test.mjs / dashboard-trigger-contract.test.mjs（Dashboard API）/ e2e/dashboard.spec.mjs（Playwright）/ fixtures/{dashboard,scan,scan-empty}/（夹具）/ helpers/dashboard-e2e-server.mjs。
 
-**docs/（56）**：根级 2（README 地图 / **产品文档.md 本文**）＋治理/ 8（开发标准 v1.3 / 审计法 v1.7 / 施工日志 / 审核记录 / 审计报告×3 / 审计守卫化回填评估）＋治理/规格/ 44（README 施工协议 + 批 B2-B47 历史规格，B31/B32/B44 为报告制无规格文件）＋研究/ 1（01-小说的骨架-重叠度评估）＋归档/（封存区，零接触）。
+**docs/（55）**：根级 2（README 地图 / **产品文档.md 本文**）＋治理/ 8（开发标准 v1.3 / 审计法 v1.7 / 施工日志 / 审核记录 / 审计报告×3 / 审计守卫化回填评估）＋治理/规格/（README 施工协议 + 历史批次规格）＋研究/（开源强化研究 10 + 01-小说的骨架）。归档区已于 2026-08-28 删除。
 
 **skills/（321）**：
 
