@@ -353,6 +353,17 @@ def main() -> int:
         except OutlineError as exc:
             candidate.append(f"虚拟对标读取异常：{exc}")
 
+    # ---------- B57 candidate：事件关系边悬空引用（卷纲「事件关系边」节） ----------
+    edges_section = section_text(text, "事件关系边") or ""
+    if edges_section:
+        # 提取关系边的源/目标事件前缀单元 ID（格式 {L卷号-序号}-{概述}，如 L1-02）
+        edge_units = set(re.findall(r"(L\d+-\d+)", edges_section))
+        # 收集卷纲中实际定义的剧情单元 ID
+        defined_units = set(re.findall(r"###\s*剧情单元\s*(L\d+-\d+)", text))
+        dangling = sorted(edge_units - defined_units)
+        if dangling:
+            candidate.append(f"事件关系边引用了未定义的剧情单元：{'、'.join(dangling[:8])}（悬空引用，请核对单元卡或修正边表）")
+
     # ---------- m. candidate：反转类型覆盖统计（整合记录） ----------
     if integration_path.exists():
         try:

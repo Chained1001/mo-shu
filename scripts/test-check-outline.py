@@ -250,6 +250,48 @@ def test_virtual_benchmark_consumed(tmp: Path) -> None:
     assert not any("零引用" in c for c in payload["candidate"]), f"已引用不应报零引用候选: {payload}"
 
 
+def test_event_edge_dangling(tmp: Path) -> None:
+    # B57：事件关系边引用未定义单元 → candidate 且 exit 0
+    outline = COMPLIANT.replace(
+        "> 定稿：v1.0（2026-08-24，构建环）",
+        """> 定稿：v1.0（2026-08-24，构建环）
+
+## 事件关系边
+| 源事件 | 关系 | 目标事件 | 说明 |
+|---|---|---|---|
+| L9-01 主角觉醒 | →因果 | L9-99 决战开启 | 铺垫→爆发 |
+""")
+    project = write_project(tmp, "edgedang", outline)
+    code, payload = run_check(project)
+    assert code == 0, f"悬空事件关系为 candidate，应 exit 0，实得 {code}: {payload}"
+    assert any("事件关系边" in c and "未定义" in c for c in payload["candidate"]), f"应出悬空引用候选: {payload}"
+
+
+def test_event_edge_ok(tmp: Path) -> None:
+    # B57：关系边引用的单元在卷纲有定义（剧情单元 L1-01 标题）→ 不出候选
+    outline = COMPLIANT + """
+
+### 剧情单元 L1-01
+- 单元ID/位置：L1-01
+
+### 剧情单元 L1-02
+- 单元ID/位置：L1-02
+"""
+    outline = outline.replace(
+        "> 定稿：v1.0（2026-08-24，构建环）",
+        """> 定稿：v1.0（2026-08-24，构建环）
+
+## 事件关系边
+| 源事件 | 关系 | 目标事件 | 说明 |
+|---|---|---|---|
+| L1-01 觉醒 | →因果 | L1-02 爆发 | 递进 |
+""")
+    project = write_project(tmp, "edgeok", outline)
+    code, payload = run_check(project)
+    assert code == 0, f"正常事件关系应 exit 0，实得 {code}: {payload}"
+    assert not any("未定义的剧情单元" in c for c in payload["candidate"]), f"已定义不应报悬空: {payload}"
+
+
 def main() -> None:
     work = ROOT / ".tmp" / "tests" / "B18work"
     import shutil
@@ -274,9 +316,11 @@ def main() -> None:
         test_power_paren_suffix(work)
         test_virtual_benchmark_unconsumed(work)
         test_virtual_benchmark_consumed(work)
+        test_event_edge_dangling(work)
+        test_event_edge_ok(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 虚拟对标未消费+已消费)")
+    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 虚拟对标未消费+已消费 / 事件边悬空+正常)")
 
 
 if __name__ == "__main__":

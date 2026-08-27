@@ -682,17 +682,72 @@ def active_foreshadow_lines(rows: dict[str, dict[str, Any]]) -> list[str]:
     return result
 
 
-def render_context(state: dict[str, Any]) -> str:
+def appearing_characters_from_outline(project: Path, state: dict[str, Any]) -> set[str] | None:
+    """B57 角色状态分层：读当前章细纲「人物关系和出场顺序」节提取出场角色名。
+
+    以 state.last_committed_chapter+1 为目标章；细纲不存在/无该字段/解析为空 →
+    返回 None（调用方维持全展开向后兼容）。只读探测，任何异常都静默降级。
+    """
+    try:
+        chapter = state.get("last_committed_chapter", 0) + 1
+        outline_dir = project / "大纲"
+        if not outline_dir.is_dir():
+            return None
+        candidates = sorted(outline_dir.glob(f"细纲_第{chapter:03d}章*.md")) or sorted(
+            outline_dir.glob(f"细纲_第{chapter}章*.md")
+        )
+        if not candidates:
+            return None
+        text = candidates[0].read_text(encoding="utf-8", errors="ignore")
+        # 细纲两种形态都认：同一行「人物关系和出场顺序：A、B」或字段行后另起一行列名
+        m = re.search(r"人物关系[和与]出场顺序[：:]\s*([^\n]+)", text) or re.search(
+            r"人物关系[和与]出场顺序[^：:\n]*\n\s*[-•]?\s*([^\n##]+)", text
+        )
+        if not m:
+            return None
+        names = {
+            name.strip()
+            for name in re.split(r"[、，,/·]|(?:\s{2,})", m.group(1))
+            if 1 < len(name.strip()) <= 12 and not re.search(r"[（）()【】\[\]]", name)
+        }
+        known = set(state["characters"])
+        hit = {n for n in names if any(n in k or k in n for k in known)}
+        return hit or None
+    except Exception:
+        return None
+
+
+def render_context(state: dict[str, Any], appearing: set[str] | None = None) -> str:
     context = state["context"]
     position = context["position"]
     current_chapter = (
         "尚未开篇" if state["last_committed_chapter"] == 0 else f"第{state['last_committed_chapter']}章"
     )
-    character_lines = [
-        f"{name}｜{state['characters'][name]['identity']}｜{state['characters'][name]['state']}｜"
-        f"目标：{state['characters'][name]['goal']}"
-        for name in context["active_character_names"]
-    ]
+    active_names = list(context["active_character_names"])
+    # B57 分层渲染：有细纲出场信息时「本章出场」展开、「背景角色」仅列名；无则全展开（向后兼容）。
+    if appearing:
+        on_stage = [n for n in active_names if n in appearing]
+        background = [n for n in active_names if n not in appearing]
+        character_lines = [
+            "### 本章出场（必读）"
+        ] + [
+            f"{name}｜{state['characters'][name]['identity']}｜{state['characters'][name]['state']}｜"
+            f"目标：{state['characters'][name]['goal']}"
+            for name in on_stage
+        ] + [
+            "### 背景角色（仅跟踪，不进正文 prompt）",
+            "、".join(background) if background else "无",
+        ]
+        character_section = ("## 核心角色状态", character_lines)
+    else:
+        character_section = (
+            "## 核心角色状态",
+            [
+                f"{name}｜{state['characters'][name]['identity']}｜{state['characters'][name]['state']}｜"
+                f"目标：{state['characters'][name]['goal']}"
+                for name in active_names
+            ],
+        )
     sections: list[tuple[str, list[str]]] = [
         (
             "## 当前位置",
@@ -704,7 +759,7 @@ def render_context(state: dict[str, Any]) -> str:
             ],
         ),
         ("## 长期约束", context["long_term_constraints"]),
-        ("## 核心角色状态", character_lines),
+        character_section,
         ("## 活跃伏笔", active_foreshadow_lines(state["foreshadow"])),
         ("## 近三章速记", [f"第{item['chapter']}章｜{item['summary']}" for item in context["recent_chapters"]]),
         ("## 下一章承诺", context["next_chapter_commitments"]),
@@ -1163,10 +1218,10 @@ def merge_transaction(state: dict[str, Any], transaction: dict[str, Any]) -> dic
     return normalize_state(next_state)
 
 
-def render_views(state: dict[str, Any]) -> dict[str, str]:
+def render_views(state: dict[str, Any], appearing: set[str] | None = None) -> dict[str, str]:
     revision = state["state_revision"]
     views = {
-        "上下文.md": render_context(state),
+        "上下文.md": render_context(state, appearing),
         "伏笔.md": render_foreshadow(state["foreshadow"], revision),
         "信息差.md": render_information_gaps(state["information_gaps"], revision),
     }
@@ -1254,7 +1309,9 @@ def apply_transaction(project: Path, document: object) -> dict[str, Any]:
         # 本章退役的角色在 next_state 里已被删除，但本章记录里仍应标为核心。
         set(next_state["characters"]) | set(transaction["delta"]["retired_characters"]),
     )
-    views = render_views(next_state)
+    # B57：本章出场角色从细纲提取，供状态卡分层渲染（细纲缺失时 None=全展开兼容）
+    appearing = appearing_characters_from_outline(project, next_state)
+    views = render_views(next_state, appearing=appearing)
     next_state_payload = json_payload(next_state)
     path = delta_path(tracking, transaction["chapter"])
     if transaction["mode"] == "append" and path.exists():
