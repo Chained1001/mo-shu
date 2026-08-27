@@ -32,6 +32,11 @@ CONTEXT_MAX_BYTES = 12288
 SNAPSHOT_TARGET_BYTES = 4096
 SNAPSHOT_MAX_BYTES = 8192
 
+# 注入预算闸（B58，mo-shu 自定；D-B58-1 修正 1 定值 2500）：「本章出场」节（唯一展开区）
+# 的非空白字符上限；超限或整卡字节超 CONTEXT_MAX_BYTES 按出场顺序降级（双闸降级序）。
+# 2500 全 CJK ≈7.5KB 字节，为其余六栏留 ~4.5KB。CLI --injection-budget 可覆盖。
+DEFAULT_INJECTION_BUDGET = 2500
+
 CONTEXT_HEADINGS = (
     "## 当前位置",
     "## 长期约束",
@@ -717,27 +722,184 @@ def appearing_characters_from_outline(project: Path, state: dict[str, Any]) -> s
         return None
 
 
-def render_context(state: dict[str, Any], appearing: set[str] | None = None) -> str:
+def involved_settings_from_outline(project: Path, state: dict[str, Any]) -> str | None:
+    """B58 点名清单：读下一章细纲「本章涉及设定」字段，返回原文字段串。
+
+    三分降级（反模式 #7）：细纲不存在 → None（调用方不渲染点名清单节）；
+    细纲在但字段缺失/为空 → 空串（渲染「（细纲未登记涉及设定）」）；
+    字段在 → 字段文本。只读探测，异常静默降级为 None。
+    """
+    try:
+        chapter = state.get("last_committed_chapter", 0) + 1
+        outline_dir = project / "大纲"
+        if not outline_dir.is_dir():
+            return None
+        candidates = sorted(outline_dir.glob(f"细纲_第{chapter:03d}章*.md")) or sorted(
+            outline_dir.glob(f"细纲_第{chapter}章*.md")
+        )
+        if not candidates:
+            return None
+        text = candidates[0].read_text(encoding="utf-8", errors="ignore")
+        m = re.search(r"本章涉及设定[：:]\s*([^\n]+)", text)
+        if not m:
+            return ""
+        value = m.group(1).strip()
+        return value
+    except Exception:
+        return None
+
+
+def nonws_len(text: str) -> int:
+    """B58 注入预算口径：非空白字符数（与 doc-budget/check-charcount 同口径）。"""
+    return len(re.sub(r"\s+", "", text))
+
+
+def _payload_bytes_probe(state: dict[str, Any], context: dict[str, Any]) -> int:
+    """B58 双闸辅助：估算状态卡除「本章出场」完整行外的固定字节（六栏+背景行+结构行）。
+
+    粗口径（上下浮动几十字节），只服务降级序收敛判断；最终硬限仍由 render_context
+    尾部的 CONTEXT_MAX_BYTES require 兜底。
+    """
+    probe_rows = [
+        "## 当前位置", "当前章：第X章", "卷：X（始于第X章）", "故事时间：X", "场景：X",
+        "## 长期约束", "## 核心角色状态", "### 本章出场（必读）",
+        "### 背景角色（仅跟踪，不进正文 prompt）", "### 本章点名清单（B58）",
+        "- 出场角色：", "- 涉及设定：", "- 活跃伏笔：", "- 信息差锁定标记：", "- 永不裁剪项：",
+        "- 预算判定：预算X/实际X/降级X人", "## 活跃伏笔", "## 近三章速记",
+        "## 下一章承诺", "## 连贯性风险", "# 写作连续性上下文 — X", "",
+    ]
+    probe_rows += [f"- {v}" for v in context["long_term_constraints"] or ["无"]]
+    probe_rows += [f"- 第{c}章｜{s}" for c, s in [(i.get("chapter", 0), i.get("summary", "")) for i in context["recent_chapters"]]]
+    probe_rows += [f"- {v}" for v in context["next_chapter_commitments"] or ["无"]]
+    probe_rows += [f"- {v}" for v in context["continuity_risks"] or ["无"]]
+    probe_rows += active_foreshadow_lines(state["foreshadow"]) or ["无"]
+    probe = "\n".join(probe_rows) + "\n\n"
+    probe_bytes = len(probe.encode("utf-8")) + 60  # 头部两行+背景名行余量
+    return probe_bytes
+
+
+def build_roll_call_section(
+    state: dict[str, Any],
+    appearing: set[str] | None,
+    involved_settings: str | None,
+    on_stage_full_rows: list[str],
+    full_rows_nonws: int,
+    full_rows_bytes: int,
+    payload_bytes_without_character_rows: int,
+    injection_budget: int,
+) -> tuple[list[str], list[str], str | None, list[str]]:
+    """B58「本章点名清单」节（D-B58-1 落法 A：列名级清单 + 预算判定行）。
+
+    唯一展开区 = B57「本章出场（必读）」节（on_stage_full_rows，由调用方传入）；
+    本节不重复展开角色行，只列名。双闸降级序：出场展开区超预算（非空白字符）或
+    整卡字节超 CONTEXT_MAX_BYTES，任一满足即按出场顺序把 B57 展开行降级为
+    「列名+硬状态一行」，两条件同时收敛才停。
+
+    返回 (点名清单行, 降级后的 B57 出场行, 预算判定行, 硬限联动行[可空])。
+    细纲不存在（appearing is None 且 involved_settings is None）→ ([], 原行, None, [])：
+    不渲染本节、B57 行原样（向后兼容）。
+    """
+    empty_budget = None
+    if appearing is None and involved_settings is None:
+        return [], on_stage_full_rows, empty_budget, []
+    active_names = list(state["context"]["active_character_names"])
+    on_stage = [n for n in active_names if n in (appearing or set())]
+    lines: list[str] = ["### 本章点名清单（B58）"]
+    lines.append("出场角色：" + ("、".join(on_stage) if on_stage else "无"))
+    if not involved_settings:
+        # 三分降级（反模式 #7）：字段缺失/为空明示，不静默
+        lines.append("涉及设定：（细纲未登记涉及设定）")
+    else:
+        lines.append(f"涉及设定：{involved_settings}")
+    lines.append("活跃伏笔：全量见下方「## 活跃伏笔」节（悬置防遗忘防线，不在本节重复筛减）")
+    lines.append("信息差锁定标记：（B58b 子步填充）")
+    lines.append("永不裁剪项：本章承诺 / 上一章结尾段 / 出场名单 / 时间锚")
+
+    # 双闸降级序：按出场顺序逐个把完整展开行降级为「列名+硬状态」，两闸同时收敛才停
+    rows = list(on_stage_full_rows)
+    degraded: list[str] = []
+    hard_state = {
+        name: (
+            f"{state['characters'][name].get('goal', '')}｜{state['characters'][name].get('state', '')}"
+        )
+        for name in on_stage
+        if name in state["characters"]
+    }
+
+    def _rows_ok() -> bool:
+        budget_ok = sum(nonws_len(r) for r in rows) <= injection_budget
+        bytes_ok = (
+            payload_bytes_without_character_rows + sum(len(r.encode("utf-8")) for r in rows) + len(degraded) * 4
+            <= CONTEXT_MAX_BYTES
+        )
+        return budget_ok and bytes_ok
+
+    order = {n: i for i, n in enumerate(on_stage)}
+    while rows and not _rows_ok():
+        # 按出场顺序找第一个未降级的完整行降级
+        victim_idx = min(
+            (i for i, r in enumerate(rows) if not r.startswith("⚠️")),
+            key=lambda i: order.get(rows[i].split("｜")[0], 10**9),
+            default=None,
+        )
+        if victim_idx is None:
+            break
+        name = rows[victim_idx].split("｜")[0]
+        degraded.append(name)
+        rows[victim_idx] = f"⚠️ {name}（硬状态：{hard_state.get(name, '—')}）"
+
+    budget_line = (
+        f"预算判定：预算{injection_budget}/实际{sum(nonws_len(r) for r in rows)}/降级{len(degraded)}人"
+    )
+    lines.append(budget_line)
+    hard_limit_line = None
+    if degraded:
+        lines.append(
+            "降级（仅列名+硬状态）："
+            + "；".join(f"{name}（{hard_state.get(name, '—')}）" for name in degraded)
+        )
+        # 硬限联动判定：若无预算闸单独立触发降级（即仅字节闸触发），另起说明行
+        budget_only_ok = sum(nonws_len(r) for r in rows) <= injection_budget
+        if budget_only_ok:
+            hard_limit_line = "硬限联动降级：整卡字节超 CONTEXT_MAX_BYTES，按出场顺序降级至收敛"
+            lines.append(hard_limit_line)
+    return lines, rows, budget_line, ([hard_limit_line] if hard_limit_line else [])
+
+
+def render_context(
+    state: dict[str, Any],
+    appearing: set[str] | None = None,
+    involved_settings: str | None = None,
+    injection_budget: int = DEFAULT_INJECTION_BUDGET,
+) -> str:
     context = state["context"]
     position = context["position"]
     current_chapter = (
         "尚未开篇" if state["last_committed_chapter"] == 0 else f"第{state['last_committed_chapter']}章"
     )
     active_names = list(context["active_character_names"])
-    # B57 分层渲染：有细纲出场信息时「本章出场」展开、「背景角色」仅列名；无则全展开（向后兼容）。
     if appearing:
         on_stage = [n for n in active_names if n in appearing]
         background = [n for n in active_names if n not in appearing]
-        character_lines = [
-            "### 本章出场（必读）"
-        ] + [
+        on_stage_full_rows = [
             f"{name}｜{state['characters'][name]['identity']}｜{state['characters'][name]['state']}｜"
             f"目标：{state['characters'][name]['goal']}"
             for name in on_stage
-        ] + [
+        ]
+        # B58 点名清单（列名级）+ 双闸降级序作用于 B57 出场展开区（唯一展开区，D-B58-1 落法 A）
+        rollcall_probe = _payload_bytes_probe(state, context)
+        rollcall_lines, on_stage_rows, _bl, _hl = build_roll_call_section(
+            state, appearing, involved_settings, on_stage_full_rows,
+            sum(nonws_len(r) for r in on_stage_full_rows),
+            sum(len(r.encode("utf-8")) for r in on_stage_full_rows),
+            rollcall_probe, injection_budget,
+        )
+        background = [n for n in active_names if n not in appearing]
+        character_lines = ["### 本章出场（必读）"] + on_stage_rows + [
             "### 背景角色（仅跟踪，不进正文 prompt）",
             "、".join(background) if background else "无",
         ]
+        character_lines = character_lines + rollcall_lines
         character_section = ("## 核心角色状态", character_lines)
     else:
         character_section = (
@@ -1218,10 +1380,15 @@ def merge_transaction(state: dict[str, Any], transaction: dict[str, Any]) -> dic
     return normalize_state(next_state)
 
 
-def render_views(state: dict[str, Any], appearing: set[str] | None = None) -> dict[str, str]:
+def render_views(
+    state: dict[str, Any],
+    appearing: set[str] | None = None,
+    involved_settings: str | None = None,
+    injection_budget: int = DEFAULT_INJECTION_BUDGET,
+) -> dict[str, str]:
     revision = state["state_revision"]
     views = {
-        "上下文.md": render_context(state, appearing),
+        "上下文.md": render_context(state, appearing, involved_settings, injection_budget),
         "伏笔.md": render_foreshadow(state["foreshadow"], revision),
         "信息差.md": render_information_gaps(state["information_gaps"], revision),
     }
@@ -1294,7 +1461,7 @@ def initialize(project: Path, document: object) -> dict[str, Any]:
     return state
 
 
-def apply_transaction(project: Path, document: object) -> dict[str, Any]:
+def apply_transaction(project: Path, document: object, injection_budget: int = DEFAULT_INJECTION_BUDGET) -> dict[str, Any]:
     tracking = tracking_root(project)
     require_no_retired_tracking_paths(tracking)
     migrate_v4_state(project)
@@ -1311,7 +1478,11 @@ def apply_transaction(project: Path, document: object) -> dict[str, Any]:
     )
     # B57：本章出场角色从细纲提取，供状态卡分层渲染（细纲缺失时 None=全展开兼容）
     appearing = appearing_characters_from_outline(project, next_state)
-    views = render_views(next_state, appearing=appearing)
+    involved_settings = involved_settings_from_outline(project, next_state)
+    views = render_views(
+        next_state, appearing=appearing, involved_settings=involved_settings,
+        injection_budget=injection_budget,
+    )
     next_state_payload = json_payload(next_state)
     path = delta_path(tracking, transaction["chapter"])
     if transaction["mode"] == "append" and path.exists():
@@ -1791,6 +1962,14 @@ def build_parser() -> argparse.ArgumentParser:
         subparser = subparsers.add_parser(command)
         subparser.add_argument("--project", type=Path, required=True, help="book project root containing 追踪/")
         subparser.add_argument("--input", type=Path, required=True, help="UTF-8 JSON input document")
+        if command == "commit":
+            # B58（mo-shu 自定）：「本章出场」节（唯一展开区）注入预算（非空白字符），默认 2500
+            subparser.add_argument(
+                "--injection-budget",
+                type=int,
+                default=DEFAULT_INJECTION_BUDGET,
+                help="roll-call expansion budget in non-whitespace chars (default %(default)s)",
+            )
     check_parser = subparsers.add_parser("check")
     check_parser.add_argument("--project", type=Path, required=True, help="book project root containing 追踪/")
     check_parser.add_argument(
@@ -1824,7 +2003,7 @@ def main() -> int:
         if args.command == "init":
             result = initialize(args.project, read_json(args.input))
         elif args.command == "commit":
-            result = apply_transaction(args.project, read_json(args.input))
+            result = apply_transaction(args.project, read_json(args.input), injection_budget=args.injection_budget)
         elif args.command == "volume-report":
             result = volume_report(args.project, args.from_chapter, args.to_chapter, args.json_out, args.volume)
         else:
