@@ -24,7 +24,7 @@ from typing import Any
 
 
 INPUT_SCHEMA_VERSION = 2
-TRACKING_SCHEMA_VERSION = 6
+TRACKING_SCHEMA_VERSION = 7
 DELTA_TARGET_BYTES = 1536
 DELTA_MAX_BYTES = 3072
 CONTEXT_TARGET_BYTES = 8192
@@ -261,11 +261,18 @@ def validate_position(value: object, label: str = "context.position") -> dict[st
     }
 
 
+# B59 语声锚（mo-shu 自定）：滚动窗口 ≤5 条、每条 ≤120 字节——脚本只做槽位管理
+# （追加/精确去重/滚动截断），挑哪句是 AI 语义层（chapter-core D 段提取指引）。
+VOICE_SAMPLES_MAX = 5
+VOICE_SAMPLE_MAX_BYTES = 120
+
+
 def normalize_snapshot(value: object, label: str) -> dict[str, Any]:
     snapshot = as_mapping(value, label)
     require_known_keys(
         snapshot,
-        {"identity", "location", "goal", "state", "abilities_resources", "relationships", "knowledge", "open_threads"},
+        {"identity", "location", "goal", "state", "abilities_resources", "relationships",
+         "knowledge", "open_threads", "voice_samples"},
         label,
     )
     return {
@@ -279,6 +286,10 @@ def normalize_snapshot(value: object, label: str) -> dict[str, Any]:
         "relationships": clean_string_list(snapshot.get("relationships", []), f"{label}.relationships"),
         "knowledge": clean_string_list(snapshot.get("knowledge", []), f"{label}.knowledge"),
         "open_threads": clean_string_list(snapshot.get("open_threads", []), f"{label}.open_threads"),
+        "voice_samples": clean_string_list(
+            snapshot.get("voice_samples", []), f"{label}.voice_samples",
+            maximum=VOICE_SAMPLES_MAX, item_max_bytes=VOICE_SAMPLE_MAX_BYTES,
+        ),
     }
 
 
@@ -314,6 +325,7 @@ def render_snapshot(name: str, snapshot: dict[str, Any], through_chapter: int, r
     lines.extend(section("关键关系", snapshot["relationships"]))
     lines.extend(section("已知信息", snapshot["knowledge"]))
     lines.extend(section("未结事项", snapshot["open_threads"]))
+    lines.extend(section("近作台词（语声锚）", snapshot.get("voice_samples", [])))
     payload = "\n".join(lines).rstrip() + "\n"
     require(
         byte_size(payload) <= SNAPSHOT_MAX_BYTES,
@@ -617,6 +629,72 @@ def normalize_information_gap_state(value: object, last_chapter: int) -> dict[st
     return normalized
 
 
+# B59 双向称谓（D2 载荷=单权威 state）：pair 键=两名排序后「|」连接，保证 A|B 与 B|A 同键。
+def address_pair_key(a: str, b: str) -> str:
+    left, right = sorted([a, b])
+    return f"{left}|{right}"
+
+
+def normalize_address_book_update(value: object, label: str) -> dict[str, Any]:
+    """归一化一条称谓变更（register 登记 / update 更新 / retire 撤销登记）。
+
+    retire 只带 a/b；register/update 校验双向称谓字段。称谓挑选是 AI 语义层，
+    脚本只做槽位与字节校验。
+    """
+    row = as_mapping(value, label)
+    require_known_keys(row, {"action", "a", "b", "a_calls_b", "b_calls_a"}, label)
+    action = clean_text(row.get("action", "register"), f"{label}.action", max_bytes=24)
+    require(action in {"register", "update", "retire"}, f"{label}.action is invalid")
+    a = clean_text(row.get("a"), f"{label}.a", max_bytes=24)
+    b = clean_text(row.get("b"), f"{label}.b", max_bytes=24)
+    require(a and b and a != b, f"{label}.a/b must be two distinct non-empty names")
+    if action == "retire":
+        return {"action": action, "pair": address_pair_key(a, b), "a": a, "b": b}
+    return {
+        "action": action,
+        "pair": address_pair_key(a, b),
+        "a": a,
+        "b": b,
+        "a_calls_b": clean_text(row.get("a_calls_b"), f"{label}.a_calls_b", max_bytes=24),
+        "b_calls_a": clean_text(row.get("b_calls_a"), f"{label}.b_calls_a", max_bytes=24),
+    }
+
+
+def normalize_address_book_state(value: object, last_chapter: int) -> dict[str, dict[str, Any]]:
+    entries = as_mapping(value, "tracking state.address_book")
+    normalized: dict[str, dict[str, Any]] = {}
+    for raw_key, raw_row in entries.items():
+        # 键由本工具写入（address_pair_key 半角 |），此处不走 clean_text——它会把半角 |
+        # 换成全角｜，破坏 pair 键的往返一致性。只做长度/空值检查。
+        require(isinstance(raw_key, str) and 0 < len(raw_key) <= 64, "tracking state.address_book key invalid")
+        pair = raw_key
+        row = as_mapping(raw_row, f"tracking state.address_book.{pair}")
+        require_known_keys(
+            row,
+            {"a", "b", "a_calls_b", "b_calls_a", "first_recorded_chapter", "updated_chapter"},
+            f"tracking state.address_book.{pair}",
+        )
+        a = clean_text(row.get("a"), f"tracking state.address_book.{pair}.a", max_bytes=24)
+        b = clean_text(row.get("b"), f"tracking state.address_book.{pair}.b", max_bytes=24)
+        require(
+            address_pair_key(a, b) == pair,
+            f"tracking state.address_book.{pair} key does not match sorted a|b",
+        )
+        first = as_int(row.get("first_recorded_chapter"), f"tracking state.address_book.{pair}.first_recorded_chapter", minimum=1)
+        updated = as_int(row.get("updated_chapter"), f"tracking state.address_book.{pair}.updated_chapter", minimum=1)
+        require(first <= last_chapter, f"address book {pair} starts after current chapter")
+        require(updated <= last_chapter, f"address book {pair} updates after current chapter")
+        normalized[pair] = {
+            "a": a,
+            "b": b,
+            "a_calls_b": clean_text(row.get("a_calls_b"), f"tracking state.address_book.{pair}.a_calls_b", max_bytes=24),
+            "b_calls_a": clean_text(row.get("b_calls_a"), f"tracking state.address_book.{pair}.b_calls_a", max_bytes=24),
+            "first_recorded_chapter": first,
+            "updated_chapter": updated,
+        }
+    return normalized
+
+
 def is_spoiler_locked(row: dict[str, Any], current_chapter: int) -> bool:
     """B58b 剧透锁：reader_known=否 且 reveal_chapter 非空且 > 当前章 → 锁定（不渲染 note/keywords）。
 
@@ -655,6 +733,27 @@ def render_information_gaps(
             f"第{row['first_recorded_chapter']}章 | 第{row['updated_chapter']}章 | "
             f"{row.get('reveal_chapter') or '—'} | {note} |"
         )
+    return "\n".join(lines) + "\n"
+
+
+def render_address_book(entries: dict[str, dict[str, Any]], revision: int) -> str:
+    """B59 称谓派生视图（全量表）：A｜B｜A 称 B｜B 称 A｜登记章。"""
+    lines = [
+        "# 双向称谓登记",
+        "",
+        f"> 状态修订：{revision}。A 称 B 与 B 称 A 双向登记；历史变化见 `逐章记录/`。正文称谓须与此表一致（chapter-core 四查 d 判据）。",
+        "",
+        "| A | B | A 称 B | B 称 A | 登记章 |",
+        "|---|---|---|---|---|",
+    ]
+    for pair in sorted(entries):
+        row = entries[pair]
+        lines.append(
+            f"| {row['a']} | {row['b']} | {row['a_calls_b']} | {row['b_calls_a']} | "
+            f"第{row['first_recorded_chapter']}章 |"
+        )
+    if len(lines) == 6:
+        lines.append("| — | — | — | — | — |")
     return "\n".join(lines) + "\n"
 
 
@@ -850,6 +949,21 @@ def build_roll_call_section(
     lines.append(
         "信息差锁定标记：" + ("、".join(sorted(locked_ids)) if locked_ids else "无")
     )
+    # B59 出场称谓行：两端均出场的登记对逐对一行，内嵌上限 8 对（mo-shu 自定），超出改「另有 N 对」。
+    address_book = state.get("address_book", {})
+    on_stage_set = set(active_names) & (appearing or set())
+    on_stage_pairs = [
+        row for pair, row in sorted(address_book.items())
+        if row.get("a") in on_stage_set and row.get("b") in on_stage_set
+    ]
+    inline_pairs = on_stage_pairs[:8]
+    if inline_pairs:
+        for row in inline_pairs:
+            lines.append(f"出场称谓｜{row.get('a', '—')} 称 {row.get('b', '—')}：「{row.get('a_calls_b', '—')}」｜{row.get('b', '—')} 称 {row.get('a', '—')}：「{row.get('b_calls_a', '—')}」")
+        if len(on_stage_pairs) > 8:
+            lines.append(f"另有 {len(on_stage_pairs) - 8} 对见 追踪/称谓.md")
+    else:
+        lines.append("出场称谓：无（或存在未两端同时出场的登记对，见 追踪/称谓.md）")
     lines.append("永不裁剪项：本章承诺 / 上一章结尾段 / 出场名单 / 时间锚")
 
     # 双闸降级序：按出场顺序逐个把完整展开行降级为「列名+硬状态」，两闸同时收敛才停
@@ -993,6 +1107,7 @@ def normalize_delta(
         delta,
         {
             "result", "character_changes", "foreshadow_changes", "timeline_events", "information_gap_changes",
+            "address_book_updates",
             "constraints", "next_chapter_commitments", "retired_context_items", "retired_characters",
         },
         "delta",
@@ -1051,6 +1166,18 @@ def normalize_delta(
         len({item["id"] for item in information_gap_changes}) == len(information_gap_changes),
         "delta.information_gap_changes contains duplicate IDs",
     )
+    # B59 双向称谓（语义移植自 NovelForge，不用图谱）：称谓挑选是 AI 语义层，脚本只做槽位管理。
+    address_book_updates = [
+        normalize_address_book_update(
+            raw, f"delta.address_book_updates[{index}]"
+        )
+        for index, raw in enumerate(as_list(delta.get("address_book_updates", []), "delta.address_book_updates"))
+    ]
+    pair_keys = [item["pair"] for item in address_book_updates]
+    require(
+        len(pair_keys) == len(set(pair_keys)),
+        "delta.address_book_updates contains duplicate pairs",
+    )
     require(
         set(snapshots).issubset({item["name"] for item in character_changes}),
         "character_snapshots must contain exactly the core characters changed by this transaction",
@@ -1061,6 +1188,7 @@ def normalize_delta(
         "foreshadow_changes": foreshadow_changes,
         "timeline_events": timeline_events,
         "information_gap_changes": information_gap_changes,
+        "address_book_updates": address_book_updates,
         "constraints": clean_string_list(delta.get("constraints", []), "delta.constraints", maximum=6),
         "next_chapter_commitments": clean_string_list(
             delta.get("next_chapter_commitments", []), "delta.next_chapter_commitments", maximum=5
@@ -1130,6 +1258,7 @@ def normalize_state(document: object) -> dict[str, Any]:
         {
             "schema_version", "book_title", "last_committed_chapter", "imported_through_chapter",
             "state_revision", "context", "characters", "foreshadow", "timeline", "information_gaps",
+            "address_book",
         },
         "tracking state",
     )
@@ -1152,10 +1281,12 @@ def normalize_state(document: object) -> dict[str, Any]:
     foreshadow = normalize_foreshadow_state(root.get("foreshadow", {}), last_chapter)
     timeline = normalize_timeline_state(root.get("timeline", {}), last_chapter)
     information_gaps = normalize_information_gap_state(root.get("information_gaps", {}), last_chapter)
+    address_book = normalize_address_book_state(root.get("address_book", {}), last_chapter)
     if last_chapter == 0:
         require(not foreshadow, "a chapter-0 project cannot have planted foreshadow facts")
         require(not timeline, "a chapter-0 project cannot have established timeline facts")
         require(not information_gaps, "a chapter-0 project cannot have registered information gaps")
+        require(not address_book, "a chapter-0 project cannot have registered address book entries")
     return {
         "schema_version": TRACKING_SCHEMA_VERSION,
         "book_title": clean_text(root.get("book_title"), "tracking state.book_title", max_bytes=240),
@@ -1167,6 +1298,7 @@ def normalize_state(document: object) -> dict[str, Any]:
         "foreshadow": foreshadow,
         "timeline": timeline,
         "information_gaps": information_gaps,
+        "address_book": address_book,
     }
 
 
@@ -1181,8 +1313,9 @@ def migrate_state(project: Path) -> None:
 
     v4→v5：缺 information_gaps 域时补空域。
     v5→v6（B58b）：每条 information_gaps 条目补 `reveal_chapter: null`（可选字段默认不锁）。
+    v6→v7（B59）：characters 逐条补 `voice_samples: []`；顶层补 `address_book: {}`（可选域默认空）。
     备份命名 `追踪/_备份/schema-v{N}-<YYYYMMDD-HHMMSS>.json`（同秒冲突追加随机后缀）。
-    迁移失败不写任何文件；老键原样保留，零丢失。连续迁移链：v4 先升 v5 再升 v6。
+    迁移失败不写任何文件；老键原样保留，零丢失。链式迁移一次备份覆盖全链。
     """
     path = state_path(project)
     if not path.exists():
@@ -1193,9 +1326,8 @@ def migrate_state(project: Path) -> None:
     version = document.get("schema_version")
     tracking = tracking_root(project)
     backup_dir = tracking / "_备份"
-    if version not in (4, 5) or version == TRACKING_SCHEMA_VERSION:
+    if version not in (4, 5, 6) or version == TRACKING_SCHEMA_VERSION:
         return
-    # 链式迁移：v4 先补空 information_gaps 升 v5，再补 reveal_chapter 升 v6；一次备份覆盖全链
     backup_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
     backup = backup_dir / f"schema-v{version}-{stamp}.json"
@@ -1211,6 +1343,14 @@ def migrate_state(project: Path) -> None:
         else row
         for identifier, row in migrated.get("information_gaps", {}).items()
     }
+    # B59 v6→v7：角色快照补 voice_samples 空列表；顶层补 address_book 空域
+    migrated["characters"] = {
+        name: {**snapshot, "voice_samples": snapshot.get("voice_samples", [])}
+        if isinstance(snapshot, dict)
+        else snapshot
+        for name, snapshot in migrated.get("characters", {}).items()
+    }
+    migrated.setdefault("address_book", {})
     migrated["schema_version"] = TRACKING_SCHEMA_VERSION
     atomic_write_text(path, json_payload(migrated))
     emit(f"NOTE: tracking state migrated v{version}→v{TRACKING_SCHEMA_VERSION}; backup at 追踪/_备份/{backup.name}", error=True)
@@ -1226,7 +1366,7 @@ def normalize_initial_document(document: object) -> dict[str, Any]:
         root,
         {
             "schema_version", "book_title", "last_chapter", "context", "character_snapshots",
-            "foreshadow", "timeline_events", "information_gaps",
+            "foreshadow", "timeline_events", "information_gaps", "address_book",
         },
         "init input",
     )
@@ -1286,7 +1426,7 @@ def normalize_transaction(state: dict[str, Any], document: object) -> dict[str, 
         root,
         {
             "schema_version", "mode", "chapter", "chapter_title", "expected_state_revision",
-            "delta", "context", "character_snapshots",
+            "delta", "context", "character_snapshots", "address_book_updates",
         },
         "transaction",
     )
@@ -1340,6 +1480,21 @@ def merge_transaction(state: dict[str, Any], transaction: dict[str, Any]) -> dic
     if transaction["mode"] == "append":
         next_state["last_committed_chapter"] = chapter
     next_state["state_revision"] += 1
+    # B59 语声锚滚动合并（脚本只做槽位管理）：新快照 voice_samples 若带新台词，与旧样本
+    # 精确去重后拼接，按提交顺序保留最近 VOICE_SAMPLES_MAX 条（旧样本先被滚动淘汰）。
+    # 输入形态兼容两种：voice_samples: ["台词"]（字符串直取）与 [{character, quote}]（取 quote）。
+    for name, snapshot in transaction["snapshots"].items():
+        incoming = snapshot.get("voice_samples") or []
+        if not incoming:
+            continue
+        previous_samples = list(state["characters"].get(name, {}).get("voice_samples", []))
+        quotes = [
+            item.get("quote", "") if isinstance(item, dict) else str(item)
+            for item in incoming
+        ]
+        quotes = [q for q in quotes if q]
+        merged = previous_samples + [q for q in quotes if q not in previous_samples]
+        snapshot["voice_samples"] = merged[-VOICE_SAMPLES_MAX:]
     next_state["characters"].update(transaction["snapshots"])
 
     next_context = transaction["context"]
@@ -1410,6 +1565,30 @@ def merge_transaction(state: dict[str, Any], transaction: dict[str, Any]) -> dic
         next_state["information_gaps"][change["id"]] = checkpoint_record(
             change, chapter, previous, keep_first_chapter=True
         )
+    # B59 称谓合并：register 要求对不存在；update 要求存在；retire 摘除。
+    for change in transaction["delta"]["address_book_updates"]:
+        pair = change["pair"]
+        if change["action"] == "retire":
+            next_state["address_book"].pop(pair, None)
+            continue
+        previous = next_state["address_book"].get(pair)
+        if change["action"] == "register":
+            require(
+                previous is None,
+                f"address book pair {pair} is already registered; use update instead",
+            )
+        else:  # update
+            require(
+                previous is not None,
+                f"address book pair {pair} is not registered; use register instead",
+            )
+        record = {
+            "a": change["a"], "b": change["b"],
+            "a_calls_b": change["a_calls_b"], "b_calls_a": change["b_calls_a"],
+            "first_recorded_chapter": previous["first_recorded_chapter"] if previous else chapter,
+            "updated_chapter": max(previous["updated_chapter"] if previous else chapter, chapter),
+        }
+        next_state["address_book"][pair] = record
 
     recent_by_chapter = {item["chapter"]: item for item in state["context"]["recent_chapters"]}
     if chapter in recent_by_chapter or transaction["mode"] == "append":
@@ -1442,6 +1621,7 @@ def render_views(
         "信息差.md": render_information_gaps(
             state["information_gaps"], revision, state.get("last_committed_chapter", 0)
         ),
+        "称谓.md": render_address_book(state.get("address_book", {}), revision),
     }
     author, reader = render_timeline_views(state["timeline"], revision)
     views["时间线/作者真相.md"] = author

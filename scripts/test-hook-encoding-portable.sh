@@ -49,7 +49,7 @@ P1="$WORK/p1"; deploy "$P1"
 mkdir -p "$P1/book/正文" "$P1/book/大纲" "$P1/book/追踪"
 # 本节测的是编码/区域下的路径与 glob 行为，不是追踪门。落一份有效 state，让细纲门成为唯一
 # 变量；没有它，写第 1 章会先被 issue #305 起新增的追踪检查点拦下（state 缺失即拦）。
-printf '{"schema_version":6,"state_revision":0,"last_committed_chapter":0}\n' > "$P1/book/追踪/_tracking-state.json"
+printf '{"schema_version":7,"state_revision":0,"last_committed_chapter":0}\n' > "$P1/book/追踪/_tracking-state.json"
 printf '> 状态修订：0。\n' > "$P1/book/追踪/上下文.md"
 run_guard_py() { # $1 mode(default|gbk)  $2 file_path -> exit code
   local mode="$1" fp="$2" ec=0
@@ -108,7 +108,7 @@ if command -v cygpath >/dev/null 2>&1; then
       mkdir -p "$P1/winbook/正文" "$P1/winbook/大纲" "$P1/winbook/追踪"
       # 本节测的是盘符路径解析，不是追踪门：落一份有效 state，让细纲门成为唯一变量。
       # last_committed 取大于本节章号的值，章号落在追踪范围内即跳过顺序校验。
-      printf '{"schema_version":6,"state_revision":0,"last_committed_chapter":50}\n' > "$P1/winbook/追踪/_tracking-state.json"
+      printf '{"schema_version":7,"state_revision":0,"last_committed_chapter":50}\n' > "$P1/winbook/追踪/_tracking-state.json"
       printf '> 状态修订：0。\n' > "$P1/winbook/追踪/上下文.md"
       run_guard_win() { local ec=0; printf '{"tool_name":"Write","tool_input":{"file_path":"%s","content":"x"}}' "$1" \
         | CLAUDE_PROJECT_DIR="$P1" bash "$P1/.claude/hooks/guard-outline-before-prose.sh" >/dev/null 2>&1 || ec=$?; printf '%s' "$ec"; }
@@ -163,7 +163,7 @@ else
   # 细纲齐了还要追踪检查点成立才放行（issue #305 起 Claude 侧也有这道门）。先落一份有效
   # state，否则下面两条测的就不是中文 glob 而是追踪门。中文书名路径这里要经 node 传给共享核，
   # 顺带守住 GBK 区域下 node 侧按 UTF-8 收路径这条（bash 用 LC_ALL=C 走字节，node 与区域无关）。
-  printf '{"schema_version":6,"state_revision":0,"last_committed_chapter":0}\n' > "$BOOK/追踪/_tracking-state.json"
+  printf '{"schema_version":7,"state_revision":0,"last_committed_chapter":0}\n' > "$BOOK/追踪/_tracking-state.json"
   printf '> 状态修订：0。\n' > "$BOOK/追踪/上下文.md"
   [ "$(rg '让你管账号/正文/第1章_开端.md')" = 0 ] && pass "[GBK] guard allows present 细纲 (Chinese glob)" || bad "[GBK] guard should allow present 细纲 under GBK"
   [ "$(rg '让你管账号/正文/第001章_开端.md')" = 0 ] && pass "[GBK] guard tolerates zero-pad 第001章" || bad "[GBK] guard should tolerate 第001章 under GBK"

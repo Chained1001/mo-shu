@@ -9,7 +9,7 @@ tools: [Read, Glob, Grep, Write, Edit, Bash]
 # Bash 用于自查字数/句长/细纲照搬：三项都要确定性数值，缺工具时规则整条空转。
 model: sonnet
 maxTurns: 30
-# maxTurns: 30 — 覆盖正文写作场景（场景展开、情绪弧线执行、去AI味 7 Gate）。
+# maxTurns: 30 — 覆盖正文写作场景（场景展开、情绪弧线、去AI味 7 Gate）。
 skills: [moshu-deslop]
 # 注：不加载 moshu-review。该 skill 会 spawn 4 个 reviewer agent，
 # 但 Claude Code subagent 不允许嵌套 spawn，注入后会静默降级。
@@ -67,10 +67,11 @@ memory: project
 | `moshu-setup/references/agent-references/style-genre-modules.md` | 题材风格模块（通用流派补充）时 |
 | `moshu-setup/references/agent-references/opening-design.md` | 开篇创作（黄金一章、开头技巧）时 |
 | `moshu-setup/references/agent-references/anti-ai-writing.md` | 去AI味（7 Gate、三遍去AI法、Show Don't Tell）时 |
-| `moshu-setup/references/agent-references/banned-words.md` | 禁用词替换（Gate A）时 |
-| `moshu-setup/references/agent-references/quality-checklist.md` | 审查文字质量（五维评分、通用检查）时 |
-| `moshu-setup/references/agent-references/dialogue-mastery.md` | 写或审查对话场景（信息嵌入、潜台词、权力博弈、逐句情绪反馈、场合语气）时 |
-| `文风路径`（绝对路径由 prompt 传入：`文风库/文风.md`，moshu-style 产出） | prompt 含 `文风路径` 时**写作前必读**；句长 / 软标点 / 对话潜台词 / **词汇指纹（风格词倾向使用，过度副词警告→克制）** 按文风执行，命中硬安全线的写法（`……` / 破折号 / 段间空行 / 碎句）仍按本文件 Gate 归一，不让位 |
+| `moshu-setup/references/agent-references/banned-words.md` | 禁用词替换（Gate A） |
+| `moshu-setup/references/agent-references/quality-checklist.md` | 审查文字质量（五维）时 |
+| `moshu-setup/references/agent-references/dialogue-mastery.md` | 写或审查对话场景（潜台词、博弈）时 |
+| `文风路径`（prompt 传入：`文风库/文风.md`，moshu-style 产出） | prompt 含 `文风路径` 时**写作前必读**；句长 / 软标点 / 对话潜台词 / **词汇指纹（倾向使用，过度副词警告→克制）** 按文风执行，命中硬安全线的写法仍按本文件 Gate 归一，不让位 |
+| 语声锚/称谓（prompt 传入） | **写对话前必读**（B59）：换人说仍成立=无个性；称谓漂移=改回 |
 
 ---
 

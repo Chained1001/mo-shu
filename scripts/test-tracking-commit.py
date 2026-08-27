@@ -143,8 +143,8 @@ def load_tool_module():
 
 
 class TrackingCommitTests(unittest.TestCase):
-    # B58b：schema 断言跟随工具常量（v5→v6 reveal_chapter；后续 bump 不再破用例）
-    SCHEMA_VERSION = 6
+    # schema 断言跟随工具常量（B58b v5→v6 / B59 v6→v7；后续 bump 不再破用例）
+    SCHEMA_VERSION = 7
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -578,6 +578,77 @@ class TrackingCommitTests(unittest.TestCase):
         self.run_tool("commit", retire)
         self.assertNotIn("G001", self.read_state()["information_gaps"])
         self.run_tool("check")
+
+    def test_b59_voice_samples_rolling_and_dedup(self) -> None:
+        # B59：voice_samples 滚动 5 条 + 精确去重——同角色两次 commit 各带 3 句（1 句重复）。
+        self.init()
+        self.run_tool("commit", transaction(1))
+        base = dict(snapshot())
+        base["voice_samples"] = ["旧一", "旧二", "旧三"]
+        doc = transaction(2, character=True)
+        doc["character_snapshots"] = {"江晨": base}
+        self.run_tool("commit", doc)
+        state = self.read_state()
+        self.assertEqual(state["characters"]["江晨"]["voice_samples"], ["旧一", "旧二", "旧三"])
+
+        snap3 = dict(snapshot(), voice_samples=["旧三", "旧四", "新五"])
+        doc = transaction(3, character=True)
+        doc["character_snapshots"] = {"江晨": snap3}
+        self.run_tool("commit", doc)
+        state = self.read_state()
+        # 旧三去重；窗口 5 条 → 旧一/旧二保留、新五入列，共 5 条
+        self.assertEqual(
+            state["characters"]["江晨"]["voice_samples"],
+            ["旧一", "旧二", "旧三", "旧四", "新五"],
+        )
+
+    def test_b59_address_book_full_cycle(self) -> None:
+        # B59：称谓 register → update → retire 全周期 + 称谓.md 派生 + 点名清单标记行替换。
+        self.init()
+        self.run_tool("commit", transaction(1))
+        doc = transaction(2, character=True)
+        doc["delta"]["address_book_updates"] = [
+            {"action": "register", "a": "江晨", "b": "钟嘉嘉", "a_calls_b": "小钟", "b_calls_a": "江哥"}
+        ]
+        doc["character_snapshots"] = {"江晨": snapshot()}
+        self.run_tool("commit", doc)
+        state = self.read_state()
+        pair = "江晨|钟嘉嘉"
+        self.assertIn(pair, state["address_book"])
+        self.assertEqual(state["address_book"][pair]["a_calls_b"], "小钟")
+        self.assertTrue((self.project / "追踪" / "称谓.md").exists())
+        self.assertIn("江晨", (self.project / "追踪" / "称谓.md").read_text(encoding="utf-8"))
+        doc = transaction(3, character=True)
+        doc["delta"]["address_book_updates"] = [
+            {"action": "update", "a": "江晨", "b": "钟嘉嘉", "a_calls_b": "钟队", "b_calls_a": "江哥"}
+        ]
+        self.run_tool("commit", doc)
+        self.assertEqual(self.read_state()["address_book"][pair]["a_calls_b"], "钟队")
+        doc = transaction(4)
+        doc["delta"]["address_book_updates"] = [{"action": "retire", "a": "江晨", "b": "钟嘉嘉"}]
+        self.run_tool("commit", doc)
+        self.assertNotIn(pair, self.read_state()["address_book"])
+
+    def test_b59_migrate_v6_to_v7_zero_key_loss(self) -> None:
+        # B59：v6 state → v7（voice_samples 补空/address_book 补空域/备份存在/老键零丢失）。
+        self.init()
+        self.run_tool("commit", transaction(1))
+        state_path = self.project / "追踪/_tracking-state.json"
+        state = self.read_state()
+        state["schema_version"] = 6
+        state.pop("address_book", None)
+        state_path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+        self.run_tool("commit", transaction(2))
+        migrated = self.read_state()
+        self.assertEqual(migrated["schema_version"], self.SCHEMA_VERSION)
+        self.assertEqual(migrated["address_book"], {})
+        for snapshot_row in migrated["characters"].values():
+            self.assertIn("voice_samples", snapshot_row)
+            self.assertEqual(snapshot_row["voice_samples"], [])
+        for key in state.keys():
+            self.assertIn(key, migrated.keys())
+        backups = list((self.project / "追踪/_备份").glob("schema-v6-*.json"))
+        self.assertTrue(backups, "v6→v7 迁移必须留下备份文件")
 
     def test_v4_state_migrates_to_v5_with_backup_and_zero_key_loss(self) -> None:
         self.init()
