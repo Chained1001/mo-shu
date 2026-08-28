@@ -183,6 +183,71 @@ Markdown 只负责给作者和 Agent 阅读，工具不再反向解析 Markdown�
 
 init 输入同样可带 `information_gaps` 数组（`action` 固定 `register`）。
 
+init 输入同样可带 `information_gaps` 数组（`action` 固定 `register`）。
+
+## 双向称谓事务（B59）
+
+`address_book_updates` 是逐章事务的**顶层可选键**（与 delta 同级，不在 delta 内），登记双向称谓：A 称 B × B 称 A。称谓挑选是 AI 语义层，脚本只做槽位与字节校验。
+
+字段（`action` = `register` / `update` 时）：
+
+| 字段 | 类型 | 约束 |
+|---|---|---|
+| `action` | 枚举 | `register`（首次登记）/ `update`（更新）/ `retire`（撤销，只需 `a` + `b`） |
+| `a` | 字符串 | 角色名，≤24 字节；pair 键=两名排序后 `\|` 连接 |
+| `b` | 字符串 | 对方角色名，≤24 字节；与 `a` 不同 |
+| `a_calls_b` | 字符串 | A 称呼 B 的方式，≤24 字节 |
+| `b_calls_a` | 字符串 | B 称呼 A 的方式，≤24 字节 |
+
+`first_recorded_chapter` / `updated_chapter` 由工具维护。派生视图：`追踪/称谓.md`；点名清单「出场称谓」行消费两端均出场的登记对（≤8 对内嵌）。
+
+示例（追加事务顶层）：
+
+```json
+"address_book_updates": [
+  {
+    "action": "register",
+    "a": "江晨",
+    "b": "钟嘉嘉",
+    "a_calls_b": "小钟",
+    "b_calls_a": "江哥"
+  }
+]
+```
+
+## 进度事务（B62）
+
+`progression_updates` 是逐章事务 **delta 的内嵌可选键**（与 address_book_updates 顶层不同——注意层级差异），登记想盯的数值指标（境界/欠款/排名/资产等）。direction 登记后语义不可改（up=应单调递增，down=应单调递减）；回退（up 降或 down 升）触发 stdout 候选提醒——无 reason 出「进度回退候选」、带 reason 出「已归因回退」（候选不拦截，退出码不变）。
+
+字段（`action` = `register` / `update` 时）：
+
+| 字段 | 类型 | 约束 |
+|---|---|---|
+| `action` | 枚举 | `register`（首次登记）/ `update`（更新数值）/ `retire`（撤销，只需 `character` + `metric`） |
+| `character` | 字符串 | 角色名，≤24 字节 |
+| `metric` | 字符串 | 指标名（如 修为/欠款），≤24 字节 |
+| `value` | 整数 | 当前值（update 必带） |
+| `direction` | 枚举 | `up` / `down`——register 必填，登记后锁定 |
+| `unit` | 字符串 | 单位（如 阶/两），可选，≤12 字节 |
+| `reason` | 字符串 | 归因回退原因（update 可选；剧情性回退须带） |
+
+`first_recorded_chapter` / `updated_chapter` 由工具维护。派生视图：`追踪/进度.md`。
+
+示例（追加事务 delta 内）：
+
+```json
+"progression_updates": [
+  {
+    "action": "register",
+    "character": "江晨",
+    "metric": "修为",
+    "value": 5,
+    "direction": "up",
+    "unit": "阶"
+  }
+]
+```
+
 ## 悬置预警
 
 `check` 子命令输出 `suspension_warnings` 候选清单（`[{id, status, chapters_since_update}]`）：仅 `status == "已埋"` 且 `last_committed_chapter - updated_chapter >= 阈值` 的伏笔。语义=最近一次变动章起算的近似"持续未动"章距（不新增状态字段）。

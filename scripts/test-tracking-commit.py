@@ -143,8 +143,8 @@ def load_tool_module():
 
 
 class TrackingCommitTests(unittest.TestCase):
-    # schema 断言跟随工具常量（B58b v5→v6 / B59 v6→v7；后续 bump 不再破用例）
-    SCHEMA_VERSION = 7
+    # schema 断言跟随工具常量（B58b v5→v6 / B59 v6→v7 / B62 v7→v8；后续 bump 不再破用例）
+    SCHEMA_VERSION = 8
 
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
@@ -642,6 +642,7 @@ class TrackingCommitTests(unittest.TestCase):
         migrated = self.read_state()
         self.assertEqual(migrated["schema_version"], self.SCHEMA_VERSION)
         self.assertEqual(migrated["address_book"], {})
+        self.assertEqual(migrated["progression"], {})
         for snapshot_row in migrated["characters"].values():
             self.assertIn("voice_samples", snapshot_row)
             self.assertEqual(snapshot_row["voice_samples"], [])
@@ -649,6 +650,109 @@ class TrackingCommitTests(unittest.TestCase):
             self.assertIn(key, migrated.keys())
         backups = list((self.project / "追踪/_备份").glob("schema-v6-*.json"))
         self.assertTrue(backups, "v6→v7 迁移必须留下备份文件")
+
+    def test_b62_progression_full_cycle_and_monotonicity_candidates(self) -> None:
+        # B62：progression register→升（无候选）→降无 reason（候选行+state 更新+退出码 0）
+        # →降带 reason（已归因行）→retire。
+        self.init()
+        self.run_tool("commit", transaction(1))
+        doc = transaction(2, character=True)
+        doc["delta"]["progression_updates"] = [
+            {"action": "register", "character": "江晨", "metric": "修为", "value": 5,
+             "direction": "up", "unit": "阶"}
+        ]
+        self.run_tool("commit", doc)
+        state = self.read_state()
+        key = "江晨#修为"
+        self.assertIn(key, state["progression"])
+        self.assertEqual(state["progression"][key]["value"], 5)
+        self.assertEqual(state["progression"][key]["direction"], "up")
+
+        # 升（无候选）：up 5→8
+        doc = transaction(3, character=True)
+        doc["delta"]["progression_updates"] = [
+            {"action": "update", "character": "江晨", "metric": "修为", "value": 8}
+        ]
+        self.run_tool("commit", doc)
+        state = self.read_state()
+        self.assertEqual(state["progression"][key]["value"], 8)
+
+        # 降无 reason：down 语义但 up 方向 8→3 → 候选行+state 更新+退出码 0
+        doc = transaction(4, character=True)
+        doc["delta"]["progression_updates"] = [
+            {"action": "update", "character": "江晨", "metric": "修为", "value": 3}
+        ]
+        result = self.run_tool("commit", doc)
+        self.assertEqual(result.returncode, 0)
+        state = self.read_state()
+        self.assertEqual(state["progression"][key]["value"], 3)
+        # 候选行在 stdout/stderr（emit → stderr），验证含「进度回退候选」与「未带归因」
+        combined = result.stdout + result.stderr
+        # run_tool 只断言 returncode，stderr 在对象属性里
+        self.assertTrue(
+            "进度回退候选" in combined or "未带归因" in combined,
+            f"应出回退候选行: {combined[:400]}",
+        )
+
+        # 降带 reason：已归因行
+        doc = transaction(5, character=True)
+        doc["delta"]["progression_updates"] = [
+            {"action": "update", "character": "江晨", "metric": "修为", "value": 1,
+             "reason": "敌人封印了功法"}
+        ]
+        result = self.run_tool("commit", doc)
+        state = self.read_state()
+        self.assertEqual(state["progression"][key]["value"], 1)
+
+        # retire
+        doc = transaction(6)
+        doc["delta"]["progression_updates"] = [
+            {"action": "retire", "character": "江晨", "metric": "修为"}
+        ]
+        self.run_tool("commit", doc)
+        state = self.read_state()
+        self.assertNotIn(key, state["progression"])
+
+    def test_b62_progression_view_and_no_context_pollution(self) -> None:
+        # B62：追踪/进度.md 派生视图在位；上下文卡不渲染 progression（不污染七栏）。
+        self.init()
+        self.run_tool("commit", transaction(1))
+        doc = transaction(2, character=True)
+        doc["delta"]["progression_updates"] = [
+            {"action": "register", "character": "江晨", "metric": "欠款", "value": 5000,
+             "direction": "down", "unit": "两"}
+        ]
+        doc["character_snapshots"] = {"江晨": snapshot()}
+        self.run_tool("commit", doc)
+        progress_path = self.project / "追踪" / "进度.md"
+        self.assertTrue(progress_path.exists())
+        progress_text = progress_path.read_text(encoding="utf-8")
+        self.assertIn("江晨", progress_text)
+        self.assertIn("5000", progress_text)
+        self.assertIn("down", progress_text)
+        # 上下文卡不渲染 progression
+        context_text = (self.project / "追踪" / "上下文.md").read_text(encoding="utf-8")
+        self.assertNotIn("progression", context_text)
+        headings = tuple(line for line in context_text.splitlines() if line.startswith("## "))
+        self.assertEqual(len(headings), 7)  # 七栏不变
+
+    def test_b62_migrate_v7_to_v8_zero_key_loss(self) -> None:
+        # B62：v7 state → v8（progression 空域、备份、零丢失）。
+        self.init()
+        self.run_tool("commit", transaction(1))
+        state_path = self.project / "追踪/_tracking-state.json"
+        state = self.read_state()
+        state["schema_version"] = 7
+        state.pop("progression", None)
+        state_path.write_text(json.dumps(state, ensure_ascii=False), encoding="utf-8")
+        self.run_tool("commit", transaction(2))
+        migrated = self.read_state()
+        self.assertEqual(migrated["schema_version"], self.SCHEMA_VERSION)
+        self.assertEqual(migrated["progression"], {})
+        for key in state.keys():
+            self.assertIn(key, migrated.keys())
+        backups = list((self.project / "追踪/_备份").glob("schema-v7-*.json"))
+        self.assertTrue(backups, "v7→v8 迁移必须留下备份文件")
 
     def test_v4_state_migrates_to_v5_with_backup_and_zero_key_loss(self) -> None:
         self.init()

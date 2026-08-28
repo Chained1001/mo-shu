@@ -217,7 +217,7 @@ advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界�
 
 **事务构造 9 条细则**（日更/单章共用）：
 
-1. 从刚落盘的正文、细纲和上一版续写状态卡提取 `result / character_changes / foreshadow_changes / timeline_events / constraints / next_chapter_commitments`，并可选登记本章的**信息差变化** `information_gap_changes`（正文揭示/新埋的「谁知道什么」：知情人×读者已知×关键词，字段见 [tracking-transaction.md](tracking-transaction.md)「信息差事务」；无变化不填）。**语声/称谓提取（B59，AI 语义层）**：主要角色挑 ≤2 句本章最具其说话作派的台词填入快照 `voice_samples`（脚本滚动 5 条/精确去重）；只记**新建立或发生变化**的双向称谓进 `address_book_updates`（register/update/retire，无变化不填）。只记录会影响未来章节的变化；过程日志、质检计数、参照章和去 AI 味统计全部排除。
+1. 从刚落盘的正文、细纲和上一版续写状态卡提取 `result / character_changes / foreshadow_changes / timeline_events / constraints / next_chapter_commitments`，并可选登记本章的**信息差变化** `information_gap_changes`（正文揭示/新埋的「谁知道什么」：知情人×读者已知×关键词，字段见 [tracking-transaction.md](tracking-transaction.md)「信息差事务」；无变化不填）。**语声/称谓提取（B59，AI 语义层）**：主要角色挑 ≤2 句本章最具其说话作派的台词填入快照 `voice_samples`（脚本滚动 5 条/精确去重）；只记**新建立或发生变化**的双向称谓进 `address_book_updates`（register/update/retire，无变化不填）。**数值登记（可选，B62）**：境界/欠款/排名/资产等想盯的指标随事务登记 `progression_updates`（**delta 内**；登记时声明方向 up/down）——回退会出候选提醒，剧情性回退带 reason 归因。只记录会影响未来章节的变化；过程日志、质检计数、参照章和去 AI 味统计全部排除。
 2. 需要长期复用的核心角色，把完整动态快照放进 `character_snapshots`，并在 `character_changes` 写对应变化；一次性路人只写变化、不交快照。已有动态快照的核心角色再次变化时必须提交新快照。静态人设继续以 `设定/角色/{名}.md` 为准。
 3. `context.long_term_constraints`、当前卷/故事时间/场景、活跃核心角色名、连贯性风险提交当前完整值；故事时间取本章细纲「时间锚点」；活跃伏笔、近三章速记和下一章承诺由工具从当前视图/本章增量派生，不重复手填。
 4. 把最近一次 `tracking_commit.py check` 返回的 `state_revision` 写入事务 `expected_state_revision`，再把 JSON 写到临时文件并执行 `tracking_commit.py commit`。成功并复检后删除临时 JSON；脚本返回新的 `state_revision` 才能进入下一章。

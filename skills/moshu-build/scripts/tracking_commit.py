@@ -24,7 +24,7 @@ from typing import Any
 
 
 INPUT_SCHEMA_VERSION = 2
-TRACKING_SCHEMA_VERSION = 7
+TRACKING_SCHEMA_VERSION = 8
 DELTA_TARGET_BYTES = 1536
 DELTA_MAX_BYTES = 3072
 CONTEXT_TARGET_BYTES = 8192
@@ -660,6 +660,64 @@ def normalize_address_book_update(value: object, label: str) -> dict[str, Any]:
     }
 
 
+# B62 progression（mo-shu 自定）：登记制数值指标（境界/欠款/排名/资产等想盯的数值）。
+# 键={角色}#{指标}；direction 登记后语义不可改；回退候选在 merge 时 stdout 呈报（不拦截）。
+def normalize_progression_update(value: object, label: str) -> dict[str, Any]:
+    row = as_mapping(value, label)
+    require_known_keys(row, {"action", "character", "metric", "value", "direction", "unit", "reason"}, label)
+    action = clean_text(row.get("action", "register"), f"{label}.action", max_bytes=24)
+    require(action in {"register", "update", "retire"}, f"{label}.action is invalid")
+    character = clean_text(row.get("character"), f"{label}.character", max_bytes=24)
+    metric = clean_text(row.get("metric"), f"{label}.metric", max_bytes=24)
+    require(character and metric, f"{label}.character/metric must not be empty")
+    key = f"{character}#{metric}"
+    if action == "retire":
+        return {"action": action, "key": key, "character": character, "metric": metric}
+    value_num = as_int(row.get("value"), f"{label}.value", minimum=-10**9)
+    require(value_num <= 10**9, f"{label}.value must be <= 10^9")
+    if action == "register":
+        direction = clean_text(row.get("direction"), f"{label}.direction", max_bytes=8)
+        require(direction in ("up", "down"), f"{label}.direction must be up or down")
+        unit = clean_text(row.get("unit", ""), f"{label}.unit", allow_empty=True, max_bytes=12)
+        return {
+            "action": action, "key": key, "character": character, "metric": metric,
+            "value": value_num, "direction": direction, "unit": unit,
+        }
+    # update：带 value（可选 reason 归因回退）
+    result = {"action": action, "key": key, "character": character, "metric": metric, "value": value_num}
+    reason = clean_text(row.get("reason", ""), f"{label}.reason", allow_empty=True, max_bytes=240)
+    if reason:
+        result["reason"] = reason
+    return result
+
+
+def normalize_progression_state(value: object, last_chapter: int) -> dict[str, dict[str, Any]]:
+    entries = as_mapping(value, "tracking state.progression")
+    normalized: dict[str, dict[str, Any]] = {}
+    for raw_key, raw_row in entries.items():
+        require(isinstance(raw_key, str) and "#" in raw_key, f"tracking state.progression key invalid: {raw_key}")
+        row = as_mapping(raw_row, f"tracking state.progression.{raw_key}")
+        require_known_keys(
+            row,
+            {"character", "metric", "value", "unit", "direction", "first_recorded_chapter", "updated_chapter"},
+            f"tracking state.progression.{raw_key}",
+        )
+        first = as_int(row.get("first_recorded_chapter"), f"tracking state.progression.{raw_key}.first_recorded_chapter", minimum=1)
+        updated = as_int(row.get("updated_chapter"), f"tracking state.progression.{raw_key}.updated_chapter", minimum=1)
+        require(first <= last_chapter, f"progression {raw_key} starts after current chapter")
+        require(updated <= last_chapter, f"progression {raw_key} updates after current chapter")
+        normalized[raw_key] = {
+            "character": clean_text(row.get("character"), f"tracking state.progression.{raw_key}.character", max_bytes=24),
+            "metric": clean_text(row.get("metric"), f"tracking state.progression.{raw_key}.metric", max_bytes=24),
+            "value": as_int(row.get("value"), f"tracking state.progression.{raw_key}.value"),
+            "unit": clean_text(row.get("unit", ""), f"tracking state.progression.{raw_key}.unit", allow_empty=True, max_bytes=12),
+            "direction": clean_text(row.get("direction"), f"tracking state.progression.{raw_key}.direction", max_bytes=8),
+            "first_recorded_chapter": first,
+            "updated_chapter": updated,
+        }
+    return normalized
+
+
 def normalize_address_book_state(value: object, last_chapter: int) -> dict[str, dict[str, Any]]:
     entries = as_mapping(value, "tracking state.address_book")
     normalized: dict[str, dict[str, Any]] = {}
@@ -754,6 +812,27 @@ def render_address_book(entries: dict[str, dict[str, Any]], revision: int) -> st
         )
     if len(lines) == 6:
         lines.append("| — | — | — | — | — |")
+    return "\n".join(lines) + "\n"
+
+
+def render_progression(entries: dict[str, dict[str, Any]], revision: int) -> str:
+    """B62 进度派生视图（全量表）：角色｜指标｜当前值｜单位｜方向｜登记章｜更新章。"""
+    lines = [
+        "# 进度登记",
+        "",
+        f"> 状态修订：{revision}。登记制数值指标（境界/欠款/排名/资产等）；回退候选在 commit stdout 呈报，不进本表。",
+        "",
+        "| 角色 | 指标 | 当前值 | 单位 | 方向 | 登记章 | 更新章 |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for key in sorted(entries):
+        row = entries[key]
+        lines.append(
+            f"| {row['character']} | {row['metric']} | {row['value']} | {row['unit'] or '—'} | "
+            f"{row['direction']} | 第{row['first_recorded_chapter']}章 | 第{row['updated_chapter']}章 |"
+        )
+    if len(lines) == 8:
+        lines.append("| — | — | — | — | — | — | — |")
     return "\n".join(lines) + "\n"
 
 
@@ -1107,7 +1186,7 @@ def normalize_delta(
         delta,
         {
             "result", "character_changes", "foreshadow_changes", "timeline_events", "information_gap_changes",
-            "address_book_updates",
+            "address_book_updates", "progression_updates",
             "constraints", "next_chapter_commitments", "retired_context_items", "retired_characters",
         },
         "delta",
@@ -1178,6 +1257,16 @@ def normalize_delta(
         len(pair_keys) == len(set(pair_keys)),
         "delta.address_book_updates contains duplicate pairs",
     )
+    # B62 progression 登记制数值域（候选语义——回退仅 stdout 呈报）
+    progression_updates = [
+        normalize_progression_update(raw, f"delta.progression_updates[{index}]")
+        for index, raw in enumerate(as_list(delta.get("progression_updates", []), "delta.progression_updates"))
+    ]
+    prog_keys = [item["key"] for item in progression_updates]
+    require(
+        len(prog_keys) == len(set(prog_keys)),
+        "delta.progression_updates contains duplicate keys",
+    )
     require(
         set(snapshots).issubset({item["name"] for item in character_changes}),
         "character_snapshots must contain exactly the core characters changed by this transaction",
@@ -1189,6 +1278,7 @@ def normalize_delta(
         "timeline_events": timeline_events,
         "information_gap_changes": information_gap_changes,
         "address_book_updates": address_book_updates,
+        "progression_updates": progression_updates,
         "constraints": clean_string_list(delta.get("constraints", []), "delta.constraints", maximum=6),
         "next_chapter_commitments": clean_string_list(
             delta.get("next_chapter_commitments", []), "delta.next_chapter_commitments", maximum=5
@@ -1258,7 +1348,7 @@ def normalize_state(document: object) -> dict[str, Any]:
         {
             "schema_version", "book_title", "last_committed_chapter", "imported_through_chapter",
             "state_revision", "context", "characters", "foreshadow", "timeline", "information_gaps",
-            "address_book",
+            "address_book", "progression",
         },
         "tracking state",
     )
@@ -1282,6 +1372,7 @@ def normalize_state(document: object) -> dict[str, Any]:
     timeline = normalize_timeline_state(root.get("timeline", {}), last_chapter)
     information_gaps = normalize_information_gap_state(root.get("information_gaps", {}), last_chapter)
     address_book = normalize_address_book_state(root.get("address_book", {}), last_chapter)
+    progression = normalize_progression_state(root.get("progression", {}), last_chapter)
     if last_chapter == 0:
         require(not foreshadow, "a chapter-0 project cannot have planted foreshadow facts")
         require(not timeline, "a chapter-0 project cannot have established timeline facts")
@@ -1299,6 +1390,7 @@ def normalize_state(document: object) -> dict[str, Any]:
         "timeline": timeline,
         "information_gaps": information_gaps,
         "address_book": address_book,
+        "progression": progression,
     }
 
 
@@ -1314,6 +1406,7 @@ def migrate_state(project: Path) -> None:
     v4→v5：缺 information_gaps 域时补空域。
     v5→v6（B58b）：每条 information_gaps 条目补 `reveal_chapter: null`（可选字段默认不锁）。
     v6→v7（B59）：characters 逐条补 `voice_samples: []`；顶层补 `address_book: {}`（可选域默认空）。
+    v7→v8（B62）：顶层补 `progression: {}`（登记制数值域，可选默认空）。
     备份命名 `追踪/_备份/schema-v{N}-<YYYYMMDD-HHMMSS>.json`（同秒冲突追加随机后缀）。
     迁移失败不写任何文件；老键原样保留，零丢失。链式迁移一次备份覆盖全链。
     """
@@ -1326,7 +1419,7 @@ def migrate_state(project: Path) -> None:
     version = document.get("schema_version")
     tracking = tracking_root(project)
     backup_dir = tracking / "_备份"
-    if version not in (4, 5, 6) or version == TRACKING_SCHEMA_VERSION:
+    if version not in (4, 5, 6, 7) or version == TRACKING_SCHEMA_VERSION:
         return
     backup_dir.mkdir(parents=True, exist_ok=True)
     stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -1351,6 +1444,7 @@ def migrate_state(project: Path) -> None:
         for name, snapshot in migrated.get("characters", {}).items()
     }
     migrated.setdefault("address_book", {})
+    migrated.setdefault("progression", {})
     migrated["schema_version"] = TRACKING_SCHEMA_VERSION
     atomic_write_text(path, json_payload(migrated))
     emit(f"NOTE: tracking state migrated v{version}→v{TRACKING_SCHEMA_VERSION}; backup at 追踪/_备份/{backup.name}", error=True)
@@ -1366,7 +1460,7 @@ def normalize_initial_document(document: object) -> dict[str, Any]:
         root,
         {
             "schema_version", "book_title", "last_chapter", "context", "character_snapshots",
-            "foreshadow", "timeline_events", "information_gaps", "address_book",
+            "foreshadow", "timeline_events", "information_gaps", "address_book", "progression",
         },
         "init input",
     )
@@ -1589,6 +1683,51 @@ def merge_transaction(state: dict[str, Any], transaction: dict[str, Any]) -> dic
             "updated_chapter": max(previous["updated_chapter"] if previous else chapter, chapter),
         }
         next_state["address_book"][pair] = record
+    # B62 progression 合并：register 要求键不存在；update 要求存在——单调性候选在此比对
+    for change in transaction["delta"]["progression_updates"]:
+        key = change["key"]
+        if change["action"] == "retire":
+            next_state["progression"].pop(key, None)
+            continue
+        previous = next_state["progression"].get(key)
+        if change["action"] == "register":
+            require(
+                previous is None,
+                f"progression {key} is already registered; use update instead",
+            )
+        else:  # update
+            require(
+                previous is not None,
+                f"progression {key} is not registered; use register instead",
+            )
+            old_value = previous["value"]
+            new_value = change["value"]
+            direction = previous["direction"]
+            regressed = (direction == "up" and new_value < old_value) or (
+                direction == "down" and new_value > old_value
+            )
+            if regressed and "reason" not in change:
+                emit(
+                    f"⚠️ 进度回退候选：{change['character']}·{change['metric']} {old_value}→{new_value}"
+                    f"（{direction} 指标逆向，未带归因）——候选不拦截，剧情性回退请在 update 带 reason",
+                    error=True,
+                )
+            elif regressed:
+                emit(
+                    f"已归因回退：{change['character']}·{change['metric']} {old_value}→{new_value}"
+                    f"（{change.get('reason', '')}）",
+                    error=True,
+                )
+        record = {
+            "character": change["character"], "metric": change["metric"],
+            "value": change["value"], "unit": previous.get("unit", "") if previous else change.get("unit", ""),
+            "direction": previous["direction"] if previous else change["direction"],
+            "first_recorded_chapter": previous["first_recorded_chapter"] if previous else chapter,
+            "updated_chapter": max(previous["updated_chapter"] if previous else chapter, chapter),
+        }
+        # B62：reason 仅用于 stdout 候选/归因行呈报，不持久化进 state（normalize_progression_state
+        # 键集不含 reason，存进去会导致下次 load_state 报 unsupported fields）
+        next_state["progression"][key] = record
 
     recent_by_chapter = {item["chapter"]: item for item in state["context"]["recent_chapters"]}
     if chapter in recent_by_chapter or transaction["mode"] == "append":
@@ -1622,6 +1761,7 @@ def render_views(
             state["information_gaps"], revision, state.get("last_committed_chapter", 0)
         ),
         "称谓.md": render_address_book(state.get("address_book", {}), revision),
+        "进度.md": render_progression(state.get("progression", {}), revision),
     }
     author, reader = render_timeline_views(state["timeline"], revision)
     views["时间线/作者真相.md"] = author

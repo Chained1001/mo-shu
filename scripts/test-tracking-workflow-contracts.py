@@ -244,7 +244,7 @@ def test_hooks_fail_closed_on_invalid_tracking_checkpoints() -> None:
         js,
         (
             "_tracking-state.json 缺失",
-            "schema_version=7",
+            "schema_version=8",
             "state_revision",
             "mode=revision 事务重建派生视图",
             "重新 /moshu-import",

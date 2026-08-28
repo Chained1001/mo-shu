@@ -115,8 +115,8 @@ function trackingCheckpointIssue(book, requireState = false, expectedLastCommitt
   } catch {
     return `追踪/_tracking-state.json 无法解析；停止写正文并重新 /moshu-import，不能猜测或手补状态`
   }
-  if (!document || typeof document !== "object" || Array.isArray(document) || document.schema_version !== 7) {
-    return `追踪/_tracking-state.json 不是当前 schema_version=7；停止写正文并重新 /moshu-import，不保留旧结构兼容路径`
+  if (!document || typeof document !== "object" || Array.isArray(document) || document.schema_version !== 8) {
+    return `追踪/_tracking-state.json 不是当前 schema_version=8；停止写正文并重新 /moshu-import，不保留旧结构兼容路径`
   }
   if (!Number.isInteger(document.state_revision)) {
     return `追踪/_tracking-state.json 缺少整数 state_revision；停止写正文并重新 /moshu-import`
