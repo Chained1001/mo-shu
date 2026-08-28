@@ -59,6 +59,7 @@
 - [genre-readers.md](genre-readers.md)
 - [plot-special-topics.md](plot-special-topics.md)
 - [plot-emotion-system.md](plot-emotion-system.md)
+- [style-genre-modules.md](style-genre-modules.md)
 - [outline-workflow.md](outline-workflow.md)（细纲职责在 write 侧，本卷规划只引其分批口径）
 - [virtual-benchmark-template.md](virtual-benchmark-template.md)
 - [ledger-template.md](ledger-template.md)
@@ -146,7 +147,7 @@
 
 ## Phase A：快速生成（Stage 4-6——Stage 1-3 见 moshu-outline 侧 workflow-outline.md）
 
-> 开书时 Stage 1-3（信息采集/骨架/人物）在 moshu-outline 侧完成；本技能承接的入口有三：①开书接力（outline 交接）；②开新卷（cold-path「开新卷」，从 Stage 4 起增量）；③修订流（revision-workflow.md）。Phase A 交互纪律与机检时点不变：Stage 4-6 全速走完（不停靠不评审，⚠️ 标注入台账），Stage 6 后自动跑全量 check_outline（blocking 清零才进弹窗）。
+> 开书时 Stage 1-3（信息采集/骨架/人物）在 moshu-outline 侧完成；本技能承接三入口：①开书接力；②开新卷（cold-path，Stage 4 起增量）；③修订流（revision-workflow）。Phase A 交互纪律与机检时点不变：Stage 4-6 全速走完（不停靠不评审，⚠️ 标注入台账），Stage 6 后自动跑全量 check_outline（blocking 清零才进弹窗）。
 
 ### Phase A Stage 4·单元构建
 
