@@ -255,6 +255,10 @@ flowchart TD
 
 current-contract.json 四域（deployment_manifest 6 键/artifact_contracts 3 项/flow_anchors 2 锚/版本与 schema 常量）；守卫从契约断言 deploy.py 常量、文档计数、锚点节名。shared-assets 76 组唯一源→副本，sync 同步+check 全量对账（未登记非豁免副本即红）。
 
+current-contract.json 四域（deployment_manifest 6 键/artifact_contracts 3 项/flow_anchors 2 锚/版本与 schema 常量）；守卫从契约断言 deploy.py 常量、文档计数、锚点节名。shared-assets 76 组唯一源→副本，sync 同步+check 全量对账（未登记非豁免副本即红）。
+
+追踪 schema 8（B58-B62 累计）新增四域与三派生视图：`reveal_chapter`（B58b，信息差最早揭示章）/ `voice_samples`（B59，角色快照语声锚滚动 5 条）/ `address_book`（B59，双向称谓域）/ `progression`（B62，登记制数值指标域）；派生视图 = `追踪/称谓.md` + `追踪/进度.md` + 上下文卡「本章点名清单」节。schema 常量权威在 tracking_commit.py:26-27 四副本。
+
 ## 3.15 性能预算
 
 doc-budget 单文件+路径组两级（node UTF-16 口径）；超限处理序：删等量旧文本→下沉冷路径→显式调高注明理由。当前关键预算：workflow-build 26000/构建路径组 29900（B51 收敛后锁定；B53 Phase A/B 重构后待实测调整）。冷热分离：SKILL.md 薄入口+references 按需+低频节下沉 cold-path。**指纹纪律（B50/B51 教训）**：shared-assets 组内容任何变更（含 sync 到 setup 副本）都改变部署物指纹——bump 后再动 shared-assets 须 --re-register-fingerprint。

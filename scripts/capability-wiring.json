@@ -1,1 +1,264 @@
-{"schema_version": 1, "description": "能力接线注册表（审计-V3 D1）：每条登记一个「确定性能力」及其全部消费点。守卫 check-capability-wiring.py 断言每个 consumer 文件含调用点标记——脚本层建好的能力若流程文档从不指示使用（接线缺口），本表立刻变红。与 behavior-contracts.json 分工：本表锁「链通不通」（producer→consumer 调用点），behavior-contracts 锁「话在不在」（约束文本存在）。新增能力时：先登记 producer 与全部 consumers，再写实现；删除能力时同步清本表。", "capabilities": [{"id": "information-gap-transaction", "producer": "tracking_commit.py 的 information_gaps 域与 information_gap_changes delta 键", "rationale": "批3a 信息差域（知情人×读者已知×关键词）——生产端登记、消费端候选机检与卷报告依赖", "consumers": [{"file": "skills/moshu-write/references/workflow-daily.md", "must_contain": "information_gap_changes"}, {"file": "skills/moshu-write/references/chapter-core.md", "must_contain": "information_gap_changes"}, {"file": "skills/moshu-import/references/import-workflow.md", "must_contain": "information_gaps"}, {"file": "skills/moshu-review/references/review-workflow.md", "must_contain": "information_gap_changes"}, {"file": "skills/moshu-write/references/tracking-transaction.md", "must_contain": "信息差事务"}]}, {"id": "suspension-warnings", "producer": "tracking_commit.py check 的 suspension_warnings 输出", "rationale": "批3b 悬置预警（候选性质）——消费端须读取并呈报，不得默默丢掉", "consumers": [{"file": "skills/moshu-review/references/review-workflow.md", "must_contain": "suspension_warnings"}, {"file": "skills/moshu-import/references/import-workflow.md", "must_contain": "suspension_warnings"}]}, {"id": "volume-report", "producer": "tracking_commit.py volume-report 子命令", "rationale": "批3c 卷报告（伏笔清账/悬置/信息差未兑现确定性出表）——卷复盘与整卷审查两条车道都要消费", "consumers": [{"file": "skills/moshu-write/references/volume-review.md", "must_contain": "volume-report"}, {"file": "skills/moshu-review/references/review-workflow.md", "must_contain": "volume-report"}]}, {"id": "review-ticket-flow", "producer": "review_tickets.py write/resolve/list 工单状态机", "rationale": "批6 审查工单闭环——产出车道、处置车道、日更前置检查三处都要接线", "consumers": [{"file": "skills/moshu-review/references/review-workflow.md", "must_contain": "review_tickets.py write"}, {"file": "skills/moshu-write/references/workflow-revision.md", "must_contain": "review_tickets.py list"}, {"file": "skills/moshu-write/references/workflow-daily.md", "must_contain": "review_tickets.py list"}]}, {"id": "review-token", "producer": "review_tickets.py verify-token + 4 个 reviewer 模板的令牌段", "rationale": "批6 审稿令牌防编造——生成、注入、校验三步缺一即整链空转", "consumers": [{"file": "skills/moshu-review/references/review-workflow.md", "must_contain": "审稿令牌：{token}"}, {"file": "skills/moshu-review/references/review-workflow.md", "must_contain": "verify-token"}, {"file": "skills/moshu-setup/references/templates/agents/moshu-architect.md", "must_contain": "审稿令牌"}, {"file": "skills/moshu-setup/references/templates/agents/moshu-character-designer.md", "must_contain": "审稿令牌"}, {"file": "skills/moshu-setup/references/templates/agents/moshu-consistency-checker.md", "must_contain": "审稿令牌"}, {"file": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md", "must_contain": "审稿令牌"}]}, {"id": "prose-candidates", "producer": "check-prose-candidates.js（三类候选，永不拦截）", "rationale": "批5 候选机检——日更批末与单章收尾两条车道都要有调用点", "consumers": [{"file": "skills/moshu-write/references/workflow-daily.md", "must_contain": "check-prose-candidates.js"}, {"file": "skills/moshu-write/references/chapter-core.md", "must_contain": "check-prose-candidates.js"}]}, {"id": "style-profile-contract", "producer": "moshu-style 的文风库/文风.md 模板字段（平均句长/文风可用）", "rationale": "文风产物是写作每章必读的风格基准——生产侧字段与两个消费侧解析口径必须逐字对齐", "consumers": [{"file": "skills/moshu-style/references/style-learn-sop.md", "must_contain": "平均句长"}, {"file": "skills/moshu-style/references/style-learn-sop.md", "must_contain": "文风可用：是"}, {"file": "skills/moshu-write/scripts/check-prose-candidates.js", "must_contain": "平均句长"}, {"file": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md", "must_contain": "平均句长"}]}, {"id": "sparse-data-marking", "producer": "4 个 scraper 的 [数据稀疏] 质量标记", "rationale": "选题硬规则「不许给高」完全依赖该标记——标记缺失会让低样本选题静默放行", "consumers": [{"file": "skills/moshu-scan/scripts/qidian-rank-scraper.js", "must_contain": "[数据稀疏]"}, {"file": "skills/moshu-scan/scripts/qimao-rank-scraper.js", "must_contain": "[数据稀疏]"}, {"file": "skills/moshu-scan/scripts/fanqie-rank-scraper.js", "must_contain": "[数据稀疏]"}, {"file": "skills/moshu-scan/scripts/jjwxc-rank-scraper.js", "must_contain": "[数据稀疏]"}, {"file": "skills/moshu-scan/references/topic-decision.md", "must_contain": "不许给\"高\""}]}, {"id": "tracking-schema-version", "producer": "tracking_commit.py 的 TRACKING_SCHEMA_VERSION 常量（三副本字节一致）", "rationale": "部署 hook 的 schema 校验必须跟随状态版本——批3a 曾漏改 hook 致真实项目写正文被拦死", "consumers": [{"file": "skills/moshu-setup/references/templates/hooks/story_hook_core.js", "must_contain": "schema_version !== 8"}]}, {"id": "exemption-marker", "producer": "check-ai-patterns.js 的 <!-- 去味:跳过 --> 豁免语义", "rationale": "豁免标记会整文件跳过扫描——deslop 主职能的文档必须指示「不得把跳过当零命中」", "consumers": [{"file": "skills/moshu-deslop/references/deslop-workflow.md", "must_contain": "去味:跳过"}, {"file": "skills/moshu-deslop/references/deslop-workflow.md", "must_contain": "不得把跳过当成零命中"}]}, {"id": "story-construction", "producer": "workflow-build.md 的开书构建流程（Phase 1 选题/对标 → Phase 2 核心设定 → Phase 3 卷级大纲 → artifact 创建含 tracking init）", "rationale": "V2.1 B1a 构建环开书职责——SKILL 路由必须指向 workflow-build，防新技能入口悬空", "consumers": [{"file": "skills/moshu-build/SKILL.md", "must_contain": "workflow-build.md"}, {"file": "skills/moshu-build/references/workflow-build.md", "must_contain": "tracking_commit.py init"}]}, {"id": "setting-revision", "producer": "revision-workflow.md 的五步修订流程（impact_scan 影响分析→作者裁决→留痕落盘→级联标记→回流提示）", "rationale": "V2.1 B1a 修订职责——影响分析脚本必须被流程文档指示使用（接线缺口即流程静默失效）", "consumers": [{"file": "skills/moshu-build/SKILL.md", "must_contain": "impact_scan.py"}, {"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "impact_scan.py"}, {"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "变更日志"}]}, {"id": "build-ledger", "producer": "workflow-build.md 的构建台账机制（进入规则/方法论声明步/台账模板/更新规则）", "rationale": "V2.1 批B3 构建台账（构建态与方法论单真源）——三种入口进入必读、决策收敛必写、会话收尾必结；修订与开新卷车道都要指示读取", "consumers": [{"file": "skills/moshu-build/references/revision-workflow.md", "must_contain": "构建台账"}, {"file": "skills/moshu-build/references/workflow-build.md", "must_contain": "构建台账"}]}]}
+{
+  "schema_version": 1,
+  "description": "能力接线注册表（审计-V3 D1）：每条登记一个「确定性能力」及其全部消费点。守卫 check-capability-wiring.py 断言每个 consumer 文件含调用点标记——脚本层建好的能力若流程文档从不指示使用（接线缺口），本表立刻变红。与 behavior-contracts.json 分工：本表锁「链通不通」（producer→consumer 调用点），behavior-contracts 锁「话在不在」（约束文本存在）。新增能力时：先登记 producer 与全部 consumers，再写实现；删除能力时同步清本表。",
+  "capabilities": [
+    {
+      "id": "information-gap-transaction",
+      "producer": "tracking_commit.py 的 information_gaps 域与 information_gap_changes delta 键",
+      "rationale": "批3a 信息差域（知情人×读者已知×关键词）——生产端登记、消费端候选机检与卷报告依赖",
+      "consumers": [
+        {
+          "file": "skills/moshu-write/references/workflow-daily.md",
+          "must_contain": "information_gap_changes"
+        },
+        {
+          "file": "skills/moshu-write/references/chapter-core.md",
+          "must_contain": "information_gap_changes"
+        },
+        {
+          "file": "skills/moshu-import/references/import-workflow.md",
+          "must_contain": "information_gaps"
+        },
+        {
+          "file": "skills/moshu-review/references/review-workflow.md",
+          "must_contain": "information_gap_changes"
+        },
+        {
+          "file": "skills/moshu-write/references/tracking-transaction.md",
+          "must_contain": "信息差事务"
+        }
+      ]
+    },
+    {
+      "id": "suspension-warnings",
+      "producer": "tracking_commit.py check 的 suspension_warnings 输出",
+      "rationale": "批3b 悬置预警（候选性质）——消费端须读取并呈报，不得默默丢掉",
+      "consumers": [
+        {
+          "file": "skills/moshu-review/references/review-workflow.md",
+          "must_contain": "suspension_warnings"
+        },
+        {
+          "file": "skills/moshu-import/references/import-workflow.md",
+          "must_contain": "suspension_warnings"
+        }
+      ]
+    },
+    {
+      "id": "volume-report",
+      "producer": "tracking_commit.py volume-report 子命令",
+      "rationale": "批3c 卷报告（伏笔清账/悬置/信息差未兑现确定性出表）——卷复盘与整卷审查两条车道都要消费",
+      "consumers": [
+        {
+          "file": "skills/moshu-write/references/volume-review.md",
+          "must_contain": "volume-report"
+        },
+        {
+          "file": "skills/moshu-review/references/review-workflow.md",
+          "must_contain": "volume-report"
+        }
+      ]
+    },
+    {
+      "id": "review-ticket-flow",
+      "producer": "review_tickets.py write/resolve/list 工单状态机",
+      "rationale": "批6 审查工单闭环——产出车道、处置车道、日更前置检查三处都要接线",
+      "consumers": [
+        {
+          "file": "skills/moshu-review/references/review-workflow.md",
+          "must_contain": "review_tickets.py write"
+        },
+        {
+          "file": "skills/moshu-write/references/workflow-revision.md",
+          "must_contain": "review_tickets.py list"
+        },
+        {
+          "file": "skills/moshu-write/references/workflow-daily.md",
+          "must_contain": "review_tickets.py list"
+        }
+      ]
+    },
+    {
+      "id": "review-token",
+      "producer": "review_tickets.py verify-token + 4 个 reviewer 模板的令牌段",
+      "rationale": "批6 审稿令牌防编造——生成、注入、校验三步缺一即整链空转",
+      "consumers": [
+        {
+          "file": "skills/moshu-review/references/review-workflow.md",
+          "must_contain": "审稿令牌：{token}"
+        },
+        {
+          "file": "skills/moshu-review/references/review-workflow.md",
+          "must_contain": "verify-token"
+        },
+        {
+          "file": "skills/moshu-setup/references/templates/agents/moshu-architect.md",
+          "must_contain": "审稿令牌"
+        },
+        {
+          "file": "skills/moshu-setup/references/templates/agents/moshu-character-designer.md",
+          "must_contain": "审稿令牌"
+        },
+        {
+          "file": "skills/moshu-setup/references/templates/agents/moshu-consistency-checker.md",
+          "must_contain": "审稿令牌"
+        },
+        {
+          "file": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
+          "must_contain": "审稿令牌"
+        }
+      ]
+    },
+    {
+      "id": "prose-candidates",
+      "producer": "check-prose-candidates.js（三类候选，永不拦截）",
+      "rationale": "批5 候选机检——日更批末与单章收尾两条车道都要有调用点",
+      "consumers": [
+        {
+          "file": "skills/moshu-write/references/workflow-daily.md",
+          "must_contain": "check-prose-candidates.js"
+        },
+        {
+          "file": "skills/moshu-write/references/chapter-core.md",
+          "must_contain": "check-prose-candidates.js"
+        }
+      ]
+    },
+    {
+      "id": "style-profile-contract",
+      "producer": "moshu-style 的文风库/文风.md 模板字段（平均句长/文风可用）",
+      "rationale": "文风产物是写作每章必读的风格基准——生产侧字段与两个消费侧解析口径必须逐字对齐",
+      "consumers": [
+        {
+          "file": "skills/moshu-style/references/style-learn-sop.md",
+          "must_contain": "平均句长"
+        },
+        {
+          "file": "skills/moshu-style/references/style-learn-sop.md",
+          "must_contain": "文风可用：是"
+        },
+        {
+          "file": "skills/moshu-write/scripts/check-prose-candidates.js",
+          "must_contain": "平均句长"
+        },
+        {
+          "file": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
+          "must_contain": "平均句长"
+        }
+      ]
+    },
+    {
+      "id": "sparse-data-marking",
+      "producer": "4 个 scraper 的 [数据稀疏] 质量标记",
+      "rationale": "选题硬规则「不许给高」完全依赖该标记——标记缺失会让低样本选题静默放行",
+      "consumers": [
+        {
+          "file": "skills/moshu-scan/scripts/qidian-rank-scraper.js",
+          "must_contain": "[数据稀疏]"
+        },
+        {
+          "file": "skills/moshu-scan/scripts/qimao-rank-scraper.js",
+          "must_contain": "[数据稀疏]"
+        },
+        {
+          "file": "skills/moshu-scan/scripts/fanqie-rank-scraper.js",
+          "must_contain": "[数据稀疏]"
+        },
+        {
+          "file": "skills/moshu-scan/scripts/jjwxc-rank-scraper.js",
+          "must_contain": "[数据稀疏]"
+        },
+        {
+          "file": "skills/moshu-scan/references/topic-decision.md",
+          "must_contain": "不许给\"高\""
+        }
+      ]
+    },
+    {
+      "id": "tracking-schema-version",
+      "producer": "tracking_commit.py 的 TRACKING_SCHEMA_VERSION 常量（三副本字节一致）",
+      "rationale": "部署 hook 的 schema 校验必须跟随状态版本——批3a 曾漏改 hook 致真实项目写正文被拦死",
+      "consumers": [
+        {
+          "file": "skills/moshu-setup/references/templates/hooks/story_hook_core.js",
+          "must_contain": "schema_version !== 8"
+        }
+      ]
+    },
+    {
+      "id": "exemption-marker",
+      "producer": "check-ai-patterns.js 的 <!-- 去味:跳过 --> 豁免语义",
+      "rationale": "豁免标记会整文件跳过扫描——deslop 主职能的文档必须指示「不得把跳过当零命中」",
+      "consumers": [
+        {
+          "file": "skills/moshu-deslop/references/deslop-workflow.md",
+          "must_contain": "去味:跳过"
+        },
+        {
+          "file": "skills/moshu-deslop/references/deslop-workflow.md",
+          "must_contain": "不得把跳过当成零命中"
+        }
+      ]
+    },
+    {
+      "id": "story-construction",
+      "producer": "workflow-build.md 的开书构建流程（Phase 1 选题/对标 → Phase 2 核心设定 → Phase 3 卷级大纲 → artifact 创建含 tracking init）",
+      "rationale": "V2.1 B1a 构建环开书职责——SKILL 路由必须指向 workflow-build，防新技能入口悬空",
+      "consumers": [
+        {
+          "file": "skills/moshu-build/SKILL.md",
+          "must_contain": "workflow-build.md"
+        },
+        {
+          "file": "skills/moshu-build/references/workflow-build.md",
+          "must_contain": "tracking_commit.py init"
+        }
+      ]
+    },
+    {
+      "id": "setting-revision",
+      "producer": "revision-workflow.md 的五步修订流程（impact_scan 影响分析→作者裁决→留痕落盘→级联标记→回流提示）",
+      "rationale": "V2.1 B1a 修订职责——影响分析脚本必须被流程文档指示使用（接线缺口即流程静默失效）",
+      "consumers": [
+        {
+          "file": "skills/moshu-build/SKILL.md",
+          "must_contain": "impact_scan.py"
+        },
+        {
+          "file": "skills/moshu-build/references/revision-workflow.md",
+          "must_contain": "impact_scan.py"
+        },
+        {
+          "file": "skills/moshu-build/references/revision-workflow.md",
+          "must_contain": "变更日志"
+        }
+      ]
+    },
+    {
+      "id": "build-ledger",
+      "producer": "workflow-build.md 的构建台账机制（进入规则/方法论声明步/台账模板/更新规则）",
+      "rationale": "V2.1 批B3 构建台账（构建态与方法论单真源）——三种入口进入必读、决策收敛必写、会话收尾必结；修订与开新卷车道都要指示读取",
+      "consumers": [
+        {
+          "file": "skills/moshu-build/references/revision-workflow.md",
+          "must_contain": "构建台账"
+        },
+        {
+          "file": "skills/moshu-build/references/workflow-build.md",
+          "must_contain": "构建台账"
+        }
+      ]
+    },
+    {
+      "id": "design-fingerprint-diff",
+      "producer": "design_fingerprints.py diff 子命令（设定指纹基线对比+受影响章反查）",
+      "rationale": "B61 设定指纹与影响面——修订流 ③b 需要确定性 diff 反查受影响章（candidate 呈报，发起权在作者）；脚本层确定性能力须流程文档指示使用",
+      "consumers": [
+        {
+          "file": "skills/moshu-build/references/revision-workflow.md",
+          "must_contain": "design_fingerprints.py diff"
+        }
+      ]
+    }
+  ]
+}
