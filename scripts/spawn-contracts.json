@@ -314,9 +314,9 @@
       ],
       "callers": [
         {
-          "file": "skills/moshu-volume/references/volume-workflow.md",
+          "file": "skills/moshu-outline/references/workflow-outline.md",
           "must_contain": "spawn moshu-researcher（结构采风，CF 票据登记）",
-          "context": "Phase A 采风默认执行",
+          "context": "Phase A Stage 1 采风默认执行（B76 拆分归 outline）",
           "required_params": [
             "query"
           ]

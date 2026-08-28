@@ -1,6 +1,6 @@
 # 构建台账模板（ledger-template.md）
 
-> 定位注记（B54）：本文件是 `设定/构建台账.md` 的落盘模板——从 workflow-build「台账模板」节下沉（create-time 资产，创建台账时按需读本文件）。台账的进入规则、构建态流转语义与流程规则见 [volume-workflow.md](volume-workflow.md)「构建台账与进入规则」——本文件只承载格式。
+> 定位注记（B54）：本文件是 `设定/构建台账.md` 的落盘模板——从 volume-workflow（原 workflow-build，B76 拆分正名）「台账模板」节下沉（create-time 资产，创建台账时按需读本文件）。台账的进入规则、构建态流转语义与流程规则见 [volume-workflow.md](volume-workflow.md)「构建台账与进入规则」——本文件只承载格式。
 
 ```markdown
 # 构建台账（{书名}）

@@ -177,7 +177,8 @@
       "source": "skills/moshu-write/references/opening-design.md",
       "targets": [
         "skills/moshu-setup/references/agent-references/opening-design.md",
-        "skills/moshu-volume/references/opening-design.md"
+        "skills/moshu-volume/references/opening-design.md",
+        "skills/moshu-outline/references/opening-design.md"
       ]
     },
     {
