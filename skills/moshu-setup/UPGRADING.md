@@ -3,11 +3,13 @@
 ## 当前版本
 
 - `setup_skill_version: 1.5.1`
-- `agents_version: 39`
+- `agents_version: 40`
 
 > **别名注记（版本地图乱点②处置）**：sentinel 字段 `setup_skill_version` 与 moshu-setup SKILL.md frontmatter `version` 是**同一版本号的两个名字**（别名关系，值恒等）——`bump-agents-version.py --setup-version` 唯一合法修改；deploy.py verify 校验 sentinel 写入值 == 常量、TS10 校验 frontmatter == current-contract，双向一致。
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `39`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `39`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v39 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `40`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `40`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v40 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+
+**v39 → v40 变更**：moshu-evaluator 评审对象扩展三型（B69 写-审配对补全）——eval_type 加 detail-batch（细纲批评审：写正文前最后一道语义闸，钩子链连贯/预算分布/场景表与卷纲单元对照/一进一出呼吸）、settings（设定包评审：一致性+题材卡置信度复核+防撞三维独立复核[B65 流程不变，只复核不接管]+信息量超载）、revision（修订包评审：影响面复核/最小改动/契约影响——只供参考，不构成裁决依据）；三型不填 score（评分仅 full 型）；被调用协议加三型 target/context 参数说明。agent 模板变更，重跑 `/moshu-setup` 并新开会话后生效。
 
 **v38 → v39 变更**：moshu-narrative-writer spawn 材料清单加两项引用（出场角色语声锚文件路径 `追踪/角色状态/{名}.md` 近作台词节 + 点名清单出场称谓行）；tracking_commit 追踪域增强（voice_samples 滚动 5 条/address_book 称谓域，schema 6→7 migrate 带备份）——agent 模板与脚本变更，重跑 `/moshu-setup` 并新开会话后生效。
 
@@ -114,7 +116,7 @@
 ## 升级步骤
 
 1. 在项目根目录重新运行 moshu-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 39` 与 `setup_skill_version: 1.5.1`。
+2. 确认 `.story-deployed` 写入 `agents_version: 40` 与 `setup_skill_version: 1.5.1`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。
