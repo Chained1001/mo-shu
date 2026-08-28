@@ -253,6 +253,15 @@ def write_command(project: Path, input_path: Path) -> Path:
         )
         emit(f"NOTE: ticket file already exists with identical content: {target.name}")
         return target
+    # CI 修正（2026-08-28 runtime-regressions 偶发红）：幂等按内容匹配扩到跨分钟戳——
+    # 同一工单二次提交跨分钟边界时目标文件名不同，旧逻辑会新建重复工单（测试跨分界偶发 + 真实重复风险）
+    for existing_file in sorted(tickets.glob(f"tickets_*_{start}-{end}.json")):
+        try:
+            if read_json(existing_file) == normalized:
+                emit(f"NOTE: ticket file already exists with identical content: {existing_file.name}")
+                return existing_file
+        except TicketError:
+            continue
     atomic_write_text(target, json_payload(normalized))
     emit(f"ticket written: {target.name}")
     return target
