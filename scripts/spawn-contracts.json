@@ -32,8 +32,8 @@
       "callers": [
         {
           "file": "skills/moshu-write/references/chapter-core.md",
-          "must_contain": "prompt 只传本章必需材料",
-          "context": "正文写作（B 段第 1 遍）",
+          "must_contain": "本章增量数据",
+          "context": "正文写作（B 段第 1 遍；B75b 两级装配——spawn 只传增量，规则由模板承接）",
           "required_params": [
             "项目目录",
             "章节",
