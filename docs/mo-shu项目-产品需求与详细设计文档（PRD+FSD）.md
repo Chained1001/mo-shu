@@ -91,7 +91,7 @@
 
 技能层（11）：setup 部署、moshu 路由+Dashboard、build 开书构建（内嵌采风）、write 写作三工作流、analyze 拆文、scan 扫榜、review 审查、import 导入、style 文风、deslop 去 AI 味、cdp 浏览器采集。Agent 层（8）：architect/character-designer/narrative-writer/consistency-checker/researcher/explorer/chapter-extractor/evaluator。自动化层：8 hook+守卫/契约体系+版本散射工具化。数据层：项目七区+追踪事务单写入口。
 
-### 2.3.1 开源强化机制层（v2.4.0，批 B58-B65，2026-08-28 反哺）
+### 2.3.1 开源强化机制层（v2.5.0，批 B58-B71，2026-08-28 反哺）
 
 | 机制 | 所属流程 | 一句话作用 | 触发点 |
 |---|---|---|---|
@@ -106,12 +106,20 @@
 | 成稿长度候选 | write C 段机检 | 成稿字数比率越 [0.7,1.3] 界出候选（阈值可覆盖） | check-prose-candidates 每章 |
 | 卡文阻塞协议 | write B 段第 1 遍 | 3 种实质写法仍不满意→停笔上报（三版对比+卡点+三选项），禁硬写 | 快写卡文时 |
 | 对标防撞对照 | build Stage 5+修订流 | 三维重合对照（人物功能位/桥段节拍/设定机制），登记项免责、单源两维候选、多源共性降噪 | 卷纲成型后按 cold-path 协议 |
+| 场景表分解步 | write 细纲批次 | 单元→场景→章数加总分解，治「100 章剧情 10 章跑完」 | 建批前产出 `大纲/场景表_单元{ID}.md`（B68a） |
+| 一进一出自检 | write 细纲模板 | 每章解决一个小问题/欠一个新问题（Swain 场景-续景） | 细纲「结尾设定」区问句行（B68a） |
+| 写作浮现+收割 | write D 段+补纲 | 写作期涌现（角色活了/新想法）append-only 登记，补纲时收割进下批细纲 | `大纲/写作浮现.md`（B68a） |
+| 拆并章规程 | write 细纲维护 | 未写区间内合法拆/并章+重编号（锁定区间须作者确认） | outline-workflow 拆并章节（B68a） |
+| 推进度仪表 | write 批末/补纲/拆并章 | 卷进度% vs 剧情进度%背离出候选（2.0×/50pp 自定可覆盖）+编号连续性 | pace_meter.py（B68b） |
+| evaluator 三型扩展 | build 停靠+write 批末+修订流 | detail-batch 细纲批评审（写正文前语义闸）/settings 设定包含防撞复核/revision 修订包独立视角 | evaluator 模板 eval_type 七值（B69） |
+| 完结态全家 | next_step+write+build | FINALIZE 建议（非拦截）/final-report 全书终账/有意留白（作者专属）/完结章指引/构建态完结 | next_step FINALIZE 分支+final-report 子命令（B70） |
+| 题材库系统集成 | build/analyze/scan/采风 | catalog 去孤儿化（双侧接线）/防撞第三共性信号源/scan 库外覆盖/采风前置查库/上游数据降档 | shared-assets genre 族+六处接线（B71） |
 
-技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **39**、候选机检永不拦截原则全程保持。
+技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **40**（B69 evaluator 三型扩展 bump）、候选机检永不拦截原则全程保持。
 
 ## 2.4 用户旅程（五条）
 
-安装（npx→开窗→setup→再开窗）→ 开书（四轮定调含默认采风→Stage 2 骨架+停靠 1→Stage 3 人物（对话 DNA 带入）→Stage 4 单元+停靠 2→Stage 5 整合+**防撞对照**→Stage 6 定稿+停靠 3→tracking init）→ 日更（写前准备（**点名注入+剧透锁+语声/称谓注入**）→细纲→正文（**卡文阻塞协议**；三遍法）→机检（**长度候选**）→追踪事务（**语声/称谓/progression 提取**））→ 审查修订（review（**工单四键+编辑决策点**）→修订流 impact_scan→裁决→**指纹影响面复查清单**→变更日志→stale 级联→**防撞改动面复跑**）→ 卷复盘开新卷（write 复盘→build 从 Stage 4 增量）。
+安装（npx→开窗→setup→再开窗）→ 开书（四轮定调含默认采风→Stage 2 骨架+停靠 1→Stage 3 人物（对话 DNA 带入）→Stage 4 单元+停靠 2→Stage 5 整合+**防撞对照**→Stage 6 定稿+停靠 3→tracking init）→ 日更（写前准备（**点名注入+剧透锁+语声/称谓注入**）→**场景表分解步**→细纲（**一进一出自检**）→正文（**卡文阻塞协议**；三遍法；**写作浮现随手记**）→机检（**长度候选**）→追踪事务（**语声/称谓/progression 提取**）→批末（**pace_meter 仪表+批末 detail-batch 评审**））→ 审查修订（review（**工单四键+编辑决策点**）→修订流 impact_scan→**修订评审（可选，不构成裁决依据）**→裁决→**指纹影响面复查清单**→变更日志→stale 级联→**防撞改动面复跑**→涉采风时**采风前置查库**分流）→ 卷复盘开新卷（write 复盘→build 从 Stage 4 增量）→ 完结（FINALIZE 建议→作者宣告完结（大纲/完结宣告.md，含有意留白标注权）→ final-report 全书终账（追踪/完结清账.md）→ 完结章写作（收束清单））。
 
 ## 2.5 产品哲学
 
@@ -123,7 +131,8 @@
 
 ## 2.7 版本路线
 
-v2.4.0（已发 2026-08-28，开源强化 B58-B65 八批+审计 B66+整改 B67+docs 瘦身）：写作上下文按需注入（点名清单+预算闸）、伏笔剧透锁、角色语声锚与双向称谓、对话 DNA 全链、外科式修订护栏与编辑决策点、设定指纹影响面、数值 progression 域与长度候选、卡文阻塞协议、对标防撞对照（登记免责）；追踪 schema 8、agents_version 39、宪法 §3.4 涟漪面纪律。v2.5 方向：实测驱动打磨（test2-5）、审计-开源强化-v1 整改、本地守卫矩阵与 CI 对齐、路由表语义守卫、rename 工具、tracking_commit 拆分。
+v2.5.0（待发，二期 B68-B71+审计 B72+整改 B73）：章纲生成强化（场景表/一进一出/浮现/拆并章/pace_meter）/完结态（FINALIZE/final-report/完结章）/evaluator 三型扩展/题材库系统集成；agents_version 40；审计法 v2.0 产品双基线+六查协议；docs 瘦身 78→26。
+v2.4.0（已发 2026-08-28，开源强化 B58-B65 八批+审计 B66+整改 B67+docs 瘦身）：写作上下文按需注入（点名清单+预算闸）、伏笔剧透锁、角色语声锚与双向称谓、对话 DNA 全链、外科式修订护栏与编辑决策点、设定指纹影响面、数值 progression 域与长度候选、卡文阻塞协议、对标防撞对照（登记免责）；追踪 schema 8、agents_version 40、宪法 §3.4 涟漪面纪律。v2.5 方向：实测驱动打磨（test2-5）、审计-开源强化-v1 整改、本地守卫矩阵与 CI 对齐、路由表语义守卫、rename 工具、tracking_commit 拆分。
 
 ## 2.8 产品边界（明确不做，14 条）
 

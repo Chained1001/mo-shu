@@ -259,6 +259,40 @@
           "must_contain": "design_fingerprints.py diff"
         }
       ]
+    },
+    {
+      "id": "pace-meter",
+      "producer": "pace_meter.py（卷进度 vs 剧情进度双百分比+背离候选+细纲编号连续性，呈报工具恒退出码 0）",
+      "rationale": "B68b 推进度仪表——批末/补纲/拆并章三处消费卷进度对账与编号缺号核对（candidate 呈报，裁决归作者）",
+      "consumers": [
+        {
+          "file": "skills/moshu-write/references/workflow-daily.md",
+          "must_contain": "pace_meter.py --project {书根}"
+        },
+        {
+          "file": "skills/moshu-write/references/outline-workflow.md",
+          "must_contain": "pace_meter.py --project {书根}"
+        }
+      ]
+    },
+    {
+      "id": "final-report",
+      "producer": "tracking_commit.py final-report 子命令（全书终账：跨卷伏笔/信息差/承诺/progression+有意留白，纯派生零 state 写入）",
+      "rationale": "B70 完结态——FINALIZE 建议引导跑 final-report，完结章写作前必读其产物 完结清账.md（未清零项裁决归作者）",
+      "consumers": [
+        {
+          "file": "skills/moshu-write/references/workflow-daily.md",
+          "must_contain": "tracking_commit.py final-report"
+        },
+        {
+          "file": "skills/moshu/scripts/next_step.py",
+          "must_contain": "跑 final-report 并走完结章写作指引"
+        },
+        {
+          "file": "skills/moshu-write/references/chapter-core.md",
+          "must_contain": "完结清账.md"
+        }
+      ]
     }
   ]
 }
