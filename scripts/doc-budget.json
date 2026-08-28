@@ -38,8 +38,8 @@
     },
     {
       "path": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
-      "budget": 13300,
-      "why": "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则；→13300：批6 审稿令牌段（审查防编造机制：报告首行逐字回传令牌供 verify-token 校验，4 个 reviewer 模板统一；已压缩至最小约 100 字仍超，审查 spawn 与写作 spawn 同付此模板，按 doc-budget 机制显式调高，2026-08-20）"
+      "budget": 14100,
+      "why": "正文 agent 的系统提示，每章每次 spawn 都付。正文规则中的 reference 引用必须保留 canonical agent-references 前缀，否则运行时无法可靠定位部署文件；本次同时加入正文形状、机器统计与细纲重合复核规则；→13300：批6 审稿令牌段（审查防编造机制：报告首行逐字回传令牌供 verify-token 校验，4 个 reviewer 模板统一；已压缩至最小约 100 字仍超，审查 spawn 与写作 spawn 同付此模板，按 doc-budget 机制显式调高，2026-08-20）。B75a 两级装配模板侧（「流程规则承接」节：三遍法/细纲优先/禁止提前释放+🔒/格式硬约束/场景路由/一进一出/语声对照七判据摘要，~628）——规格 §五 称模板不在 doc-budget 系现状事实错误（B56 起登记），偏差记录；增量对价=75b spawn prompt 删重复规则（payload 数千字符/章减免，系统级净减），13300→14100"
     },
     {
       "path": "skills/moshu-write/references/writing-craft.md",
