@@ -32,6 +32,16 @@ ALLOWED_CROSS_DOMAIN: dict[str, str] = {
     "artifact-protocols.md": "write 侧产物模板；B1a 裁决其细纲模板段属 write 域、build 不补副本（批B4 裁决二）",
     "writing-craft.md": "write 域执行技法；build 构建对谈不加载，仅跨域指引（批B4 裁决二）",
     "style-combat-face.md": "write 域文风技法；build 构建对谈不加载，仅跨域指引（批B4 裁决二）",
+    # B76 build 拆分（D-B76-1 裁决 E：outline/volume 互为上下游，文件即接口；方法论互引由 9+1 组交叉副本承载导航，提及类走白名单）
+    "volume-workflow.md": "volume 侧卷规划流程（Stage 4-6+Phase B）；outline 侧交接指针与对照引用（B76 拆分）",
+    "workflow-outline.md": "outline 侧开书流程（Stage 1-3）；volume-workflow 头部交接指针指回（B76 拆分）",
+    "caifeng-methods.md": "volume 侧采风手册；outline Stage 1 采风执行细则跨域指引（B76 拆分）",
+    "outline-methods.md": "volume 侧大纲方法论路由表；outline 侧结构理论提及（B76 拆分）",
+    "plot-special-topics.md": "volume 侧专题方法论；outline 侧 plot-frameworks 交叉引用（B76 拆分）",
+    "idea-seed.md": "outline 侧灵感种子；volume outline-methods 路由表提及（B76 拆分）",
+    "character-design-methods.md": "outline 侧人物方法论；volume outline-methods 路由表提及（B76 拆分）",
+    "character-basics.md": "outline 侧角色基础卡；volume outline-methods/outline-workflow 提及（B76 拆分）",
+    "plot-frameworks.md": "outline 侧桥段框架；volume outline-methods 路由表提及（B76 拆分）",
 }
 
 

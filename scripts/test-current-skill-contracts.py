@@ -396,9 +396,9 @@ def test_stale_scan_phase_reference_accepts_backticks() -> None:
         manifest_with(topic_decision_phase=current + 1),
         "stale-topic-decision-phase-reference",
     )
-    # 长篇「先查选题决策」随 B1a 拆分进 build 侧 workflow-build.md（开书构建段），扫描目标跟着内容走。
+    # 长篇「先查选题决策」随 B1a 拆分进构建流程文件，B76 拆分后 Stage 1 段在 outline 侧 workflow-outline.md（扫描目标跟着内容走）。
     for relative in (
-        "skills/moshu-build/references/workflow-build.md",
+        "skills/moshu-outline/references/workflow-outline.md",
         # 拆分后拆解流程承载在 references/analyze-workflow.md
         "skills/moshu-analyze/references/analyze-workflow.md",
     ):

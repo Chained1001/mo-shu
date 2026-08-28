@@ -43,7 +43,7 @@ description: "网文拆书。深度拆解爆款网文的黄金三章、人设架
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 准备开书 | moshu-build | `/moshu-build` |
+| 准备开书 | moshu-outline | `/moshu-outline`（→ `/moshu-volume` 首卷） |
 | 已有书续写 | moshu-write | `/moshu-write` |
 | 需要市场数据 | moshu-scan | `/moshu-scan` |
 

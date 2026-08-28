@@ -21,7 +21,7 @@
 
 **运行时概念**
 
-- **技能（Skill）**：Claude Code 的能力包，`skills/<名字>/SKILL.md` 为入口（frontmatter 声明触发词），references/ 放流程细则（按需读，不预载）。本项目 11 个技能，由 `.claude-plugin/marketplace.json` 注册成 11 个插件分发（adapter 守卫校验一一映射）。
+- **技能（Skill）**：Claude Code 的能力包，`skills/<名字>/SKILL.md` 为入口（frontmatter 声明触发词），references/ 放流程细则（按需读，不预载）。本项目 12 个技能，由 `.claude-plugin/marketplace.json` 注册成 12 个插件分发（adapter 守卫校验一一映射）。
 - **Agent**：主会话按需 spawn 的子代理（`moshu-architect` 等 8 个），各带工具白名单与纪律段；只在「会话启动时」注册——所以部署后必须**新开会话**。子代理不能弹窗问用户、不能嵌套 spawn，所以交互和台账永远在主线程。
 - **Hook**：Claude Code 在特定事件自动执行的脚本（本项目 8 个，由 setup 写入项目 settings）。两种语义：**提醒**（ask，如正文后轻扫）与**阻断**（deny，仅细纲门禁一处）。
 - **机检**：护作品的确定性检测器（check-*.js/py），输出 blocking（拦）/candidate（只报）两列。与守卫相对。
@@ -89,7 +89,7 @@
 
 ## 2.3 能力全景
 
-技能层（11）：setup 部署、moshu 路由+Dashboard、build 开书构建（内嵌采风）、write 写作三工作流、analyze 拆文、scan 扫榜、review 审查、import 导入、style 文风、deslop 去 AI 味、cdp 浏览器采集。Agent 层（8）：architect/character-designer/narrative-writer/consistency-checker/researcher/explorer/chapter-extractor/evaluator。自动化层：8 hook+守卫/契约体系+版本散射工具化。数据层：项目七区+追踪事务单写入口。
+技能层（12）：setup 部署、moshu 路由+Dashboard、outline 故事架构（Stage 1-3：题材定位/世界观/人物/全书大纲）、volume 卷规划（Stage 4-6/开新卷/修订流/采风/防撞）、write 写作三工作流、analyze 拆文、scan 扫榜、review 审查、import 导入、style 文风、deslop 去 AI 味、cdp 浏览器采集。Agent 层（8）：architect/character-designer/narrative-writer/consistency-checker/researcher/explorer/chapter-extractor/evaluator。自动化层：8 hook+守卫/契约体系+版本散射工具化。数据层：项目七区+追踪事务单写入口。
 
 ### 2.3.1 开源强化机制层（v2.5.0，批 B58-B71，2026-08-28 反哺）
 
@@ -166,7 +166,7 @@ flowchart LR
 flowchart TD
     S0[未部署] -->|/moshu-setup| S1[无书名目录]
     S1 -->|/moshu-scan| S1
-    S1 -->|/moshu-build| S2[有书无正文]
+    S1 -->|/moshu-outline| S2[有书无正文]
     S2 -->|写第1章| S3[下一章无细纲]
     S3 -->|补纲| S4[有细纲未写]
     S4 -->|日更| S5[已写至卷末]
@@ -181,7 +181,7 @@ flowchart TD
 
 | 层 | 组成 | 职责 |
 |---|---|---|
-| 会话层 | moshu 路由+11 技能入口+8 Agent | 意图分发、流程权威、语义执行 |
+| 会话层 | moshu 路由+12 技能入口+8 Agent | 意图分发、流程权威、语义执行 |
 | 确定性脚本层 | 机检/事务（tracking_commit）/部署（deploy）/Dashboard/榜单 scraper | 统计、检测、原子事务、幂等部署 |
 | 自动化 Hook 层 | 8 hook | 兜底网：主会话漏跑时拦截或提醒 |
 | 文件系统数据层 | 拆文库+项目七区+追踪状态 | 唯一记忆载体 |
@@ -377,7 +377,7 @@ npx skills add Chained1001/mo-shu -y -g（读 .claude-plugin/marketplace.json �
           状态四查 + 版本三分支（sentinel <35 更新 / =35 询问 / >35 停止防降级）
    Stage 2：deploy.py deploy --project（一次完成 8 件事，见 19.2）
    Stage 3：deploy.py verify（八项机械验证，见 19.2）→ 安装报告 + ⚡重启提示
-→ ⚡再次新开会话（agent 会话启动时注册）→ /moshu-build 开书
+→ ⚡再次新开会话（agent 会话启动时注册）→ /moshu-outline 开书（故事层）→ /moshu-volume 首卷
 ```
 
 ### 19.1 调用图谱
@@ -517,7 +517,7 @@ Stage 5 选题：references/topic-decision.md（四步+可行性三档）→ 选
 ```
 **消费方**：write 每章写前两级检查（存在+合规「文风可用：是」+锚点≥1）；explorer 的 benchmark_style_load；narrative-writer 的句长带/锚点 few-shot。
 
-## Ⅳ.21 开书（moshu-build）
+## Ⅳ.21 开书（moshu-outline → moshu-volume）
 
 **分支：有对标 vs 无对标**——判定在 Stage 1：用户登记主对标 → 走 `对标/{书名}/` 召回链（回退 `拆文库/`），虚拟对标跳过；无对标 → 采风产物合成**虚拟对标**（`设定/虚拟对标.md`，三类设计目标：节奏/情绪/结构）承担设计约束参照。两分支共用 Phase A/B 主干：
 
@@ -600,7 +600,8 @@ write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_
 
 - **moshu（8）**：SKILL.md（路由表 13 行意图）／VERSION（2.3.6）／scripts/next_step.py（S0-S6 DTO）／scripts/dashboard-server.mjs（本地工作台：回环监听/冲突保护/原子写）／assets/×3（前端页）／references/dashboard-guide.md。
 - **moshu-setup（97）**：SKILL.md ／UPGRADING.md（版本权威）／scripts/{deploy.py,merge-claude-settings.py} ／references/{setup-workflow.md 流程权威,deploy-manual.md 冷兜底}／templates/（CLAUDE.md.tmpl、settings-hooks.json、agents/×8、hooks/×12〔8 sh+core.js+cli.js+lib×2〕、rules/×4）／references/agent-references/×33（方法论包，agent 按需加载：方法论/题材/文风卡/钩子/反 AI 等）＋genre-prose-cards/×32（单题材正文提示卡）。
-- **moshu-build（66）**：SKILL.md ／scripts/{check_outline.py,impact_scan.py,tracking_commit.py} ／references/×30（workflow-build 热路径主文档 / cold-path 冷路径 / caifeng-methods 采风手册 / revision-workflow / 大纲族 outline-{methods,conflict,rhythm,structure-theory,workflow} / 剧情族 plot-{core-methods,frameworks,emotion-system,special-topics}+reversal-toolkit+emotional-{methods,arc-design} / 人物族 character-{basics,relations,design-methods} / 卡片族 beat/scene/naming-cards / genre 族 {genre-core-mechanics,genre-readers,genre-writing-formulas,genre-prose-cards,style-genre-modules} / hooks-chapter 挂钩 / opening-design / idea-seed / reader-contract-and-progression / tracking-transaction）＋genre-prose-cards/×32（write 同源副本）。
+- **moshu-outline（12）**：SKILL.md ／scripts/check_outline.py ／references/×10（workflow-outline 开书流程[Stage 1-3] / core-setting-template / ideal-review-template / 人物族 character-{basics,relations,design-methods} / genre 族 {genre-core-mechanics,genre-catalog,genre-readers,genre-writing-formulas} / idea-seed / opening-design / plot-frameworks / reader-contract-and-progression——多数为 write 同源副本）。
+- **moshu-volume（63）**：SKILL.md ／scripts/{design_fingerprints.py,impact_scan.py,tracking_commit.py,pace_meter.py} ／references/×25（volume-workflow 热路径主文档[Stage 4-6+Phase B] / cold-path 冷路径 / caifeng-methods 采风手册 / revision-workflow / ledger-template / virtual-benchmark-template / tracking-transaction / 大纲族 outline-{methods,conflict,rhythm,structure-theory,workflow} / 剧情族 plot-{core-methods,emotion-system,special-topics}+reversal-toolkit+emotional-{methods,arc-design} / 卡片族 beat-cards/naming-cards / genre 族 {genre-prose-cards,readers,writing-formulas,core-mechanics}——多为 write 同源副本）＋genre-prose-cards/×32（write 同源副本）。
 - **moshu-write（88）**：SKILL.md（三 lane 路由）／scripts/×6（check-ai-patterns / check-degeneration / check-outline-copy / check-prose-candidates / normalize-punctuation / tracking_commit）／references/×49（三工作流薄壳 workflow-{chapter,daily,revision} + 内核 chapter-core + artifact-protocols + recovery-protocol + tracking-transaction + state-tracking + writing-craft+技法卡族 + 大纲族（含 outline-workflow 补纲）+ 剧情族 + 人物族 + 钩子族 + 题材族 + quality-checklist + banned-words + anti-ai-writing + format-and-structure + reader-contract-and-progression + volume-review + idea-seed + genre-writing-formulas 等，与 build/deslop 侧部分为共享副本）＋genre-prose-cards/×32（源）。
 - **moshu-analyze（10）**：SKILL.md ／references/×6（analyze-workflow 主文档 / pipeline-ops 断点恢复 / material-decomposition 阈值 / deconstruction-notes / output-templates / technique-summary-sop）／scripts/×3（chapter_boundary / check_chapter_summary / merge-chapter-summaries）。
 - **moshu-review（18）**：SKILL.md ／references/×12（review-workflow + quality-rubric + rubrics/{fanqie,qidian} + quality-checklist + 共享副本×4〔anti-ai-writing/banned-words/character-relations/dialogue-mastery/plot-core-methods/tracking-transaction 部分同源〕）／scripts/×5（review_tickets + 机检副本×4）。
@@ -616,7 +617,7 @@ write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_
 |---|---|
 | Ⅰ 词典 | AGENTS.md §9 术语表（工程口径）；本文为小白向扩写 |
 | Ⅲ.9 架构 | 本文吸收自原 docs/architecture.md（已删）；状态机真源 skills/moshu/scripts/next_step.py |
-| Ⅲ.10/Ⅳ.21 构建 | skills/moshu-build/references/{workflow-build,cold-path,caifeng-methods,revision-workflow}.md |
+| Ⅲ.10/Ⅳ.21 构建 | skills/moshu-outline/references/workflow-outline.md + skills/moshu-volume/references/{volume-workflow,cold-path,caifeng-methods,revision-workflow}.md |
 | Ⅳ.19 安装与部署 | skills/moshu-setup/{SKILL.md,references/setup-workflow.md,references/deploy-manual.md,scripts/deploy.py,UPGRADING.md} |
 | Ⅳ.20.2/Ⅳ.22 | skills/moshu-analyze/references/analyze-workflow.md、skills/moshu-import/references/import-workflow.md |
 | Ⅳ.23-24 写作 | skills/moshu-write/references/{chapter-core,workflow-*}.md |

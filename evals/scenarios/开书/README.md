@@ -26,4 +26,4 @@
 | 卷纲「章节范围」与首批细纲章号一致 | 过：一致；不过：矛盾 | 人工项 |
 | 无对标时全程未 fail-fast（合法无对标模式） | 过：流程正常走完；不过：被"缺对标"阻断 | 人工项 |
 
-> 规则依据：`skills/moshu-build/SKILL.md`、`skills/moshu-build/references/workflow-build.md`（开书构建）与 `skills/moshu-write/references/outline-workflow.md`（首批细纲接力）。
+> 规则依据：`skills/moshu-outline/SKILL.md`、`skills/moshu-outline/references/workflow-outline.md（Stage 1-3）与 moshu-volume/references/volume-workflow.md（Stage 4-6）`（开书构建）与 `skills/moshu-write/references/outline-workflow.md`（首批细纲接力）。

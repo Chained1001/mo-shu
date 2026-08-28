@@ -71,7 +71,7 @@ description: "网文扫榜。分析起点、番茄、晋江等平台排行榜数
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
 | 找到方向 | moshu-analyze | `/moshu-analyze` |
-| 直接开书 | moshu-build | `/moshu-build` |
+| 直接开书 | moshu-outline | `/moshu-outline` |
 
 ## 参考资料
 

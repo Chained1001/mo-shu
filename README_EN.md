@@ -85,9 +85,9 @@ npx skills add Chained1001/mo-shu -y -g
 
 | Step | What to Do | Why |
 |---|---|---|
-| **① New Window** | After installation, **close the current Claude Code window and open a new one** in your writing directory | Skills load at session start — `/moshu-build` etc. won't work in the install session |
+| **① New Window** | After installation, **close the current Claude Code window and open a new one** in your writing directory | Skills load at session start — `/moshu-outline` etc. won't work in the install session |
 | **② Deploy Environment** | Run `/moshu-setup` in the new window | Deploys hooks, agents, rules, CLAUDE.md to your writing project |
-| **③ New Window Again** | After setup, open another new window and start `/moshu-build` | Agents register at session start, not available in the setup session |
+| **③ New Window Again** | After setup, open another new window and start `/moshu-outline` (then `/moshu-volume` for volume one) | Agents register at session start, not available in the setup session |
 
 
 ## Skills
@@ -97,7 +97,8 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-setup` | `/moshu-setup` | Environment setup — Claude Code (safe merge) |
 | `moshu` | `/moshu` / `/moshu dashboard` | Toolbox router plus a local deconstruction/project dashboard |
 | `moshu-write` | `/moshu-write` | Long-form writing — chapter outlines and prose, daily continuation, revision, volume-review execution |
-| `moshu-build` | `/moshu-build` | Book construction — Stage 1-6 six-step flow (ideal review → 8-column skeleton → character arcs → unit cards → integration → finalize), three-dimension review, embedded research (Stage 1 default + bottleneck-triggered), setting revision, new-volume planning |
+| `moshu-outline` | `/moshu-outline` | Story architecture — book-start Stage 1-3 (genre positioning → worldview → characters → full-book outline), structure/character/mechanism research |
+| `moshu-volume` | `/moshu-volume` | Volume planning — Stage 4-6 (unit cards → integration → finalize + volume outline), new-volume flow, setting revision (revision workflow), collision check, research fusion |
 | `moshu-analyze` | `/moshu-analyze` | Web novel deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
 | `moshu-scan` | `/moshu-scan` | Web novel trend scan — Qidian/Fanqie/Jinjiang market trends |
 | `moshu-deslop` | `/moshu-deslop` | De-AI-ify — detect and remove AI writing traces |
@@ -108,7 +109,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 > `moshu-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
 
-Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-build` (outlines & prose continue in `moshu-write`), `这篇太AI了` ("this is too AI-ish") → `moshu-deslop`, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `moshu-explorer`.
+Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-outline` (volume outline continues in `moshu-volume`; outlines & prose in `moshu-write`), `这篇太AI了` ("this is too AI-ish") → `moshu-deslop`, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `moshu-explorer`.
 
 ### Story Dashboard
 

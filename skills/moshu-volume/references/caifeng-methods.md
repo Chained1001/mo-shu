@@ -1,6 +1,6 @@
 # caifeng-methods.md：采风操作方法（研究环）
 
-> 本文件是 moshu-build 采风环节的操作说明书：检索策略 + 要素表模板 + 转译纪律 + 降级与来源规范。产物一律项目级（`设定/采风-CF*.md`），禁中央库。**检索执行的权威路径是 moshu-researcher agent**（B21 扩展采风研究段）——本文件定义方法本体，agent 与主线 fallback 共用；**融合四步归主线**（agent 不做融合）。
+> 本文件是 moshu-volume 采风环节的操作说明书：检索策略 + 要素表模板 + 转译纪律 + 降级与来源规范。产物一律项目级（`设定/采风-CF*.md`），禁中央库。**检索执行的权威路径是 moshu-researcher agent**（B21 扩展采风研究段）——本文件定义方法本体，agent 与主线 fallback 共用；**融合四步归主线**（agent 不做融合）。
 
 ## 检索策略（只取公开元数据；执行权威路径＝moshu-researcher agent，本方法与主线 fallback 共用）
 

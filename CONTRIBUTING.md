@@ -16,7 +16,8 @@ skills/
 ├── moshu-style/             # 文风学习
 ├── moshu-review/            # 多视角审查
 ├── moshu-cdp/             # 浏览器操控
-└── moshu-build/             # 构建环（开书/修订/开新卷）
+├── moshu-outline/           # 故事架构（开书 Stage 1-3）
+└── moshu-volume/            # 卷规划（Stage 4-6/修订/开新卷）
 scripts/                       # 开发守卫 / 测试 / 代码生成（完整索引见 scripts/README.md）
 ```
 

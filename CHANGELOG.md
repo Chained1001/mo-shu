@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased（B76 build 拆分 + 审计整改，2026-08-29）
+
+- **build 拆分（B76）**：moshu-build 拆为 **moshu-outline**（故事架构，Stage 1-3：题材定位/世界观/人物/全书大纲）与 **moshu-volume**（卷规划，Stage 4-6：单元卡/整合/定稿+卷纲；开新卷/修订流/采风/防撞对照）——references 36 项与 scripts 5 件迁移、shared-assets 注册表 61+9 组改指、契约五件（spawn/capability/current/behavior/doc-budget）同步重组；volume-workflow 按统一模板重写（保留全部 spawn 锚行）；/moshu-build 命令退役，路由改 /moshu-outline → /moshu-volume
+- **统一创作流程模板入宪**：FULL（书级/卷级五步 PREPARE→DRAFT→REVIEW→POLISH→COMMIT）/LIGHT（章级日更映射）——AGENTS §9 第 7 条
+- **B73 审计整改**：PRD 反哺 G1-G4（agents_version 40/机制表 19 行/完结旅程/v2.5.0 路线）+ AGENTS 术语 15 条 + 题材框架字段链闭合 + capability-wiring 补登 + 学习台账二期
+- **B74 spawn 契约单一真源**：spawn-contracts.json 注册表（8 agent×callers）+ check-spawn-contracts.sh 三查守卫 + D2 参数遗漏锚定
+- **B75 模板两级装配**：narrative-writer 流程规则承接节（agents_version 41）+ chapter-core spawn 段瘦身（payload −21%）
+
 ## v2.4.0（2026-08-28）
 
 > 开源强化八批（B58-B65）+ 整体审计（B66）+ 整改（B67）——13 个开源项目源码级研究驱动的全面强化；零阻断零需修审计通过

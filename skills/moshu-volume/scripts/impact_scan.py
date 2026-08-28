@@ -36,7 +36,7 @@ def read_json(path: Path) -> object:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError as exc:
-        raise ScanError(f"读取失败（缺文件）：{path} 不存在——追踪未初始化，先 /moshu-build 开书（tracking init）") from exc
+        raise ScanError(f"读取失败（缺文件）：{path} 不存在——追踪未初始化，先 /moshu-outline 开书 → /moshu-volume 首卷（tracking init）") from exc
     except json.JSONDecodeError as exc:
         raise ScanError(f"读取失败（内容坏）：{path} 不是合法 JSON: {exc}") from exc
     except OSError as exc:
@@ -123,7 +123,7 @@ def main() -> int:
         if not isinstance(state, dict) or "last_committed_chapter" not in state:
             raise ScanError(
                 f"读取失败（类型错）：{state_path} 缺少 last_committed_chapter——"
-                "不是合法的追踪 state；先 /moshu-build 开书（tracking init）"
+                "不是合法的追踪 state；先 /moshu-outline 开书 → /moshu-volume 首卷（tracking init）"
             )
         boundary = state["last_committed_chapter"]
         if not isinstance(boundary, int) or isinstance(boundary, bool):

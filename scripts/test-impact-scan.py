@@ -5,7 +5,7 @@
 
 正向：关键词命中未写细纲 + 已写正文 + 追踪条目三处。
 反向：干净关键词三清单全空。
-反向 2：无追踪 state → 退出 2 且报文含"先 /moshu-build"。
+反向 2：无追踪 state → 退出 2 且报文含"先 /moshu-outline"。
 """
 
 from __future__ import annotations
@@ -153,7 +153,7 @@ class ImpactScanTests(unittest.TestCase):
         args = [sys.executable, str(TOOL), "--project", str(empty_project), "--keyword", "秘宝"]
         completed = subprocess.run(args, text=True, capture_output=True, check=False, encoding="utf-8")
         self.assertEqual(completed.returncode, 2)
-        self.assertIn("先 /moshu-build", completed.stderr)
+        self.assertIn("先 /moshu-outline", completed.stderr)
 
 
 if __name__ == "__main__":

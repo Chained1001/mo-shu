@@ -27,7 +27,7 @@
 | 对标节奏迁移 / 章节张弛 | outline-structure-theory.md「一级结构 = 对标书的剧情单元」「章节定位与张弛」 |
 | 防套路自检（规划后必过） | 本文件「反模式自查表」「剧情相似度/匹配度检查」「约束规则」+ outline-workflow.md 大纲安全七检段 |
 | 卷纲 / 细纲模板字段 | outline-workflow.md「细纲（第 N 章）」+ artifact-protocols.md（大纲/卷纲/细纲模板；write 侧 references/，build 侧不直接加载） |
-| 卷末复盘 / 开新卷 | volume-review.md「四步」（write 侧 references/，build 侧不直接加载）+ /moshu-build 开新卷（增量补设定与卷纲） |
+| 卷末复盘 / 开新卷 | volume-review.md「四步」（write 侧）+ /moshu-volume 开新卷（增量补设定与卷纲） |
 
 > 用方法顺序建议：**先五步法/八节点定骨架 → 结构理论定类型 → 卷内用节奏/矛盾/弧线/反转填肉 → 防套路自检 → 模板落盘**。卡在哪一步就加载对应行，不必通读全部文件。
 

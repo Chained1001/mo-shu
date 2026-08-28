@@ -20,12 +20,12 @@ from pathlib import Path
 # 构建域词（BLOCKING）：语境含其一 = 确定性开书语义残留（B1b 缺陷类同族，第 4 例史）。
 # 每词一条理由——防静默增删。判定优先级：blocking > whitelist > candidate。
 BLOCKING_WORDS: dict[str, str] = {
-    "开书": "开书属 build 域（/moshu-build），跳 write 即 B1b 开书语义残留",
+    "开书": "开书属 outline 域（/moshu-outline），跳 write 即 B1b 开书语义残留",
     "开写": "开写=开书措辞变体（scan「直接开写」/analyze「准备开写」两例史）",
     "开新": "开新书/开新卷属 build 域（开书变体）",
-    "建设定": "建/补设定属 build 域（B1b 拆分后设定建设走 /moshu-build）",
-    "改设定": "改设定属 build 域（设定修订走 /moshu-build）",
-    "写大纲": "大纲搭建属 build 域（outline 建设走 /moshu-build）",
+    "建设定": "建/补设定属 outline 域（设定建设走 /moshu-outline）",
+    "改设定": "改设定属 volume 域（设定修订走 /moshu-volume）",
+    "写大纲": "大纲搭建属 outline 域（/moshu-outline）",
     "搭大纲": "同写大纲——大纲搭建属 build 域",
     "写卷纲": "卷纲规划属 build 域",
     "定世界观": "世界观设定属 build 域",

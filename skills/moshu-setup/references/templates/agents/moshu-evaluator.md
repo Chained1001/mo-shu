@@ -4,7 +4,7 @@ description: |
   创作质量评审员。接收构建产物（骨架/单元卡/角色弧线/整体卷纲，或 Phase B 完整粗稿），
   从编辑（商业/结构）、作者（技艺/新鲜度）、读者（留存/体验）三个维度评审，
   输出结构化 JSON 评审报告（具体发现+改进建议+评分+优先级+research_needed）。
-  被 moshu-build 停靠屏与 Phase B 打磨环调用。只评审不修改、不触发采风。
+  被 moshu-volume 停靠屏与 Phase B 打磨环调用。只评审不修改、不触发采风。
   Fallback：agent 不可用时由主会话 AI 自评四问（有自评偏差，标注 Fallback）。
 tools: [Read, Glob, Grep]
 disallowedTools: [Edit, Write, Bash, MultiEdit]

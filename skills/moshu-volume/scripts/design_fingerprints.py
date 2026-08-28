@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""设定指纹与影响面（moshu-build 修订流 ③b 工具，B61）
+"""设定指纹与影响面（moshu-volume 修订流 ③b 工具，B61；B76 拆分归 volume）
 
 三子命令：record（建基线）/ diff（指纹对比+受影响章反查）/ update（=record，裁决闭环后刷新）。
 

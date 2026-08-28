@@ -1,13 +1,13 @@
 ---
 name: moshu-write
 version: 1.7.0
-description: "长篇网文写作。承接开书构建（/moshu-build）之后的细纲与正文：细纲补建/滚动、日更续写（写作三遍法）、大修、卷复盘执行。触发方式：/moshu-write、/写长篇、「出细纲」「补细纲」「日更」「续写」「继续写」「修改第X章」「回炉」「重写第X章」；开书/建设定/写大纲 → /moshu-build。"
+description: "长篇网文写作。承接开书构建（/moshu-outline → /moshu-volume）之后的细纲与正文：细纲补建/滚动、日更续写（写作三遍法）、大修、卷复盘执行。触发方式：/moshu-write、/写长篇、「出细纲」「补细纲」「日更」「续写」「继续写」「修改第X章」「回炉」「重写第X章」；开书/建设定/写大纲 → /moshu-outline；卷纲 → /moshu-volume。"
 ---
 # moshu-write：长篇网文写作
 
 > **部署前置检查**：项目根无 `.story-deployed` 时不执行本技能，改为提示：「⚠️ 尚未部署写作环境。请先运行 /moshu-setup，完成后新开会话再回来。」版本不匹配走下方 Spawn 版本提示。
 
-你是网络小说创作教练。你的任务是承接开书构建（`/moshu-build` 产出设定/大纲/卷纲/追踪 init）之后的**细纲与正文输出**：细纲补建/滚动、单章写作、日更续写、大修与卷复盘执行。开书/建设定/写大纲 → `/moshu-build`。
+你是网络小说创作教练。你的任务是承接开书构建（moshu-outline 产出设定/大纲.md；moshu-volume 产出卷纲/追踪 init）之后的**细纲与正文输出**：细纲补建/滚动、单章写作、日更续写、大修与卷复盘执行。开书/建设定/写大纲 → `/moshu-outline`；卷纲/开新卷 → `/moshu-volume`。
 
 ---
 
@@ -44,13 +44,13 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 
 | 场景 | 触发条件 | 执行流程 |
 |------|----------|----------|
-| **开书/设定/大纲/卷纲** | "帮我开书" / 项目目录为空 | → `/moshu-build` 开书构建（题材定位、世界观、人物、全书大纲、首卷卷纲）；本 skill 接力**细纲与写作**（见 [outline-workflow.md](references/outline-workflow.md)） |
-| **写指定章** | "写第 N 章" / "写第1章" / "开书并写首章" | Stage 4 单章写作；只写用户点名的章节，写完 Stage 5 检查后停止。空项目/无细纲（如"开书并写首章"）先经 /moshu-build 建纲再写点名章 |
+| **开书/设定/大纲/卷纲** | "帮我开书" / 项目目录为空 | → `/moshu-outline` 开书故事层（题材定位、世界观、人物、全书大纲）→ `/moshu-volume` 首卷卷纲；本 skill 接力**细纲与写作**（见 [outline-workflow.md](references/outline-workflow.md)） |
+| **写指定章** | "写第 N 章" / "写第1章" / "开书并写首章" | Stage 4 单章写作；只写用户点名的章节，写完 Stage 5 检查后停止。空项目/无细纲（如"开书并写首章"）先经 /moshu-outline+/moshu-volume 建纲再写点名章 |
 | **补纲/扩纲** | "出细纲/补细纲/规划下一段剧情/接下来写XX剧情（先出细纲）" **且**项目已有大纲 | [outline-workflow.md](references/outline-workflow.md)「中途补纲/扩纲小流程」：选同类剧情单元→追加剧情单元卡→按剧情批滚动补细纲；**默认停在细纲交付，不自动写正文** |
 | **日更续写** | 关键词（"日更"/"续写"/"继续写"）**且**项目已有正文+追踪 | 加载 `references/workflow-daily.md` |
 | **大修** | "修改第X章" / "回炉" / "重写第X章" | 加载 `references/workflow-revision.md` |
 
-> **开新卷**：新卷构建（增量设定/卷纲/新卷规划）→ `/moshu-build` 开新卷（消费卷复盘下卷方向候选）；本 skill 接力新卷细纲与写作（细纲见 [outline-workflow.md](references/outline-workflow.md)）。
+> **开新卷**：新卷构建（增量设定/卷纲/新卷规划）→ `/moshu-volume` 开新卷（消费卷复盘下卷方向候选）；本 skill 接力新卷细纲与写作（细纲见 [outline-workflow.md](references/outline-workflow.md)）。
 
 ### 裸调用与停靠点（防失控）
 
@@ -60,7 +60,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 - 已有设定/大纲但无正文 → 建议说「写第1章」「只写1章」或「日更2章」；
 - 已有正文+追踪 → 展示最后完成章节与下一章细纲状态，建议说「日更3章」「只写1章」「逐章确认」或「修改第X章」。
 
-**开书默认停靠（build 侧）**：用户只说"开书/写大纲/帮我开书"时，由 `/moshu-build` 完成开书构建与首批细纲（默认 5 章，用户可指定更少或更多，上限 10）后停止，报告已生成文件和下一步命令；除非用户同一句明确说"并写第1章/写 N 章/日更"，否则不要自动进入正文写作。
+**开书默认停靠（build 侧）**：用户只说"开书/写大纲/帮我开书"时，由 `/moshu-outline`→`/moshu-volume` 完成开书构建与首批细纲（默认 5 章，用户可指定更少或更多，上限 10）后停止，报告已生成文件和下一步命令；除非用户同一句明确说"并写第1章/写 N 章/日更"，否则不要自动进入正文写作。
 
 **正文批量上限**：写正文必须由用户显式给出章节范围或日更意图。未给数量时，单章写作默认 1 章；日更 workflow 默认 2-3 章；用户给出 N 时按 N 执行但单轮最多 3 章，超过 3 章先拆成本轮 3 章并在进度摘要里提示后续再继续。
 
@@ -80,15 +80,15 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 
 ### Stage 1：确认选题方向
 
-> **本 Phase（选题/对标/题材定位构建）已移 `/moshu-build`**；本 skill 不再执行开书构建，细纲与正文在此接力。
+> **本 Phase（选题/对标/题材定位构建）已移 `/moshu-outline`**；本 skill 不再执行开书构建，细纲与正文在此接力。
 
 ### Stage 2：核心设定
 
-> **本 Phase（核心设定/设定建档）已移 `/moshu-build`**；细纲后设定补全见 [outline-workflow.md](references/outline-workflow.md)「细纲后设定补全」。
+> **本 Phase（核心设定/设定建档）已移 `/moshu-outline`**；细纲后设定补全见 [outline-workflow.md](references/outline-workflow.md)「细纲后设定补全」。
 
 ### Stage 3：大纲搭建
 
-> **卷级大纲/卷纲构建已移 `/moshu-build`**；细纲（全书每章）模板、七检/审查、分批建纲、中途补纲见 [outline-workflow.md](references/outline-workflow.md)。
+> **卷级大纲/卷纲构建已移 `/moshu-volume`**；细纲（全书每章）模板、七检/审查、分批建纲、中途补纲见 [outline-workflow.md](references/outline-workflow.md)。
 
 ---
 
@@ -202,7 +202,7 @@ description: "长篇网文写作。承接开书构建（/moshu-build）之后的
 | 女频写作 | **`references/female-audience-writing.md`**（女频长篇：核心原则/文案/题材/感情线长线/平台） | `references/genre-readers.md`（读者心理/平台差异）· `references/character-relations.md`（感情线总框架） |
 | 去AI味 | **`references/anti-ai-writing.md`**（AI指纹/核心规则/Show Don't Tell） | `references/banned-words.md`（禁用词扫描）· `references/quality-checklist.md`（成稿检查） |
 | 失败恢复 | **`references/recovery-protocol.md`**（A 环境/B 状态/C 主产物/D 模型四类失败分类与恢复动作） | `references/tracking-transaction.md`（事务重试语义）· `/moshu-import`（旧追踪迁移）· `/moshu-analyze`（拆解管道恢复机制） |
-| 卷复盘 | **`references/volume-review.md`**（卷末四步：伏笔清账/卷摘要/下卷规划/契约修订候选） | `/moshu-build` 开新卷（消费下卷方向候选）· `追踪/伏笔.md`（清账数据源）· `设定/题材定位.md`（终局储备与契约） |
+| 卷复盘 | **`references/volume-review.md`**（卷末四步：伏笔清账/卷摘要/下卷规划/契约修订候选） | `/moshu-volume` 开新卷（消费下卷方向候选）· `追踪/伏笔.md`（清账数据源）· `设定/题材定位.md`（终局储备与契约） |
 | 起名 | **`references/naming-cards.md`**（NC-001~005：书名/章节名/卷名/角色名/绰号，冷路径） | — |
 
 ---

@@ -77,9 +77,9 @@ npx skills add Chained1001/mo-shu -y -g
 
 | 步骤 | 做什么 | 为什么 |
 |---|---|---|
-| **① 新开窗口** | 安装完成后，**关闭当前 Claude Code 窗口，在写作目录新开一个** | Skills 在会话启动时加载——安装会话里 `/moshu-build` 等命令不可用 |
+| **① 新开窗口** | 安装完成后，**关闭当前 Claude Code 窗口，在写作目录新开一个** | Skills 在会话启动时加载——安装会话里 `/moshu-outline` 等命令不可用 |
 | **② 部署环境** | 新窗口里运行 `/moshu-setup` | 部署 hooks、agents、rules、CLAUDE.md 到你的写作项目 |
-| **③ 再开窗口** | setup 完成后再新开一个窗口，开始 `/moshu-build` 构建 | agents 在会话启动时注册，setup 会话里不可用 |
+| **③ 再开窗口** | setup 完成后再新开一个窗口，开始 `/moshu-outline` 开书（→ `/moshu-volume` 首卷） | agents 在会话启动时注册，setup 会话里不可用 |
 
 > 💡 快速记忆：**装完→开窗→setup→再开窗→build**
 
@@ -96,7 +96,8 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-setup` | `/moshu-setup` 「部署墨枢写作环境」 | 环境部署 · Claude Code（已有配置安全合并） |
 | `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
 | `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 细纲与正文输出、日更续写、大修、卷复盘执行 |
-| `moshu-build` | `/moshu-build` `/建书` | 开书构建 · Stage 1-6 六步流程（理想书评→骨架八列→人物弧线→单元卡→整合→定稿）、三维度评审、内嵌采风（Stage 1 默认 + 瓶颈触发）、设定修订、开新卷 |
+| `moshu-outline` | `/moshu-outline` | 故事架构 · 开书 Stage 1-3（题材定位→世界观→人物→全书大纲）、结构/角色/机制采风 |
+| `moshu-volume` | `/moshu-volume` | 卷规划 · Stage 4-6（单元卡→整合→定稿+卷纲）、开新卷、设定修订（修订流）、防撞对照、采风融合 |
 | `moshu-analyze` | `/moshu-analyze` 『进行拆书』 | 网文拆书 · 黄金三章、爽点设计、节奏分析 |
 | `moshu-scan` | `/moshu-scan` 「网文扫榜」 | 网文扫榜 · 起点/番茄/晋江市场趋势 |
 | `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
@@ -108,7 +109,7 @@ npx skills add Chained1001/mo-shu -y -g
 > `moshu-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
 
 自然语言同样触发：
-- 「帮我开书」→ `moshu-build`（细纲与正文 → `moshu-write`）
+- 「帮我开书」→ `moshu-outline`（首卷卷纲 → `moshu-volume`；细纲与正文 → `moshu-write`）
 - 「这篇太 AI 了」→ `moshu-deslop`
 - 「把我的书导进来」→ `moshu-import`
 - 「打开工作台」→ `moshu dashboard`（本机浏览拆文库与写作项目，可轻量编辑）
