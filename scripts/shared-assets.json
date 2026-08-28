@@ -243,7 +243,8 @@
       "source": "skills/moshu-write/references/genre-writing-formulas.md",
       "targets": [
         "skills/moshu-setup/references/agent-references/genre-writing-formulas.md",
-        "skills/moshu-build/references/genre-writing-formulas.md"
+        "skills/moshu-build/references/genre-writing-formulas.md",
+        "skills/moshu-analyze/references/genre-writing-formulas.md"
       ]
     },
     {
@@ -282,14 +283,17 @@
       "source": "skills/moshu-write/references/genre-core-mechanics.md",
       "targets": [
         "skills/moshu-setup/references/agent-references/genre-core-mechanics.md",
-        "skills/moshu-build/references/genre-core-mechanics.md"
+        "skills/moshu-build/references/genre-core-mechanics.md",
+        "skills/moshu-analyze/references/genre-core-mechanics.md"
       ]
     },
     {
       "name": "genre-catalog-reference",
       "source": "skills/moshu-write/references/genre-catalog.md",
       "targets": [
-        "skills/moshu-setup/references/agent-references/genre-catalog.md"
+        "skills/moshu-setup/references/agent-references/genre-catalog.md",
+        "skills/moshu-build/references/genre-catalog.md",
+        "skills/moshu-analyze/references/genre-catalog.md"
       ]
     },
     {
@@ -297,7 +301,8 @@
       "source": "skills/moshu-write/references/genre-readers.md",
       "targets": [
         "skills/moshu-setup/references/agent-references/genre-readers.md",
-        "skills/moshu-build/references/genre-readers.md"
+        "skills/moshu-build/references/genre-readers.md",
+        "skills/moshu-analyze/references/genre-readers.md"
       ]
     },
     {
