@@ -1,4 +1,4 @@
-# 规格 · 批 B80：build 拆分——moshu-outline + moshu-volume + 统一创作流程模板入宪
+# 规格 · 批 B76：build 拆分——moshu-outline + moshu-volume + 统一创作流程模板入宪
 
 - 版本：v1.0（2026-08-29，旗舰起草；来源：作者多轮架构讨论裁定。**目的**：解决 build 193K/35 文件的结构性臃肿；统一创作技能内部流程为五步模板（FULL/LIGHT 两档）；审查覆盖按技能独立设计——**每个产物的写-审配对可逐一对账**。）
 - 性质：**全仓最大架构重构**——拆一个技能为两个、统一流程模板入宪、审查缺口标注。分**四个子步**执行。
@@ -8,7 +8,7 @@
 所有创作技能共享以下骨架（写入 AGENTS.md §9 宪法原则，作为新增第 10 条原则）：
 
 ```
-统一创作流程模板（B80 入宪，所有创作技能共享骨架）
+统一创作流程模板（B76 入宪，所有创作技能共享骨架）
 
 FULL 模式（书级/卷级——moshu-outline 与 moshu-volume 默认）：
   Phase 1 PREPARE——「先想清」
@@ -156,6 +156,34 @@ SKILL.md 路由表更新：build 相关意图分流到 outline 或 volume。
 - S2 状态：「有书但无正文」→ 建议动作改为 `/moshu-outline`（首次）→ `/moshu-volume`（首卷）→ `/moshu-write`（开始写作）
 - S6 状态：「下卷规划」→ 建议动作改为 `/moshu-volume`
 
+### 设定/采风跨技能声明（各技能 SKILL.md 内声明读/写面）
+
+**moshu-outline SKILL.md**：
+```
+设定读写面——创建：设定/题材定位.md、关系.md、题材正文提示卡.md、角色/*.md、势力/*.md、世界观/*.md
+设定读面——读取：拆文库/{书}/概要.md、角色卡（对话 DNA 带入）
+采风触发面——结构采风（Stage 2）/角色采风（Stage 3）/机制采风（设定面）
+```
+
+**moshu-volume SKILL.md**：
+```
+设定读写面——修订：设定/*（修订流 impact_scan 影响分析后修改）
+设定读面——读取：设定/（全部，单元卡消费）、大纲/大纲.md（骨架表）
+采风触发面——情节采风（Stage 4）/情绪采风（Stage 5）/机制采风（应用层）/融合（researcher agent fusion 模式）
+```
+
+**不需要新建设定管理 agent**——三权分立已清晰（outline 创建 / write 增量 / volume 修订），一致性由追踪系统+修订流覆盖，查询通过文件即接口。采风的跨技能特性由 researcher agent 天然解决（agent 不属于任何技能）。
+
+### 追踪系统归属确认
+
+| 操作 | 拆分后归属 | 变化 |
+|---|---|---|
+| tracking init | volume Stage 6 末尾 | 调用者从 build 改为 volume |
+| commit/check/report | write（不变） | 无 |
+| pace_meter | write + volume（共享脚本） | shared-assets targets 更新 |
+| impact_scan + design_fingerprints | volume 修订流 | 路径更新 |
+| tracking_commit.py 副本 | 原 build 副本→volume | shared-assets targets 更新 |
+
 ### architecture.md 更新
 
 分层架构图中 build 拆为两个节点。
@@ -245,7 +273,7 @@ SKILL.md 路由表更新：build 相关意图分流到 outline 或 volume。
 
 ## 九、提交规范（四子步四提交）
 
-- 80a：`feat(宪法+路由): B80a 统一创作流程模板入宪（FULL/LIGHT 两档五步骨架）+ moshu-outline/moshu-volume SKILL.md 新建 + 路由与状态机更新`
-- 80b：`feat(迁移): B80b references 35 文件迁移至新技能 + shared-assets 重组 + workflow-build→volume-workflow 重命名`
-- 80c：`feat(volume): B80c volume-workflow 按统一模板重写（PREPARE/DRAFT/REVIEW/POLISH/COMMIT）+ 台账/冷路径/修订流归属更新 + 原 build 删除`
-- 80d：`feat(守卫+PRD): B80d 全部守卫路径更新 + capability-wiring/spawn-contracts 路径 + doc-budget 路径 + PRD 12 技能 + CHANGELOG`
+- 80a：`feat(宪法+路由): B76a 统一创作流程模板入宪（FULL/LIGHT 两档五步骨架）+ moshu-outline/moshu-volume SKILL.md 新建 + 路由与状态机更新`
+- 80b：`feat(迁移): B76b references 35 文件迁移至新技能 + shared-assets 重组 + workflow-build→volume-workflow 重命名`
+- 80c：`feat(volume): B76c volume-workflow 按统一模板重写（PREPARE/DRAFT/REVIEW/POLISH/COMMIT）+ 台账/冷路径/修订流归属更新 + 原 build 删除`
+- 80d：`feat(守卫+PRD): B76d 全部守卫路径更新 + capability-wiring/spawn-contracts 路径 + doc-budget 路径 + PRD 12 技能 + CHANGELOG`
