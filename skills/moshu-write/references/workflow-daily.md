@@ -82,6 +82,8 @@
 
 批末再对本批全部落盘正文整体跑一遍 [chapter-core.md](chapter-core.md)「C 段」的确定性收尾（`check-ai-patterns.js` → `check-outline-copy.js` → `normalize-punctuation.js` → `check-degeneration.js` → `check-prose-candidates.js --prose <本章> --style 文风库/文风.md --gaps 追踪/信息差.md`（**候选永不拦截**）），确认无回潮。
 
+推进度对账（B68b）：机检链后跑 `python skills/moshu-write/scripts/pace_meter.py --project {书根}`（呈报工具，恒退出码 0）——卷进度 vs 剧情进度背离候选随批末报告呈报作者（裁决归作者，不拦截）；细纲编号缺号列表供拆并章/补纲前核对。
+
 > 若本步修文改变了会影响后续的事实/角色状态/伏笔/时间线/下一章承诺，必须在进入 Stage 4-D4 前为受影响章节提交 `mode=revision` 事务并通过 `check`；`delta` 要重算修订后仍成立的完整当前记录；纯措辞调整不重复提交。
 
 ## Stage 4-D4：批末收尾

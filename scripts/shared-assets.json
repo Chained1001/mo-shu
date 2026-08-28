@@ -42,6 +42,13 @@
       ]
     },
     {
+      "name": "pace-meter-script",
+      "source": "skills/moshu-write/scripts/pace_meter.py",
+      "targets": [
+        "skills/moshu-build/scripts/pace_meter.py"
+      ]
+    },
+    {
       "name": "story-tracking-transaction-reference",
       "source": "skills/moshu-write/references/tracking-transaction.md",
       "targets": [

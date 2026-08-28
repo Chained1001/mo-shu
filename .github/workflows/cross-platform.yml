@@ -134,6 +134,8 @@ jobs:
         run: python3 scripts/test-impact-scan.py
       - name: check_outline regression (build ring)
         run: python3 scripts/test-check-outline.py
+      - name: Pace-meter regression (write ring)
+        run: python3 scripts/test-pace-meter.py
       - name: bump-agents-version regression (scripts)
         run: python3 scripts/test-bump-agents-version.py
       # Generate a GBK-class locale so the hook test's Part 2 runs end-to-end here,
