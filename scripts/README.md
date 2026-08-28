@@ -27,6 +27,7 @@
 | `check-eval-scenarios.sh` | 场景剧本静态校验（不跑 LLM）：3 剧本存在非空、各含断言节与 ≥3 条 `[机检]` 标记、引用脚本路径存在 | CI；改 evals/scenarios 或引用脚本后 | evals 场景静态校验 | 未登记-待体检 |
 | `check-reference-closure.sh` + `check-reference-closure.py` | 引用可达性守卫（批B4，方案 A 资产宇宙）：扫描 `skills/*/references/*.md` 中「资产宇宙内」的文件名提及（链接/反引号/正文词元）须在所属 skill 域内可达；跨域合法提及走理由白名单（`ALLOWED_CROSS_DOMAIN`）。与 static-check 互补（链接 vs 文件名文本提及） | CI；增删 build 方法论副本 / 改路由表 / 提及跨域文件后 | 批B4 方案 A 资产宇宙 | 未登记-待体检 |
 | `check-route-write.sh` + `check-route-write.py` | 路由残留守卫（批B8）：扫描 `skills/**/*.md` 第二列=moshu-write 的表格行，语境两级判定——构建域词（开书/开写/…）blocking 退出 1、写作域白名单过、未知语境 candidate 不阻断（候选永不拦截）；只锁表格行，prose 面留审计法轻扫 | CI；改流程衔接表/路由表后 | 批B8 路由残留 | 未登记-待体检 |
+| `check-spawn-contracts.sh` + `spawn-contracts.json` | spawn 契约单一真源守卫（B74）：8 agent 的调用参数注册表——三查=注册面完备（模板↔注册双向）/调用面覆盖（caller 文件存在且含锚文本）/必需参数覆盖（锚文本 ±30 行窗口内含全部 required_params，缺失即红=阻断语义）；机检面与 agent 模板「被调用协议」（文档面）互补不替代；D2 参数遗漏事故锚定（consistency-checker 两状态值在册） | CI；改 agent spawn 契约/新增调用点/加参数后 | B74 spawn 契约（B72 §7.3 只改一处立项） | 2026-08-28（B74 批内红绿：deslop 锚文本转义不匹配+违规 fixture 红） |
 
 ## 测试回归（test-*）
 

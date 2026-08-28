@@ -104,6 +104,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-claude-adapter.sh` — Claude marketplace 与 skill 映射检查（含 version 与 SKILL.md frontmatter 一致）
 - `scripts/check-behavior-contracts.sh` — 关键行为约束静态守卫（裸调用停靠/细纲优先/S1-S2 过桥/追踪事务/候选永不拦截等契约，条数以 `scripts/behavior-contracts.json` 为准，清单见 `scripts/behavior-contracts.json`）
 - `scripts/check-agents-version-sync.sh` — agents_version 一致性守卫（7 个 SKILL.md 的声明与 `moshu-setup/UPGRADING.md` 权威一致）
+- `scripts/check-spawn-contracts.sh` — spawn 契约单一真源守卫（8 agent 注册表 `scripts/spawn-contracts.json`：调用面覆盖+必需参数 ±30 行窗口，缺失即红）
 - `scripts/check-story-numbers.sh` — 叙述性 skill 计数守卫（README/README_EN/CONTRIBUTING/scripts-README/architecture 中「N 个 skill」必须与 skills/ 实测一致；CHANGELOG 排除）
 - `scripts/check-agent-template-rules.sh` — agent 模板纪律守卫（禁互引 / `agent-references/` 挂载点存在 / 共享纪律单副本）
 - `scripts/check-eval-scenarios.sh` — 场景剧本静态校验（3 剧本存在非空/断言节/机检标记 ≥3/引用路径存在；不跑 LLM）
@@ -148,6 +149,7 @@ bash scripts/check-claude-adapter.sh
 bash scripts/check-behavior-contracts.sh
 python3 scripts/test-behavior-contracts.py
 bash scripts/check-capability-wiring.sh
+bash scripts/check-spawn-contracts.sh
 python3 scripts/test-capability-wiring.py
 bash scripts/check-reference-closure.sh
 python3 scripts/test-reference-closure.py

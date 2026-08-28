@@ -48,6 +48,8 @@ jobs:
         run: bash scripts/check-capability-wiring.sh
       - name: Capability-wiring regression
         run: python3 scripts/test-capability-wiring.py
+      - name: Check spawn contracts
+        run: bash scripts/check-spawn-contracts.sh
       - name: Check reference closure (asset universe)
         run: bash scripts/check-reference-closure.sh
       - name: Reference-closure regression
