@@ -12,7 +12,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "skills/moshu-build/scripts/check_outline.py"
+SCRIPT = ROOT / "skills/moshu-outline/scripts/check_outline.py"
 PY = sys.executable
 
 COMPLIANT = """# 大纲（测试书）

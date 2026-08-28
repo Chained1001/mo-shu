@@ -1,6 +1,6 @@
 # 理想书评结构化模板（ideal-review-template.md）
 
-> 定位注记（B54）：本文件是 `设定/理想书评.md` 的落盘模板——理想书评（轮 3）的结构化三维度量化目标，Phase B evaluator 打分的锚点。从 workflow-build Stage 1 轮 3 描述下沉（create-time 资产）。采集时机与对话流程见 [workflow-build.md](workflow-build.md) Stage 1——本文件只承载格式。分数越具体，打磨环的判断力越强。
+> 定位注记（B54）：本文件是 `设定/理想书评.md` 的落盘模板——理想书评（轮 3）的结构化三维度量化目标，Phase B evaluator 打分的锚点。从 workflow-build Stage 1 轮 3 描述下沉（create-time 资产）。采集时机与对话流程见 [volume-workflow.md](volume-workflow.md) Stage 1——本文件只承载格式。分数越具体，打磨环的判断力越强。
 
 ```markdown
 # 理想书评（{书名}）——结构化三维度

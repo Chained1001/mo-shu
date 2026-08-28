@@ -42,8 +42,20 @@
   },
   "artifact_contracts": [
     {
+      "artifact": "故事层设定与全书大纲",
+      "producer": "moshu-outline",
+      "consumer": "moshu-volume / moshu-write（文件即接口：outline 产出，volume 与 write 只读消费）",
+      "fields": [
+        "大纲/大纲.md",
+        "设定/*"
+      ],
+      "anchor_docs": [
+        "skills/moshu-outline/SKILL.md"
+      ]
+    },
+    {
       "artifact": "剧情单元卡",
-      "producer": "moshu-build",
+      "producer": "moshu-volume",
       "consumer": "moshu-write",
       "fields": [
         "单元 ID",
@@ -54,7 +66,7 @@
         "章功能分配"
       ],
       "anchor_docs": [
-        "skills/moshu-build/references/workflow-build.md"
+        "skills/moshu-volume/references/volume-workflow.md"
       ]
     },
     {
@@ -73,17 +85,17 @@
     },
     {
       "artifact": "采风-CF 记录",
-      "producer": "moshu-build",
-      "consumer": "moshu-build",
+      "producer": "moshu-volume",
+      "consumer": "moshu-volume",
       "fields": [
         "CF",
         "需求描述",
         "状态"
       ],
       "anchor_docs": [
-        "skills/moshu-build/references/workflow-build.md",
-        "skills/moshu-build/references/ledger-template.md",
-        "skills/moshu-build/references/caifeng-methods.md"
+        "skills/moshu-volume/references/volume-workflow.md",
+        "skills/moshu-volume/references/ledger-template.md",
+        "skills/moshu-volume/references/caifeng-methods.md"
       ]
     }
   ],

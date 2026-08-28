@@ -79,7 +79,7 @@
       "notes": "契约摘要六项=spawn prompt 必须原样附带（cold-path/outline-workflow 契约摘要节是唯一来源）",
       "callers": [
         {
-          "file": "skills/moshu-build/references/cold-path.md",
+          "file": "skills/moshu-volume/references/cold-path.md",
           "must_contain": "moshu-architect + moshu-character-designer",
           "context": "开新卷 Stage 2-3 骨架与人物",
           "required_params": [
@@ -88,7 +88,7 @@
           ]
         },
         {
-          "file": "skills/moshu-build/references/cold-path.md",
+          "file": "skills/moshu-volume/references/cold-path.md",
           "must_contain": "任务类型：题材定位",
           "context": "Stage 1 题材定位（复杂场景）",
           "required_params": [
@@ -97,7 +97,7 @@
           ]
         },
         {
-          "file": "skills/moshu-build/references/outline-workflow.md",
+          "file": "skills/moshu-volume/references/outline-workflow.md",
           "must_contain": "契约摘要必须原样附带",
           "context": "细纲批设计承接",
           "required_params": [
@@ -124,7 +124,7 @@
       ],
       "callers": [
         {
-          "file": "skills/moshu-build/references/cold-path.md",
+          "file": "skills/moshu-volume/references/cold-path.md",
           "must_contain": "moshu-architect + moshu-character-designer",
           "context": "开新卷 Stage 2-3 角色设定",
           "required_params": [
@@ -185,7 +185,7 @@
       "notes": "score 仅 full 型；detail-batch/settings/revision 三型不填（B69）",
       "callers": [
         {
-          "file": "skills/moshu-build/references/workflow-build.md",
+          "file": "skills/moshu-volume/references/volume-workflow.md",
           "must_contain": "evaluator 全局评审（full 类型",
           "context": "Phase B 打磨环（full）",
           "required_params": [
@@ -210,7 +210,7 @@
           ]
         },
         {
-          "file": "skills/moshu-build/references/revision-workflow.md",
+          "file": "skills/moshu-volume/references/revision-workflow.md",
           "must_contain": "eval_type=revision",
           "context": "修订评审 ①b（B69）",
           "required_params": [
@@ -314,7 +314,7 @@
       ],
       "callers": [
         {
-          "file": "skills/moshu-build/references/workflow-build.md",
+          "file": "skills/moshu-volume/references/volume-workflow.md",
           "must_contain": "spawn moshu-researcher（结构采风，CF 票据登记）",
           "context": "Phase A 采风默认执行",
           "required_params": [
@@ -322,7 +322,7 @@
           ]
         },
         {
-          "file": "skills/moshu-build/references/workflow-build.md",
+          "file": "skills/moshu-volume/references/volume-workflow.md",
           "must_contain": "query = research_needed 的内容",
           "context": "Phase B research_needed 精准检索",
           "required_params": [

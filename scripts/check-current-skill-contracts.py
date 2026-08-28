@@ -1256,10 +1256,10 @@ def validate_repository(repo_root: Path, manifest: ContractManifest) -> List[Fin
             )
         )
 
-    # 长篇的「对标发现」随 B1a 拆分进 build 侧 workflow-build.md（开书构建段），
+    # 长篇的「对标发现」随 B1a 拆分进卷规划侧 volume-workflow.md（开书构建段，B76 迁移），
     # 断言跟着内容走。
     for relative in (
-        "skills/moshu-build/references/workflow-build.md",
+        "skills/moshu-volume/references/volume-workflow.md",
         ):
         benchmark_discovery = repo_root / relative
         findings.extend(
@@ -1360,7 +1360,7 @@ def deployment_manifest_findings(repo_root: Path, manifest: ContractManifest) ->
         nst = ns.read_text(encoding="utf-8", errors="ignore")
         check("next-step-chapter-prefix", "第" in nst and "[-—~至]" in nst,
               "next_step.py 章节范围正则应含「第」前缀与 [-—~至] 形态", ns)
-        for rel in ("skills/moshu-build/references/workflow-build.md",
+        for rel in ("skills/moshu-volume/references/volume-workflow.md",
                     "skills/moshu-write/references/artifact-protocols.md"):
             doc = repo_root / rel
             dt = doc.read_text(encoding="utf-8", errors="ignore")

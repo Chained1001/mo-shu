@@ -18,7 +18,7 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOL = ROOT / "skills/moshu-build/scripts/impact_scan.py"
+TOOL = ROOT / "skills/moshu-volume/scripts/impact_scan.py"
 TRACKING_TOOL = ROOT / "skills/moshu-write/scripts/tracking_commit.py"
 
 INIT_DOCUMENT = {

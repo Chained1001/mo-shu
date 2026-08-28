@@ -170,7 +170,7 @@ python3 scripts/test-agent-template-rules.py
 bash scripts/check-eval-scenarios.sh
 bash scripts/test-writing-pipeline.sh
 python3 scripts/test-impact-scan.py
-python3 scripts/test-check-outline.py  # 守护 skills/moshu-build/scripts/check_outline.py 大纲机检
+python3 scripts/test-check-outline.py  # 守护 skills/moshu-outline/scripts/check_outline.py 大纲机检
 python3 scripts/test-bump-agents-version.py  # 守护 scripts/bump-agents-version.py 版本 bump
 bash scripts/check-python-invocation.sh
 bash scripts/check-hook-locale-safety.sh

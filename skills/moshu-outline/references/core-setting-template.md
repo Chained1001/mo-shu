@@ -1,6 +1,6 @@
 # 核心设定表模板（core-setting-template.md）
 
-> 定位注记（B54）：本文件是 Stage 1 落盘「核心设定表」的模板——从 workflow-build「核心设定表」节下沉（create-time 资产，落盘时按需读本文件）。采集时机（轮 1 参考偏好/轮 2 读者偏好/轮 4 后落盘）见 [workflow-build.md](workflow-build.md) Stage 1——本文件只承载格式。本表是 Phase A Stage 2-6 的原料。
+> 定位注记（B54）：本文件是 Stage 1 落盘「核心设定表」的模板——从 workflow-build「核心设定表」节下沉（create-time 资产，落盘时按需读本文件）。采集时机（轮 1 参考偏好/轮 2 读者偏好/轮 4 后落盘）见 moshu-volume 技能 volume-workflow.md Stage 1——本文件只承载格式。本表是 Phase A Stage 2-6 的原料。
 
 ```markdown
 ## 核心设定表

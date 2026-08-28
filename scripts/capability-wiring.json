@@ -206,11 +206,11 @@
       "rationale": "V2.1 B1a 构建环开书职责——SKILL 路由必须指向 workflow-build，防新技能入口悬空",
       "consumers": [
         {
-          "file": "skills/moshu-build/SKILL.md",
-          "must_contain": "workflow-build.md"
+          "file": "skills/moshu-volume/SKILL.md",
+          "must_contain": "volume-workflow.md"
         },
         {
-          "file": "skills/moshu-build/references/workflow-build.md",
+          "file": "skills/moshu-volume/references/volume-workflow.md",
           "must_contain": "tracking_commit.py init"
         }
       ]
@@ -221,15 +221,15 @@
       "rationale": "V2.1 B1a 修订职责——影响分析脚本必须被流程文档指示使用（接线缺口即流程静默失效）",
       "consumers": [
         {
-          "file": "skills/moshu-build/SKILL.md",
+          "file": "skills/moshu-volume/SKILL.md",
           "must_contain": "impact_scan.py"
         },
         {
-          "file": "skills/moshu-build/references/revision-workflow.md",
+          "file": "skills/moshu-volume/references/revision-workflow.md",
           "must_contain": "impact_scan.py"
         },
         {
-          "file": "skills/moshu-build/references/revision-workflow.md",
+          "file": "skills/moshu-volume/references/revision-workflow.md",
           "must_contain": "变更日志"
         }
       ]
@@ -240,11 +240,11 @@
       "rationale": "V2.1 批B3 构建台账（构建态与方法论单真源）——三种入口进入必读、决策收敛必写、会话收尾必结；修订与开新卷车道都要指示读取",
       "consumers": [
         {
-          "file": "skills/moshu-build/references/revision-workflow.md",
+          "file": "skills/moshu-volume/references/revision-workflow.md",
           "must_contain": "构建台账"
         },
         {
-          "file": "skills/moshu-build/references/workflow-build.md",
+          "file": "skills/moshu-volume/references/volume-workflow.md",
           "must_contain": "构建台账"
         }
       ]
@@ -255,7 +255,7 @@
       "rationale": "B61 设定指纹与影响面——修订流 ③b 需要确定性 diff 反查受影响章（candidate 呈报，发起权在作者）；脚本层确定性能力须流程文档指示使用",
       "consumers": [
         {
-          "file": "skills/moshu-build/references/revision-workflow.md",
+          "file": "skills/moshu-volume/references/revision-workflow.md",
           "must_contain": "design_fingerprints.py diff"
         }
       ]

@@ -1,6 +1,7 @@
 # 规格 · 批 B76：build 拆分——moshu-outline + moshu-volume + 统一创作流程模板入宪
 
 - 版本：v1.1（2026-08-29 旗舰修订。v1.0 八处问题：①子步误号 80a-d→76a-d ②漏 `skills/moshu-build/scripts/` 5 脚本迁移 ③漏 `.claude-plugin/marketplace.json` build 条目替换 ④漏 current-contract/behavior-contracts 两契约面 ⑤共享副本迁移机制错误（27 md+32 题材卡源在 write、build 是副本——不应 git mv 副本、不应反转源）⑥下游批次号交叉引用过时（evaluator 新型是 B77 非 B81；方法论萃取是 B78-B80；采风融合是 B81）⑦原则计数错（「第 10 条」→第 7 条）⑧注册表更新错排在 80d（子步中间态红）。v1.1 全部修正 + 补挂盲区对照节。）
+- v1.2（2026-08-29 施工中勘误，D-B76-1 待决裁决随附）：①§三-2 追加 9 组交叉副本（B71 先例机制——共享副本内裸链接互引跨了技能界，补对侧 target 零文本编辑归零；白名单方案否决，判因见施工日志 D-B76-1 答复）②§六-76c 拆分补全——Phase A 的 Stage 1-3（信息采集/骨架/人物）拆出为 `skills/moshu-outline/references/workflow-outline.md`（v1.1 漏了 outline 侧流程文件归属：其 12 个 references 全是方法论模板无流程文件），volume-workflow 仅留 Stage 4-6+Phase B，方法论索引按技能在册重列；此拆分同时缓解 volume-workflow 预算无余量。
 - 性质：**全仓最大架构重构**——拆一个技能为两个、统一流程模板入宪、审查缺口标注。分**四个子步**执行。
 - **目的**：解决 build 193K/36 项的结构性臃肿（开书与卷规划两类语义不同的工作挤一个技能）；统一创作技能内部流程为五步模板（FULL/LIGHT 两档）；审查覆盖按技能独立设计——**每个产物的写-审配对可逐一对账**。
 
@@ -104,6 +105,7 @@ LIGHT 模式（章级日更——moshu-write 默认）：
 - **targets 改指 `skills/moshu-outline/references/`**（8 组）：character-basics、character-design-methods、character-relations、genre-core-mechanics、genre-catalog、plot-frameworks、reader-contract-and-progression、idea-seed
 - **targets 改指 `skills/moshu-volume/references/`**（18 个 md 组 + 32 张卡各一组）：beat-cards、emotional-arc-design、emotional-methods、genre-prose-cards.md、genre-prose-cards/ 下 32 张卡、genre-readers、genre-writing-formulas、naming-cards、opening-design、outline-conflict、outline-methods、outline-rhythm、outline-structure-theory、outline-workflow、plot-core-methods、plot-emotion-system、plot-special-topics、reversal-toolkit、style-genre-modules
 - **tracking-transaction.md 与 tracking_commit.py、pace_meter.py**：src 不动（write），build target 改 volume target
+- **交叉副本 9 组（v1.2，D-B76-1 裁决，B71 先例机制）**：outline += genre-readers、genre-writing-formulas、plot-emotion-system、outline-rhythm、outline-structure-theory（5 组）；volume += genre-catalog、reader-contract-and-progression、character-relations、genre-core-mechanics（4 组）——共享副本内的裸文件名互引在拆分后跨了技能界，补对侧 target + sync 物化后零文本编辑 resolve；opening-design→outline 视 76c 拆分实需同机制补第 10 组
 
 ### 3. scripts 迁移（build/scripts/ 5 文件 + __pycache__ 删除）
 
@@ -241,7 +243,7 @@ description: 卷规划技能——每卷的单元卡/场景表/卷纲产出与�
 
 ### 子步 76c：workflow 重写 + 删 build
 
-1. volume-workflow.md 按统一模板五步重写（Phase A/B → PREPARE/DRAFT/REVIEW/POLISH/COMMIT；**重写必须保留全部 spawn 调用锚行原文**——check-spawn-contracts 三查绿后再提交本子步）
+1. **流程内容拆分（v1.2）**：原 workflow-build.md 的 Phase A 六步中 Stage 1-3 段（信息采集四轮式开场/骨架构建→机检/人物构建）拆出为 `skills/moshu-outline/references/workflow-outline.md`（开书流程，按统一模板 FULL 五步组织，引用 outline 在册方法论）；volume-workflow.md 仅留 Stage 4-6（单元构建/整合检验/定稿）+ Phase B 打磨环 + 台账 + evaluator 协议 + 采风衔接，同样按五步组织；**重写必须保留全部 spawn 调用锚行原文**（check-spawn-contracts 三查绿后再提交本子步）；两文件的「方法论副本索引」按各自技能在册文件重列（volume 侧删 character-design-methods/character-basics/plot-frameworks/core-setting-template/ideal-review-template/idea-seed 等 outline-only 条目——这些引用随 Stage 1-3 段迁往 workflow-outline.md）；1 行级伴随修正：ideal-review-template.md:3 指针改指 workflow-outline.md
 2. revision-workflow.md 保持独立（跨技能流程，仅 76b 已迁路径）
 3. cold-path.md 开新卷节入口更新（引用卷规划新称谓）
 4. ledger-template.md 归属句更新（volume）
@@ -252,7 +254,7 @@ description: 卷规划技能——每卷的单元卡/场景表/卷纲产出与�
 1. 全套守卫跑绿：static-check / shared-files / doc-budget / capability-wiring / spawn-contracts / current-contract / behavior-contracts / story-numbers（叙述计数 11→12：README/README_EN/CONTRIBUTING/scripts README/PRD）
 2. PRD 更新（能力全景 12 技能/分层架构两节点/用户旅程/文件走查 build 段拆分）
 3. CHANGELOG Unreleased 段（B76 条目：拆分+模板入宪+迁移）
-4. doc-budget 预算锁定：volume-workflow 重写后实测（目标≤现 18900，超出走压缩→下沉→调高序并在日志偏差记录）；volume/SKILL.md 与 outline/SKILL.md 新条目=实测×1.05 取整；「卷规划路径」组值重锁
+4. doc-budget 预算锁定：volume-workflow 重写拆分后实测（目标≤现 18900，拆出即瘦身；超出走压缩→下沉→调高序并在日志偏差记录）；volume/SKILL.md、outline/SKILL.md、workflow-outline.md 三新条目=实测×1.05 取整；「卷规划路径」组值重锁
 
 ## 七、验收
 
@@ -266,6 +268,7 @@ description: 卷规划技能——每卷的单元卡/场景表/卷纲产出与�
 8. doc-budget 全绿且新预算锁定值记录进施工日志（含量法：node 非空白 UTF-16）
 9. **端到端走查**（AI 按清单走，非自动化）：①说「开书」→ 路由应指 /moshu-outline；②说「卷纲/开新卷/修订设定/采风」→ /moshu-volume；③next_step S2 无书态建议链 outline→volume→write 通顺；④volume SKILL 读面声明与 outline 产出文件名一一对应。走查结论四行进施工日志
 10. PRD 能力全景 12 技能、分层架构两节点
+11. `skills/moshu-outline/references/workflow-outline.md` 在位（Stage 1-3 五步开书流程）且 doc-budget 登记；static-check 全绿且 D-B76-1 基线 26 行断链归零（共享副本 11 行由交叉副本 resolve、volume-workflow/ideal-review-template 15 行由拆分重写消解）
 
 ## 八、禁止事项
 

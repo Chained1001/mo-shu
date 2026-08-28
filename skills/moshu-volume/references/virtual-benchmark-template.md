@@ -1,6 +1,6 @@
 # 虚拟对标模板（virtual-benchmark-template.md）
 
-> 定位注记（B54）：本文件是 `设定/虚拟对标.md` 的落盘模板——从 workflow-build「虚拟对标.md 模板」节下沉（create-time 资产，合成时按需读本文件）。合成时机与流程（轮 4 后、融合四步之后、有对标跳过）见 [workflow-build.md](workflow-build.md) Stage 1 与 [caifeng-methods.md](caifeng-methods.md)「第五步」——本文件只承载格式。
+> 定位注记（B54）：本文件是 `设定/虚拟对标.md` 的落盘模板——从 workflow-build「虚拟对标.md 模板」节下沉（create-time 资产，合成时按需读本文件）。合成时机与流程（轮 4 后、融合四步之后、有对标跳过）见 [volume-workflow.md](volume-workflow.md) Stage 1 与 [caifeng-methods.md](caifeng-methods.md)「第五步」——本文件只承载格式。
 
 ```markdown
 # 虚拟对标（{书名}·{题材}）

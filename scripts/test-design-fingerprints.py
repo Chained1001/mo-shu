@@ -18,7 +18,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TOOL = ROOT / "skills/moshu-build/scripts/design_fingerprints.py"
+TOOL = ROOT / "skills/moshu-volume/scripts/design_fingerprints.py"
 
 
 def run_tool(command: str, project: Path) -> subprocess.CompletedProcess:
