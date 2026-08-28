@@ -580,7 +580,7 @@ write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_
 
 **tests/（8）**：dashboard-server.test.mjs / dashboard-trigger-contract.test.mjs（Dashboard API）/ e2e/dashboard.spec.mjs（Playwright）/ fixtures/{dashboard,scan,scan-empty}/（夹具）/ helpers/dashboard-e2e-server.mjs。
 
-**docs/（22）**：根级 2（README 地图 / **产品文档.md 本文**）＋治理/ 5（开发标准 / 审计法 / 施工日志 / 审核记录 / 技能走查记录）＋治理/规格/ 5（README 施工协议 + 开源强化程序规格 B58-B61）＋研究/开源强化/ 10。归档区、旧审计报告与历史批次规格（B2-B57）已于 2026-08-28 删除（历史在 git）。
+**docs/（26）**：根级 2（README 地图 / **产品文档.md 本文**）＋治理/ 6（开发标准 / 审计法 / 施工日志 / 审核记录 / 技能走查记录 / 审计-开源强化-v1）＋治理/规格/ 8（README 施工协议 + 开源强化程序规格 B58-B62b + B63 + B65）＋研究/开源强化/ 10。归档区、旧审计报告与历史批次规格（B2-B57）已于 2026-08-28 删除（历史在 git）。
 
 **skills/（321）**：
 
