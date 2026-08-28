@@ -1,0 +1,28 @@
+---
+name: moshu-outline
+version: 1.0.0
+description: "故事架构技能——开书的故事层设计。题材定位、世界观、人物设计、全书大纲（大纲/大纲.md）。触发方式：/moshu-outline、开书、设计故事、搭大纲、建世界观、人物设计。产出设定/ 和 大纲/大纲.md；卷纲归 /moshu-volume、细纲与正文归 /moshu-write。"
+---
+
+# moshu-outline：故事架构（开书的故事层）
+
+开书 Stage 1-3：题材定位 → 世界观与人物 → 全书大纲。按统一创作流程模板 FULL 模式执行（AGENTS §9 第 7 条：PREPARE→DRAFT→REVIEW→POLISH→COMMIT）。
+
+## 读写面
+
+- 创建（产出）：`设定/题材定位.md`、`设定/关系.md`、`设定/题材正文提示卡.md`、`设定/理想书评.md`、`设定/角色/*.md`、`设定/势力/*.md`、`设定/世界观/*.md`、`大纲/大纲.md`（全书卷级鸟瞰+每卷骨架表）
+- 读取（消费）：`拆文库/{书}/概要.md`、`拆文库/{书}/角色卡`（对话 DNA 带入）；题材卡文风样张按需跨技能只读 `moshu-volume/references/genre-prose-cards/`（文件即接口）
+- 边界：卷纲（`大纲/卷纲_第X卷.md`）归 /moshu-volume；细纲与正文归 /moshu-write
+
+## 采风触发面
+
+- 结构采风（Stage 2）/角色采风（Stage 3）/机制采风（设定面）——执行体为 moshu-researcher agent（跨技能，采风方法见 volume 侧 caifeng-methods.md）
+
+## 流程文件
+
+- 题材定位表模板：`references/core-setting-template.md`；理想书评（evaluator 打分锚点）：`references/ideal-review-template.md`
+- 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/idea-seed.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`
+
+## 交接
+
+- 产物就绪后转 `/moshu-volume` 做首卷卷纲（Stage 4-6 归 volume）；追踪 init 在 volume Stage 6 末尾

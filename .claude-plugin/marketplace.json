@@ -28,24 +28,41 @@
       ]
     },
     {
-      "name": "moshu-build",
-      "description": "开书构建与设定/大纲/卷纲修订。新书开书构建（题材定位、世界观、人物、全书大纲与首卷卷纲）、构建资产迭代修订（影响分析→作者裁决→留痕→级联标记）与开新卷规划。细纲与正文归 /moshu-write。",
+      "name": "moshu-outline",
+      "description": "故事架构技能——开书的故事层设计。题材定位、世界观、人物设计、全书大纲（大纲/大纲.md）。细纲与正文归 /moshu-write，卷纲归 /moshu-volume。",
       "source": "./",
       "strict": false,
-      "version": "1.3.0",
+      "version": "1.0.0",
       "category": "novel-writing",
       "keywords": [
-        "build",
         "outline",
         "worldbuilding",
         "setting",
-        "construction",
         "开书",
         "设定",
         "大纲"
       ],
       "skills": [
-        "./skills/moshu-build"
+        "./skills/moshu-outline"
+      ]
+    },
+    {
+      "name": "moshu-volume",
+      "description": "卷规划技能——每卷的单元卡/场景表/卷纲产出与修订、开新卷规划、采风、防撞对照。读 moshu-outline 的设定与大纲，产出卷纲层文件。",
+      "source": "./",
+      "strict": false,
+      "version": "1.0.0",
+      "category": "novel-writing",
+      "keywords": [
+        "volume",
+        "卷纲",
+        "开新卷",
+        "单元卡",
+        "修订",
+        "采风"
+      ],
+      "skills": [
+        "./skills/moshu-volume"
       ]
     },
     {

@@ -137,8 +137,8 @@ def main() -> int:
             "step": "S1",
             "evidence": ["无 正文/ 大纲/ 追踪 任一目录"],
             "last_committed_chapter": 0,
-            "next_action": "运行 /moshu-build 开书（构建设定/大纲/卷纲；细纲与正文接力 /moshu-write）",
-            "suggested_skill": "moshu-build",
+            "next_action": "运行 /moshu-outline 开书（故事层：设定与大纲/大纲.md）→ /moshu-volume（首卷卷纲）→ 细纲与正文接力 /moshu-write",
+            "suggested_skill": "moshu-outline",
         })
         return 0
 
@@ -163,7 +163,7 @@ def main() -> int:
             "step": "S2",
             "evidence": evidence + ["正文/ 无章文件或全部为空（完成判定只认非空文件）"],
             "last_committed_chapter": 0,
-            "next_action": "首批细纲 + 写第 1 章（/moshu-write，细纲首建见 outline-workflow；设定/卷纲缺失才回 /moshu-build）",
+            "next_action": "首批细纲 + 写第 1 章（/moshu-write，细纲首建见 outline-workflow；设定缺失回 /moshu-outline，卷纲缺失回 /moshu-volume）",
             "suggested_skill": "moshu-write",
         })
         return 0
@@ -268,8 +268,8 @@ def main() -> int:
             "step": "S6",
             "evidence": s6_evidence + [f"第 {volume_number} 卷卷复盘已完成"],
             "last_committed_chapter": last,
-            "next_action": "下卷规划（/moshu-build，消费卷复盘方向候选）",
-            "suggested_skill": "moshu-build",
+            "next_action": "下卷规划（/moshu-volume，消费卷复盘方向候选）",
+            "suggested_skill": "moshu-volume",
         })
         return 0
 

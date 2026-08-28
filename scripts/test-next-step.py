@@ -66,8 +66,8 @@ class NextStepTests(unittest.TestCase):
         self.write(project / ".story-deployed")
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S1")
-        self.assertEqual(payload["suggested_skill"], "moshu-build")
-        self.assertIn("/moshu-build", payload["next_action"])
+        self.assertEqual(payload["suggested_skill"], "moshu-outline")
+        self.assertIn("/moshu-volume", payload["next_action"])
 
     def test_s2_when_prose_empty_or_missing(self) -> None:
         project = self.make_project()
@@ -127,8 +127,8 @@ class NextStepTests(unittest.TestCase):
         self.init_state(project, 5)
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S6")
-        self.assertEqual(payload["suggested_skill"], "moshu-build")
-        self.assertIn("/moshu-build", payload["next_action"])
+        self.assertEqual(payload["suggested_skill"], "moshu-volume")
+        self.assertIn("/moshu-volume", payload["next_action"])
 
     def test_finalize_when_final_volume_reviewed(self) -> None:
         """B70：末卷卷复盘已完成且大纲无后续卷 → FINALIZE 建议（final-report+完结章指引）。"""
@@ -174,7 +174,7 @@ class NextStepTests(unittest.TestCase):
         self.init_state(project, 5)
         payload = parse(run_tool(project))
         self.assertEqual(payload["step"], "S6")
-        self.assertIn("/moshu-build", payload["next_action"])
+        self.assertIn("/moshu-volume", payload["next_action"])
 
     def test_s6_maintained_degrades_when_outline_unparsable(self) -> None:
         """B70 三分类降级：大纲.md 缺失或无卷行 → 维持 S6 不误判 FINALIZE，证据明示。"""
