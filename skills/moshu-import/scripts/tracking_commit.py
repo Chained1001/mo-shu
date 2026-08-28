@@ -565,7 +565,10 @@ def normalize_information_gap_change(
     if raw_reveal is None:
         reveal_chapter = None
     else:
-        reveal_chapter = as_int(raw_reveal, f"{label}.reveal_chapter", minimum=1, maximum=9999)
+        # B70 判因修复：as_int 无 maximum 参数（B62b 同型），非 null 时原句必 TypeError——
+        # B58b 用例全用 null 未暴露；上限拆 require 显式校验。
+        reveal_chapter = as_int(raw_reveal, f"{label}.reveal_chapter", minimum=1)
+        require(reveal_chapter <= 9999, f"{label}.reveal_chapter must be <= 9999")
     reader_known = clean_text(row.get("reader_known"), f"{label}.reader_known", max_bytes=12)
     require(reader_known in READER_KNOWN, f"{label}.reader_known must be one of {READER_KNOWN}")
     status = clean_text(row.get("status"), f"{label}.status", max_bytes=24)
@@ -2326,6 +2329,246 @@ def volume_report(
     return {"report": relative, **summary}
 
 
+# B70 全书清账（mo-shu 自定）：完结宣告与「有意留白」行——作者宣告专属，AI 不得自标。
+ANNOUNCEMENT_RELPATH = Path("大纲") / "完结宣告.md"
+FINAL_REPORT_FILE = "完结清账.md"
+INTENTIONAL_BLANK_RE = re.compile(r"^有意留白\s*[：:]\s*(\S.*)$", re.MULTILINE)
+
+
+def read_intentional_blanks(project: Path) -> list[str]:
+    """读 大纲/完结宣告.md 的 `有意留白：F0XX/G0XX` 行（顿号/逗号/斜杠分隔）。
+
+    无宣告文件或无留白行 → 空表；只认作者宣告文件，AI 不得自标（B70 禁止事项 1）。
+    """
+    path = project / ANNOUNCEMENT_RELPATH
+    if not path.is_file():
+        return []
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError):
+        return []
+    blanks: list[str] = []
+    for match in INTENTIONAL_BLANK_RE.finditer(text):
+        for token in re.split(r"[、,，/\s]+", match.group(1)):
+            token = token.strip()
+            if token and token not in blanks:
+                blanks.append(token)
+    return blanks
+
+
+def render_final_report(
+    *,
+    state: dict[str, Any],
+    settled: dict[str, list[dict[str, Any]]],
+    suspended: list[dict[str, Any]],
+    blanked: list[dict[str, Any]],
+    open_gaps: list[dict[str, Any]],
+    unfinished_gap_warnings: list[dict[str, Any]],
+    commitments: list[str],
+    progression_rows: list[dict[str, Any]],
+    blanks: list[str],
+    has_announcement: bool,
+) -> str:
+    """完结清账 Markdown：全书伏笔四态终账 + 悬置（章距）+ 信息差清算 + 烂尾预警 + 承诺 + progression 全表。
+
+    按需产物（非每章派生视图），不进 check 强校验集；列表按 id/键排序保证确定性；
+    「未清零项」只呈报不清算——完结裁决归作者（补完结章回收 or 宣告有意留白）。
+    """
+    lines = [
+        "# 完结清账（全书终账）",
+        "",
+        f"- 截至章：第 {state['last_committed_chapter']} 章 | 状态修订：{state['state_revision']} | 完结宣告：{'有（大纲/完结宣告.md）' if has_announcement else '无（本报告不构成完结裁决）'}",
+        f"- 有意留白（作者宣告）：{'、'.join(blanks) if blanks else '无'}",
+        "",
+        "## 摘要",
+        f"- 伏笔四态（全书）：已埋 {len(settled['已埋'])} / 已回收 {len(settled['已回收'])} / 已过期 {len(settled['已过期'])} / 放弃 {len(settled['放弃'])}",
+        f"- 悬置警示（距最近变动章 ≥ 阈值，未留白）：{len(suspended)} 条",
+        f"- 信息差未兑现（status=登记）：{len(open_gaps)} 条｜其中烂尾预警（读者未知）：{len(unfinished_gap_warnings)} 条",
+        f"- 未履行下一章承诺：{len(commitments)} 条｜progression 在册指标：{len(progression_rows)} 项",
+        "",
+    ]
+    lines.extend(["## 伏笔四态终账（全书跨卷汇总）", ""])
+    for status in FORESHADOW_STATUSES:
+        lines.append(f"### {status}")
+        rows = settled[status]
+        if not rows:
+            lines.append("- 无")
+        for row in rows:
+            planned = f"第{row['planned_resolution_chapter']}章" if row["planned_resolution_chapter"] else "—"
+            lines.append(
+                f"- {row['id']}｜{row['summary']}｜埋第{row['planted_chapter']}章｜计划回收{planned}｜"
+                f"最近变动第{row['updated_chapter']}章"
+            )
+        lines.append("")
+    lines.extend(["## 悬置警示（埋设章·计划回收章·悬置章距）", ""])
+    if not suspended:
+        lines.append("- 无")
+    for item in suspended:
+        planned = f"第{item['planned_resolution_chapter']}章" if item["planned_resolution_chapter"] else "—"
+        lines.append(
+            f"- {item['id']}｜{item['summary']}｜埋第{item['planted_chapter']}章·计划回收{planned}·"
+            f"悬置 {item['chapters_since_update']} 章"
+        )
+    lines.append("")
+    lines.extend(["## 有意留白（已决，作者宣告生效）", ""])
+    if not blanked:
+        lines.append("- 无")
+    for item in blanked:
+        lines.append(f"- {item['id']}｜{item['summary']}｜埋第{item['planted_chapter']}章｜留白（不再列为未清）")
+    lines.append("")
+    lines.extend(["## 信息差全量清算", ""])
+    if not open_gaps:
+        lines.append("- 无")
+    for row in open_gaps:
+        knowers = "、".join(row["knowers"]) or "—"
+        keywords = "、".join(row["keywords"]) or "—"
+        reveal = f"第{row['reveal_chapter']}章" if row.get("reveal_chapter") else "—"
+        lines.append(
+            f"- {row['id']}｜知情人：{knowers}｜读者已知：{row['reader_known']}｜关键词：{keywords}｜"
+            f"最早揭露：{reveal}｜最近变更第{row['updated_chapter']}章"
+        )
+    lines.append("")
+    lines.extend(["## 烂尾预警（读者未知 的未兑现条目）", ""])
+    if not unfinished_gap_warnings:
+        lines.append("- 无")
+    for row in unfinished_gap_warnings:
+        lines.append(f"- {row['id']}｜{row['note']}｜最近变更第{row['updated_chapter']}章——完结前须兑现或宣告留白")
+    lines.append("")
+    lines.extend(["## 下一章承诺（全量未履行清单）", ""])
+    if not commitments:
+        lines.append("- 无")
+    for item in commitments:
+        lines.append(f"- {item}")
+    lines.append("")
+    lines.extend(["## progression 全表（在册数值指标）", ""])
+    if not progression_rows:
+        lines.append("- 无")
+    for row in progression_rows:
+        unit = row["unit"] or "—"
+        lines.append(
+            f"- {row['key']}｜当前值 {row['value']} {unit}｜方向 {row['direction']}｜"
+            f"登记第{row['first_recorded_chapter']}章｜更新第{row['updated_chapter']}章"
+        )
+    lines.append("")
+    lines.append("> 本报告为派生只读产物（B70），不写 state；未清零项的裁决（补完结章回收 or 标记有意留白）归作者。")
+    return "\n".join(lines)
+
+
+def final_report(project: Path, json_out: Path | None, warn_chapters: int) -> dict[str, Any]:
+    """全书清账子命令（B70）：只读 state 全量渲染完结总账。
+
+    零 state 写入（纯派生渲染，验收含前后 state 字节不变断言）；「有意留白」只经
+    大纲/完结宣告.md 生效（作者宣告专属），留白条目从悬置/烂尾清单降为已决并透明列示。
+    """
+    tracking = tracking_root(project)
+    require_no_retired_tracking_paths(tracking)
+    state = load_state(project)
+    blanks = read_intentional_blanks(project)
+    blank_set = set(blanks)
+    announcement_exists = (project / ANNOUNCEMENT_RELPATH).is_file()
+
+    # ① 伏笔四态终账（全书，无卷内过滤）
+    settled: dict[str, list[dict[str, Any]]] = {status: [] for status in FORESHADOW_STATUSES}
+    for identifier in sorted(state["foreshadow"]):
+        row = state["foreshadow"][identifier]
+        settled[row["status"]].append(
+            {
+                "id": identifier,
+                "summary": row["summary"],
+                "planted_chapter": row["planted_chapter"],
+                "planned_resolution_chapter": row["planned_resolution_chapter"],
+                "status": row["status"],
+                "updated_chapter": row["updated_chapter"],
+            }
+        )
+
+    # ② 悬置警示（全书；留白条目降已决移出）＋ ③ 留白已决清单（透明列示）
+    suspended: list[dict[str, Any]] = []
+    blanked: list[dict[str, Any]] = []
+    for item in suspension_warnings(state, warn_chapters):
+        row = state["foreshadow"][item["id"]]
+        entry = {
+            "id": item["id"],
+            "summary": row["summary"],
+            "planted_chapter": row["planted_chapter"],
+            "planned_resolution_chapter": row["planned_resolution_chapter"],
+            "chapters_since_update": item["chapters_since_update"],
+        }
+        if item["id"] in blank_set:
+            blanked.append(entry)
+        else:
+            suspended.append(entry)
+
+    # ④ 信息差全量清算（status=登记=未兑现；留白降已决移出）＋ 烂尾预警子集（读者已知=否）
+    open_gaps: list[dict[str, Any]] = []
+    unfinished_gap_warnings: list[dict[str, Any]] = []
+    for identifier, row in sorted(state["information_gaps"].items()):
+        if row["status"] != "登记" or identifier in blank_set:
+            continue
+        entry = {
+            "id": identifier,
+            "knowers": row["knowers"],
+            "reader_known": row["reader_known"],
+            "keywords": row["keywords"],
+            "reveal_chapter": row.get("reveal_chapter"),
+            "updated_chapter": row["updated_chapter"],
+            "note": row["note"],
+        }
+        open_gaps.append(entry)
+        # 规格「读者已知=否」≙ state 枚举 reader_known=未知（全集：未知/部分已知/已知）
+        if row["reader_known"] == "未知":
+            unfinished_gap_warnings.append(entry)
+
+    # ⑤ 承诺清单（全量未履行）＋ ⑥ progression 全表
+    commitments = list(state["context"].get("next_chapter_commitments", []))
+    progression_rows = [
+        {"key": key, **row}
+        for key, row in sorted(state.get("progression", {}).items())
+    ]
+
+    report_payload = render_final_report(
+        state=state,
+        settled=settled,
+        suspended=suspended,
+        blanked=blanked,
+        open_gaps=open_gaps,
+        unfinished_gap_warnings=unfinished_gap_warnings,
+        commitments=commitments,
+        progression_rows=progression_rows,
+        blanks=blanks,
+        has_announcement=announcement_exists,
+    )
+    write_if_changed(tracking / FINAL_REPORT_FILE, report_payload)
+
+    summary = {
+        "foreshadow_counts": {status: len(settled[status]) for status in FORESHADOW_STATUSES},
+        "suspension_count": len(suspended),
+        "intentional_blank_ids": blanks,
+        "open_gap_count": len(open_gaps),
+        "unfinished_gap_warning_count": len(unfinished_gap_warnings),
+        "commitment_count": len(commitments),
+        "progression_count": len(progression_rows),
+        "has_announcement": announcement_exists,
+    }
+    if json_out is not None:
+        atomic_write_text(
+            json_out,
+            json_payload(
+                {
+                    "foreshadow_settled": settled,
+                    "suspension_warnings": suspended,
+                    "intentional_blanks": blanked,
+                    "open_information_gaps": open_gaps,
+                    "unfinished_gap_warnings": unfinished_gap_warnings,
+                    "commitments": commitments,
+                    "progression": progression_rows,
+                    "summary": summary,
+                }
+            ),
+        )
+    return {"report": FINAL_REPORT_FILE, **summary}
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
@@ -2365,6 +2608,20 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="可选：把结构化账表 JSON 写到该路径",
     )
+    final_parser = subparsers.add_parser("final-report")
+    final_parser.add_argument("--project", type=Path, required=True, help="book project root containing 追踪/")
+    final_parser.add_argument(
+        "--warn-chapters",
+        type=int,
+        default=SUSPENSION_WARN_CHAPTERS,
+        help="伏笔悬置警示阈值（默认 20）；仅呈报不改变退出码",
+    )
+    final_parser.add_argument(
+        "--json-out",
+        type=Path,
+        default=None,
+        help="可选：把结构化账表 JSON 写到该路径",
+    )
     return parser
 
 
@@ -2377,13 +2634,16 @@ def main() -> int:
             result = apply_transaction(args.project, read_json(args.input), injection_budget=args.injection_budget)
         elif args.command == "volume-report":
             result = volume_report(args.project, args.from_chapter, args.to_chapter, args.json_out, args.volume)
+        elif args.command == "final-report":
+            require(args.warn_chapters >= 1, "--warn-chapters must be >= 1")
+            result = final_report(args.project, args.json_out, args.warn_chapters)
         else:
             require(args.warn_chapters >= 1, "--warn-chapters must be >= 1")
             result = check_project(args.project)
     except (TrackingError, OSError, UnicodeError) as exc:
         emit(f"ERROR: {exc}", error=True)
         return 2
-    if args.command == "volume-report":
+    if args.command in ("volume-report", "final-report"):
         emit(json.dumps(result, ensure_ascii=False))
         return 0
     payload: dict[str, Any] = {

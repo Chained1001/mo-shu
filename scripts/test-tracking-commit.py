@@ -1051,6 +1051,114 @@ class TrackingCommitTests(unittest.TestCase):
         self.assertEqual(first_json, json_out.read_bytes())
         self.assertEqual(first_md, (self.project / "追踪/卷报告_第1-15章.md").read_bytes())
 
+    # ── B70 final-report：全书清账（只读 state 派生渲染；有意留白=作者宣告专属） ──
+
+    def _commit_chapter(
+        self,
+        chapter: int,
+        *,
+        foreshadow_changes: list[dict[str, object]] | None = None,
+        gap_changes: list[dict[str, object]] | None = None,
+        progression_updates: list[dict[str, object]] | None = None,
+        commitment: str = "终章当众揭露幕后势力。",
+    ) -> None:
+        document = transaction(chapter, next_commitment=commitment)
+        delta = document["delta"]
+        assert isinstance(delta, dict)
+        if foreshadow_changes is not None:
+            delta["foreshadow_changes"] = foreshadow_changes
+        if gap_changes is not None:
+            delta["information_gap_changes"] = gap_changes
+        if progression_updates is not None:
+            delta["progression_updates"] = progression_updates
+        self.run_tool("commit", document)
+
+    def _build_finalize_fixture(self) -> None:
+        """规格 §四.2 fixture：F001 跨卷回收 / F002 悬置 / G001 读者未知 / 承诺 / progression。"""
+        self.init()
+        self._commit_chapter(
+            1,
+            foreshadow_changes=[
+                {"action": "upsert", "id": "F001", "summary": "神秘信物来历。", "planted_chapter": 1,
+                 "planned_resolution_chapter": 5, "status": "已埋", "importance": "高"}
+            ],
+            gap_changes=[
+                {"action": "register", "id": "G001", "knowers": ["反派"], "reader_known": "未知",
+                 "keywords": ["真实身份"], "status": "登记", "note": "幕后势力身份未揭示。", "reveal_chapter": 6}
+            ],
+            progression_updates=[
+                {"action": "register", "character": "江晨", "metric": "境界", "value": 3, "unit": "阶",
+                 "direction": "up"}
+            ],
+        )
+        self._commit_chapter(
+            2,
+            foreshadow_changes=[
+                {"action": "upsert", "id": "F002", "summary": "配角身世悬案。", "planted_chapter": 2,
+                 "planned_resolution_chapter": None, "status": "已埋", "importance": "中"}
+            ],
+            commitment="下一章收束配角的支线。",
+        )
+        for chapter in (3, 4):
+            self._commit_chapter(chapter)
+        self._commit_chapter(
+            5,
+            foreshadow_changes=[
+                {"action": "upsert", "id": "F001", "summary": "神秘信物来历。", "planted_chapter": 1,
+                 "planned_resolution_chapter": 5, "status": "已回收", "importance": "高"}
+            ],
+            commitment="终章当众揭露幕后势力。",
+        )
+
+    def test_final_report_renders_ledger_and_never_writes_state(self) -> None:
+        self._build_finalize_fixture()
+        state_path = self.project / "追踪/_tracking-state.json"
+        before = state_path.read_bytes()
+        self.run_tool("final-report", extra=("--warn-chapters", "1"))
+        self.assertEqual(state_path.read_bytes(), before, "final-report must not write state")
+        report = (self.project / "追踪/完结清账.md").read_text(encoding="utf-8")
+        for fragment in (
+            "# 完结清账（全书终账）",
+            "## 伏笔四态终账（全书跨卷汇总）",
+            "F001｜神秘信物来历。",
+            "## 悬置警示（埋设章·计划回收章·悬置章距）",
+            "F002｜配角身世悬案。｜埋第2章·计划回收—·悬置 3 章",
+            "## 烂尾预警（读者未知 的未兑现条目）",
+            "G001",
+            "## 下一章承诺（全量未履行清单）",
+            "终章当众揭露幕后势力。",
+            "## progression 全表（在册数值指标）",
+            "江晨#境界",
+        ):
+            self.assertIn(fragment, report)
+        payload = json.loads(
+            self.run_tool("final-report", extra=("--warn-chapters", "1")).stdout
+        )
+        self.assertEqual(payload["foreshadow_counts"]["已回收"], 1)
+        self.assertEqual(payload["foreshadow_counts"]["已埋"], 1)
+        self.assertEqual(payload["suspension_count"], 1)
+        self.assertEqual(payload["unfinished_gap_warning_count"], 1)
+        self.assertEqual(payload["has_announcement"], False)
+
+    def test_final_report_intentional_blanks_demote_to_settled(self) -> None:
+        self._build_finalize_fixture()
+        announcement = self.project / "大纲/完结宣告.md"
+        announcement.parent.mkdir(parents=True, exist_ok=True)
+        announcement.write_text("# 完结宣告\n\n有意留白：F002、G001\n", encoding="utf-8")
+        state_path = self.project / "追踪/_tracking-state.json"
+        before = state_path.read_bytes()
+        payload = json.loads(self.run_tool("final-report", extra=("--warn-chapters", "1")).stdout)
+        self.assertEqual(state_path.read_bytes(), before)
+        self.assertEqual(payload["suspension_count"], 0, payload)
+        self.assertEqual(payload["open_gap_count"], 0, payload)
+        self.assertEqual(payload["unfinished_gap_warning_count"], 0, payload)
+        self.assertEqual(payload["intentional_blank_ids"], ["F002", "G001"])
+        self.assertEqual(payload["has_announcement"], True)
+        report = (self.project / "追踪/完结清账.md").read_text(encoding="utf-8")
+        blank_section = report.split("## 有意留白（已决，作者宣告生效）")[1].split("## ")[0]
+        self.assertIn("F002", blank_section)
+        self.assertIn("留白（不再列为未清）", blank_section)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

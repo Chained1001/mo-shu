@@ -18,6 +18,7 @@
   S4 下一章有细纲 → 日更
   S5 卷末已定稿且无卷复盘产物 → 卷复盘
   S6 卷末已定稿且有卷复盘产物 → 下卷规划
+  FINALIZE 末卷卷复盘已完成且（大纲无后续卷或完结宣告文件存在）→ 全书完结清账（B70，建议非拦截；降级维持 S6）
 退出码：0=判定成功；2=项目根不存在。
 """
 
@@ -40,6 +41,7 @@ PROSE_RE = re.compile(r"^第0*(\d+)章.*\.md$")
 VOLUME_OUTLINE_RE = re.compile(r"卷纲_第0*(\d+)卷")
 VOLUME_REVIEW_RE = re.compile(r"卷复盘_第0*(\d+)卷")
 VOLUME_RANGE_RE = re.compile(r"第\s*(\d+)\s*[-—~至]\s*(\d+)\s*章")
+OUTLINE_VOLUME_ROW_RE = re.compile(r"^#{1,6}\s*第[0-9一二三四五六七八九十百千零]{1,7}卷[：:（(]", re.MULTILINE)
 
 
 def emit(payload: dict) -> None:
@@ -226,9 +228,45 @@ def main() -> int:
                 "suggested_skill": "moshu-write",
             })
             return 0
+        # FINALIZE（B70 完结判定，S6 分叉出的建议——非拦截；作者不宣告完结则 S6 开新卷永远合法）：
+        # 条件 = 末卷卷复盘已存在（本分支前提：当前卷有卷复盘产物）且（大纲再无后续卷 或 完结宣告文件存在）。
+        # 末卷判定 mo-shu 自定口径：大纲.md 卷级大纲行计数 N，当前卷号 ≥ N 即末卷（行序数=计数，不解析中文卷号）。
+        # 三分类降级（宁漏勿误）：大纲.md 缺失 / 卷行不可解析 → 无法判定末卷，维持 S6 不误判 FINALIZE。
+        announcement_path = outline_dir / "完结宣告.md"
+        declared = announcement_path.is_file()
+        outline_md = outline_dir / "大纲.md"
+        registered_volume_rows = 0
+        outline_md_exists = outline_md.is_file()
+        if outline_md_exists:
+            try:
+                outline_text = outline_md.read_text(encoding="utf-8")
+            except OSError:
+                outline_text = ""
+            registered_volume_rows = len(OUTLINE_VOLUME_ROW_RE.findall(outline_text))
+        is_final_volume = (not declared and outline_md_exists and registered_volume_rows > 0
+                           and volume_number >= registered_volume_rows)
+        if declared or is_final_volume:
+            reasons = []
+            if declared:
+                reasons.append("作者完结宣告文件存在（大纲/完结宣告.md，出现即完结）")
+            if is_final_volume:
+                reasons.append(f"第 {volume_number} 卷为大纲登记末卷（共 {registered_volume_rows} 卷行）且卷复盘已完成")
+            emit({
+                "step": "FINALIZE",
+                "evidence": evidence + ["；".join(reasons)],
+                "last_committed_chapter": last,
+                "next_action": "全书完结清账：跑 final-report 并走完结章写作指引（/moshu-write）",
+                "suggested_skill": "moshu-write",
+            })
+            return 0
+        s6_evidence = list(evidence)
+        if not outline_md_exists:
+            s6_evidence.append("缺 大纲/大纲.md——无法判定末卷，维持 S6（完结判定降级，宁漏勿误）")
+        elif registered_volume_rows == 0:
+            s6_evidence.append("大纲.md 无可解析卷行——无法判定末卷，维持 S6（完结判定降级，宁漏勿误）")
         emit({
             "step": "S6",
-            "evidence": evidence + [f"第 {volume_number} 卷卷复盘已完成"],
+            "evidence": s6_evidence + [f"第 {volume_number} 卷卷复盘已完成"],
             "last_committed_chapter": last,
             "next_action": "下卷规划（/moshu-build，消费卷复盘方向候选）",
             "suggested_skill": "moshu-build",

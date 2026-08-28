@@ -163,11 +163,12 @@ flowchart TD
     S4 -->|日更| S5[已写至卷末]
     S5 -->|卷复盘| S6[下卷规划]
     S6 --> S2
+    S6 -->|末卷复盘毕且无后续卷，或完结宣告| F[FINALIZE 全书完结清账]
     S2 -.->|拆文未完| A[analyze 续跑]
     S3 -.->|审查未毕| V[review 续批]
 ```
 
-（S0-S6 由 `skills/moshu/scripts/next_step.py` 只读判定输出 JSON DTO，优先中断边以 `step=INTERRUPT` 输出。）
+（S0-S6 由 `skills/moshu/scripts/next_step.py` 只读判定输出 JSON DTO，优先中断边以 `step=INTERRUPT` 输出。FINALIZE 为 S6 的分叉建议值（B70，非新增状态、非拦截——不宣告完结则 S6 开新卷永远合法）：末卷卷复盘已完成且（大纲无后续卷或 `大纲/完结宣告.md` 存在）时输出，引导跑 `tracking_commit.py final-report` 全书清账与完结章写作。）
 
 | 层 | 组成 | 职责 |
 |---|---|---|

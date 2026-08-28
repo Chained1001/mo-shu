@@ -130,6 +130,68 @@ class NextStepTests(unittest.TestCase):
         self.assertEqual(payload["suggested_skill"], "moshu-build")
         self.assertIn("/moshu-build", payload["next_action"])
 
+    def test_finalize_when_final_volume_reviewed(self) -> None:
+        """B70：末卷卷复盘已完成且大纲无后续卷 → FINALIZE 建议（final-report+完结章指引）。"""
+        project = self.make_project()
+        self.write(project / ".story-deployed")
+        self.write(project / "正文/第005章_结尾.md")
+        self.write(project / "大纲/细纲_第006章.md")
+        self.write(project / "大纲/卷纲_第1卷.md", "## 章节范围\n第 1 - 5 章\n")
+        self.write(project / "大纲/卷复盘_第1卷.md")
+        self.write(project / "大纲/大纲.md", "# 大纲\n\n## 卷级大纲\n### 第一卷：末卷（约 4 万字，5 章）\n- 一段式\n")
+        self.init_state(project, 5)
+        payload = parse(run_tool(project))
+        self.assertEqual(payload["step"], "FINALIZE")
+        self.assertEqual(payload["suggested_skill"], "moshu-write")
+        self.assertIn("final-report", payload["next_action"])
+
+    def test_finalize_with_declaration_overrides_open_plan(self) -> None:
+        """B70：作者完结宣告文件存在即 FINALIZE（即便大纲还登记了后续卷——显式宣告优先）。"""
+        project = self.make_project()
+        self.write(project / ".story-deployed")
+        self.write(project / "正文/第005章_结尾.md")
+        self.write(project / "大纲/细纲_第006章.md")
+        self.write(project / "大纲/卷纲_第1卷.md", "## 章节范围\n第 1 - 5 章\n")
+        self.write(project / "大纲/卷复盘_第1卷.md")
+        self.write(project / "大纲/大纲.md",
+                   "# 大纲\n\n## 卷级大纲\n### 第一卷：一卷（约 4 万字，5 章）\n### 第二卷：远卷（约 5 万字，40 章）\n")
+        self.write(project / "大纲/完结宣告.md")
+        self.init_state(project, 5)
+        payload = parse(run_tool(project))
+        self.assertEqual(payload["step"], "FINALIZE")
+        self.assertTrue(any("完结宣告" in e for e in payload["evidence"]), payload["evidence"])
+
+    def test_s6_maintained_when_not_final_volume(self) -> None:
+        """B70：非末卷（大纲登记 2 卷、当前第 1 卷）且无宣告 → S6 不变。"""
+        project = self.make_project()
+        self.write(project / ".story-deployed")
+        self.write(project / "正文/第005章_结尾.md")
+        self.write(project / "大纲/细纲_第006章.md")
+        self.write(project / "大纲/卷纲_第1卷.md", "## 章节范围\n第 1 - 5 章\n")
+        self.write(project / "大纲/卷复盘_第1卷.md")
+        self.write(project / "大纲/大纲.md",
+                   "# 大纲\n\n## 卷级大纲\n### 第一卷：一卷（约 4 万字，5 章）\n### 第二卷：远卷（约 5 万字，40 章）\n")
+        self.init_state(project, 5)
+        payload = parse(run_tool(project))
+        self.assertEqual(payload["step"], "S6")
+        self.assertIn("/moshu-build", payload["next_action"])
+
+    def test_s6_maintained_degrades_when_outline_unparsable(self) -> None:
+        """B70 三分类降级：大纲.md 缺失或无卷行 → 维持 S6 不误判 FINALIZE，证据明示。"""
+        for name, outline_text in (("书", None), ("书2", "# 大纲\n\n## 卷级大纲\n（卷行未填）\n")):
+            project = self.make_project(name)
+            self.write(project / ".story-deployed")
+            self.write(project / "正文/第005章_结尾.md")
+            self.write(project / "大纲/细纲_第006章.md")
+            self.write(project / "大纲/卷纲_第1卷.md", "## 章节范围\n第 1 - 5 章\n")
+            self.write(project / "大纲/卷复盘_第1卷.md")
+            if outline_text is not None:
+                self.write(project / "大纲/大纲.md", outline_text)
+            self.init_state(project, 5)
+            payload = parse(run_tool(project))
+            self.assertEqual(payload["step"], "S6")
+            self.assertTrue(any("无法判定末卷" in e for e in payload["evidence"]), payload["evidence"])
+
     def test_volume_range_unparsed_degrades_to_s4(self) -> None:
         project = self.make_project()
         self.write(project / ".story-deployed")
