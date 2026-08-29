@@ -25,5 +25,6 @@
 | 首批细纲存在（`大纲/细纲_第001章.md`，缺字段标 `[待补充]`） | 过：存在且无杜撰字段；不过：缺失或凭空捏造 | 人工项 |
 | 卷纲「章节范围」与首批细纲章号一致 | 过：一致；不过：矛盾 | 人工项 |
 | 无对标时全程未 fail-fast（合法无对标模式） | 过：流程正常走完；不过：被"缺对标"阻断 | 人工项 |
+| 评审报告 JSON 结构（eval_type ∈ structure\|reader；reader 含 score） | 过：eval_type 为两型之一且 reader 型报告含 score；不过：旧七型枚举或 reader 缺 score | [机检] |
 
 > 规则依据：`skills/moshu-outline/SKILL.md`、`skills/moshu-outline/references/workflow-outline.md（Stage 1-3）与 moshu-volume/references/volume-workflow.md（Stage 4-6）`（开书构建）与 `skills/moshu-write/references/outline-workflow.md`（首批细纲接力）。

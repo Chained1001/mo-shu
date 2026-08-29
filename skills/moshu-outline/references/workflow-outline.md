@@ -181,6 +181,8 @@
 
 **产出**：每卷一段话（三幕+灾难）、每个角色一页（背景故事+弧线六阶段+大纲微调）、势力场总览回填精化、世界观完善、情绪引擎设计。不确定处标 ⚠️ 入台账（移交 volume Phase B）。
 
+**人物设计评审（B77 缺口补全，可选触发）**：本步产出后可 spawn evaluator（eval_type=structure，对象=人物设计；target_paths=新角色档案+关系.md，related_paths=大纲/大纲.md 骨架段），报告呈报作者处置；agent 不可用则 fallback 主会话自评（对照三维度问句，标注 Fallback）。只呈报不拦截。
+
 ---
 
 ## 交接

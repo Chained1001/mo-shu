@@ -187,35 +187,68 @@
       "callers": [
         {
           "file": "skills/moshu-volume/references/volume-workflow.md",
-          "must_contain": "evaluator 全局评审（full 类型",
-          "context": "Phase B 打磨环（full）",
+          "must_contain": "eval_type: reader",
+          "context": "Phase B 打磨环（reader，B77 迁移）",
+          "required_params": []
+        },
+        {
+          "file": "skills/moshu-write/references/outline-workflow.md",
+          "must_contain": "eval_type=structure，对象=细纲批",
+          "context": "批末细纲评审（B69 立项/B77 迁移 structure；related_paths 跨稿核对）",
           "required_params": [
-            "虚拟对标",
-            "理想书评"
+            "eval_type=structure"
           ]
         },
         {
           "file": "skills/moshu-write/references/outline-workflow.md",
-          "must_contain": "eval_type=detail-batch",
-          "context": "批末细纲评审（B69 立项；B77b 迁移 structure+related_paths 跨稿核对）",
+          "must_contain": "eval_type=structure，对象=设定包",
+          "context": "设定补全触发（B69 立项/B77 迁移 structure）",
           "required_params": [
-            "eval_type=detail-batch"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/outline-workflow.md",
-          "must_contain": "eval_type=settings",
-          "context": "设定补全触发（B69 立项；B77b 迁移 structure）",
-          "required_params": [
-            "eval_type=settings"
+            "eval_type=structure"
           ]
         },
         {
           "file": "skills/moshu-volume/references/revision-workflow.md",
-          "must_contain": "eval_type=revision",
-          "context": "修订评审 ①b（B69 立项；B77b 迁移 structure）",
+          "must_contain": "eval_type=structure",
+          "context": "修订评审 ①b（B69 立项/B77 迁移 structure）",
           "required_params": [
-            "eval_type=revision"
+            "eval_type=structure"
+          ]
+        },
+        {
+          "file": "skills/moshu-outline/references/workflow-outline.md",
+          "must_contain": "eval_type=structure",
+          "context": "人物设计评审（B77 缺口补全，Stage 3 后可选）",
+          "required_params": [
+            "eval_type=structure"
+          ]
+        },
+        {
+          "file": "skills/moshu-volume/references/volume-workflow.md",
+          "must_contain": "eval_type=reader",
+          "context": "防撞升格复核（B77 缺口补全，Stage 5 候选后可选）",
+          "required_params": []
+        },
+        {
+          "file": "skills/moshu-volume/references/caifeng-methods.md",
+          "must_contain": "eval_type=reader",
+          "context": "融合评审（B77 缺口补全，融合四步后可选）",
+          "required_params": []
+        },
+        {
+          "file": "skills/moshu-write/references/volume-review.md",
+          "must_contain": "eval_type=structure",
+          "context": "卷末体检升格（B77 缺口补全，复盘产出后可选）",
+          "required_params": [
+            "eval_type=structure"
+          ]
+        },
+        {
+          "file": "skills/moshu-write/references/workflow-daily.md",
+          "must_contain": "eval_type=reader",
+          "context": "完结清账评审（B77 缺口补全，final-report 后可选）",
+          "required_params": [
+            "eval_type=reader"
           ]
         }
       ]

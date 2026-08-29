@@ -178,7 +178,7 @@
 - 跨卷关系边照常登记，目标事件可以是后续卷的单元 ID
 - 无关系的事件不登记（不强补）
 
-**防撞对照（B65）**：Stage 5 卷纲成型后按 [cold-path.md](cold-path.md)「防撞对照协议」执行三维重合对照（人物功能位 / 桥段节拍 / 设定机制）——卷纲对标结构坐标与剧情单元卡已登记的参照项**登记免责**（明示学习不计渗透）；单源两维以上高重合 → 候选呈报，多参照源同现的共性降为背景噪音；只呈报不拦截，重合裁决归作者。
+**防撞对照（B65）**：Stage 5 卷纲成型后按 [cold-path.md](cold-path.md)「防撞对照协议」执行三维重合对照（人物功能位 / 桥段节拍 / 设定机制）——卷纲对标结构坐标与剧情单元卡已登记的参照项**登记免责**（明示学习不计渗透）；单源两维以上高重合 → 候选呈报，多参照源同现的共性降为背景噪音；只呈报不拦截，重合裁决归作者。**防撞升格复核（B77 缺口补全，可选）**：候选产出后可 spawn evaluator（eval_type=reader，对象=防撞对照；target_paths=对照表，related_paths=对标拆文产物）独立复核——消除主会话自检盲区；agent 不可用则主会话自评（标注 Fallback）。
 
 ### Phase A Stage 6·定稿（Phase A 意义上的"写完"）
 
@@ -243,7 +243,7 @@ Phase B 是一个大停靠——作者看完整粗稿后，逐维度评审→改
 spawn 参数：
 ```
 token: {8 位令牌}
-eval_type: full          ← Phase B 专用，评完整粗稿
+eval_type: reader         ← Phase B 专用，评完整粗稿（B77 迁移：full→reader，score 语义不变）
 target_paths: [大纲/大纲.md, 大纲/卷纲_第X卷.md, 设定/角色/*.md, 角色弧线页]
 benchmark_path: 设定/理想书评.md（结构化三维度）
 virtual_benchmark_path: 设定/虚拟对标.md   ← 无对标时传入，有对标时省略
@@ -338,7 +338,7 @@ Agent 不可用时：AI 在打磨屏自评四问（简化版）：
 
 ### 开新卷（第 2 卷及后续）——冷路径
 
-见 [cold-path.md](cold-path.md)「开新卷」（按需加载：`大纲/卷复盘_第X卷.md` 产出后进入，SKILL.md 路由直达）。**Phase A/B 适配**：开新卷的 Phase A 从 Stage 4 起增量（Stage 1-3 全书级不重做），Stage 4-6 全速走完 → Phase A→B 弹窗 → Phase B 打磨环（evaluator eval_type: full 评新卷单元卡+卷纲）；虚拟对标不重新合成（全书级沿用）；新卷引入新题材元素可触发增量采风（CF 票据照常）。
+见 [cold-path.md](cold-path.md)「开新卷」（按需加载：`大纲/卷复盘_第X卷.md` 产出后进入，SKILL.md 路由直达）。**Phase A/B 适配**：开新卷的 Phase A 从 Stage 4 起增量（Stage 1-3 全书级不重做），Stage 4-6 全速走完 → Phase A→B 弹窗 → Phase B 打磨环（evaluator eval_type: reader 评新卷单元卡+卷纲，B77 迁移）；虚拟对标不重新合成（全书级沿用）；新卷引入新题材元素可触发增量采风（CF 票据照常）。
 
 ## 卡片按需加载清单
 

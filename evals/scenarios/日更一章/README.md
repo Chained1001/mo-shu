@@ -25,5 +25,6 @@
 | 章文件不含 `第X章/上一章/本章` 等写作工程词（正文元信息隔离） | 过：零命中；不过：命中 | 人工项 |
 | 写后机检未出现 blocking 欠账即继续（AI 味检测器语义） | 过：流程未被阻断；不过：有 blocking 未清仍继续 | 人工项 |
 | 批末进度汇报含章数/字数/漂移处理 | 过：三项齐备；不过：缺项 | 人工项 |
+| 批末细纲评审断言同步（B77 迁移）：spawn 用 eval_type=structure 且 related_paths 含场景表+卷纲路径 | 过：两要素齐备；不过：旧 detail-batch 枚举或缺 related_paths | 人工项 |
 
 > 规则依据：`skills/moshu-write/references/workflow-daily.md`（日更四步与批末收尾）。

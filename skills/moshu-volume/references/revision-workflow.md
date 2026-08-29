@@ -22,7 +22,7 @@
 
 ### ①b 修订评审（B69，可选）
 
-裁决前可 spawn evaluator（eval_type=revision，传变更提案+三清单+受影响章清单）取独立视角——只供参考，**不构成裁决依据**；agent 不可用则主会话自评（标注 Fallback）。
+裁决前可 spawn evaluator（eval_type=structure，对象=修订包；B77 迁移；传变更提案+三清单+受影响章清单）取独立视角——只供参考，**不构成裁决依据**；agent 不可用则主会话自评（标注 Fallback）。
 
 ### ② 作者裁决
 

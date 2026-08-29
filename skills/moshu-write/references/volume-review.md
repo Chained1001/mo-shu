@@ -41,3 +41,5 @@
 ## 契约修订候选（作者确认后生效）
 - {问题} → {修订建议}（涉及：期待债 / 代理权 / 换书债 / 终局储备）
 ```
+
+**卷末体检评审（B77 缺口补全，可选触发）**：复盘产物落盘后可 spawn evaluator（eval_type=structure，对象=卷末体检；target_paths=卷复盘文件+卷纲，related_paths=本卷正文目录），报告呈报作者；agent 不可用则 fallback 主会话自评（标注 Fallback）。只呈报不拦截。
