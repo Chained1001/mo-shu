@@ -85,7 +85,7 @@ for PYBIN in python3 python py; do "$PYBIN" -c "" 2>/dev/null && break; done
 
 ## 查询降级
 
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 43` 不一致时（标记缺失、字段缺失/非整数、小于或大于 43）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 43）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 43 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`（**注意**：下方「查询降级」的目标态是 `-> direct lookup`，两处措辞不同是有意的）。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 44` 不一致时（标记缺失、字段缺失/非整数、小于或大于 44）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 44）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 44 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`（**注意**：下方「查询降级」的目标态是 `-> direct lookup`，两处措辞不同是有意的）。
 
 「查故事资料」「查资料」走 agent 前先做轻量可用性检查（路由只做这一层，不承担全局部署策略）：当前不在子代理上下文、Agent/Task 工具可用、且目标 agent 已部署（部署判定见 /moshu-setup）→ 可尝试 spawn。任一不满足，则降级，不硬失败：
 

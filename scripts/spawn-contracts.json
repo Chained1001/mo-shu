@@ -344,7 +344,10 @@
       "optional_params": [
         "type",
         "context",
-        "cdp_port"
+        "cdp_port",
+        "caifeng_product",
+        "story_files",
+        "design_need"
       ],
       "callers": [
         {
@@ -393,6 +396,24 @@
           "file": "skills/moshu/SKILL.md",
           "must_contain": "spawn `moshu-researcher` agent；agent 不可用时",
           "context": "路由查资料",
+          "required_params": []
+        },
+        {
+          "file": "skills/moshu-volume/references/volume-workflow.md",
+          "must_contain": "caifeng-fusion",
+          "context": "B81 深度融合触发点（research_needed 与采风补强衔接节）",
+          "required_params": []
+        },
+        {
+          "file": "skills/moshu-outline/references/workflow-outline.md",
+          "must_contain": "caifeng-fusion",
+          "context": "B81 深度融合触发点（Stage 1 采风默认执行句尾）",
+          "required_params": []
+        },
+        {
+          "file": "skills/moshu-volume/references/caifeng-methods.md",
+          "must_contain": "caifeng-fusion",
+          "context": "B81 融合模式操作说明（轻重分治判据）",
           "required_params": []
         }
       ]

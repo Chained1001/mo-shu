@@ -104,6 +104,7 @@
   3. 用户不反对 → spawn moshu-researcher（结构采风，CF 票据登记）
   4. 采风产物回来 → 展示要点表 → 用户过目 → 按融合四步使用
   5. 采风产物回来后 → **融合四步在本 Stage 内执行完毕**（对照核心设定表→借用功能位→本土转译→方法论验证），产物直接喂 Stage 2 骨架设计——不留到后续 Stage 才消化。
+  5b. **深度融合触发（B81）**：融合涉及 ≥3 个设定文件联动 → spawn researcher（type=caifeng-fusion，传采风产物路径+本书设定路径+设计需求）；轻量融合主会话 inline。
   6. **操作细则见采风手册**：检索策略 / 源七类 / 融合四步细则与 fallback 内联流程见 moshu-volume 侧 [caifeng-methods.md](caifeng-methods.md)。
 
 轮 2（定形·AskUserQuestion 批，>4 问拆两屏连续问）：

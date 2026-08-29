@@ -74,9 +74,9 @@
 
 #### Phase A/B 架构（文字概览）
 
-**Phase A「快速生成」**：Stage 1 信息采集保留全部交互（轮 1 定调+参考偏好采集、采风默认执行[query 按参考偏好定向/泛化分流]、虚拟对标合成[无对标时]、轮 2 定形六问、轮 3 理想书评结构化三维度量化目标、轮 4 档位）→ Stage 2-6 全速走完（方法论照用，不停靠不评审，不确定处标 ⚠️ 入台账产物表）；Stage 2 后自动跑 check_outline（blocking only，⚠️ 标注继续走），Stage 6 写完全部 artifact 后自动跑全量（blocking 清零才进弹窗）→ **Phase A→B 弹窗**（✅ 进入打磨 / 📋 先看产出 / ⏸️ 暂存）。
+**Phase A「快速生成」**：Stage 1 信息采集保留全部交互（轮 1 定调+偏好采集、采风默认执行[query 分流]、虚拟对标合成[无对标时]、轮 2 定形六问、轮 3 理想书评结构化目标、轮 4 档位）→ Stage 2-6 全速走完（方法论照用，不停靠不评审，不确定处标 ⚠️ 入台账产物表）；Stage 2 后自动跑 check_outline（blocking only），Stage 6 全量（blocking 清零才进弹窗）→ **Phase A→B 弹窗**（✅ 进入打磨 / 📋 先看产出 / ⏸️ 暂存）。
 
-**Phase B「深度打磨」**：一个大停靠的打磨环——① evaluator 全局评审（full 类型，对照虚拟对标+理想书评出三维度 JSON+score+research_needed+summary+recommendation）→ ② 打磨屏（报告九格+⚠️待打磨项汇总）→ ③ 五选项主选择（✅ 确认定稿[tracking init]/🔧按建议改进/🔄触发采风补强[research_needed 精准检索→更新虚拟对标]/📡逐维度打磨[结构/桥段/节奏/情绪/角色五选一，各映射方法论文件与对照锚点]/📝作者自改）→ ④ 每轮改动按级联纪律（影响声明→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录落台账 append-only）。
+**Phase B「深度打磨」**：一个大停靠的打磨环——① evaluator 全局评审（full：三维度 JSON+score+research_needed+summary+recommendation）→ ② 打磨屏（报告九格+⚠️待打磨项）→ ③ 五选项（✅定稿[tracking init]/🔧改进/🔄采风补强[research_needed 检索→更新虚拟对标]/📡逐维度打磨[五维映射方法论]/📝自改）→ ④ 每轮按级联纪律（影响声明→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录落台账 append-only）。
 
 **断点恢复**：新会话读台账构建态「Phase B 打磨中」→ 读打磨记录最后一条 → 汇报断点 → 继续打磨环。创作瓶颈按需加载 [plot-troubleshooting.md](plot-troubleshooting.md) 症状药方（B78）。
 
@@ -309,6 +309,8 @@ evaluator JSON 的 `research_needed` ≠ null 时：打磨屏展示 ⚠️「评
 作者选 🔄 后：
   主线程 spawn moshu-researcher（query=research_needed 内容，CF 票据照常登记）
   采风产物 → 融合四步 → 更新 `设定/虚拟对标.md` → re-spawn evaluator（context 加新采风说明）→ 回打磨屏
+
+> **深度融合触发（B81）**：融合涉及 ≥3 个设定文件联动 → spawn researcher（type=caifeng-fusion，传采风产物路径+本书设定路径+设计需求）；轻量融合主会话 inline。
 
 ### 打磨评审 Fallback（自评四问）
 
