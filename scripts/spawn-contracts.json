@@ -357,7 +357,7 @@
         },
         {
           "file": "skills/moshu-volume/references/volume-workflow.md",
-          "must_contain": "query = research_needed 的内容",
+          "must_contain": "query=research_needed 内容",
           "context": "Phase B research_needed 精准检索",
           "required_params": [
             "query"

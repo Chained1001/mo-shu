@@ -623,6 +623,21 @@
         "skills/moshu-volume/references/genre-prose-cards/青春甜宠.md",
         "skills/moshu-setup/references/agent-references/genre-prose-cards/青春甜宠.md"
       ]
+    },
+    {
+      "name": "plot-patterns-reference",
+      "source": "skills/moshu-write/references/plot-patterns.md",
+      "targets": [
+        "skills/moshu-volume/references/plot-patterns.md",
+        "skills/moshu-analyze/references/plot-patterns.md"
+      ]
+    },
+    {
+      "name": "plot-troubleshooting-reference",
+      "source": "skills/moshu-write/references/plot-troubleshooting.md",
+      "targets": [
+        "skills/moshu-volume/references/plot-troubleshooting.md"
+      ]
     }
   ]
 }

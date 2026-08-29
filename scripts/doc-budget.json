@@ -18,8 +18,8 @@
   "files": [
     {
       "path": "skills/moshu-write/SKILL.md",
-      "budget": 9500,
-      "why": "长篇任一场景都无条件加载。预算 13200→9000：Phase 4 契约块（结构树/产物映射表→artifact-protocols.md，缺失处理/权威优先级/追踪体积→workflow-chapter.md 写前准备契约）下沉，入口只留路由与索引（P-A 审计）；→9200：参考索引登记 3 个冷路径文件（idea-seed/naming-cards/scene-cards），主入口可发现性，索引本身按需加载"
+      "budget": 10100,
+      "why": "长篇任一场景都无条件加载。预算 13200→9000：Phase 4 契约块（结构树/产物映射表→artifact-protocols.md，缺失处理/权威优先级/追踪体积→workflow-chapter.md 写前准备契约）下沉，入口只留路由与索引（P-A 审计）；→9200：参考索引登记 3 个冷路径文件（idea-seed/naming-cards/scene-cards），主入口可发现性，索引本身按需加载。B78 路由表加 plot-patterns/plot-troubleshooting 行（新增方法论文件 SKILL 可达性纪律），实测 9564，9500→10100（×1.05）"
     },
     {
       "path": "skills/moshu-write/references/workflow-daily.md",
@@ -48,8 +48,8 @@
     },
     {
       "path": "skills/moshu-write/references/anti-ai-writing.md",
-      "budget": 14300,
-      "why": "去AI味每章读。预算 13900→14300：新增模式 11 悖论句式/模式 12 物化结尾（高频 AI 味，每章检测时付）。B59 锁定：增长须先压缩或下沉"
+      "budget": 15300,
+      "why": "去AI味每章读。预算 13900→14300：新增模式 11 悖论句式/模式 12 物化结尾（高频 AI 味，每章检测时付）。B59 锁定：增长须先压缩或下沉。B78「剪去 90%」+「套路复读警示」节（大师写作课 Ch.5/14 萃取；源在 deslop，本条目登记 write 副本），实测 14521，14300→15300（×1.05）"
     },
     {
       "path": "skills/moshu-write/references/banned-words.md",

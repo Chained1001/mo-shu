@@ -54,6 +54,7 @@ description: "网文拆书。深度拆解爆款网文的黄金三章、人设架
 | 文件 | 何时加载 |
 |------|----------|
 | [references/analyze-workflow.md](references/analyze-workflow.md) | **流程权威**：Stage 1-2 完整拆解流程（管道 2-1~2-7/边界表/停靠/并行策略/恢复机制） |
+| [references/plot-patterns.md](references/plot-patterns.md) | 拆对标书标注情节模式（B78：9 骨架原型，三消费点之二） |
 | [references/output-templates.md](references/output-templates.md) | 管道全程：各 Stage 输出模板 + 快速预览报告模板 + `剧情/节奏.md` / `剧情/情绪模块.md` 模板 + 通用速查表 |
 | [references/material-decomposition.md](references/material-decomposition.md) | Stage 2-3~2-6 按节加载：素材拆解方法论 + 质量阈值 + 分块策略（语料读取/阈值门禁/分块策略多点位引用） |
 | [references/pipeline-ops.md](references/pipeline-ops.md) | 管道运维：_progress.md 模板、错误处理、恢复机制操作步骤 |

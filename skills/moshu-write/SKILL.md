@@ -151,6 +151,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 | 节奏与升级感 | `references/outline-rhythm.md` |
 | 小纲与卡文 | `references/plot-core-methods.md` |
 | 选择叙事框架 | `references/plot-frameworks.md` |
+| 情节模式校验/情节卡点排障 | `references/plot-patterns.md` + `references/plot-troubleshooting.md`（B78） |
 | 题材写作公式 | `references/genre-writing-formulas.md` |
 | 黄金三章 | `references/opening-design.md` |
 | 情绪弧线 | `references/emotional-arc-design.md` |
