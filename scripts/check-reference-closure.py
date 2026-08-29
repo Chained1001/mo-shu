@@ -42,6 +42,8 @@ ALLOWED_CROSS_DOMAIN: dict[str, str] = {
     "character-design-methods.md": "outline 侧人物方法论；volume outline-methods 路由表提及（B76 拆分）",
     "character-basics.md": "outline 侧角色基础卡；volume outline-methods/outline-workflow 提及（B76 拆分）",
     "plot-frameworks.md": "outline 侧桥段框架；volume outline-methods 路由表提及（B76 拆分）",
+    # B78 方法论萃取第二批：plot-troubleshooting 头注与 recovery-protocol 分工互指（规格改动2 要求互相头注指认）
+    "recovery-protocol.md": "write 侧流程/数据故障恢复手册；volume 排障速查头注仅作分工导航提示不加载，与既有「write 域执行技法仅跨域指引」同类（批B4 裁决二/B78）",
 }
 
 
