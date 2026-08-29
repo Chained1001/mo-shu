@@ -2,13 +2,34 @@
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased（B76 build 拆分 + 审计整改，2026-08-29）
+## v2.5.0（2026-08-29）
 
-- **build 拆分（B76）**：moshu-build 拆为 **moshu-outline**（故事架构，Stage 1-3：题材定位/世界观/人物/全书大纲）与 **moshu-volume**（卷规划，Stage 4-6：单元卡/整合/定稿+卷纲；开新卷/修订流/采风/防撞对照）——references 36 项与 scripts 5 件迁移、shared-assets 注册表 61+9 组改指、契约五件（spawn/capability/current/behavior/doc-budget）同步重组；volume-workflow 按统一模板重写（保留全部 spawn 锚行）；/moshu-build 命令退役，路由改 /moshu-outline → /moshu-volume
-- **统一创作流程模板入宪**：FULL（书级/卷级五步 PREPARE→DRAFT→REVIEW→POLISH→COMMIT）/LIGHT（章级日更映射）——AGENTS §9 第 7 条
-- **B73 审计整改**：PRD 反哺 G1-G4（agents_version 40/机制表 19 行/完结旅程/v2.5.0 路线）+ AGENTS 术语 15 条 + 题材框架字段链闭合 + capability-wiring 补登 + 学习台账二期
-- **B74 spawn 契约单一真源**：spawn-contracts.json 注册表（8 agent×callers）+ check-spawn-contracts.sh 三查守卫 + D2 参数遗漏锚定
-- **B75 模板两级装配**：narrative-writer 流程规则承接节（agents_version 41）+ chapter-core spawn 段瘦身（payload −21%）
+> 二期八批（B68-B71）+ 二期整体审计（B72）+ 整改（B73）+ 架构三批（B74-B76）+ 治理两批（B76.5-B76.6）+ 写审配对（B77）+ 方法论四批（B78-B81）——**12 技能世代**；agents_version 44
+
+### 新增
+
+- **章纲生成强化（B68）**：场景表分解步（单元→场景→章数加总，治「100 章剧情 10 章跑完」）+ 一进一出呼吸节律自检 + 写作浮现登记与收割 + 拆并章规程（锁定区间须作者确认）+ 推进度仪表 pace_meter.py（卷进度% vs 剧情进度%背离候选）
+- **完结态全家（B70）**：FINALIZE 完结建议（next_step，非拦截）+ final-report 全书终账 + 完结宣告.md（**有意留白**标注权归作者）+ 完结清账报告 + 完结章收束清单
+- **采风融合智能体（B81）**：researcher 扩展 caifeng-fusion 模式（融合四步进 agent 隔离上下文：结构对照→功能位借用→本土转译→方法论验证，返回可应用策略+功能位清单+防抄红线）；轻重分治（≥3 设定文件联动→spawn，否则 inline）
+- **写审配对补全（B77）**：evaluator 按人类角色合并为 **structure（责编）/reader（读者评委）两型**（原 7 型收敛）+12 产物写审配对全覆盖（人物/场景表/采风融合/完结清账/卷末体检/防撞升格六缺口清零）+ related_paths **跨产物审查**（场景表节奏 vs 单元卡承诺类跨稿矛盾）
+- **方法论萃取四批（B78/B80/B79）**：情节骨架（plot-patterns 九模式+plot-troubleshooting 排障速查+代价系统+BS2 比例骨架 50%/68% 硬锚）+ 正文手艺（literary-techniques 五节：过滤词直呈/系动词激活/比喻禁忌/POV 距离推拉/叙事时间+Swain 场景-续景五条操作规则+craft-cards 6→14）+ 写作哲学（**先想清再动笔，先动笔再挑剔**——三遍法认知模式显式化+逐层精化+扩展版探索稿）
+- **治理体系进化**：审计法 v2.0 产品双基线+六查+第七查（规格侧正确性/模板 diff 对照）、**盲区清单** v1.0（四节防遗忘检查单——规格撰写前/发版前/实测分流/元治理）、开发标准 v1.6 §11 权威规范对齐（Anthropic agent 模式/12-Factor Agents/evals 纪律消化收口）、守卫复跑最终态纪律+Result 行整段引用
+
+### 变更
+
+- **build 拆分（B76）**：moshu-build 拆为 **moshu-outline**（故事架构 Stage 1-3）与 **moshu-volume**（卷规划 Stage 4-6+修订流+采风+防撞）——references 36 项与 scripts 5 件迁移、五注册表重组；/moshu-build 退役，路由改 /moshu-outline → /moshu-volume；**统一创作流程模板入宪**（FULL 五步 PREPARE→DRAFT→REVIEW→POLISH→COMMIT/LIGHT 章级映射——AGENTS §9 第 7 条）
+- **spawn 契约单一真源（B74）**：spawn-contracts.json 注册表（8 agent×调用点）+ 三查守卫（注册完备/调用面覆盖/必需参数窗口）——D2 参数遗漏事故的制度防线
+- **模板两级装配（B75）**：narrative-writer 稳定规则由模板承接（部署一次），spawn prompt 只传本章增量数据（9 组 ≤12 项，payload −21%）——attention 释放给创作
+- **宿主适配面收口（B76.6）**：**两宿主裁定（Claude Code+ZCode）**入宪——运行时流程零宿主字眼（check-host-neutrality 守卫长期兜住）、宿主差异收敛 moshu-setup 适配面；24 处路径探测改「已部署→spawn→fallback」语义
+- **指纹事故根治（B76.5）**：B76 推送 CI 首红真因勘误（登记过期非 CRLF）→ 指纹 LF 归一+CRLF 免疫回归+部署面改动联动纪律（模板 bump/agent-references 仅重登记两条义务分家）+ 状态总表 B48-B75 回填
+- **题材库系统集成（B71）**：catalog 去孤儿化（双侧接线+三副本）/防撞第三共性信号源/scan 库外覆盖检查/采风前置查库分流
+- **evaluator 三型扩展（B69）**：detail-batch 细纲批评审（写正文前语义闸）/settings 设定包含防撞复核/revision 修订包独立视角
+- **版本轨**：agents_version 44（五次 bump：40/41/42/43/44）；12 技能/8 agent；追踪 schema 8
+
+### 修复
+
+- B73 审计整改：PRD 反哺（机制表/完结旅程/版本路线）+ AGENTS 术语 15 条 + 题材框架字段链闭合 + capability-wiring 补登
+- B76.5/B77/B78/B80 四批审核整改：预算压缩对冲（未调额）+ 验收虚报勘误 + doc-budget 入子步验收清单（固化挂载）+ 参考闭包白名单补登
 
 ## v2.4.0（2026-08-28）
 

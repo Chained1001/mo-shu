@@ -118,17 +118,17 @@
 | 模板两级装配 | narrative-writer 每章 spawn | 稳定规则由 agent 模板承接（部署一次），spawn prompt 只传本章增量数据（9 组 ≤12 项）——payload −21%、attention 释放给创作 | chapter-core spawn 段+narrative-writer「流程规则承接」节（B75） |
 | 统一创作流程模板+技能拆分 | 全创作技能 | 五步骨架（PREPARE→DRAFT→REVIEW→POLISH→COMMIT）FULL/LIGHT 两档入宪；build 拆 outline（故事架构）+volume（卷规划），12 技能世代 | 宪法 §9 第 7 条+双 SKILL（B76） |
 
-技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **42**（B69 三型扩展 bump 至 40，B75a 模板承接 bump 至 41，B76.5 整改补 bump 至 42——B76 模板称谓变更漏 bump 的登记过期教训）、候选机检永不拦截原则全程保持；agents_version 实管部署物全量，散布 40+ 处由 bump 脚本唯一合法修改。
+技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **44**（B69 三型扩展至 40，B75a 模板承接至 41，B76.5 整改补至 42，B77 评审合并至 43，B81 采风融合至 44）、候选机检永不拦截原则全程保持；agents_version 实管部署物全量，散布 40+ 处由 bump 脚本唯一合法修改。
 
-### 2.3.2 规划中能力（B77-B81，规格在库待施工）
+### 2.3.2 方法论与评审能力（B77-B81，已实施 2026-08-29）
 
-| 批 | 能力（产品语言） | 解决什么 |
+| 批 | 能力（产品语言） | 状态 |
 |---|---|---|
-| ~~B77 审查补全~~（已实施，B77 按人类角色合并落地：原规划六新型收敛为两型模型——structure 责编吸收人物/场景表/卷末体检，reader 读者评委吸收融合/防撞/完结清账；6 缺口全部补上审查角色） | evaluator 两型：structure（责编：结构/线/节奏/人物功能/跨稿矛盾）+ reader（读者评委：追读/爽点/对标/融合本土化/完结交付） | 写审配对缺口清零：没有一个产物再是「有人写、没人审」 |
-| B78 情节骨架萃取 | plot-patterns 九模式+plot-troubleshooting 排障手册+代价系统+BS2 比例锚进卷纲/细纲层 | 卷纲到细纲的情节手艺目前靠拆文参照，缺方法论书直接支撑 |
-| B79 先想清再动笔 | 三遍法认知哲学落 chapter-core（创作帽禁自我评判/读者帽/技艺帽的分工依据显式化） | 写手层有流程无认知依据，流程哲学停在模板层 |
-| B80 正文手艺萃取 | literary-techniques 五节（过滤词直呈/系动词激活/比喻禁忌/POV 距离推拉/叙事时间五技）+craft-cards 6→14 | 正文句级手艺只有 anti-ai 防御层，缺进攻层 |
-| B81 采风融合智能体 | researcher 扩 caifeng-fusion 模式（融合四步进 agent 隔离上下文） | 融合四步占主会话上下文；采风跨技能天然适合 agent |
+| B77 审查补全（已实施：六新型按人类角色收敛为两型——structure 责编吸收人物/场景表/卷末体检，reader 读者评委吸收融合/防撞/完结清账；6 缺口全部补上审查角色） | evaluator 两型：structure（责编：结构/线/节奏/人物功能/跨稿矛盾）+ reader（读者评委：追读/爽点/对标/融合本土化/完结交付）+related_paths 跨产物审查 | ✅ 写审配对缺口清零 |
+| B78 情节骨架萃取 | plot-patterns 九模式+plot-troubleshooting 排障手册+代价系统+BS2 比例锚（50%/68% 硬锚进卷纲层，structure 评卷纲对照尺） | ✅ 已实施 |
+| B79 先想清再动笔 | 三遍法认知哲学显式化（创作/评判分离+模式切换物理标记）+逐层精化+扩展版探索稿 | ✅ 已实施 |
+| B80 正文手艺萃取 | literary-techniques 五节（过滤词直呈/系动词激活/比喻禁忌/POV 距离推拉/叙事时间五技）+Swain 五条操作规则+craft-cards 6→14+写前判型接线 | ✅ 已实施 |
+| B81 采风融合智能体 | researcher 扩 caifeng-fusion 模式（融合四步进 agent 隔离上下文，轻重分治：≥3 设定文件联动→spawn） | ✅ 已实施 |
 
 ## 2.4 用户旅程（五条）
 
@@ -144,7 +144,7 @@
 
 ## 2.7 版本路线
 
-v2.5.0（待发，二期 B68-B81+审计 B72+整改 B73）：章纲生成强化（场景表/一进一出/浮现/拆并章/pace_meter）/完结态（FINALIZE/final-report/完结章）/evaluator 三型扩展/题材库系统集成/spawn 契约单一真源（B74）/模板两级装配（B75）/build 拆分 outline+volume 与统一创作流程模板入宪（B76）/审查补全六型（B77 规划）/方法论萃取两层（B78 情节骨架+B80 正文手艺，规划）/先想清再动笔（B79 规划）/采风融合智能体（B81 规划）；agents_version 42；审计法 v2.0 产品双基线+六查+第七查协议；docs 瘦身 78→26。
+v2.5.0（已发 2026-08-29，二期 B68-B81+审计 B72+整改 B73+架构 B74-B76+治理 B76.5-B76.6+写审 B77+方法论 B78-B81）：章纲生成强化/完结态全家/题材库集成/evaluator 两型（structure 责编+reader 读者评委，12 产物写审配对全覆盖+跨产物审查）/spawn 契约单一真源/模板两级装配/**build 拆分 outline+volume（12 技能世代）**/统一创作流程模板入宪/宿主适配面收口（两宿主裁定）/方法论萃取四批（情节骨架+正文手艺+采风融合智能体+写作哲学）；agents_version 44；审计法 v2.0 六查+第七查；盲区清单 v1.0；开发标准 §11 权威规范对齐；docs 瘦身 78→26。
 v2.4.0（已发 2026-08-28，开源强化 B58-B65 八批+审计 B66+整改 B67+docs 瘦身）：写作上下文按需注入（点名清单+预算闸）、伏笔剧透锁、角色语声锚与双向称谓、对话 DNA 全链、外科式修订护栏与编辑决策点、设定指纹影响面、数值 progression 域与长度候选、卡文阻塞协议、对标防撞对照（登记免责）；追踪 schema 8、agents_version 40、宪法 §3.4 涟漪面纪律。v2.5 方向：实测驱动打磨（test2-5）、审计-开源强化-v1 整改、本地守卫矩阵与 CI 对齐、路由表语义守卫、rename 工具、tracking_commit 拆分。
 
 ## 2.8 产品边界（明确不做，14 条）

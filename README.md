@@ -16,7 +16,7 @@
 
 围绕四条线展开：爆款逆向 · 剧情模块化重组 · 上下文状态分层管理 · 人机协同。
 
-> **最近更新（v2.4.0）**：**开源强化八批**——写作上下文按需注入（点名清单+预算闸+**伏笔剧透锁**）/ 角色语声体系（语声锚+双向称谓+**对话 DNA**）/ 外科式修订护栏（工单四键+**编辑决策点**）/ 设定指纹影响面 / progression 数值域+长度候选 / 卡文阻塞协议 / **对标防撞对照**（登记免责）；追踪 schema 8、agents_version 39、宪法涟漪面纪律、审计法 v2.0 产品双基线、docs 瘦身 78→26；整体审计零阻断零需修。更早版本变更见 [CHANGELOG.md](CHANGELOG.md)。
+> **最近更新（v2.5.0）**：**12 技能世代+方法论链**——build 拆分为 moshu-outline（故事架构）+moshu-volume（卷规划）、统一创作流程模板入宪（先想清再动笔→先动笔再挑剔五步骨架）、写审配对 12 产物全覆盖（evaluator 两型：structure 责编/reader 读者评委+跨产物审查）、方法论萃取四批（情节骨架 BS2 硬锚+正文手艺 literary-techniques+采风融合智能体 caifeng-fusion+写作哲学）、spawn 契约单一真源、模板两级装配、宿主适配面收口（Claude Code+ZCode 两宿主）；agents_version 44。v2.4 及更早见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 流程总览
 
