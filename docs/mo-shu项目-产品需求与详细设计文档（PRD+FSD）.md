@@ -111,7 +111,7 @@
 | 写作浮现+收割 | write D 段+补纲 | 写作期涌现（角色活了/新想法）append-only 登记，补纲时收割进下批细纲 | `大纲/写作浮现.md`（B68a） |
 | 拆并章规程 | write 细纲维护 | 未写区间内合法拆/并章+重编号（锁定区间须作者确认） | outline-workflow 拆并章节（B68a） |
 | 推进度仪表 | write 批末/补纲/拆并章 | 卷进度% vs 剧情进度%背离出候选（2.0×/50pp 自定可覆盖）+编号连续性 | pace_meter.py（B68b） |
-| evaluator 三型扩展 | volume 打磨环+write 批末+修订流 | detail-batch 细纲批评审（写正文前语义闸）/settings 设定包含防撞复核/revision 修订包独立视角 | evaluator 模板 eval_type 七值（B69） |
+| evaluator 三型扩展 | volume 打磨环+write 批末+修订流 | detail-batch 细纲批评审（写正文前语义闸）/settings 设定包含防撞复核/revision 修订包独立视角 | evaluator 模板 eval_type 七值（B69）；**B77 演进：七型按人类角色合并为两型**（structure 责编/reader 读者评委），6 审查缺口补全，spawn prompt 增 related_paths 跨稿核对 |
 | 完结态全家 | next_step+write+volume | FINALIZE 建议（非拦截）/final-report 全书终账/有意留白（作者专属）/完结章指引/构建态完结 | next_step FINALIZE 分支+final-report 子命令（B70） |
 | 题材库系统集成 | volume/analyze/scan/采风 | catalog 去孤儿化（双侧接线）/防撞第三共性信号源/scan 库外覆盖/采风前置查库/上游数据降档 | shared-assets genre 族+六处接线（B71） |
 | spawn 契约单一真源 | 全部 agent 调用点 | 8 agent 调用参数入注册表（required/optional×27 调用点）+三查守卫——spawn 参数遗漏事故的制度防线 | spawn-contracts.json+check-spawn-contracts.sh（B74） |
@@ -124,7 +124,7 @@
 
 | 批 | 能力（产品语言） | 解决什么 |
 |---|---|---|
-| B77 审查补全 | evaluator 新型：character 人物设计评审 / scene 场景表评审 / fusion-review 采风融合评审 / finale 完结清账评审 / volume-review 卷末体检升格 / 防撞对照升格独立审查步 | 现有写-审配对有缺口：人物/场景/采风融合/完结产物还没有专属评审者，防撞仍是流程内自检 |
+| ~~B77 审查补全~~（已实施，B77 按人类角色合并落地：原规划六新型收敛为两型模型——structure 责编吸收人物/场景表/卷末体检，reader 读者评委吸收融合/防撞/完结清账；6 缺口全部补上审查角色） | evaluator 两型：structure（责编：结构/线/节奏/人物功能/跨稿矛盾）+ reader（读者评委：追读/爽点/对标/融合本土化/完结交付） | 写审配对缺口清零：没有一个产物再是「有人写、没人审」 |
 | B78 情节骨架萃取 | plot-patterns 九模式+plot-troubleshooting 排障手册+代价系统+BS2 比例锚进卷纲/细纲层 | 卷纲到细纲的情节手艺目前靠拆文参照，缺方法论书直接支撑 |
 | B79 先想清再动笔 | 三遍法认知哲学落 chapter-core（创作帽禁自我评判/读者帽/技艺帽的分工依据显式化） | 写手层有流程无认知依据，流程哲学停在模板层 |
 | B80 正文手艺萃取 | literary-techniques 五节（过滤词直呈/系动词激活/比喻禁忌/POV 距离推拉/叙事时间五技）+craft-cards 6→14 | 正文句级手艺只有 anti-ai 防御层，缺进攻层 |
@@ -210,6 +210,23 @@ RAG/向量检索、LLM 导演黑盒自治、每章全量快照、自动连写污
 **D3·批末跨章核对**：标题去重、读者契约双向核对、伏笔盘点、进度仪表（卷进度% vs 剧情进度%背离出候选）。
 **D4·批末收尾**：追踪完整性验证→口头汇报（章数/字数/漂移/下批建议）；卷末提示卷复盘，末卷提示完结链（完结宣告→全书终账→完结章）。
 **确认点**：卡文上报、审查建议、卷复盘、完结宣告——除此之外日更全程无需作者值守。
+
+### 2.9.5 写审配对表（B77——12 产物×审查角色，没有一个产物「有人写、没人审」）
+
+| # | 产物 | 写（producer） | 审（evaluator 型/对象） | 触发时点 | 报告去向 |
+|---|---|---|---|---|---|
+| 1 | 大纲骨架 | outline Stage 2 | structure/大纲骨架 | Stage 2 后（既有） | 呈报作者，⚠️ 入台账 |
+| 2 | 单元卡 | volume Stage 4 | structure/单元卡 | Phase B 打磨环（既有） | 打磨屏 |
+| 3 | 人物设计 | outline Stage 3 | structure/人物设计 | Stage 3 后可选（B77 新增） | 呈报作者 |
+| 4 | 场景表 | write 细纲批 | structure/细纲批（related_paths 跨稿核对覆盖） | 批末写前（B77 并入，不单独 spawn） | 呈报作者处置后进正文 |
+| 5 | 细纲批 | write 批次 | structure/细纲批 | 批末写前（B69 立项/B77 迁移） | 呈报作者处置后进正文 |
+| 6 | 设定包 | write 细纲后补全 | structure/设定包 | ≥3 文件可选（B69 立项/B77 迁移） | 呈报作者 |
+| 7 | 修订包 | volume 修订流 | structure/修订包 | ①② 之间可选（B69 立项/B77 迁移） | 作者裁决参考 |
+| 8 | 卷末体检 | write 卷复盘 | structure/卷末体检 | 复盘产出后可选（B77 新增） | 呈报作者 |
+| 9 | 完整粗稿 | volume Phase A | reader/完整粗稿（score 必填） | Phase B 打磨环（既有，B77 迁移） | 打磨屏 |
+| 10 | 采风融合产物 | researcher+主线融合 | reader/融合产物 | 融合四步后可选（B77 新增） | 呈报作者 |
+| 11 | 防撞对照 | volume Stage 5 主会话 | reader/防撞对照 | 候选产出后可选复核（B77 升格） | 呈报作者 |
+| 12 | 完结清账 | write final-report | reader/完结清账 | final-report 后可选（B77 新增） | 作者完结宣告前末道读者之眼 |
 
 ---
 
