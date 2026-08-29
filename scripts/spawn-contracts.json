@@ -180,9 +180,10 @@
         "research_needed",
         "summary",
         "recommendation",
+        "related_paths",
         "score"
       ],
-      "notes": "score 仅 full 型；detail-batch/settings/revision 三型不填（B69）",
+      "notes": "score 仅 reader 型（B77 合并：full→reader，对照理想书评打分）；structure 型不填；related_paths=跨产物审查材料清单（structure 型带了必须逐对核对）",
       "callers": [
         {
           "file": "skills/moshu-volume/references/volume-workflow.md",
@@ -196,7 +197,7 @@
         {
           "file": "skills/moshu-write/references/outline-workflow.md",
           "must_contain": "eval_type=detail-batch",
-          "context": "批末细纲评审（B69）",
+          "context": "批末细纲评审（B69 立项；B77b 迁移 structure+related_paths 跨稿核对）",
           "required_params": [
             "eval_type=detail-batch"
           ]
@@ -204,7 +205,7 @@
         {
           "file": "skills/moshu-write/references/outline-workflow.md",
           "must_contain": "eval_type=settings",
-          "context": "设定补全触发（B69）",
+          "context": "设定补全触发（B69 立项；B77b 迁移 structure）",
           "required_params": [
             "eval_type=settings"
           ]
@@ -212,7 +213,7 @@
         {
           "file": "skills/moshu-volume/references/revision-workflow.md",
           "must_contain": "eval_type=revision",
-          "context": "修订评审 ①b（B69）",
+          "context": "修订评审 ①b（B69 立项；B77b 迁移 structure）",
           "required_params": [
             "eval_type=revision"
           ]
