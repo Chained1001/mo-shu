@@ -27,7 +27,6 @@ const IGNORED_DIRECTORIES = new Set([
   ".git",
   ".omc",
   ".omx",
-  ".claude",
   ".agents",
   "node_modules",
   "test-results",

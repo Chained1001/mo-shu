@@ -1,6 +1,6 @@
 ---
 name: moshu-import
-version: 1.1.1
+version: 1.1.2
 description: "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容 moshu-write 后续写作流程；内部复用 moshu-analyze 的拆解管道。触发方式：/moshu-import、「导入小说」「导入书籍」「反向解析」「把我的书导进来」。"
 ---
 # moshu-import：逆向导入已有小说
@@ -11,7 +11,7 @@ description: "逆向导入已有小说。将已写好的小说（半成品或完
 
 ---
 
-> Agent 兼容性：检查专业 agent 是否可用时，检查 `.claude/agents/{agent}.md`；不存在或运行时不暴露 custom agent registry 时必须降级为 solo/direct，报告 `Fallback: project custom agents unavailable -> solo`。Claude Code 兼容面保留 `subagent_type`。
+> Agent 兼容性：检查专业 agent 是否可用——已部署（部署物由 /moshu-setup 按宿主物化）即可 spawn；不可用或运行时不暴露 custom agent registry 时必须降级为 solo/direct，报告 `Fallback: project custom agents unavailable -> solo`。宿主布局差异由 /moshu-setup 适配面处理，本技能不感知；Claude Code 兼容面保留 `subagent_type`。
 >
 > Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 42` 不一致时（标记缺失、字段缺失/非整数、小于或大于 42）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 42）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 42 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 

@@ -70,7 +70,7 @@
 
 | 子类型 | 判定 | 恢复 |
 |---|---|---|
-| 辅助 agent 不可用 | `.claude/agents/{name}.md` 不存在或 spawn 失败 | 由主线程直接执行对应职责（explorer→手动加载；researcher→主线程检索；consistency-checker→参照 quality-checklist 直接检查；narrative-writer→主线程按 anti-ai-writing/banned-words 执行；architect→主线程完成） |
+| 辅助 agent 不可用 | agent 未部署或 spawn 失败 | 由主线程直接执行对应职责（explorer→手动加载；researcher→主线程检索；consistency-checker→参照 quality-checklist 直接检查；narrative-writer→主线程按 anti-ai-writing/banned-words 执行；architect→主线程完成） |
 | explorer 返回不完整 | `context_load` 结果缺项 | 回退到手动加载步骤（workflow-daily Stage 4-D1 手动清单） |
 | 一致性检查 S1/S2 冲突 | 报告含 S1/S2 | 每条当场显式判定并落盘其一：①已修复（改正文/细纲后复核）；②进 `continuity_risks`（跨章风险，下章起持续核对）；③进 `next_chapter_commitments`（下一章必须修）。未判定的冲突不得进入下一章 |
 | 模型产出质量异常 | 检测器 blocking 命中 / 字数不达标 / 退化 | 按对应流程修复：毒句式欠账先清再写下一章（写前 hook 拦截）；字数<90% 按情节点预算找欠账点（`outline_underfilled` 先补纲）；blocking 重写最多 2 次，仍失败报告证据让用户定夺 |

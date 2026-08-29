@@ -149,7 +149,7 @@ v2.4.0（已发 2026-08-28，开源强化 B58-B65 八批+审计 B66+整改 B67+d
 
 ## 2.8 产品边界（明确不做，14 条）
 
-RAG/向量检索、LLM 导演黑盒自治、每章全量快照、自动连写污染传播、知识治理重三件套、数据库后端、Dashboard 常驻服务化、外部 AI 检测器进主链路、git 书仓托管、插件市场改造、PreToolUse 拦截式门禁、npx 安装器改造、多宿主适配、学自己作品文风。
+RAG/向量检索、LLM 导演黑盒自治、每章全量快照、自动连写污染传播、知识治理重三件套、数据库后端、Dashboard 常驻服务化、外部 AI 检测器进主链路、git 书仓托管、插件市场改造、PreToolUse 拦截式门禁、npx 安装器改造、三宿主以上通用多宿主框架（仅 Claude Code+ZCode 两宿主，适配面收敛于 moshu-setup）、学自己作品文风。
 
 ## 2.9 创作主流程四阶走查（产品视角——每一步在做什么）
 
@@ -347,7 +347,7 @@ flowchart TD
 
 ## 3.13 部署与分发
 
-分发：marketplace 11 插件（版本须与 SKILL.md frontmatter 一致）+ npx。部署（deploy.py 一键）：hooks/rules/agents/agent-references 复制→CLAUDE.md 三分支（生成/section 合并/纯自定义 CONFLICT 不覆盖）→settings 按 command 身份合并（剥离受管注册再追加，原子写幂等）→sentinel（6 字段）+重启标记。版本三分支：<35 更新/=35 询问/>35 禁止降级。verify 八项机械验证。**重新部署后必须新开会话**（agent 启动时注册）。版本管理：bump 脚本覆盖全仓 40+ 处（六类文件，以 bump 预览实测为准）+setup 独立轨 6 处，--confirm 带三守卫失败回滚。
+分发：marketplace 11 插件（版本须与 SKILL.md frontmatter 一致）+ npx。部署（deploy.py 一键）：hooks/rules/agents/agent-references 复制→CLAUDE.md 三分支（生成/section 合并/纯自定义 CONFLICT 不覆盖）→settings 按 command 身份合并（剥离受管注册再追加，原子写幂等）→sentinel（6 字段）+重启标记。版本三分支：<35 更新/=35 询问/>35 禁止降级。verify 八项机械验证。**重新部署后必须新开会话**（agent 启动时注册）。版本管理：bump 脚本覆盖全仓 40+ 处（六类文件，以 bump 预览实测为准）+setup 独立轨 6 处，--confirm 带三守卫失败回滚。宿主适配面：deploy.py 物化器按宿主 profile 产出部署物（现仅 Claude Code profile；ZCode profile 排实测门后 B82）——运行时流程零宿主字眼（check-host-neutrality 守卫）。
 
 
 ### 版本地图（四层版本体系——回答新手必问的"为什么这么多版本号"）

@@ -67,7 +67,7 @@
 在进入 Stage 2 之前，先检测项目是否已部署 moshu-setup 基础设施：
 
 - 先读取 `.story-deployed` 并执行顶部 Spawn 版本门禁（版本不匹配只提示、不阻断，照常按文件存在性检查）；旧版 `moshu-chapter-extractor` 文件即使仍在磁盘上也不可复用。
-- 随后按 `.claude/agents/moshu-chapter-extractor.md` 是否存在决定 Stage 2 长篇并行 agent 的并行/串行。
+- 随后按 moshu-chapter-extractor agent 是否已部署（部署判定见 /moshu-setup）决定 Stage 2 长篇并行 agent 的并行/串行。
 
 **部署标记缺失、版本无效/过期，或当前端的 agent 不可用时**，提示用户：
 
@@ -418,7 +418,7 @@ Stage 2 出口判据（三条都满足才算完成拆解管道）：
 ### Stage 4-3：项目激活
 
 - 设置 `.active-book` 指向导入的书名/标题目录
-- 可选验证：如果项目已部署 moshu-explorer agent（检查 `.claude/agents/moshu-explorer.md` 是否存在），可 spawn `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：progress\n查询参数：导入验证")` 交叉验证迁移数据完整性
+- 可选验证：如果项目已部署 moshu-explorer agent（部署判定见 /moshu-setup），可 spawn `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：progress\n查询参数：导入验证")` 交叉验证迁移数据完整性
 
 > setup 环境检测已在 Stage 1「环境检测前置」完成，此处不再重复检测。
 

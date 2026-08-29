@@ -91,7 +91,7 @@
       "description": "长篇网文拆文。深度拆解爆款长篇小说的黄金三章、人设架构、爽点设计、节奏控制。",
       "source": "./",
       "strict": false,
-      "version": "1.1.1",
+      "version": "1.1.2",
       "category": "novel-analysis",
       "keywords": [
         "long-novel",
@@ -110,7 +110,7 @@
       "description": "长篇网文写作。从大纲到正文，辅助长篇网络小说的创作，包括世界观、人物、情节线管理。",
       "source": "./",
       "strict": false,
-      "version": "1.7.0",
+      "version": "1.7.1",
       "category": "novel-writing",
       "keywords": [
         "long-novel",
@@ -190,7 +190,7 @@
       "description": "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；agents 缺失、异常、过旧或启动失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。内置番茄/起点两平台评分标准。",
       "source": "./",
       "strict": false,
-      "version": "1.2.1",
+      "version": "1.2.2",
       "category": "novel-quality",
       "keywords": [
         "review",
@@ -212,7 +212,7 @@
       "description": "逆向导入已有小说。将已写好的小说（半成品或完本）反向解析为标准项目目录结构，兼容后续写作流程。",
       "source": "./",
       "strict": false,
-      "version": "1.1.1",
+      "version": "1.1.2",
       "category": "novel-import",
       "keywords": [
         "import",

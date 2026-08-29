@@ -274,7 +274,7 @@ Agent(
 
 以下任一情况，Stage 2-3 自动退回串行模式，由主线程逐章处理（质量不受影响，只是改为串行、速度略慢）。**两条路径的要求是同一份**：串行时概要写法、情节点白描、原文引用精选规则和输出自检都按 [output-templates.md](output-templates.md)「Stage 2-3 章节摘要+情节点」执行；上面的机械硬检查串行同样要跑。串行没有 sonnet 升级重试这条路——硬检查命中时由主线程按失败项重写本章摘要 1 次，仍不过按 `⚠️ 跳过` 记入 `_progress.md` 「失败记录」表。
 
-- **agent 未部署**：`.claude/agents/moshu-chapter-extractor.md` 不存在。`.claude/agents/` 通常不随仓库提交，应重新运行 `/moshu-setup` 完成部署，不跨 Skill 读取模板源。
+- **agent 未部署**：moshu-chapter-extractor 未部署（部署物由 /moshu-setup 按宿主物化）。未部署时重新运行 `/moshu-setup` 完成部署，不跨 Skill 读取模板源。
 - **环境不支持 spawn 子代理**：本 skill 正运行在某个子代理上下文中，无法再起下一层 agent。
 
 ### Stage 2-3 收尾：合并章节摘要（_章节摘要汇总.md）

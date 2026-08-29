@@ -21,10 +21,10 @@ Rubric Source: file | embedded fallback
 ### 参考资料解析顺序
 
 可读取参考文件时，按以下顺序尝试，第一个命中即用：
-1. `{项目根}/.claude/skills/{规范路径}`（Claude Code 项目内安装）
+1. 宿主技能安装目录内的 {skill}/references/（宿主布局映射归 /moshu-setup 适配面；未命中走第 2 层仓库相对路径）
 2. 当前运行时加载本 skill 的目录，或其可访问的全局 skill 搜索路径中同名 `{skill-name}/...` 目录
 
-> 第 1 层不存在是正常的（本仓库开发环境或未部署的项目），不是部署损坏。skill 以插件/`npx skills add` 安装后整包位于项目 `.claude/skills/{skill}/`（`/moshu-setup` 只额外部署它自己的 agent 参考资料供 agent 使用，不部署其他 skill 的 references）；本仓库开发环境通常命中第 2 层。
+> 第 1 层不存在是正常的（本仓库开发环境或未部署的项目），不是部署损坏。skill 以插件安装后整包位于宿主技能安装目录（宿主布局映射归 /moshu-setup 适配面；`/moshu-setup` 只额外部署它自己的 agent 参考资料供 agent 使用，不部署其他 skill 的 references）；本仓库开发环境通常命中第 2 层。
 
 规范路径如下；禁止只写裸文件名，禁止跨 skill 误读其他 skill 的 references：
 
@@ -140,7 +140,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
    - 这三个预检脚本只读；`moshu-review` **不修改正文、设定或大纲文件**，需要自动修复正文时建议转 `/moshu-deslop`。full / lean 模式只有下方「追踪文件维护」允许修改 `追踪/`；分批审查的所有模式都可按上方契约写 **.moshu-review/state.md**，solo 除该状态外不写项目内容。
    - 默认 `--quote-mode keep`，不把古言/日式的 `「」` 当作问题；只有项目明确指定引号风格时才检查对应转换建议。
 
-**moshu-explorer 预查询（可选）**。仅当 `Effective Mode` 仍为 `full`/`lean`、当前允许 spawn 且 Agent/Task 工具可用时，才可检查 `.claude/agents/moshu-explorer.md` 是否存在并 spawn `moshu-explorer` 预查设定摘要；`solo` 或子代理递归保护场景下不得 spawn，只能直接 Read/Grep。Prompt 示例：
+**moshu-explorer 预查询（可选）**。仅当 `Effective Mode` 仍为 `full`/`lean`、当前允许 spawn 且 Agent/Task 工具可用时，才可检查 moshu-explorer 是否已部署（部署判定见 /moshu-setup）并 spawn `moshu-explorer` 预查设定摘要；`solo` 或子代理递归保护场景下不得 spawn，只能直接 Read/Grep。Prompt 示例：
 
 ```text
 项目目录：{dir}
@@ -323,7 +323,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 
 1. 收集实际执行的 reviewer VERDICT 和 FINDINGS。
 2. 合并去重：按 `severity` 排序（S1 > S2 > S3 > S4），同级内按影响范围排序。
-3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 `.claude/agents/moshu-researcher.md` 已部署时，才可额外 spawn `moshu-researcher` 搜索验证；`solo`、missing/malformed/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
+3. **可选事实核查**：如果审查内容涉及需要验证的外部事实（历史年代、地理方位、职业细节等），只有在 `Effective Mode` 仍为 `full`/`lean`、当前不是子 Agent、Agent/Task 工具可用且 moshu-researcher 已部署时，才可额外 spawn `moshu-researcher` 搜索验证；`solo`、missing/malformed/spawn failed 降级或子代理递归保护场景下不得 spawn，只能在报告中标记“需人工事实核查”。
 4. **分歧呈现（B60 结构化）**：reviewer 间冲突意见写入工单 `decision_points`（[{a, b, question}]，a/b 为冲突 findings 的数组索引）——write 时可选携带，list 输出单列「编辑决策点」节；resolve 对应 finding 时 status_note 必须以「作者裁决：」开头（引用作者裁决，不自动妥协）。
 5. 输出综合审查报告。报告必须列出实际模式、fallback 原因、使用的 rubric、Rubric Source、审查范围和证据不足项。
 6. **作者裁决点（必须输出）**：报告末尾列出作者三项裁决——**全部接受 / 修改后接受 / 打回重写**（打回需指明从哪章重写）。用户未当场裁决前不得把审查发现视作已处理；裁决结果同步进 `.moshu-review/review-log`（写作建议）与追踪事务（S1/S2）。

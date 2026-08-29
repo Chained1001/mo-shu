@@ -38,7 +38,7 @@
 
 ## Agent 调用（moshu-architect / moshu-character-designer）（agent/技能选型判据见 AGENTS.md §5「Agent 使用判据」）
 
-- **moshu-architect（Stage 1 题材定位）**：轻量题材定位优先由主会话完成；只有涉及复杂世界观、多线结构、强反转工程或用户明确要求时，才调用。已部署时（检查 `.claude/agents/moshu-architect.md` 是否存在）可 spawn `Agent(subagent_type: "moshu-architect", prompt: "项目目录：{dir}\n任务类型：题材定位\n查询参数：{用户选择的方向+对标信息}")`。如 agent 不可用，由主线程直接执行。
+- **moshu-architect（Stage 1 题材定位）**：轻量题材定位优先由主会话完成；只有涉及复杂世界观、多线结构、强反转工程或用户明确要求时，才调用。已部署时（部署判定见 /moshu-setup）可 spawn `Agent(subagent_type: "moshu-architect", prompt: "项目目录：{dir}\n任务类型：题材定位\n查询参数：{用户选择的方向+对标信息}")`。如 agent 不可用，由主线程直接执行。
 - **moshu-architect + moshu-character-designer（Stage 2-3 骨架与人物）**：结构复杂/反转链多/角色关系密时辅助骨架与角色设定（任务类型：核心设定/角色设定）。spawn prompt 必须原样附带「moshu-architect 契约摘要」。
 - **moshu-architect（Stage 4-6 卷级）**：只有结构复杂、反转链多或主会话方案不稳时，才调用辅助卷级结构（卷级大纲、钩子/反转/情绪弧线设计）。**首批细纲的产出不在本工作流**（归 write，B1b）。
 

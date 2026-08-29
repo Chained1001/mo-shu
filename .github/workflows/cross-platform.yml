@@ -50,6 +50,10 @@ jobs:
         run: python3 scripts/test-capability-wiring.py
       - name: Check spawn contracts
         run: bash scripts/check-spawn-contracts.sh
+      - name: Check host neutrality
+        run: bash scripts/check-host-neutrality.sh
+      - name: Host-neutrality regression
+        run: bash scripts/test-host-neutrality.sh
       - name: Check reference closure (asset universe)
         run: bash scripts/check-reference-closure.sh
       - name: Reference-closure regression

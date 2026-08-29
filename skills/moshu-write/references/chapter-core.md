@@ -12,7 +12,7 @@
 
 ### A2 读取上下文
 
-（按需选择；缺失时遵循下方「写前准备契约」的「缺失文件处理」，仅明确标为可选的非主产物跳过。**快捷路径（已部署则优先，节省主会话上下文）**：如果项目已部署 moshu-explorer agent（检查 `.claude/agents/moshu-explorer.md` 是否存在），spawn `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={check 的值}，state_revision={check 的值}")` 一次获取上下文，返回不完整时回退到下方手动加载）：
+（按需选择；缺失时遵循下方「写前准备契约」的「缺失文件处理」，仅明确标为可选的非主产物跳过。**快捷路径（已部署则优先，节省主会话上下文）**：如果项目已部署 moshu-explorer agent（部署判定见 /moshu-setup），spawn `Agent(subagent_type: "moshu-explorer", prompt: "项目目录：{dir}\n查询类型：context_load\n查询参数：准备写第 {N} 章\n追踪状态：last_committed_chapter={check 的值}，state_revision={check 的值}")` 一次获取上下文，返回不完整时回退到下方手动加载）：
 
 - (1) `正文/第{N-1}章_*.md` — 上一章正文
 - (2) `大纲/细纲_第{N}章.md` — 本章细纲（含钩子设计）
@@ -56,7 +56,7 @@
 
     同时读情节点功能标签：标签含「反转」→ 追加 ⑤不可靠叙述；标签含「爽点」→ 追加 ③（可能重复激活，不重复加载）。章节定位留空按「普通推进」处理（细纲规则已有此默认）。预载的卡内容生成 `scene_writing_refs`（短摘要），传入 B 段 spawn prompt。
   - **快捷路径**：项目已部署 moshu-explorer agent 时，可一次性召回文风/模块材料。
-    - 检查 `.claude/agents/moshu-explorer.md` 是否存在。
+    - 检查 moshu-explorer 是否已部署（部署判定见 /moshu-setup）。
     - 查询类型：`benchmark_style_load`；传入项目目录、章节号、目标基调/字数和爽点类型。
     - 需要返回：`style_profile_path`、`style_profile_summary`、`selected_emotion_module`、`rhythm_reference`、来源路径、匹配章节、锚点片段、`gaps`。
     - `gaps.missing_primary_contract` 为 true 时先按 `repair_action` 修复，不进入正文生成。
@@ -73,7 +73,7 @@
 
 ### A4 资料研究（按需）
 
-如果写作中遇到需要查证的外部事实（历史年代、地理方位、职业细节等），如果项目已部署 moshu-researcher agent（检查 `.claude/agents/moshu-researcher.md` 是否存在），spawn `moshu-researcher` agent 搜索并输出到 `参考资料/` 目录。如 agent 不可用，由主线程直接执行。研究完成后再继续写作。
+如果写作中遇到需要查证的外部事实（历史年代、地理方位、职业细节等），如果项目已部署 moshu-researcher agent（部署判定见 /moshu-setup），spawn `moshu-researcher` agent 搜索并输出到 `参考资料/` 目录。如 agent 不可用，由主线程直接执行。研究完成后再继续写作。
 
 ## B 段：正文执行（三遍法——快写/读者重读/技艺打磨）
 
@@ -112,7 +112,7 @@
 6. 字数不够 → 继续推进情节（不注水）；字数超了 → 先不停（第 3 遍精确控制）。
 7. **卡文阻塞协议（B63）**：同一情节点尝试 3 种写法仍不满意 → 显式标记**阻塞**停笔，向作者上报：三版要点对比 + 卡点分析（卡在哪：情绪不到/逻辑不通/节奏不对/素材不够）+ 三选项（换写法 / 改细纲 / 先写下一章回头再攻）。**不得自作主张跳过、注水或降标准续写**——阻塞不是失败，硬写才是。
 
-**执行方式**：先检查 moshu-narrative-writer agent（`.claude/agents/moshu-narrative-writer.md`）。如可用，spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: ...)`，prompt 只传**本章增量数据**（≤12 项）。**流程规则（三遍法/细纲优先边界/格式约束/场景路由/语声对照/一进一出判据）由 agent 模板承接（B75a），不在 prompt 重复传递——本 prompt 只传本章增量数据**：
+**执行方式**：先检查 moshu-narrative-writer agent 是否已部署（部署判定见 /moshu-setup）。如可用，spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: ...)`，prompt 只传**本章增量数据**（≤12 项）。**流程规则（三遍法/细纲优先边界/格式约束/场景路由/语声对照/一进一出判据）由 agent 模板承接（B75a），不在 prompt 重复传递——本 prompt 只传本章增量数据**：
 
 1. 项目目录+章节号+细纲文件路径+上一章结尾段+输出路径（基础 5 项）
 2. `selected_emotion_module`+`rhythm_reference`+来源路径
@@ -210,13 +210,13 @@ advisory 只提示可疑处，先看脚本给出的例外；故事内系统/界�
 
 ### D2 Agent 调用：moshu-consistency-checker
 
-质量检查阶段，如果项目已部署 moshu-consistency-checker agent（检查 `.claude/agents/moshu-consistency-checker.md` 是否存在），spawn `Agent(subagent_type: "moshu-consistency-checker", prompt: "项目目录：{dir}\n检查范围：{本次写作的章节}\n检查类型：事实冲突+伏笔断线+角色属性不一致")` 执行一致性检查，获取 S1-S4 分级报告。如 agent 不可用，由主线程参照 quality-checklist.md 直接检查。
+质量检查阶段，如果项目已部署 moshu-consistency-checker agent（部署判定见 /moshu-setup），spawn `Agent(subagent_type: "moshu-consistency-checker", prompt: "项目目录：{dir}\n检查范围：{本次写作的章节}\n检查类型：事实冲突+伏笔断线+角色属性不一致")` 执行一致性检查，获取 S1-S4 分级报告。如 agent 不可用，由主线程参照 quality-checklist.md 直接检查。
 
 **S1/S2 必须显式过桥**：报告中的每条 S1/S2 冲突必须当场显式判定并落盘其一——①已修复（改正文/细纲后复核该冲突不再成立，必要时重跑检查确认）；②进 `continuity_risks`（跨章风险，下章起持续核对）；③进 `next_chapter_commitments`（下一章必须修）。未判定的冲突不得进入下一章；S3/S4 按需记录，不强制。
 
 ### D3 Agent 调用：moshu-narrative-writer（去AI味审查）
 
-质量检查阶段，如果项目已部署 moshu-narrative-writer agent（检查 `.claude/agents/moshu-narrative-writer.md` 是否存在），可 spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: "项目目录：{dir}\n任务描述：审查+去AI味\n检查范围：{本次写作的章节}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/必要信息的直接删，会丢才润色（删除受比例上限与字数下限约束，跌破下限改降AI重写）\n检查项按你自己的 7 Gate、禁止事项与写完后对话自检全量执行，其中否定翻转句式和台词里的工整否定清单不因脚本豁免台词而跳过")` 执行文字质量审查和去AI味检查。如 agent 不可用，由主线程直接执行，检查项对照 `references/anti-ai-writing.md` 与 `references/banned-words.md`。
+质量检查阶段，如果项目已部署 moshu-narrative-writer agent（部署判定见 /moshu-setup），可 spawn `Agent(subagent_type: "moshu-narrative-writer", prompt: "项目目录：{dir}\n任务描述：审查+去AI味\n检查范围：{本次写作的章节}\n删除优先：每条 AI 味项先判能否删除——删后不丢伏笔/钩子/角色/情节/必要信息的直接删，会丢才润色（删除受比例上限与字数下限约束，跌破下限改降AI重写）\n检查项按你自己的 7 Gate、禁止事项与写完后对话自检全量执行，其中否定翻转句式和台词里的工整否定清单不因脚本豁免台词而跳过")` 执行文字质量审查和去AI味检查。如 agent 不可用，由主线程直接执行，检查项对照 `references/anti-ai-writing.md` 与 `references/banned-words.md`。
 
 检查后若正文修订改变了连续性事实，必须构造 `mode=revision` 的同章追踪事务并执行 `scripts/tracking_commit.py commit`：
 - 伏笔变化用 `foreshadow_changes` 更新同一 ID 的当前行，不追加重复历史；

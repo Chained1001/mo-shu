@@ -68,13 +68,13 @@
     },
     {
       "path": "skills/moshu-deslop/SKILL.md",
-      "budget": 3300,
-      "why": "触发 /moshu-deslop 时入口全量进上下文（P-A 骨架化后约 3.3K 去空白；防膨胀，流程在 references/deslop-workflow.md）。B59 锁定：增长须先压缩或下沉"
+      "budget": 3470,
+      "why": "触发 /moshu-deslop 时入口全量进上下文（P-A 骨架化后约 3.3K 去空白；防膨胀，流程在 references/deslop-workflow.md）。B59 锁定：增长须先压缩或下沉。B76.6 P2 兼容性头注统一句（宿主路径探测→部署语义，+29），实测 3307，3300→3470（×1.05）"
     },
     {
       "path": "skills/moshu-analyze/SKILL.md",
-      "budget": 2422,
-      "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）。→2422：B1b 路由残留第 4 例修复（流程衔接表 1 行拆 2 行：准备开书→moshu-build / 已有书续写→moshu-write，路由正确性值得每次会话付，预算=实测 2307×1.05 取整）。B59 锁定：增长须先压缩或下沉"
+      "budget": 2540,
+      "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）。→2422：B1b 路由残留第 4 例修复（流程衔接表 1 行拆 2 行：准备开书→moshu-build / 已有书续写→moshu-write，路由正确性值得每次会话付，预算=实测 2307×1.05 取整）。B59 锁定：增长须先压缩或下沉。B76.6 P2 兼容性头注统一句（+29），实测 2451，2422→2540（×1.05）"
     },
     {
       "path": "skills/moshu/SKILL.md",

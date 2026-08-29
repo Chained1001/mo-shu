@@ -1,6 +1,6 @@
 ---
 name: moshu-review
-version: 1.2.1
+version: 1.2.2
 description: "多视角对抗式审查。full/lean 模式在已部署 reviewer agents 时并行 spawn；缺失/异常 agents 或 spawn 失败时自动降级 solo，参考文件不可读时使用内置 rubric fallback。触发方式：/moshu-review、/审查、「审查一下」「帮我审一下」。"
 ---
 # moshu-review：多视角对抗式审查
@@ -28,7 +28,7 @@ description: "多视角对抗式审查。full/lean 模式在已部署 reviewer a
 
 1. **确定请求模式**：解析用户输入中的 `full`、`lean`、`solo`；未指定时目标模式为 `full`。
 2. **确认是否允许 spawn**：如果当前已经在子代理/Agent 内执行，不再递归 spawn，直接降级为 `solo`，报告开头写明 `Fallback: subagent recursion guard -> solo`。
-3. **检查核心 Agent 部署状态**（检查项目内 `.claude/agents/`）：
+3. **检查核心 Agent 部署状态**（已部署判定见 /moshu-setup）：
    - full 必需：`moshu-architect.md`、`moshu-character-designer.md`、`moshu-narrative-writer.md`、`moshu-consistency-checker.md`
    - lean 必需：`moshu-architect.md`、`moshu-consistency-checker.md`
    - 对每个必需 Agent 文件：读取 frontmatter，确认 `name:` 与 subagent_type 完全一致；frontmatter 缺失、不可解析或 name 不匹配时视为 malformed agent。
