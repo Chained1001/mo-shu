@@ -42,6 +42,9 @@ def compute_deployment_fingerprint(root: Path) -> str:
     检出为 CRLF——按原始字节聚合会让登记值绑定本机工作区形态，CI Linux（LF 检出）算出不同
     指纹、推送后必红（2026-08-25 审核 F1 实证：登记值=CRLF 字节，git archive 的 LF 树不同）。
     归一化后两侧收敛，不再依赖工作区行尾形态。
+    B76 推送 CI 首红（2026-08-29）真实根因非行尾：B75a 登记指纹后 B76d 修改部署面文件
+    （DEPLOYMENT_PATHS 含 templates/）未重登记——登记过期；76d 验收清单遗漏本守卫致本地未拦。
+    归一化职责保持：防未来 CRLF 工作区形态干扰（2026-08-25 F1 确立；B76.5 审计勘误在档）。
 
     排序显式 posix key：pathlib 的 Path 默认排序在 Python 3.13+ 改为按 parts 比较
     （3.12 按字符串），且 Windows str(Path) 用反斜杠——默认排序跨版本/跨平台不一致，

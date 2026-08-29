@@ -118,7 +118,7 @@
 | 模板两级装配 | narrative-writer 每章 spawn | 稳定规则由 agent 模板承接（部署一次），spawn prompt 只传本章增量数据（9 组 ≤12 项）——payload −21%、attention 释放给创作 | chapter-core spawn 段+narrative-writer「流程规则承接」节（B75） |
 | 统一创作流程模板+技能拆分 | 全创作技能 | 五步骨架（PREPARE→DRAFT→REVIEW→POLISH→COMMIT）FULL/LIGHT 两档入宪；build 拆 outline（故事架构）+volume（卷规划），12 技能世代 | 宪法 §9 第 7 条+双 SKILL（B76） |
 
-技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **41**（B69 三型扩展 bump 至 40，B75a 模板承接 bump 至 41）、候选机检永不拦截原则全程保持；agents_version 实管部署物全量，散布 40+ 处由 bump 脚本唯一合法修改。
+技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **42**（B69 三型扩展 bump 至 40，B75a 模板承接 bump 至 41，B76.5 整改补 bump 至 42——B76 模板称谓变更漏 bump 的登记过期教训）、候选机检永不拦截原则全程保持；agents_version 实管部署物全量，散布 40+ 处由 bump 脚本唯一合法修改。
 
 ### 2.3.2 规划中能力（B77-B81，规格在库待施工）
 
@@ -144,7 +144,7 @@
 
 ## 2.7 版本路线
 
-v2.5.0（待发，二期 B68-B81+审计 B72+整改 B73）：章纲生成强化（场景表/一进一出/浮现/拆并章/pace_meter）/完结态（FINALIZE/final-report/完结章）/evaluator 三型扩展/题材库系统集成/spawn 契约单一真源（B74）/模板两级装配（B75）/build 拆分 outline+volume 与统一创作流程模板入宪（B76）/审查补全六型（B77 规划）/方法论萃取两层（B78 情节骨架+B80 正文手艺，规划）/先想清再动笔（B79 规划）/采风融合智能体（B81 规划）；agents_version 41；审计法 v2.0 产品双基线+六查协议；docs 瘦身 78→26。
+v2.5.0（待发，二期 B68-B81+审计 B72+整改 B73）：章纲生成强化（场景表/一进一出/浮现/拆并章/pace_meter）/完结态（FINALIZE/final-report/完结章）/evaluator 三型扩展/题材库系统集成/spawn 契约单一真源（B74）/模板两级装配（B75）/build 拆分 outline+volume 与统一创作流程模板入宪（B76）/审查补全六型（B77 规划）/方法论萃取两层（B78 情节骨架+B80 正文手艺，规划）/先想清再动笔（B79 规划）/采风融合智能体（B81 规划）；agents_version 42；审计法 v2.0 产品双基线+六查+第七查协议；docs 瘦身 78→26。
 v2.4.0（已发 2026-08-28，开源强化 B58-B65 八批+审计 B66+整改 B67+docs 瘦身）：写作上下文按需注入（点名清单+预算闸）、伏笔剧透锁、角色语声锚与双向称谓、对话 DNA 全链、外科式修订护栏与编辑决策点、设定指纹影响面、数值 progression 域与长度候选、卡文阻塞协议、对标防撞对照（登记免责）；追踪 schema 8、agents_version 40、宪法 §3.4 涟漪面纪律。v2.5 方向：实测驱动打磨（test2-5）、审计-开源强化-v1 整改、本地守卫矩阵与 CI 对齐、路由表语义守卫、rename 工具、tracking_commit 拆分。
 
 ## 2.8 产品边界（明确不做，14 条）

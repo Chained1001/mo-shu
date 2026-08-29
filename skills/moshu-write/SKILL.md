@@ -13,7 +13,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 
 > 运行环境兼容性：Claude Code 是内置适配目标；能读取项目文件的环境，可按本 skill 执行长篇流程。检查专业 agent 时按 `.claude/agents/{agent}.md` 查找；找不到或运行时不暴露 custom agent 时，直接 solo/direct 执行并报告 fallback。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 41` 不一致时（标记缺失、字段缺失/非整数、小于或大于 41）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 41）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 41 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 42` 不一致时（标记缺失、字段缺失/非整数、小于或大于 42）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 42）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 42 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 ## 核心方法
 
