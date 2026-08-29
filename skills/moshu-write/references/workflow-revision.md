@@ -84,6 +84,10 @@
 2. **逐条处置**：fixed / dismissed 均需一句证据（`status_note`）：`review_tickets.py resolve --project {项目根} --ticket <文件> --id T001 --status fixed|dismissed --note "<证据一句>"`（脚本归属同前条：moshu-review 侧单副本）。**不得绕过 resolve 手工编辑工单 JSON**——status 只允许 open→fixed/dismissed 单向流转。
 3. **复审**：全部 open 项处置后重跑 review（`/moshu-review`），只验证工单内 open→fixed 项是否真的修好；复审通过后本轮工单闭环。
 
+### 重听批评（Burroway Ch.9 :6929-6935，处置工单时）
+
+处置审查工单时**听诊断不听建议**：工单里「哪里读不下去/哪里不信/哪里逻辑断」是诊断（真信息，逐条核实改）；工单给出的「怎么改」是解决方案——「一旦薄弱环节被指出，作者几乎总能想出比读者建议好的解决办法」，拿到诊断后自己设计修改。**一遍集中修一个维度**（结构→场景→对话→文字），多维并改无法判断哪刀起了作用。
+
 ---
 
 ## Stage 4-R5：质量检查

@@ -638,6 +638,13 @@
       "targets": [
         "skills/moshu-volume/references/plot-troubleshooting.md"
       ]
+    },
+    {
+      "name": "literary-techniques-reference",
+      "source": "skills/moshu-write/references/literary-techniques.md",
+      "targets": [
+        "skills/moshu-setup/references/agent-references/literary-techniques.md"
+      ]
     }
   ]
 }
