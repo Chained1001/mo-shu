@@ -1,10 +1,10 @@
 # workflow-outline.md：开书故事层流程（Stage 1-3——moshu-outline）
 
-> **来源声明（B76 v1.2）**：本文件自 volume-workflow.md（原 workflow-build）的 Phase A Stage 1-3 段拆出归 moshu-outline；单元构建→整合检验→定稿与 Phase B 在 moshu-volume 侧。按统一创作流程模板 FULL 模式组织（AGENTS §9 第 7 条）。
+> **来源声明（B76 v1.2）**：本文件自 volume-workflow.md（原 workflow-build）的 Phase A Stage 1-3 段拆出归 moshu-outline；定稿与 Phase B 在 moshu-volume 侧。按统一创作流程模板 FULL 模式（AGENTS §9 第 7 条）。
 >
 > **参考偏好 ≠ 对标**：参考学神韵（基调/主角/风格），对标仿结构（拆文产物 fail-fast 校准）——可共存。
 >
-> **虚拟对标**：无对标路线的设计约束参照——Stage 1 采风多源产物合成三类设计目标，落盘 `设定/虚拟对标.md`；outline 设计时参照、volume Phase B 打磨时评审锚点。有对标时跳过合成。
+> **虚拟对标**：无对标路线的约束参照——Stage 1 采风多源产物合成三类设计目标，落盘 `设定/虚拟对标.md`；outline 参照、volume Phase B 评审锚点。有对标时跳过。
 >
 > **消费侧只读**：本工作流读 `追踪/`（last_committed_chapter 等）作输入，不写任何追踪文件。
 
@@ -18,14 +18,14 @@
 
 ## 创作进度（入口规则）
 
-开书入口第一步先读 `设定/创作进度.md`：存在 → 读它并汇报「本书{构建态}…」；不存在 → **四轮式开场答完即创建最小创作进度**（构建态＝Phase A 进行中）。模板与六态状态机见 moshu-volume 技能的 progress-template（进度模板归 volume）。
+开书入口先读 `设定/创作进度.md`：存在 → 读它并汇报「本书{构建态}…」；不存在 → **四轮式开场答完即创建最小创作进度**（构建态＝Phase A 进行中）。模板见 moshu-volume progress-template。
 
 ## 方法论索引（outline 在册，经 outline-methods 路由表按需加载）
 
 > **按节精读纪律**：引用带「节名」锚点时先 grep/offset 定位该节、只读所需节——不整文件读入。
 
 - [idea-seed.md](idea-seed.md)（理想书评萃取/灵感种子收敛）
-- [core-setting-template.md](core-setting-template.md)（核心设定表七段模板）
+- [core-setting-template.md](core-setting-template.md)（核心设定表七段模板）；金手指字段必读 [golden-finger-design.md](golden-finger-design.md)
 - [ideal-review-template.md](ideal-review-template.md)（理想书评三维度量化目标）
 - [genre-catalog.md](genre-catalog.md)（题材框架路由）
 - [genre-core-mechanics.md](genre-core-mechanics.md)（核心梗解析/微创新）
@@ -51,16 +51,16 @@
 
 ## Stage 1·信息采集（四轮式开场——作者意图输入口，保留全部交互）
 
-> **方法论书指引**（先读后操作）：**《小说的骨架》第 2 章（理想书评）**——理想评论家口吻的成品书评，作目标态锚；操作已萃取进 [idea-seed.md](idea-seed.md)「理想书评」节，直接用，不另读原文。
+> **方法论书指引**：**《小说的骨架》第 2 章（理想书评）**——理想评论家口吻成品书评作目标态锚；操作已萃取进 [idea-seed.md](idea-seed.md)「理想书评」节，直接用。
 
 **故事面**（所有书都做）——四轮开场（定调→定形→理想书评→定流程），按回答落地：
 
-1. **先查选题决策**：项目根存在 `选题决策.md`（moshu-scan Stage 5 产出）则读取——取最前推荐选题为开书起点向用户确认；`扫榜日期` 久则提示"市场数据可能过期，建议复扫"；「能爆的原因」标 `待拆文验证` 时提示可选先 `/moshu-analyze` 验证或直接开书（不拦）。缺失时自动找（项目根起向下 3 层按名搜，mtime 取最新 2 份，AskUserQuestion 列候选）——见「四轮式开场」轮 1。
-2. **模糊灵感**（画面/脑洞/感觉，说不清题材卖点）：先做**灵感种子收敛**（[idea-seed.md](idea-seed.md)，产物落 `{项目根}/灵感种子.md`），Logline 作后续方向与设定的一致性尺度。
-3. **定形（轮 2）**：AskUserQuestion 批问 体量三数＋目标平台＋终局口径＋【B53 新增】情绪基调＋更新频率＋禁区雷点（可选跳过）；不确定按 200 万字/5 卷规划。所有答案落盘核心设定表对应字段（读者偏好段）。
-4. **理想书评（轮 3，结构化）**：按 [ideal-review-template.md](ideal-review-template.md) 写"理想书评"——三维度量化目标（① 结构评分 1-10｜② 节奏：期待密度/释放频率｜③ 情绪：核心情绪+首卷读完感受），是 Phase B evaluator 打分锚点。落盘 `设定/理想书评.md`。
-5. **核心设定落盘（轮 4 后）**：按 [core-setting-template.md](core-setting-template.md) 模板产出，**成稿先展示作者过目（可打断调整）**，确认后创建 `设定/题材定位.md`（题材核心梗三分法+对标分析[genre-core-mechanics]；含**终局底牌与升级台阶**）、`设定/关系.md`（角色关系映射[character-relations]）、`设定/题材正文提示卡.md`（题材边界/核心逻辑/读者期待/核心爽点[genre-prose-cards]）。
-6. **方法论声明（轮 4 收尾）**：创作进度创建后补全「方法论声明」节——仅档位一行（轮 4 答案）；三域规划深度**不再逐项问**——默认档位表（见下）作流程内参考，作者口头可调（"卷纲再细一点"即改）。
+1. **先查选题决策**：项目根存在 `选题决策.md`（moshu-scan Stage 5 产出）则读取——取最前推荐选题为开书起点向用户确认；`扫榜日期` 久则提示"市场数据可能过期，建议复扫"；「能爆的原因」标 `待拆文验证` 时提示可选先 `/moshu-analyze` 或直接开书（不拦）。缺失时自动找（项目根起向下 3 层按名搜，取最新 2 份列候选）——见轮 1。
+2. **模糊灵感**（画面/脑洞/感觉，说不清题材卖点）：先做**灵感种子收敛**（[idea-seed.md](idea-seed.md)，落 `灵感种子.md`），Logline 作后续一致性尺度。
+3. **定形（轮 2）**：AskUserQuestion 批问 体量三数＋目标平台＋终局口径＋情绪基调＋更新频率＋禁区雷点（可选跳过）；不确定按 200 万字/5 卷。答案落盘核心设定表（读者偏好段）。
+4. **理想书评（轮 3，结构化）**：按 [ideal-review-template.md](ideal-review-template.md) 写理想书评——三维度目标（① 结构 1-10｜② 节奏：期待密度/释放频率｜③ 情绪：核心情绪+首卷感受），是 Phase B evaluator 锚点。落盘 `设定/理想书评.md`。
+5. **核心设定落盘（轮 4 后）**：按 [core-setting-template.md](core-setting-template.md) 产出，**成稿先展示作者过目**，确认后创建 `设定/题材定位.md`（核心梗三分法+对标分析[genre-core-mechanics]；含**终局底牌与升级台阶**）、`设定/关系.md`（关系映射[character-relations]）、`设定/题材正文提示卡.md`（边界/逻辑/期待/爽点[genre-prose-cards]）。
+6. **方法论声明（轮 4 收尾）**：创作进度创建后补全「方法论声明」节——仅档位一行（轮 4 答案）；三域深度**不再逐项问**——默认档位表（见下）作参考，作者口头可调（"卷纲再细一点"即改）。
 
 > **默认档位表**：
 
@@ -182,7 +182,7 @@
 
 ## Stage 3·人物构建（自动）
 
-> 方法论照常加载：moshu-outline 侧 [character-design-methods.md](character-design-methods.md) 苏式问句 / 升级绑弧光 / 人物主题卡；感情线结构模板。**虚拟对标情绪基准参照**（无对标时）。角色采风按需（产物命名与融合规程见 moshu-volume 侧 caifeng-methods.md）。角色卡含「对话 DNA」五要素（口头禅功能位/句长习惯/语气词与标点/回避话题/情绪外显）——有主对标时从拆文库角色卡带入作派（学结构不抄血肉），无对标留占位待填；write 侧语声锚消费此作派（B59）。
+> 方法论照常加载：**人物构建开始前必读 [character-construction.md](character-construction.md)**（B86）+ [character-design-methods.md](character-design-methods.md) 苏式问句/升级绑弧光/人物主题卡；卡字段见 [character-basics.md](character-basics.md)。**虚拟对标情绪基准参照**（无对标时）。角色采风按需（产物命名与融合规程见 moshu-volume 侧 caifeng-methods.md）。角色卡含「对话 DNA」五要素（口头禅功能位/句长习惯/语气词与标点/回避话题/情绪外显）——有主对标时从拆文库角色卡带入作派（学结构不抄血肉），无对标留占位待填；write 侧语声锚消费此作派（B59）。
 
 **产出**：每卷一段话（三幕+灾难）、每个角色一页（背景故事+弧线六阶段+大纲微调）、势力场总览回填精化、世界观完善、情绪引擎设计。不确定处标 ⚠️ 入创作进度（移交 volume Phase B）。
 

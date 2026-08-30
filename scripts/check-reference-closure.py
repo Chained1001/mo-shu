@@ -44,6 +44,8 @@ ALLOWED_CROSS_DOMAIN: dict[str, str] = {
     "plot-frameworks.md": "outline 侧桥段框架；volume outline-methods 路由表提及（B76 拆分）",
     # B78 方法论萃取第二批：plot-troubleshooting 头注与 recovery-protocol 分工互指（规格改动2 要求互相头注指认）
     "recovery-protocol.md": "write 侧流程/数据故障恢复手册；volume 排障速查头注仅作分工导航提示不加载，与既有「write 域执行技法仅跨域指引」同类（批B4 裁决二/B78）",
+    # B86 方法论萃取：outline ideal-review-template 情绪目标设计跨域参照 write 侧读者心理学（消费接线）
+    "reader-psychology.md": "write 侧读者心理学；outline ideal-review-template 情绪目标设计跨域参照（B86 消费接线）",
 }
 
 
