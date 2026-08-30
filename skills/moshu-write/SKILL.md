@@ -104,7 +104,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 
 ## 交接
 
-- 输入← 卷纲/场景表/台账构建态（moshu-volume 产出）+ 设定/*（moshu-outline 产出）+ 审查工单（moshu-review）
+- 输入← 卷纲/场景表/进度构建态（moshu-volume 产出）+ 设定/*（moshu-outline 产出）+ 审查工单（moshu-review）
 - 输出→ 细纲_第N章.md、正文/第XXX章_章名.md（作者日更消费）
 - 边界：故事层归 /moshu-outline；卷纲归 /moshu-volume；细纲与正文归 /moshu-write
 

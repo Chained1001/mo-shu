@@ -22,7 +22,7 @@
 **运行时概念**
 
 - **技能（Skill）**：Claude Code 的能力包，`skills/<名字>/SKILL.md` 为入口（frontmatter 声明触发词），references/ 放流程细则（按需读，不预载）。本项目 12 个技能，由 `.claude-plugin/marketplace.json` 注册成 12 个插件分发（adapter 守卫校验一一映射）。
-- **Agent**：主会话按需 spawn 的子代理（`moshu-architect` 等 8 个），各带工具白名单与纪律段；只在「会话启动时」注册——所以部署后必须**新开会话**。子代理不能弹窗问用户、不能嵌套 spawn，所以交互和台账永远在主线程。
+- **Agent**：主会话按需 spawn 的子代理（`moshu-architect` 等 8 个），各带工具白名单与纪律段；只在「会话启动时」注册——所以部署后必须**新开会话**。子代理不能弹窗问用户、不能嵌套 spawn，所以交互和创作进度永远在主线程。
 - **Hook**：Claude Code 在特定事件自动执行的脚本（本项目 8 个，由 setup 写入项目 settings）。两种语义：**提醒**（ask，如正文后轻扫）与**阻断**（deny，仅细纲门禁一处）。
 - **机检**：护作品的确定性检测器（check-*.js/py），输出 blocking（拦）/candidate（只报）两列。与守卫相对。
 - **守卫**：护仓库的检查脚本（scripts/check-*），在 CI 里跑，防文档/结构/契约漂移。
@@ -36,8 +36,8 @@
 
 - **Stage**：技能内部流程的标准编号（Stage 1-N；子步骤 Stage N-M；禁止 0 起编号）。写作技能的三条工作流用 **lane** 前缀区分：单章 4-C1~C13、日更 4-D1~D4、修订 4-R1~R5（消除同号不同义）。
 - **停靠**：构建流程中的强制暂停点（3 个），呈报前必跑机检、例行 spawn 评审 agent、作者裁决后才继续。
-- **自动步**：无需停靠的自动执行 Stage（构建 Stage 3/5），支持打断后恢复（台账快照幂等）。
-- **台账（构建台账）**：`{书名}/构建台账.md`，六步状态表+浮现记录+采风 CF 表+方法论档位，纯 Markdown 快照、幂等可恢复。
+- **自动步**：无需停靠的自动执行 Stage（构建 Stage 3/5），支持打断后恢复（创作进度快照幂等）。
+- **创作进度（创作进度）**：`{书名}/创作进度.md`，六步状态表+浮现记录+采风 CF 表+方法论档位，纯 Markdown 快照、幂等可恢复。
 - **采风**：build 的内嵌环节（v2.4 起不再独立技能）：五类参照（结构/角色/设定机制/情节/情绪）× 源七类，联网检索成功作品的活结构，**融合四步归主线**（agent 只做检索蒸馏）。
 - **CF 票据**：采风需求的编号登记制（CF-{NNN}｜需求｜状态），从「进行中」流转到「已消费」，机检比对其消费情况。
 - **细纲/卷纲/大纲**：章级/卷级/全书级的规划文件三层。细纲门禁 hook 保证「先纲后文」。
@@ -69,8 +69,8 @@
 - **虚拟对标**：无对标路线的设计约束参照——采风产物合成为三类设计目标（节奏目标/情绪基准/结构要点），落盘 设定/虚拟对标.md，Phase A 设计时参照、Phase B 打磨时作为 evaluator 评分锚点。有对标时跳过（对标/节奏.md+情绪模块.md 提供更精确约束）。
 - **参考偏好**：0-3 部作品+各自偏好维度（如"诡秘的悬疑氛围"）——学习神韵非模仿结构（对标=拆文产物直接 fail-fast）。采风的定向检索锚点（有参考→精准搜，无→泛化搜）。
 - **Phase A/B**：build 内部的双 Phase 架构——Phase A 快速生成（Stage 1 交互+Stage 2-6 全速不停靠），Phase B 深度打磨（evaluator 全局评审→逐维度改进→循环直到确认）。
-- **打磨环**：Phase B 的大停靠——内含五选项主屏（确认/按建议改进/触发采风/逐维度打磨/自己改）+ 级联变更协议 + append-only 打磨记录（台账 v3）。
-- **打磨记录**：构建台账 v3 的 append-only 节——每轮打磨的 evaluator 报告摘要/score/作者选择/改动文件/影响级联/check_outline 重跑结果。多天打磨的断点恢复唯一真相源。
+- **打磨环**：Phase B 的大停靠——内含五选项主屏（确认/按建议改进/触发采风/逐维度打磨/自己改）+ 级联变更协议 + append-only 打磨记录（创作进度 v3）。
+- **打磨记录**：创作进度 v3 的 append-only 节——每轮打磨的 evaluator 报告摘要/score/作者选择/改动文件/影响级联/check_outline 重跑结果。多天打磨的断点恢复唯一真相源。
 - **research_needed**：evaluator JSON 输出字段——null（评审完成不需额外参照）或具体查询（"需要同题材中点设计实例"）。非 null 时🔄触发采风选项自动填充检索需求，采风目标从模糊变精准。
 - **上下文注入**：技能触发时 SKILL.md 全文进入 AI 对话上下文的机制——AI 读到指令才开始按它行动。
 - **evals**：两层评测资产——samples（缺陷/干净样本对，CI 端到端回归）+ scenarios（人工带 agent 走查的场景剧本，CI 只做静态校验不跑 LLM）。
@@ -163,14 +163,14 @@ RAG/向量检索、LLM 导演黑盒自治、每章全量快照、自动连写污
 - **轮 1 定调（开放对话）**：AI 问「你想写什么类型的故事？希望给读者什么感觉？」；追加参考偏好快问（喜欢的作品 0-3 部，只取风格气质，不等同对标）；随后**默认执行采风**（AI 声明约 5 分钟联网检索参考作品的结构要素，可说「跳过」）；无对标书时采风产物合成「虚拟对标」（三类设计目标：节奏/情绪/结构）。AI 会主动扫描拆文库推荐同题材对标书，弹窗供作者选定或跳过。
 - **轮 2 定形（弹窗批问，一屏 ≤4 问）**：体量三数（总字数/章数/卷数，不确定按 200 万字 5 卷）、目标平台（起点/番茄/晋江…）、终局口径（完结设计 vs 开放式连载）、情绪基调（爽/虐/甜/悬疑/燃可多选）、更新频率、禁区雷点（不要后宫/不要虐主…——负面约束比正面偏好更防翻车）。
 - **轮 3 理想书评（AI 起草→作者改定）**：想象一个完全读懂本书的评论家写一篇溢美书评，按三维度量化（结构评分 1-10/节奏目标/情绪目标）——落盘 `设定/理想书评.md`，**它是后续打磨评审的打分锚点**。
-- **轮 4 档位（一问弹窗）**：构建精细度三档（快速试水/标准·推荐/完整多线）——答完创建构建台账。
+- **轮 4 档位（一问弹窗）**：构建精细度三档（快速试水/标准·推荐/完整多线）——答完创建创作进度。
 - **确认点**：核心设定表成稿先展示作者过目，确认后落盘 `设定/题材定位.md`+`关系.md`+`题材正文提示卡.md`。
 
-**第 2 步·骨架构建（AI 自动）**：产出 `大纲/大纲.md`——每卷八列骨架表、终局底牌+升级台阶、对手梯队与势力场、暗线层次表、核心角色四件套、全书阶段总览。完成后自动跑结构机检（阻断项标记进台账，移交下一阶打磨，本阶不自评自改）。
+**第 2 步·骨架构建（AI 自动）**：产出 `大纲/大纲.md`——每卷八列骨架表、终局底牌+升级台阶、对手梯队与势力场、暗线层次表、核心角色四件套、全书阶段总览。完成后自动跑结构机检（阻断项标记进创作进度，移交下一阶打磨，本阶不自评自改）。
 
-**第 3 步·人物构建（AI 自动）**：每角色一页（背景故事+弧线六阶段）、对话 DNA 带入（有对标书时从拆文库学作派）、势力场精化、情绪引擎设计。不确定处标 ⚠️ 入台账。
+**第 3 步·人物构建（AI 自动）**：每角色一页（背景故事+弧线六阶段）、对话 DNA 带入（有对标书时从拆文库学作派）、势力场精化、情绪引擎设计。不确定处标 ⚠️ 入创作进度。
 
-**交接**：三步产物就绪 → `/moshu-volume`（⚠️ 待打磨清单随台账移交）。
+**交接**：三步产物就绪 → `/moshu-volume`（⚠️ 待打磨清单随创作进度移交）。
 
 ### 2.9.2 第二阶·卷纲——卷规划（/moshu-volume，Stage 4-6+打磨环）
 
@@ -215,7 +215,7 @@ RAG/向量检索、LLM 导演黑盒自治、每章全量快照、自动连写污
 
 | # | 产物 | 写（producer） | 审（evaluator 型/对象） | 触发时点 | 报告去向 |
 |---|---|---|---|---|---|
-| 1 | 大纲骨架 | outline Stage 2 | structure/大纲骨架 | Stage 2 后（既有） | 呈报作者，⚠️ 入台账 |
+| 1 | 大纲骨架 | outline Stage 2 | structure/大纲骨架 | Stage 2 后（既有） | 呈报作者，⚠️ 入创作进度 |
 | 2 | 单元卡 | volume Stage 4 | structure/单元卡 | Phase B 打磨环（既有） | 打磨屏 |
 | 3 | 人物设计 | outline Stage 3 | structure/人物设计 | Stage 3 后可选（B77 新增） | 呈报作者 |
 | 4 | 场景表 | write 细纲批 | structure/细纲批（related_paths 跨稿核对覆盖） | 批末写前（B77 并入，不单独 spawn） | 呈报作者处置后进正文 |
@@ -287,22 +287,22 @@ flowchart TD
 | 产品步骤 | 实现机制 | 机检/Agent | 产物 | 作者确认点 |
 |---|---|---|---|---|
 | PREPARE·四轮开场 | 交互模态规则（封闭选择弹窗/开放采集对话/合批≤4问/带推荐标注）；选题决策.md 读取（scan 产物，过期提示+待拆文验证提示）；灵感种子收敛（模糊灵感时）；主对标发现（拆文库扫描+排除自对标） | 采风 spawn moshu-researcher（CF 票据）+融合四步（Stage 1 语境） | 灵感种子.md/主对标登记/虚拟对标.md（无对标时三节模板） | 轮 1-4 全部作答；采风跳过权 |
-| 轮 2-4 落盘 | core-setting-template 七段模板成稿展示；ideal-review-template 三维度量化 | — | 设定/题材定位.md（题材框架行 B71+终局底牌）+关系.md+题材正文提示卡.md+理想书评.md+构建台账.md（最小台账） | 核心设定表过目确认 |
+| 轮 2-4 落盘 | core-setting-template 七段模板成稿展示；ideal-review-template 三维度量化 | — | 设定/题材定位.md（题材框架行 B71+终局底牌）+关系.md+题材正文提示卡.md+理想书评.md+创作进度.md（最小创作进度） | 核心设定表过目确认 |
 | DRAFT·骨架构建 | 方法论按需加载（outline-methods 路由表+按节精读纪律）；虚拟对标节奏目标参照 | check_outline（blocking 自动，⚠️ 移交 Phase B） | 大纲/大纲.md（八列骨架表/终局底牌+升级台阶/势力场/暗线/角色四件套/阶段总览） | — |
 | DRAFT·人物构建 | 苏式问句/升级绑弧光/弧线六阶段；对话 DNA 带入（对标拆文角色卡） | — | 角色/*.md+势力场精化+情绪引擎 | — |
-| REVIEW/POLISH | **本阶不自评自改**——⚠️ 统一移交 volume Phase B 打磨环 | — | ⚠️ 待打磨清单（随台账） | — |
-| COMMIT·交接 | 产物就绪转 /moshu-volume Stage 4 起 | — | 台账构建态推进 | — |
+| REVIEW/POLISH | **本阶不自评自改**——⚠️ 统一移交 volume Phase B 打磨环 | — | ⚠️ 待打磨清单（随创作进度） | — |
+| COMMIT·交接 | 产物就绪转 /moshu-volume Stage 4 起 | — | 进度构建态推进 | — |
 
 卷纲阶实现映射（流程文件 `skills/moshu-volume/references/volume-workflow.md`+`revision-workflow.md`+`cold-path.md`）：
 
 | 产品步骤 | 实现机制 | 机检/Agent | 产物 | 作者确认点 |
 |---|---|---|---|---|
-| 三入口统一 | 台账进入规则（存在读态汇报/不存在创建）；开新卷=cold-path Stage 4 起增量；修订流=五步独立 | — | 台账构建态 | 入口意图确认 |
+| 三入口统一 | 进度进入规则（存在读态汇报/不存在创建）；开新卷=cold-path Stage 4 起增量；修订流=五步独立 | — | 进度构建态 | 入口意图确认 |
 | Stage 4 单元构建 | beat-cards BC-ID 节拍分配/plot-emotion-system 情绪拉扯/支线登记≤25%（mo-shu 自定） | — | 剧情单元卡（行格式 `单元 U{NN}｜章节范围…`=pace_meter 主源解析口径 B68b） | — |
 | Stage 5 整合检验 | 伏笔四态+铺垫链≥3卷半揭/线索矩阵八线/动机链核验/事件关系边三型（→因果/⊕揭示/∥并行）；防撞对照按 cold-path 协议（三维+登记免责+单源两维候选+多源降噪） | check_outline candidate（悬空引用等） | 伏笔表/线索矩阵/事件关系边/防撞候选 | 防撞重合裁决 |
 | Stage 6 定稿 | 对标回流五步（结构坐标表） | **check_outline 全量 blocking 清零才进弹窗** | 卷纲_第X卷.md 全家+整合记录 | — |
-| Phase B 打磨环 | Phase A→B 弹窗（✅/📋/⏸️）→spawn evaluator（eval_type=full：读完整粗稿+虚拟对标+理想书评三维度评分+research_needed）→打磨屏五选项→级联变更（先声明影响文件→作者确认→一次改完→重跑机检→re-spawn）→打磨记录落台账 append-only | evaluator（agent 不可用 fallback 自评四问） | 评审报告/打磨记录 | 进入打磨/影响面/定稿（→tracking init 构建态翻定稿） |
-| 断点恢复 | 台账构建态「Phase B 打磨中」→读打磨记录最后一条→续环 | — | — | — |
+| Phase B 打磨环 | Phase A→B 弹窗（✅/📋/⏸️）→spawn evaluator（eval_type=full：读完整粗稿+虚拟对标+理想书评三维度评分+research_needed）→打磨屏五选项→级联变更（先声明影响文件→作者确认→一次改完→重跑机检→re-spawn）→打磨记录落创作进度 append-only | evaluator（agent 不可用 fallback 自评四问） | 评审报告/打磨记录 | 进入打磨/影响面/定稿（→tracking init 构建态翻定稿） |
+| 断点恢复 | 进度构建态「Phase B 打磨中」→读打磨记录最后一条→续环 | — | — | — |
 | 双路参照 | 有对标：evaluator 收 benchmark_book_paths（拆文节奏.md+情绪模块.md 精确数据，省略 virtual_benchmark_path）；无对标：虚拟对标.md | — | — | — |
 
 **3.10.2 章纲+正文（moshu-write，三工作流——细纲批次/日更/修订）**
@@ -410,7 +410,7 @@ doc-budget 单文件+路径组两级（node UTF-16 口径）；超限处理序�
 
 ## 3.16 降级与容错
 
-Agent 降级链（未部署/spawn 失败/子代理上下文→solo/direct+标注）；采风降级（台账显式声明不静默）；断点恢复（拆文 _progress/构建台账快照/事务幂等重跑）；读失败三分类（缺/空/坏）各自明示；平台假红清单（Windows chmod 等，CI Linux 为准）。
+Agent 降级链（未部署/spawn 失败/子代理上下文→solo/direct+标注）；采风降级（创作进度显式声明不静默）；断点恢复（拆文 _progress/创作进度快照/事务幂等重跑）；读失败三分类（缺/空/坏）各自明示；平台假红清单（Windows chmod 等，CI Linux 为准）。
 
 ## 3.17 工程辅助设施一览（每个文件的作用与守护对象）
 
@@ -658,12 +658,12 @@ Stage 5 选题：references/topic-decision.md（四步+可行性三档）→ 选
 
 | Phase | 内容 | 读/调用 | 产出 |
 |---|---|---|---|
-| **A·快速生成** Stage 1 | 四轮式（定调+参考偏好采集→定形六问[含情绪基调/更新频率/雷点]→理想书评结构化三维度量化目标→档位）；采风默认执行（query 按参考偏好分流定向/泛化）；虚拟对标合成（无对标时，CF 票据标已消费） | ⚡spawn moshu-researcher；caifeng-methods（融合四步+第五步合成） | 核心设定表（含参考偏好/读者偏好段）、理想书评.md、虚拟对标.md、构建台账 v3 |
-| A Stage 2-6 全速 | 方法论照用不停靠不评审（骨架八列表+势力场→人物档案+弧线页→单元卡+卷纲[BC-ID]→整合检验伏笔四态/线索矩阵→定稿写完全部 artifact）；不确定处标 ⚠️ 入台账 | 方法论副本索引按需；beat-cards；check_outline.py（Stage 2 后 blocking-only、Stage 6 后全量） | 大纲、角色档案、卷纲、整合记录 |
-| **A→B 弹窗** | 产物清单+⚠️待打磨项汇总+机检结果 → ✅进入打磨/📋先看产出/⏸️暂存 | — | 台账构建态翻「Phase B 打磨中」 |
-| **B·深度打磨环** | ① evaluator 全局评审（eval_type: full，target_paths=完整粗稿，对照 virtual_benchmark_path+benchmark_path 出三维度 JSON+score+research_needed+summary+recommendation）② 打磨屏（评审报告九格+⚠️汇总）③ 五选项：✅确认定稿(tracking init)/🔧按建议改进/🔄采风补强(research_needed 精准检索→更新虚拟对标→re-spawn)/📡逐维度打磨(结构/桥段/节奏/情绪/角色五选一,各映射方法论文件与对照锚点)/📝作者自改 ④ 级联纪律：影响声明→作者确认→一次改完→重跑 check_outline→re-spawn→打磨记录落台账(append-only) | ⚡spawn moshu-evaluator / moshu-researcher；review_tickets.py verify-token；check_outline.py 重跑 | 打磨记录轮次追加、改后产物、tracking init |
+| **A·快速生成** Stage 1 | 四轮式（定调+参考偏好采集→定形六问[含情绪基调/更新频率/雷点]→理想书评结构化三维度量化目标→档位）；采风默认执行（query 按参考偏好分流定向/泛化）；虚拟对标合成（无对标时，CF 票据标已消费） | ⚡spawn moshu-researcher；caifeng-methods（融合四步+第五步合成） | 核心设定表（含参考偏好/读者偏好段）、理想书评.md、虚拟对标.md、创作进度 v3 |
+| A Stage 2-6 全速 | 方法论照用不停靠不评审（骨架八列表+势力场→人物档案+弧线页→单元卡+卷纲[BC-ID]→整合检验伏笔四态/线索矩阵→定稿写完全部 artifact）；不确定处标 ⚠️ 入创作进度 | 方法论副本索引按需；beat-cards；check_outline.py（Stage 2 后 blocking-only、Stage 6 后全量） | 大纲、角色档案、卷纲、整合记录 |
+| **A→B 弹窗** | 产物清单+⚠️待打磨项汇总+机检结果 → ✅进入打磨/📋先看产出/⏸️暂存 | — | 进度构建态翻「Phase B 打磨中」 |
+| **B·深度打磨环** | ① evaluator 全局评审（eval_type: full，target_paths=完整粗稿，对照 virtual_benchmark_path+benchmark_path 出三维度 JSON+score+research_needed+summary+recommendation）② 打磨屏（评审报告九格+⚠️汇总）③ 五选项：✅确认定稿(tracking init)/🔧按建议改进/🔄采风补强(research_needed 精准检索→更新虚拟对标→re-spawn)/📡逐维度打磨(结构/桥段/节奏/情绪/角色五选一,各映射方法论文件与对照锚点)/📝作者自改 ④ 级联纪律：影响声明→作者确认→一次改完→重跑 check_outline→re-spawn→打磨记录落创作进度(append-only) | ⚡spawn moshu-evaluator / moshu-researcher；review_tickets.py verify-token；check_outline.py 重跑 | 打磨记录轮次追加、改后产物、tracking init |
 
-断点恢复：新会话读台账构建态「Phase B 打磨中」→读打磨记录最后一条→汇报断点→继续打磨环。开新卷见 Ⅳ.26（Phase A 从 Stage 4 起增量，虚拟对标沿用）。修订流：scripts/impact_scan.py（三清单：未写细纲/已写正文/追踪域）→ AskUserQuestion 裁决 → 变更日志 append → stale 级联。
+断点恢复：新会话读进度构建态「Phase B 打磨中」→读打磨记录最后一条→汇报断点→继续打磨环。开新卷见 Ⅳ.26（Phase A 从 Stage 4 起增量，虚拟对标沿用）。修订流：scripts/impact_scan.py（三清单：未写细纲/已写正文/追踪域）→ AskUserQuestion 裁决 → 变更日志 append → stale 级联。
 
 ## Ⅳ.22 导入（moshu-import）
 
@@ -711,7 +711,7 @@ Effective Mode 自检（agent 注册？full/lean : Fallback solo）
 
 ## Ⅳ.26 卷末与开新卷
 
-write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_第X卷.md` → build 冷路径（references/cold-path.md）：无复盘→询问直接常规开卷；有→候选弹窗→**Stage 4 起增量**（新卷新角色先补设定档案、既有卷纲只增不改）→停靠 2/3→台账构建态翻「开卷中」→定稿翻回。首批细纲归 write（边界）。
+write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_第X卷.md` → build 冷路径（references/cold-path.md）：无复盘→询问直接常规开卷；有→候选弹窗→**Stage 4 起增量**（新卷新角色先补设定档案、既有卷纲只增不改）→停靠 2/3→进度构建态翻「开卷中」→定稿翻回。首批细纲归 write（边界）。
 
 ## Ⅳ.27 升级与版本迁移
 
@@ -736,7 +736,7 @@ write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_
 - **moshu（8）**：SKILL.md（路由表 13 行意图）／VERSION（2.3.6）／scripts/next_step.py（S0-S6 DTO）／scripts/dashboard-server.mjs（本地工作台：回环监听/冲突保护/原子写）／assets/×3（前端页）／references/dashboard-guide.md。
 - **moshu-setup（97）**：SKILL.md ／UPGRADING.md（版本权威）／scripts/{deploy.py,merge-claude-settings.py} ／references/{setup-workflow.md 流程权威,deploy-manual.md 冷兜底}／templates/（CLAUDE.md.tmpl、settings-hooks.json、agents/×8、hooks/×12〔8 sh+core.js+cli.js+lib×2〕、rules/×4）／references/agent-references/×33（方法论包，agent 按需加载：方法论/题材/文风卡/钩子/反 AI 等）＋genre-prose-cards/×32（单题材正文提示卡）。
 - **moshu-outline（12）**：SKILL.md ／scripts/check_outline.py ／references/×10（workflow-outline 开书流程[Stage 1-3] / core-setting-template / ideal-review-template / 人物族 character-{basics,relations,design-methods} / genre 族 {genre-core-mechanics,genre-catalog,genre-readers,genre-writing-formulas} / idea-seed / opening-design / plot-frameworks / reader-contract-and-progression——多数为 write 同源副本）。
-- **moshu-volume（63）**：SKILL.md ／scripts/{design_fingerprints.py,impact_scan.py,tracking_commit.py,pace_meter.py} ／references/×25（volume-workflow 热路径主文档[Stage 4-6+Phase B] / cold-path 冷路径 / caifeng-methods 采风手册 / revision-workflow / ledger-template / virtual-benchmark-template / tracking-transaction / 大纲族 outline-{methods,conflict,rhythm,structure-theory,workflow} / 剧情族 plot-{core-methods,emotion-system,special-topics}+reversal-toolkit+emotional-{methods,arc-design} / 卡片族 beat-cards/naming-cards / genre 族 {genre-prose-cards,readers,writing-formulas,core-mechanics}——多为 write 同源副本）＋genre-prose-cards/×32（write 同源副本）。
+- **moshu-volume（63）**：SKILL.md ／scripts/{design_fingerprints.py,impact_scan.py,tracking_commit.py,pace_meter.py} ／references/×25（volume-workflow 热路径主文档[Stage 4-6+Phase B] / cold-path 冷路径 / caifeng-methods 采风手册 / revision-workflow / progress-template / virtual-benchmark-template / tracking-transaction / 大纲族 outline-{methods,conflict,rhythm,structure-theory,workflow} / 剧情族 plot-{core-methods,emotion-system,special-topics}+reversal-toolkit+emotional-{methods,arc-design} / 卡片族 beat-cards/naming-cards / genre 族 {genre-prose-cards,readers,writing-formulas,core-mechanics}——多为 write 同源副本）＋genre-prose-cards/×32（write 同源副本）。
 - **moshu-write（88）**：SKILL.md（三 lane 路由）／scripts/×6（check-ai-patterns / check-degeneration / check-outline-copy / check-prose-candidates / normalize-punctuation / tracking_commit）／references/×49（三工作流薄壳 workflow-{chapter,daily,revision} + 内核 chapter-core + artifact-protocols + recovery-protocol + tracking-transaction + state-tracking + writing-craft+技法卡族 + 大纲族（含 outline-workflow 补纲）+ 剧情族 + 人物族 + 钩子族 + 题材族 + quality-checklist + banned-words + anti-ai-writing + format-and-structure + reader-contract-and-progression + volume-review + idea-seed + genre-writing-formulas 等，与 build/deslop 侧部分为共享副本）＋genre-prose-cards/×32（源）。
 - **moshu-analyze（10）**：SKILL.md ／references/×6（analyze-workflow 主文档 / pipeline-ops 断点恢复 / material-decomposition 阈值 / deconstruction-notes / output-templates / technique-summary-sop）／scripts/×3（chapter_boundary / check_chapter_summary / merge-chapter-summaries）。
 - **moshu-review（18）**：SKILL.md ／references/×12（review-workflow + quality-rubric + rubrics/{fanqie,qidian} + quality-checklist + 共享副本×4〔anti-ai-writing/banned-words/character-relations/dialogue-mastery/plot-core-methods/tracking-transaction 部分同源〕）／scripts/×5（review_tickets + 机检副本×4）。

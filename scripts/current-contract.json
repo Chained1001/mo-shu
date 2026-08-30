@@ -38,7 +38,7 @@
       "Compact 后恢复上下文"
     ],
     "chapter_range_format": "第{N}-{M}章",
-    "deployment_fingerprint": "bb0957a49c8064385e983de1ad8f389fd1a95119f718839673b4df7d05b7f779"
+    "deployment_fingerprint": "e25fe14b2b048e0f4d1333e922bb7ddb07f067f226569e02b123253f3157c2e6"
   },
   "artifact_contracts": [
     {
@@ -94,7 +94,7 @@
       ],
       "anchor_docs": [
         "skills/moshu-volume/references/volume-workflow.md",
-        "skills/moshu-volume/references/ledger-template.md",
+        "skills/moshu-volume/references/progress-template.md",
         "skills/moshu-volume/references/caifeng-methods.md"
       ]
     }

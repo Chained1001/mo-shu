@@ -1,9 +1,9 @@
-# 构建台账模板（ledger-template.md）
+# 创作进度模板（progress-template.md）
 
-> 定位注记（B54）：本文件是 `设定/构建台账.md` 的落盘模板——从 volume-workflow（原 workflow-build，B76 拆分正名）「台账模板」节下沉（create-time 资产，创建台账时按需读本文件）。台账的进入规则、构建态流转语义与流程规则见 [volume-workflow.md](volume-workflow.md)「构建台账与进入规则」——本文件只承载格式。
+> 定位注记（B54）：本文件是 `设定/创作进度.md` 的落盘模板——从 volume-workflow（原 workflow-build，B76 拆分正名）「进度模板」节下沉（create-time 资产，创建创作进度时按需读本文件）。创作进度的进入规则、构建态流转语义与流程规则见 [volume-workflow.md](volume-workflow.md)「创作进度与进入规则」——本文件只承载格式。
 
 ```markdown
-# 构建台账（{书名}）
+# 创作进度（{书名}）
 
 ## 方法论声明
 - 规划深度：大纲=全局骨架｜卷纲=首卷细｜设定=核心+终局相关
@@ -49,7 +49,7 @@
 ## 当前焦点
 Phase {A/B}——{正在做什么}
 
-## 浮现记录（Phase A Stage 4 起生效）
+## 浮现记录（Phase A 单元构建 起生效）
 | 类型 | 内容 | 处理状态 |
 |---|---|---|
 | 线索 | {灵感} | 待整合 |

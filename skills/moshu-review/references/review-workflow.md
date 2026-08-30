@@ -349,7 +349,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
 }
 ```
 2. **先写临时文件，再走脚本**：把 findings 数组先写到临时 JSON 文件（如 `/.tmp/review-tickets-<时间戳>.json`），再执行 `moshu-review/scripts/review_tickets.py write --project {项目根} --input <临时文件>`——**AI 产出只走文件不走 argv**（移植 v7）。校验（schema/枚举/id 唯一且 `T\d{3,}`/令牌非空）失败时按报错修正后重跑同一 `write`。
-3. **落盘位置**：`{项目根}/.moshu-review/tickets/tickets_{YYYYMMDD-HHMM}_{起章}-{止章}.json`（write 原子写、幂等）。落盘后做一次确定性复核：`moshu-review/scripts/review_tickets.py verify-token --ticket <落盘工单> --token {token}` 必须输出 `token ok`（退出 0）——防工单里的 `review_token` 与本轮实际注入值不一致；不等（退出 2）时修正工单 token 后重跑同一 `write`。
+3. **落盘位置**：`{项目根}/.moshu-review/tickets/tickets_{YYYYMMDD-HHMM}_{起章}-{止章}.json`（write 原子写、幂等）。落盘后做一次确定性复核：`moshu-review/scripts/review_tickets.py verify-token --ticket <落盘工单> --token {token}` 必须输出 `token ok`（退出 0）——防工单里的 `review_token` 与本轮实际注入值不一致；不等（退出 2）时修正工单 token 后重跑同一 `write`。**落盘后汇报含工单路径**（tickets_{时间戳}_{起章}-{止章}.json）。
 4. **复审轮只重落 open 项**：同一 `{起章}-{止章}` 已存在工单文件时，本轮属**复审轮**——只把上一轮仍为 `open` 的 finding 重新整理进新数组，已 `fixed`/`dismissed` 的 id **不再进新工单**（否则已处置项会被重新变成 open）。待办真源统一读 `moshu-review/scripts/review_tickets.py list --project {项目根} --status open`，不要按"最新文件"人工挑。
 5. **工单与 review-log 分工**：工单=结构化处置真源（复审只验 open 项，处置走 `resolve`）；review-log=既有写作建议审计流（`{章节范围} | {问题} | {建议}` 行式，S3/S4 与 advisory 记录）——**review-log 格式与读点不变**。
 
