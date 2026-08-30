@@ -26,4 +26,6 @@ Stage 4-6 + 开新卷增量 + 修订流 + 采风 + 防撞对照。按统一创�
 
 ## 交接
 
-- 卷纲定稿（Stage 6 末尾执行 tracking init）后转 `/moshu-write` 接力首批细纲；修订发起见 `references/revision-workflow.md`
+- 输入← 设定/*、大纲/大纲.md（outline 产出，只读消费）
+- 输出→ 卷纲/场景表/台账构建态 + tracking init → /moshu-write；修订见 revision-workflow.md
+- 边界：故事层归 /moshu-outline；细纲与正文归 /moshu-write

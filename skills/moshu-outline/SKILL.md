@@ -25,4 +25,5 @@ description: "故事架构技能——开书的故事层设计。题材定位、
 
 ## 交接
 
-- 产物就绪后转 `/moshu-volume` 做首卷卷纲（Stage 4-6 归 volume）；追踪 init 在 volume Stage 6 末尾
+- 输出→ 设定/*、大纲/大纲.md、⚠️ 构建台账 → /moshu-volume（首卷卷纲消费；追踪 init 在 volume Stage 6 末尾）
+- 边界：卷纲归 /moshu-volume；细纲与正文归 /moshu-write

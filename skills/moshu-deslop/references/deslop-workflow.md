@@ -156,7 +156,7 @@ node {SKILL_DIR}/scripts/check-ai-patterns.js --check --fail-on=blocking <正文
 示例 `.deslop-whitelist`：
 
 ```
-# 项目自定义豁免词（一行一个，# 开头为注释）
+#### 项目自定义豁免词（一行一个，# 开头为注释）
 缓缓                # 主角"缓缓"是绰号，不算禁用词
 仿佛山海             # 章名
 深邃的山谷           # 设定地名

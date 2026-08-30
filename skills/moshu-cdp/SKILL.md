@@ -96,10 +96,10 @@ agent-browser --cdp 9222 eval 'localStorage.getItem("token") || document.cookie'
 shell 转义容易出错，用以下两种方式之一：
 
 ```bash
-# 1) base64 包裹
+#### 1) base64 包裹
 agent-browser --cdp 9222 eval -b "$(echo -n "document.querySelectorAll('a').length" | base64)"
 
-# 2) heredoc + --stdin
+#### 2) heredoc + --stdin
 cat <<'EOF' | agent-browser --cdp 9222 eval --stdin
 const links = document.querySelectorAll('a');
 links.length;

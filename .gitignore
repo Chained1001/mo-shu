@@ -6,7 +6,6 @@
 node_modules/
 playwright-report/
 test-results/
-CLAUDE.md
 _archive/
 skills-lock.json
 docs/plans/

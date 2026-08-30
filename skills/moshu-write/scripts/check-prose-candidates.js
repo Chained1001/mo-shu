@@ -209,7 +209,7 @@ function lengthCandidate(proseText, prosePath, floor, ceiling) {
       },
     };
   }
-  return { ok: `length_check: ok（${actual}/${target}）` };
+  return { ok: `length_check: ok（${actual}/${target}）`, ratio };
 }
 
 function analyzeProse(proseText, styleText, gapsText, options = {}) {
@@ -307,8 +307,23 @@ function main(argv) {
   if (length.candidate) {
     result.candidates.push(length.candidate);
   }
-  if (result.candidates.length === 0) {
-    console.log("prose candidates: none");
+  // 三层报告（B83）：汇总行 → 分级行（✅界内/⚠️警告区[贴边]/🔴越界）→ 明细行。
+  const nearEdge =
+    length.ok &&
+    typeof length.ratio === "number" &&
+    (length.ratio <= lengthFloor + 0.05 || length.ratio >= lengthCeiling - 0.05);
+  const overCount = result.candidates.filter(
+    (c) => c.type === "length" || c.type === "style_drift"
+  ).length;
+  console.log(
+    `prose check: 候选 ${result.candidates.length} 项｜越界 ${overCount} 项｜贴边 ${nearEdge ? 1 : 0} 项`
+  );
+  if (overCount === 0 && !nearEdge) {
+    console.log("✅ 界内：无越界候选");
+  } else if (overCount === 0 && nearEdge) {
+    console.log("⚠️ 警告区：长度贴边（界内但接近 0.7/1.3 边界）");
+  } else {
+    console.log(`🔴 越界候选 ${overCount} 项（明细如下）`);
   }
   for (const candidate of result.candidates) {
     if (candidate.type === "imagery") {
