@@ -1,650 +1,619 @@
 {
-  "version": 1,
-  "groups": [
-    {
-      "name": "prose-ai-pattern-detector",
-      "source": "skills/moshu-deslop/scripts/check-ai-patterns.js",
-      "targets": [
-        "skills/moshu-write/scripts/check-ai-patterns.js",
-        "skills/moshu-review/scripts/check-ai-patterns.js"
-      ]
-    },
-    {
-      "name": "prose-outline-copy-detector",
-      "source": "skills/moshu-write/scripts/check-outline-copy.js",
-      "targets": [
-        "skills/moshu-deslop/scripts/check-outline-copy.js"
-      ]
-    },
-    {
-      "name": "prose-degeneration-detector",
-      "source": "skills/moshu-deslop/scripts/check-degeneration.js",
-      "targets": [
-        "skills/moshu-write/scripts/check-degeneration.js",
-        "skills/moshu-review/scripts/check-degeneration.js"
-      ]
-    },
-    {
-      "name": "prose-punctuation-normalizer",
-      "source": "skills/moshu-deslop/scripts/normalize-punctuation.js",
-      "targets": [
-        "skills/moshu-write/scripts/normalize-punctuation.js",
-        "skills/moshu-review/scripts/normalize-punctuation.js"
-      ]
-    },
-    {
-      "name": "story-tracking-transaction",
-      "source": "skills/moshu-write/scripts/tracking_commit.py",
-      "targets": [
-        "skills/moshu-import/scripts/tracking_commit.py",
-        "skills/moshu-review/scripts/tracking_commit.py",
-        "skills/moshu-volume/scripts/tracking_commit.py"
-      ]
-    },
-    {
-      "name": "pace-meter-script",
-      "source": "skills/moshu-write/scripts/pace_meter.py",
-      "targets": [
-        "skills/moshu-volume/scripts/pace_meter.py"
-      ]
-    },
-    {
-      "name": "story-tracking-transaction-reference",
-      "source": "skills/moshu-write/references/tracking-transaction.md",
-      "targets": [
-        "skills/moshu-import/references/tracking-transaction.md",
-        "skills/moshu-review/references/tracking-transaction.md",
-        "skills/moshu-volume/references/tracking-transaction.md"
-      ]
-    },
-    {
-      "name": "banned-words-reference",
-      "source": "skills/moshu-deslop/references/banned-words.md",
-      "targets": [
-        "skills/moshu-write/references/banned-words.md",
-        "skills/moshu-review/references/banned-words.md",
-        "skills/moshu-setup/references/agent-references/banned-words.md"
-      ]
-    },
-    {
-      "name": "quality-checklist-reference",
-      "source": "skills/moshu-write/references/quality-checklist.md",
-      "targets": [
-        "skills/moshu-review/references/quality-checklist.md",
-        "skills/moshu-setup/references/agent-references/quality-checklist.md"
-      ]
-    },
-    {
-      "name": "anti-ai-writing-reference",
-      "source": "skills/moshu-deslop/references/anti-ai-writing.md",
-      "targets": [
-        "skills/moshu-review/references/anti-ai-writing.md",
-        "skills/moshu-setup/references/agent-references/anti-ai-writing.md",
-        "skills/moshu-write/references/anti-ai-writing.md"
-      ]
-    },
-    {
-      "name": "dialogue-mastery-reference",
-      "source": "skills/moshu-write/references/dialogue-mastery.md",
-      "targets": [
-        "skills/moshu-review/references/dialogue-mastery.md",
-        "skills/moshu-setup/references/agent-references/dialogue-mastery.md"
-      ]
-    },
-    {
-      "name": "plot-core-methods-reference",
-      "source": "skills/moshu-write/references/plot-core-methods.md",
-      "targets": [
-        "skills/moshu-review/references/plot-core-methods.md",
-        "skills/moshu-setup/references/agent-references/plot-core-methods.md",
-        "skills/moshu-volume/references/plot-core-methods.md"
-      ]
-    },
-    {
-      "name": "plot-frameworks-reference",
-      "source": "skills/moshu-write/references/plot-frameworks.md",
-      "targets": [
-        "skills/moshu-outline/references/plot-frameworks.md"
-      ]
-    },
-    {
-      "name": "plot-special-topics-reference",
-      "source": "skills/moshu-write/references/plot-special-topics.md",
-      "targets": [
-        "skills/moshu-volume/references/plot-special-topics.md"
-      ]
-    },
-    {
-      "name": "plot-emotion-system-reference",
-      "source": "skills/moshu-write/references/plot-emotion-system.md",
-      "targets": [
-        "skills/moshu-volume/references/plot-emotion-system.md",
-        "skills/moshu-setup/references/agent-references/plot-emotion-system.md",
-        "skills/moshu-outline/references/plot-emotion-system.md"
-      ]
-    },
-    {
-      "name": "character-relations-reference",
-      "source": "skills/moshu-write/references/character-relations.md",
-      "targets": [
-        "skills/moshu-review/references/character-relations.md",
-        "skills/moshu-setup/references/agent-references/character-relations.md",
-        "skills/moshu-outline/references/character-relations.md",
-        "skills/moshu-volume/references/character-relations.md"
-      ]
-    },
-    {
-      "name": "character-design-methods-reference",
-      "source": "skills/moshu-write/references/character-design-methods.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/character-design-methods.md",
-        "skills/moshu-outline/references/character-design-methods.md"
-      ]
-    },
-    {
-      "name": "character-basics-reference",
-      "source": "skills/moshu-write/references/character-basics.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/character-basics.md",
-        "skills/moshu-outline/references/character-basics.md"
-      ]
-    },
-    {
-      "name": "state-tracking-reference",
-      "source": "skills/moshu-write/references/state-tracking.md",
-      "targets": [
-        "skills/moshu-import/references/state-tracking.md"
-      ]
-    },
-    {
-      "name": "emotional-arc-design-reference",
-      "source": "skills/moshu-write/references/emotional-arc-design.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/emotional-arc-design.md",
-        "skills/moshu-volume/references/emotional-arc-design.md"
-      ]
-    },
-    {
-      "name": "format-and-structure-reference",
-      "source": "skills/moshu-write/references/format-and-structure.md",
-      "targets": [
-        "skills/moshu-import/references/format-and-structure.md",
-        "skills/moshu-setup/references/agent-references/format-and-structure.md"
-      ]
-    },
-    {
-      "name": "opening-design-reference",
-      "source": "skills/moshu-write/references/opening-design.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/opening-design.md",
-        "skills/moshu-volume/references/opening-design.md",
-        "skills/moshu-outline/references/opening-design.md"
-      ]
-    },
-    {
-      "name": "hooks-chapter-reference",
-      "source": "skills/moshu-write/references/hooks-chapter.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/hooks-chapter.md"
-      ]
-    },
-    {
-      "name": "hooks-suspense-reference",
-      "source": "skills/moshu-write/references/hooks-suspense.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/hooks-suspense.md"
-      ]
-    },
-    {
-      "name": "reversal-toolkit-reference",
-      "source": "skills/moshu-write/references/reversal-toolkit.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/reversal-toolkit.md",
-        "skills/moshu-volume/references/reversal-toolkit.md"
-      ]
-    },
-    {
-      "name": "outline-methods-reference",
-      "source": "skills/moshu-write/references/outline-methods.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/outline-methods.md",
-        "skills/moshu-volume/references/outline-methods.md"
-      ]
-    },
-    {
-      "name": "outline-structure-theory-reference",
-      "source": "skills/moshu-write/references/outline-structure-theory.md",
-      "targets": [
-        "skills/moshu-volume/references/outline-structure-theory.md",
-        "skills/moshu-outline/references/outline-structure-theory.md"
-      ]
-    },
-    {
-      "name": "outline-workflow-reference",
-      "source": "skills/moshu-write/references/outline-workflow.md",
-      "targets": [
-        "skills/moshu-volume/references/outline-workflow.md"
-      ]
-    },
-    {
-      "name": "outline-rhythm-reference",
-      "source": "skills/moshu-write/references/outline-rhythm.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/outline-rhythm.md",
-        "skills/moshu-volume/references/outline-rhythm.md",
-        "skills/moshu-outline/references/outline-rhythm.md"
-      ]
-    },
-    {
-      "name": "outline-conflict-reference",
-      "source": "skills/moshu-write/references/outline-conflict.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/outline-conflict.md",
-        "skills/moshu-volume/references/outline-conflict.md"
-      ]
-    },
-    {
-      "name": "genre-writing-formulas-reference",
-      "source": "skills/moshu-write/references/genre-writing-formulas.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/genre-writing-formulas.md",
-        "skills/moshu-volume/references/genre-writing-formulas.md",
-        "skills/moshu-analyze/references/genre-writing-formulas.md",
-        "skills/moshu-outline/references/genre-writing-formulas.md"
-      ]
-    },
-    {
-      "name": "style-genre-modules-reference",
-      "source": "skills/moshu-write/references/style-genre-modules.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/style-genre-modules.md",
-        "skills/moshu-volume/references/style-genre-modules.md"
-      ]
-    },
-    {
-      "name": "style-combat-face-reference",
-      "source": "skills/moshu-write/references/style-combat-face.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/style-combat-face.md"
-      ]
-    },
-    {
-      "name": "writing-craft-reference",
-      "source": "skills/moshu-write/references/writing-craft.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/writing-craft.md"
-      ]
-    },
-    {
-      "name": "reader-contract-reference",
-      "source": "skills/moshu-write/references/reader-contract-and-progression.md",
-      "targets": [
-        "skills/moshu-review/references/reader-contract-and-progression.md",
-        "skills/moshu-setup/references/agent-references/reader-contract-and-progression.md",
-        "skills/moshu-outline/references/reader-contract-and-progression.md",
-        "skills/moshu-volume/references/reader-contract-and-progression.md"
-      ]
-    },
-    {
-      "name": "genre-core-mechanics-reference",
-      "source": "skills/moshu-write/references/genre-core-mechanics.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/genre-core-mechanics.md",
-        "skills/moshu-outline/references/genre-core-mechanics.md",
-        "skills/moshu-analyze/references/genre-core-mechanics.md",
-        "skills/moshu-volume/references/genre-core-mechanics.md"
-      ]
-    },
-    {
-      "name": "genre-catalog-reference",
-      "source": "skills/moshu-write/references/genre-catalog.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/genre-catalog.md",
-        "skills/moshu-outline/references/genre-catalog.md",
-        "skills/moshu-analyze/references/genre-catalog.md",
-        "skills/moshu-volume/references/genre-catalog.md"
-      ]
-    },
-    {
-      "name": "genre-readers-reference",
-      "source": "skills/moshu-write/references/genre-readers.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/genre-readers.md",
-        "skills/moshu-volume/references/genre-readers.md",
-        "skills/moshu-analyze/references/genre-readers.md",
-        "skills/moshu-outline/references/genre-readers.md"
-      ]
-    },
-    {
-      "name": "beat-cards-reference",
-      "source": "skills/moshu-write/references/beat-cards.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/beat-cards.md",
-        "skills/moshu-volume/references/beat-cards.md"
-      ]
-    },
-    {
-      "name": "craft-cards-reference",
-      "source": "skills/moshu-write/references/craft-cards.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/craft-cards.md"
-      ]
-    },
-    {
-      "name": "naming-cards-reference",
-      "source": "skills/moshu-write/references/naming-cards.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/naming-cards.md",
-        "skills/moshu-volume/references/naming-cards.md"
-      ]
-    },
-    {
-      "name": "scene-cards-reference",
-      "source": "skills/moshu-write/references/scene-cards.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/scene-cards.md"
-      ]
-    },
-    {
-      "name": "story-emotional-methods-reference",
-      "source": "skills/moshu-write/references/emotional-methods.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/emotional-methods.md",
-        "skills/moshu-volume/references/emotional-methods.md"
-      ]
-    },
-    {
-      "name": "genre-prose-cards-reference",
-      "source": "skills/moshu-write/references/genre-prose-cards.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards.md"
-      ]
-    },
-    {
-      "name": "idea-seed-reference",
-      "source": "skills/moshu-write/references/idea-seed.md",
-      "targets": [
-        "skills/moshu-outline/references/idea-seed.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-东方仙侠",
-      "source": "skills/moshu-write/references/genre-prose-cards/东方仙侠.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/东方仙侠.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/东方仙侠.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-传统玄幻",
-      "source": "skills/moshu-write/references/genre-prose-cards/传统玄幻.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/传统玄幻.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/传统玄幻.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-历史古代",
-      "source": "skills/moshu-write/references/genre-prose-cards/历史古代.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/历史古代.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/历史古代.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-历史脑洞",
-      "source": "skills/moshu-write/references/genre-prose-cards/历史脑洞.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/历史脑洞.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/历史脑洞.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-双男主",
-      "source": "skills/moshu-write/references/genre-prose-cards/双男主.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/双男主.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/双男主.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-古言脑洞",
-      "source": "skills/moshu-write/references/genre-prose-cards/古言脑洞.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/古言脑洞.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/古言脑洞.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-古风世情",
-      "source": "skills/moshu-write/references/genre-prose-cards/古风世情.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/古风世情.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/古风世情.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-女频悬疑",
-      "source": "skills/moshu-write/references/genre-prose-cards/女频悬疑.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/女频悬疑.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/女频悬疑.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-女频种田",
-      "source": "skills/moshu-write/references/genre-prose-cards/女频种田.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/女频种田.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/女频种田.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-宫斗宅斗",
-      "source": "skills/moshu-write/references/genre-prose-cards/宫斗宅斗.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/宫斗宅斗.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/宫斗宅斗.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-年代",
-      "source": "skills/moshu-write/references/genre-prose-cards/年代.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/年代.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/年代.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-快穿",
-      "source": "skills/moshu-write/references/genre-prose-cards/快穿.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/快穿.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/快穿.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-悬疑灵异",
-      "source": "skills/moshu-write/references/genre-prose-cards/悬疑灵异.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/悬疑灵异.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/悬疑灵异.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-悬疑脑洞",
-      "source": "skills/moshu-write/references/genre-prose-cards/悬疑脑洞.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/悬疑脑洞.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/悬疑脑洞.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-战神赘婿",
-      "source": "skills/moshu-write/references/genre-prose-cards/战神赘婿.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/战神赘婿.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/战神赘婿.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-抗战谍战",
-      "source": "skills/moshu-write/references/genre-prose-cards/抗战谍战.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/抗战谍战.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/抗战谍战.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-星光璀璨",
-      "source": "skills/moshu-write/references/genre-prose-cards/星光璀璨.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/星光璀璨.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/星光璀璨.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-民国言情",
-      "source": "skills/moshu-write/references/genre-prose-cards/民国言情.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/民国言情.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/民国言情.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-游戏体育",
-      "source": "skills/moshu-write/references/genre-prose-cards/游戏体育.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/游戏体育.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/游戏体育.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-玄幻脑洞",
-      "source": "skills/moshu-write/references/genre-prose-cards/玄幻脑洞.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/玄幻脑洞.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/玄幻脑洞.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-玄幻言情",
-      "source": "skills/moshu-write/references/genre-prose-cards/玄幻言情.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/玄幻言情.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/玄幻言情.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-现言脑洞",
-      "source": "skills/moshu-write/references/genre-prose-cards/现言脑洞.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/现言脑洞.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/现言脑洞.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-科幻末世",
-      "source": "skills/moshu-write/references/genre-prose-cards/科幻末世.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/科幻末世.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/科幻末世.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-职场婚恋",
-      "source": "skills/moshu-write/references/genre-prose-cards/职场婚恋.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/职场婚恋.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/职场婚恋.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-西方奇幻",
-      "source": "skills/moshu-write/references/genre-prose-cards/西方奇幻.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/西方奇幻.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/西方奇幻.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-豪门总裁",
-      "source": "skills/moshu-write/references/genre-prose-cards/豪门总裁.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/豪门总裁.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/豪门总裁.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-都市修真",
-      "source": "skills/moshu-write/references/genre-prose-cards/都市修真.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/都市修真.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/都市修真.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-都市日常",
-      "source": "skills/moshu-write/references/genre-prose-cards/都市日常.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/都市日常.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/都市日常.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-都市种田",
-      "source": "skills/moshu-write/references/genre-prose-cards/都市种田.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/都市种田.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/都市种田.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-都市脑洞",
-      "source": "skills/moshu-write/references/genre-prose-cards/都市脑洞.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/都市脑洞.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/都市脑洞.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-都市高武",
-      "source": "skills/moshu-write/references/genre-prose-cards/都市高武.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/都市高武.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/都市高武.md"
-      ]
-    },
-    {
-      "name": "genre-prose-card-青春甜宠",
-      "source": "skills/moshu-write/references/genre-prose-cards/青春甜宠.md",
-      "targets": [
-        "skills/moshu-volume/references/genre-prose-cards/青春甜宠.md",
-        "skills/moshu-setup/references/agent-references/genre-prose-cards/青春甜宠.md"
-      ]
-    },
-    {
-      "name": "plot-patterns-reference",
-      "source": "skills/moshu-write/references/plot-patterns.md",
-      "targets": [
-        "skills/moshu-volume/references/plot-patterns.md",
-        "skills/moshu-analyze/references/plot-patterns.md"
-      ]
-    },
-    {
-      "name": "plot-troubleshooting-reference",
-      "source": "skills/moshu-write/references/plot-troubleshooting.md",
-      "targets": [
-        "skills/moshu-volume/references/plot-troubleshooting.md"
-      ]
-    },
-    {
-      "name": "literary-techniques-reference",
-      "source": "skills/moshu-write/references/literary-techniques.md",
-      "targets": [
-        "skills/moshu-setup/references/agent-references/literary-techniques.md"
-      ]
-    }
-  ]
+ "version": 1,
+ "groups": [
+  {
+   "name": "prose-ai-pattern-detector",
+   "source": "skills/moshu-deslop/scripts/check-ai-patterns.js",
+   "targets": [
+    "skills/moshu-write/scripts/check-ai-patterns.js",
+    "skills/moshu-review/scripts/check-ai-patterns.js"
+   ]
+  },
+  {
+   "name": "prose-outline-copy-detector",
+   "source": "skills/moshu-write/scripts/check-outline-copy.js",
+   "targets": [
+    "skills/moshu-deslop/scripts/check-outline-copy.js"
+   ]
+  },
+  {
+   "name": "prose-degeneration-detector",
+   "source": "skills/moshu-deslop/scripts/check-degeneration.js",
+   "targets": [
+    "skills/moshu-write/scripts/check-degeneration.js",
+    "skills/moshu-review/scripts/check-degeneration.js"
+   ]
+  },
+  {
+   "name": "prose-punctuation-normalizer",
+   "source": "skills/moshu-deslop/scripts/normalize-punctuation.js",
+   "targets": [
+    "skills/moshu-write/scripts/normalize-punctuation.js",
+    "skills/moshu-review/scripts/normalize-punctuation.js"
+   ]
+  },
+  {
+   "name": "story-tracking-transaction",
+   "source": "skills/moshu-write/scripts/tracking_commit.py",
+   "targets": [
+    "skills/moshu-import/scripts/tracking_commit.py",
+    "skills/moshu-review/scripts/tracking_commit.py",
+    "skills/moshu-volume/scripts/tracking_commit.py"
+   ]
+  },
+  {
+   "name": "pace-meter-script",
+   "source": "skills/moshu-write/scripts/pace_meter.py",
+   "targets": [
+    "skills/moshu-volume/scripts/pace_meter.py"
+   ]
+  },
+  {
+   "name": "story-tracking-transaction-reference",
+   "source": "skills/moshu-write/references/tracking-transaction.md",
+   "targets": [
+    "skills/moshu-import/references/tracking-transaction.md",
+    "skills/moshu-review/references/tracking-transaction.md",
+    "skills/moshu-volume/references/tracking-transaction.md"
+   ]
+  },
+  {
+   "name": "banned-words-reference",
+   "source": "skills/moshu-deslop/references/banned-words.md",
+   "targets": [
+    "skills/moshu-write/references/banned-words.md",
+    "skills/moshu-review/references/banned-words.md",
+    "skills/moshu-setup/references/agent-references/banned-words.md"
+   ]
+  },
+  {
+   "name": "quality-checklist-reference",
+   "source": "skills/moshu-write/references/quality-checklist.md",
+   "targets": [
+    "skills/moshu-review/references/quality-checklist.md",
+    "skills/moshu-setup/references/agent-references/quality-checklist.md"
+   ]
+  },
+  {
+   "name": "anti-ai-writing-reference",
+   "source": "skills/moshu-deslop/references/anti-ai-writing.md",
+   "targets": [
+    "skills/moshu-review/references/anti-ai-writing.md",
+    "skills/moshu-setup/references/agent-references/anti-ai-writing.md",
+    "skills/moshu-write/references/anti-ai-writing.md"
+   ]
+  },
+  {
+   "name": "dialogue-mastery-reference",
+   "source": "skills/moshu-write/references/dialogue-mastery.md",
+   "targets": [
+    "skills/moshu-review/references/dialogue-mastery.md",
+    "skills/moshu-setup/references/agent-references/dialogue-mastery.md"
+   ]
+  },
+  {
+   "name": "plot-core-methods-reference",
+   "source": "skills/moshu-write/references/plot-core-methods.md",
+   "targets": [
+    "skills/moshu-review/references/plot-core-methods.md",
+    "skills/moshu-volume/references/plot-core-methods.md"
+   ]
+  },
+  {
+   "name": "plot-frameworks-reference",
+   "source": "skills/moshu-write/references/plot-frameworks.md",
+   "targets": [
+    "skills/moshu-outline/references/plot-frameworks.md"
+   ]
+  },
+  {
+   "name": "plot-special-topics-reference",
+   "source": "skills/moshu-write/references/plot-special-topics.md",
+   "targets": [
+    "skills/moshu-volume/references/plot-special-topics.md"
+   ]
+  },
+  {
+   "name": "plot-emotion-system-reference",
+   "source": "skills/moshu-write/references/plot-emotion-system.md",
+   "targets": [
+    "skills/moshu-volume/references/plot-emotion-system.md",
+    "skills/moshu-setup/references/agent-references/plot-emotion-system.md",
+    "skills/moshu-outline/references/plot-emotion-system.md"
+   ]
+  },
+  {
+   "name": "character-relations-reference",
+   "source": "skills/moshu-write/references/character-relations.md",
+   "targets": [
+    "skills/moshu-review/references/character-relations.md",
+    "skills/moshu-setup/references/agent-references/character-relations.md",
+    "skills/moshu-outline/references/character-relations.md",
+    "skills/moshu-volume/references/character-relations.md"
+   ]
+  },
+  {
+   "name": "character-design-methods-reference",
+   "source": "skills/moshu-write/references/character-design-methods.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/character-design-methods.md",
+    "skills/moshu-outline/references/character-design-methods.md"
+   ]
+  },
+  {
+   "name": "character-basics-reference",
+   "source": "skills/moshu-write/references/character-basics.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/character-basics.md",
+    "skills/moshu-outline/references/character-basics.md"
+   ]
+  },
+  {
+   "name": "state-tracking-reference",
+   "source": "skills/moshu-write/references/state-tracking.md",
+   "targets": [
+    "skills/moshu-import/references/state-tracking.md"
+   ]
+  },
+  {
+   "name": "emotional-arc-design-reference",
+   "source": "skills/moshu-write/references/emotional-arc-design.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/emotional-arc-design.md",
+    "skills/moshu-volume/references/emotional-arc-design.md"
+   ]
+  },
+  {
+   "name": "format-and-structure-reference",
+   "source": "skills/moshu-write/references/format-and-structure.md",
+   "targets": [
+    "skills/moshu-import/references/format-and-structure.md",
+    "skills/moshu-setup/references/agent-references/format-and-structure.md"
+   ]
+  },
+  {
+   "name": "opening-design-reference",
+   "source": "skills/moshu-write/references/opening-design.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/opening-design.md",
+    "skills/moshu-volume/references/opening-design.md",
+    "skills/moshu-outline/references/opening-design.md"
+   ]
+  },
+  {
+   "name": "hooks-chapter-reference",
+   "source": "skills/moshu-write/references/hooks-chapter.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/hooks-chapter.md"
+   ]
+  },
+  {
+   "name": "hooks-suspense-reference",
+   "source": "skills/moshu-write/references/hooks-suspense.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/hooks-suspense.md"
+   ]
+  },
+  {
+   "name": "reversal-toolkit-reference",
+   "source": "skills/moshu-write/references/reversal-toolkit.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/reversal-toolkit.md",
+    "skills/moshu-volume/references/reversal-toolkit.md"
+   ]
+  },
+  {
+   "name": "outline-methods-reference",
+   "source": "skills/moshu-write/references/outline-methods.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/outline-methods.md",
+    "skills/moshu-volume/references/outline-methods.md"
+   ]
+  },
+  {
+   "name": "outline-structure-theory-reference",
+   "source": "skills/moshu-write/references/outline-structure-theory.md",
+   "targets": [
+    "skills/moshu-volume/references/outline-structure-theory.md",
+    "skills/moshu-outline/references/outline-structure-theory.md"
+   ]
+  },
+  {
+   "name": "outline-workflow-reference",
+   "source": "skills/moshu-write/references/outline-workflow.md",
+   "targets": [
+    "skills/moshu-volume/references/outline-workflow.md"
+   ]
+  },
+  {
+   "name": "outline-rhythm-reference",
+   "source": "skills/moshu-write/references/outline-rhythm.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/outline-rhythm.md",
+    "skills/moshu-volume/references/outline-rhythm.md",
+    "skills/moshu-outline/references/outline-rhythm.md"
+   ]
+  },
+  {
+   "name": "outline-conflict-reference",
+   "source": "skills/moshu-write/references/outline-conflict.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/outline-conflict.md",
+    "skills/moshu-volume/references/outline-conflict.md"
+   ]
+  },
+  {
+   "name": "genre-writing-formulas-reference",
+   "source": "skills/moshu-write/references/genre-writing-formulas.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-writing-formulas.md",
+    "skills/moshu-analyze/references/genre-writing-formulas.md",
+    "skills/moshu-outline/references/genre-writing-formulas.md"
+   ]
+  },
+  {
+   "name": "style-genre-modules-reference",
+   "source": "skills/moshu-write/references/style-genre-modules.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/style-genre-modules.md",
+    "skills/moshu-volume/references/style-genre-modules.md"
+   ]
+  },
+  {
+   "name": "writing-craft-reference",
+   "source": "skills/moshu-write/references/writing-craft.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/writing-craft.md"
+   ]
+  },
+  {
+   "name": "reader-contract-reference",
+   "source": "skills/moshu-write/references/reader-contract-and-progression.md",
+   "targets": [
+    "skills/moshu-review/references/reader-contract-and-progression.md",
+    "skills/moshu-setup/references/agent-references/reader-contract-and-progression.md",
+    "skills/moshu-outline/references/reader-contract-and-progression.md",
+    "skills/moshu-volume/references/reader-contract-and-progression.md"
+   ]
+  },
+  {
+   "name": "genre-core-mechanics-reference",
+   "source": "skills/moshu-write/references/genre-core-mechanics.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/genre-core-mechanics.md",
+    "skills/moshu-outline/references/genre-core-mechanics.md",
+    "skills/moshu-analyze/references/genre-core-mechanics.md",
+    "skills/moshu-volume/references/genre-core-mechanics.md"
+   ]
+  },
+  {
+   "name": "genre-catalog-reference",
+   "source": "skills/moshu-write/references/genre-catalog.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/genre-catalog.md",
+    "skills/moshu-outline/references/genre-catalog.md",
+    "skills/moshu-analyze/references/genre-catalog.md",
+    "skills/moshu-volume/references/genre-catalog.md"
+   ]
+  },
+  {
+   "name": "genre-readers-reference",
+   "source": "skills/moshu-write/references/genre-readers.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/genre-readers.md",
+    "skills/moshu-volume/references/genre-readers.md",
+    "skills/moshu-analyze/references/genre-readers.md",
+    "skills/moshu-outline/references/genre-readers.md"
+   ]
+  },
+  {
+   "name": "beat-cards-reference",
+   "source": "skills/moshu-write/references/beat-cards.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/beat-cards.md",
+    "skills/moshu-volume/references/beat-cards.md"
+   ]
+  },
+  {
+   "name": "naming-cards-reference",
+   "source": "skills/moshu-write/references/naming-cards.md",
+   "targets": [
+    "skills/moshu-volume/references/naming-cards.md"
+   ]
+  },
+  {
+   "name": "story-emotional-methods-reference",
+   "source": "skills/moshu-write/references/emotional-methods.md",
+   "targets": [
+    "skills/moshu-setup/references/agent-references/emotional-methods.md",
+    "skills/moshu-volume/references/emotional-methods.md"
+   ]
+  },
+  {
+   "name": "genre-prose-cards-reference",
+   "source": "skills/moshu-write/references/genre-prose-cards.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards.md"
+   ]
+  },
+  {
+   "name": "idea-seed-reference",
+   "source": "skills/moshu-write/references/idea-seed.md",
+   "targets": [
+    "skills/moshu-outline/references/idea-seed.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-东方仙侠",
+   "source": "skills/moshu-write/references/genre-prose-cards/东方仙侠.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/东方仙侠.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/东方仙侠.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-传统玄幻",
+   "source": "skills/moshu-write/references/genre-prose-cards/传统玄幻.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/传统玄幻.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/传统玄幻.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-历史古代",
+   "source": "skills/moshu-write/references/genre-prose-cards/历史古代.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/历史古代.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/历史古代.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-历史脑洞",
+   "source": "skills/moshu-write/references/genre-prose-cards/历史脑洞.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/历史脑洞.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/历史脑洞.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-双男主",
+   "source": "skills/moshu-write/references/genre-prose-cards/双男主.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/双男主.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/双男主.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-古言脑洞",
+   "source": "skills/moshu-write/references/genre-prose-cards/古言脑洞.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/古言脑洞.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/古言脑洞.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-古风世情",
+   "source": "skills/moshu-write/references/genre-prose-cards/古风世情.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/古风世情.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/古风世情.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-女频悬疑",
+   "source": "skills/moshu-write/references/genre-prose-cards/女频悬疑.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/女频悬疑.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/女频悬疑.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-女频种田",
+   "source": "skills/moshu-write/references/genre-prose-cards/女频种田.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/女频种田.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/女频种田.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-宫斗宅斗",
+   "source": "skills/moshu-write/references/genre-prose-cards/宫斗宅斗.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/宫斗宅斗.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/宫斗宅斗.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-年代",
+   "source": "skills/moshu-write/references/genre-prose-cards/年代.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/年代.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/年代.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-快穿",
+   "source": "skills/moshu-write/references/genre-prose-cards/快穿.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/快穿.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/快穿.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-悬疑灵异",
+   "source": "skills/moshu-write/references/genre-prose-cards/悬疑灵异.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/悬疑灵异.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/悬疑灵异.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-悬疑脑洞",
+   "source": "skills/moshu-write/references/genre-prose-cards/悬疑脑洞.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/悬疑脑洞.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/悬疑脑洞.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-战神赘婿",
+   "source": "skills/moshu-write/references/genre-prose-cards/战神赘婿.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/战神赘婿.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/战神赘婿.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-抗战谍战",
+   "source": "skills/moshu-write/references/genre-prose-cards/抗战谍战.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/抗战谍战.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/抗战谍战.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-星光璀璨",
+   "source": "skills/moshu-write/references/genre-prose-cards/星光璀璨.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/星光璀璨.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/星光璀璨.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-民国言情",
+   "source": "skills/moshu-write/references/genre-prose-cards/民国言情.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/民国言情.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/民国言情.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-游戏体育",
+   "source": "skills/moshu-write/references/genre-prose-cards/游戏体育.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/游戏体育.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/游戏体育.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-玄幻脑洞",
+   "source": "skills/moshu-write/references/genre-prose-cards/玄幻脑洞.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/玄幻脑洞.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/玄幻脑洞.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-玄幻言情",
+   "source": "skills/moshu-write/references/genre-prose-cards/玄幻言情.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/玄幻言情.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/玄幻言情.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-现言脑洞",
+   "source": "skills/moshu-write/references/genre-prose-cards/现言脑洞.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/现言脑洞.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/现言脑洞.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-科幻末世",
+   "source": "skills/moshu-write/references/genre-prose-cards/科幻末世.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/科幻末世.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/科幻末世.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-职场婚恋",
+   "source": "skills/moshu-write/references/genre-prose-cards/职场婚恋.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/职场婚恋.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/职场婚恋.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-西方奇幻",
+   "source": "skills/moshu-write/references/genre-prose-cards/西方奇幻.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/西方奇幻.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/西方奇幻.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-豪门总裁",
+   "source": "skills/moshu-write/references/genre-prose-cards/豪门总裁.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/豪门总裁.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/豪门总裁.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-都市修真",
+   "source": "skills/moshu-write/references/genre-prose-cards/都市修真.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/都市修真.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/都市修真.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-都市日常",
+   "source": "skills/moshu-write/references/genre-prose-cards/都市日常.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/都市日常.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/都市日常.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-都市种田",
+   "source": "skills/moshu-write/references/genre-prose-cards/都市种田.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/都市种田.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/都市种田.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-都市脑洞",
+   "source": "skills/moshu-write/references/genre-prose-cards/都市脑洞.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/都市脑洞.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/都市脑洞.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-都市高武",
+   "source": "skills/moshu-write/references/genre-prose-cards/都市高武.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/都市高武.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/都市高武.md"
+   ]
+  },
+  {
+   "name": "genre-prose-card-青春甜宠",
+   "source": "skills/moshu-write/references/genre-prose-cards/青春甜宠.md",
+   "targets": [
+    "skills/moshu-volume/references/genre-prose-cards/青春甜宠.md",
+    "skills/moshu-setup/references/agent-references/genre-prose-cards/青春甜宠.md"
+   ]
+  },
+  {
+   "name": "plot-patterns-reference",
+   "source": "skills/moshu-write/references/plot-patterns.md",
+   "targets": [
+    "skills/moshu-volume/references/plot-patterns.md",
+    "skills/moshu-analyze/references/plot-patterns.md"
+   ]
+  },
+  {
+   "name": "plot-troubleshooting-reference",
+   "source": "skills/moshu-write/references/plot-troubleshooting.md",
+   "targets": [
+    "skills/moshu-volume/references/plot-troubleshooting.md"
+   ]
+  }
+ ]
 }

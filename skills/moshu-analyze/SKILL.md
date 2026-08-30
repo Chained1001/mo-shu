@@ -13,7 +13,7 @@ description: "网文拆书。深度拆解爆款网文的黄金三章、人设架
 
 > Agent 兼容性：检查专业 agent 是否可用——已部署（部署物由 /moshu-setup 按宿主物化）即可 spawn；不可用或运行时不暴露 custom agent registry 时必须降级为 solo/direct，报告 `Fallback: project custom agents unavailable -> solo`。宿主布局差异由 /moshu-setup 适配面处理，本技能不感知；Claude Code 兼容面保留 `subagent_type`。
 >
-> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 44` 不一致时（标记缺失、字段缺失/非整数、小于或大于 44）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 44）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 44 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
+> Spawn 版本提示（不阻断 spawn）：先读取项目根 `.story-deployed` 的 `agents_version`。与本版 `agents_version: 45` 不一致时（标记缺失、字段缺失/非整数、小于或大于 45）**照常按文件存在性检查并 spawn**，同时报告 `Notice: agents bundle 版本不匹配（项目 {N}，本版 45）` 并提示重新运行 `/moshu-setup` 后新开会话；大于 45 时额外提示先更新 mo-shu，不要用本地旧版 setup 降级覆盖。只有 agent 文件缺失、或运行时不暴露 custom agent 时才降级 solo/direct，报告 `Fallback: ... -> solo`。
 
 ## 拆解边界声明（主线程同样适用）
 
@@ -53,13 +53,14 @@ description: "网文拆书。深度拆解爆款网文的黄金三章、人设架
 
 | 文件 | 何时加载 |
 |------|----------|
-| [references/analyze-workflow.md](references/analyze-workflow.md) | **流程权威**：Stage 1-2 完整拆解流程（管道 2-1~2-7/边界表/停靠/并行策略/恢复机制） |
-| [references/plot-patterns.md](references/plot-patterns.md) | 拆对标书标注情节模式（B78：9 骨架原型，三消费点之二） |
-| [references/output-templates.md](references/output-templates.md) | 管道全程：各 Stage 输出模板 + 快速预览报告模板 + `剧情/节奏.md` / `剧情/情绪模块.md` 模板 + 通用速查表 |
-| [references/material-decomposition.md](references/material-decomposition.md) | Stage 2-3~2-6 按节加载：素材拆解方法论 + 质量阈值 + 分块策略（语料读取/阈值门禁/分块策略多点位引用） |
-| [references/pipeline-ops.md](references/pipeline-ops.md) | 管道运维：_progress.md 模板、错误处理、恢复机制操作步骤 |
-| [references/deconstruction-notes.md](references/deconstruction-notes.md) | 拆书方法+影视拆解+抽象拆解法+题材实战 |
-| [references/technique-summary-sop.md](references/technique-summary-sop.md) | Stage 2-7：技法总结 SOP（情绪交替/可借鉴技巧/分层学习路线/不可模仿） |
+| [references/analyze-workflow.md](references/analyze-workflow.md) | **流程权威**：Stage 1-2 拆解流程（管道/边界/停靠/并行/恢复） |
+| [references/plot-patterns.md](references/plot-patterns.md) | 拆书标注情节模式（B78：9 骨架原型） |
+| [references/genre-writing-formulas.md](references/genre-writing-formulas.md) | 拆文题材公式参考 |
+| [references/output-templates.md](references/output-templates.md) | 管道全程：各 Stage 输出模板 + 快速预览 + 剧情节奏/情绪模块模板 + 通用速查表 |
+| [references/material-decomposition.md](references/material-decomposition.md) | Stage 2-3~2-6 按节加载：素材拆解方法论 + 质量阈值 + 分块策略 |
+| [references/pipeline-ops.md](references/pipeline-ops.md) | 管道运维：_progress 模板、错误处理、恢复步骤 |
+| [references/deconstruction-notes.md](references/deconstruction-notes.md) | 拆书/影视/抽象拆解+题材实战 |
+| [references/technique-summary-sop.md](references/technique-summary-sop.md) | Stage 2-7 技法总结 SOP |
 
 ---
 
