@@ -24,10 +24,10 @@ COMPLIANT = """# 大纲（测试书）
 - 开篇期 15% / 发展期 55% / 高潮期 20% / 收尾期 10%
 
 ## 每卷骨架表
-| 卷 | 一句话（主角中心） | 主要对手（+私人纠缠） | 危机/赌注 | 中点 | 高潮定死 | 卷末跃迁 | 字数 |
-|---|---|---|---|---|---|---|---|
-| 1 | 主角被迫查案 | 反派A（私人纠缠） | 心理死亡 | 假胜 | 揭穿阴谋 | 自保→反击 | 50 |
-| 2 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 反击→终局 | 50 |
+| 卷 | 一句话（主角中心） | 主要对手（+私人纠缠） | 危机/赌注 | 中点 | 高潮定死 | 群像 | 钥匙 | 卷末跃迁 | 字数 |
+|---|---|---|---|---|---|---|---|---|---|
+| 1 | 主角被迫查案 | 反派A（私人纠缠） | 心理死亡 | 假胜 | 揭穿阴谋 | 师门旧案配角入场 | 反派A为何针对主角 | 自保→反击 | 50 |
+| 2 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |
 
 ## 终局底牌
 - 底牌一（解锁卷 2）
@@ -57,6 +57,16 @@ COMPLIANT = """# 大纲（测试书）
 
 ## 常驻压力
 - 阴德账（每卷结算，收尾卷合流）
+
+## 卷间驱动链
+| 卷 | 前台问题 | 卷末钥匙 | 下一卷前台问题 |
+|---|---|---|---|
+| 1 | 主角被迫查案 | 反派A为何针对主角 | 主角对决势力 |
+
+## 承诺兑现时点
+| 理想书评承诺 | 兑现章数 | 兑现方式 |
+|---|---|---|
+| 金手指首显威 | 8-12 | 探案中首次动用 |
 """
 
 
@@ -100,7 +110,7 @@ def test_missing_midpoint(tmp: Path) -> None:
 
 
 def test_wordcount_drift(tmp: Path) -> None:
-    outline = COMPLIANT.replace("| 2 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 反击→终局 | 50 |",
+    outline = COMPLIANT.replace("| 2 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |",
                                 "| 2 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 反击→终局 | 80 |")
     project = write_project(tmp, "words", outline)
     code, payload = run_check(project)
@@ -133,7 +143,7 @@ def test_old_structure_downgrade(tmp: Path) -> None:
     project = write_project(tmp, "old", old)
     code, payload = run_check(project)
     assert code == 0, f"旧结构应降级 exit 0，实得 {code}: {payload}"
-    assert any("旧结构" in c for c in payload["candidate"]), f"旧结构应出 candidate 提示: {payload}"
+    assert any("旧版结构" in c for c in payload["candidate"]), f"旧版结构应出 candidate 提示: {payload}"
 
 
 def test_missing_outline(tmp: Path) -> None:

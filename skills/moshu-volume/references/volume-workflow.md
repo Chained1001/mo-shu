@@ -1,8 +1,8 @@
 # volume-workflow.md：卷规划（单元构建→整合检验→定稿 + Phase B 深度打磨）
 
-> **来源声明**：本文件源自 moshu-write 侧开书工作流的构建段拆分（V2.1 批 B1a）；**B76 拆分**——Phase A 的 Stage 1-3（信息采集/骨架/人物）拆出为 moshu-outline 侧 workflow-outline.md，本文件承载单元构建→整合检验→定稿 + Phase B 打磨环 + 创作进度 + 采风衔接 + 修订流入口；细纲职责归 write 侧。上卷故事层产物（设定/、大纲/大纲.md）由 moshu-outline 产出，本技能只读消费（文件即接口）。
+> **来源声明**：本文件自 write 侧开书工作流构建段拆分（V2.1 B1a）；**B76 拆分**——信息采集/骨架/人物 三域拆出为 moshu-outline 侧 workflow-outline.md，本文件承载单元构建→整合检验→定稿 + Phase B 打磨环 + 创作进度 + 采风衔接 + 修订流入口；细纲归 write 侧。上卷故事层产物（设定/、大纲/大纲.md）由 moshu-outline 产出只读消费（文件即接口）。
 >
-> **v4.0 架构（批 B53）**：由 B10 六步书驱构建（三停靠）重构为 **Phase A「快速生成」+ Phase B「深度打磨」双 Phase**——Phase A 全速走完 Stage 1-6（方法论照用，不停靠不评审），Stage 2/6 后自动跑 check_outline；Phase A 完成一个弹窗确认后进入 Phase B 打磨环（evaluator 全局评审 → 五选项主选择 → 级联改进循环）。三停靠折叠为一个大停靠的打磨环；每步五面方法论与雪花法基底不变。与 write 侧"锁定"（有正文章节即保护锁）共存不冲突，见 [cold-path.md](cold-path.md)「与现有机制的关系」。
+> **v4.0 架构（批 B53）**：由 B10 六步书驱构建（三停靠）重构为 **Phase A「快速生成」+ Phase B「深度打磨」双 Phase**——Phase A 全速走完六步（不停靠不评审），Stage 2/6 后跑 check_outline；弹窗确认后进 Phase B 打磨环（evaluator 全局评审→五选项→级联循环）。三停靠折叠为一个大打磨环；每步五面方法论与雪花法基底不变。与 write 侧"锁定"共存，见 cold-path。
 >
 > **参考偏好 ≠ 对标**（B53 新增语义）：参考是学习神韵（基调/主角/风格），对标是模仿结构（拆文产物 fail-fast 校准）——两者可共存。
 >
@@ -10,7 +10,7 @@
 >
 > **对标书路径查找**（本书引用规则）：优先 `{项目}/对标/{书名}/`，不存在则回退 `拆文库/{书名}/`；排除同名或来源指向当前正文的 `对标/{当前书}/`。
 >
-> **消费侧只读**：本工作流读 `追踪/`（last_committed_chapter、连贯性风险、信息差冲突）作输入，不写任何追踪文件——唯一例外是定稿后的 `tracking_commit.py init`（事实层第 0 章基线，见「定稿与 artifact 创建」）。
+> **消费侧只读**：本工作流读 `追踪/`（last_committed_chapter、连贯性风险、信息差冲突）作输入，不写追踪文件——唯一例外是定稿后的 `tracking_commit.py init`（第 0 章基线，见「定稿与 artifact 创建」）。
 
 ---
 
@@ -24,6 +24,8 @@
 
 ## 创作进度与进入规则（三种入口统一）
 
+> **前置检查（B85）**：`设定/题材定位.md`/`大纲/大纲.md` 缺 → 先走 /moshu-outline（故事层产物是本技能输入；提醒不拦截）。
+
 构建环三种入口（开书构建 / 修订 / 开新卷）的第一步均先读 `设定/创作进度.md`（一册一份：构建期对谈锚，构建态与方法论单真源）：
 
 - **存在** → 读取它，向作者汇报「本书{构建态}，当前焦点…，待定 N 项」，确认后再继续后续对谈。进度构建态为「Phase B 打磨中」时按「Phase B·断点恢复」节恢复打磨环。
@@ -32,7 +34,7 @@
 
 ### 进度模板（书项目产物 `设定/创作进度.md`，v3——Phase 状态机）
 
-> 模板见 [progress-template.md](progress-template.md)（方法论声明/六态状态机表/产物表/打磨记录 append-only 等完整格式）。创作进度语义要点：① 构建态六态流转以模板内「进入条件/退出条件」两列为准（⑤ 完结终态：作者在大纲/完结宣告.md 宣告后翻入，不再退出，B70）；② **打磨记录 append-only**——每轮追加、不改历史，是 Phase B 断点恢复的唯一真相源；③ 产物表的 ⚠️ 待打磨项列由 Phase A 各步汇总，作为 Phase B 打磨的初始清单；④ 采风需求节用 CF 票据四列（CF 编号｜需求描述｜类型｜状态），与 [caifeng-methods.md](caifeng-methods.md) 创作进度登记口径一致。
+> 模板见 [progress-template.md](progress-template.md)（方法论声明/六态状态机/产物表/打磨记录）。创作进度语义要点：① 构建态六态流转以模板「进入条件/退出条件」两列为准（完结终态作者宣告后翻入不退）；② **打磨记录 append-only**——断点恢复唯一真相源；③ 产物表 ⚠️ 待打磨项列由 Phase A 汇总作 Phase B 初始清单；④ 采风需求节 CF 票据四列（CF/需求描述/类型/状态），与 [caifeng-methods.md](caifeng-methods.md) 口径一致。
 
 ### 流程规则（六条）
 
@@ -64,7 +66,7 @@
 - [virtual-benchmark-template.md](virtual-benchmark-template.md)
 - [progress-template.md](progress-template.md)
 
-> B76 拆分注记：character-design-methods / character-basics / plot-frameworks / core-setting-template / ideal-review-template / idea-seed 六件随 Stage 1-3 段迁往 moshu-outline 侧 workflow-outline.md——其方法论索引在彼处重列。
+> B76 拆分注记：character-design-methods / character-basics / plot-frameworks / core-setting-template / ideal-review-template / idea-seed 六件迁往 moshu-outline 侧 workflow-outline.md——索引在彼处重列。
 
 ---
 
@@ -74,9 +76,9 @@
 
 #### Phase A/B 架构（文字概览）
 
-**Phase A「快速生成」**：Stage 1 信息采集保留全部交互（轮 1 定调+偏好采集、采风默认执行[query 分流]、虚拟对标合成[无对标时]、轮 2 定形六问、轮 3 理想书评结构化目标、轮 4 档位）→ Stage 2-6 全速走完（方法论照用，不停靠不评审，不确定处标 ⚠️ 入创作进度产物表）；Stage 2 后自动跑 check_outline（blocking only），Stage 6 全量（blocking 清零才进弹窗）→ **Phase A→B 弹窗**（✅ 进入打磨 / 📋 先看产出 / ⏸️ 暂存）。
+**Phase A「快速生成」**：Stage 1 信息采集保留全部交互（轮 1 定调+偏好采集、采风默认执行[query 分流]、虚拟对标合成[无对标时]、轮 2 定形六问、轮 3 理想书评结构化目标、轮 4 档位）→ Stage 2-6 全速走完（不停靠不评审，⚠️ 入创作进度产物表）；Stage 2 后自动跑 check_outline（blocking only），Stage 6 全量（blocking 清零才进弹窗）→ **Phase A→B 弹窗**（✅ 进入打磨 / 📋 先看产出 / ⏸️ 暂存）。
 
-**Phase B「深度打磨」**：一个大停靠的打磨环——① evaluator 全局评审（full：三维度 JSON+score+research_needed+summary+recommendation）→ ② 打磨屏（报告九格+⚠️待打磨项）→ ③ 五选项（✅定稿[tracking init]/🔧改进/🔄采风补强[research_needed 检索→更新虚拟对标]/📡逐维度打磨[五维映射方法论]/📝自改）→ ④ 每轮按级联纪律（影响声明→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录落创作进度 append-only，**每轮汇报含创作进度文件路径**）。
+**Phase B「深度打磨」**：一个大停靠的打磨环——① evaluator 全局评审（full：三维度 JSON+score+research_needed+summary+recommendation）→ ② 打磨屏（报告九格+⚠️待打磨项）→ ③ 五选项（✅定稿[tracking init]/🔧改进/🔄采风补强[检索→更新对标]/📡逐维度[五维映射]/📝自改）→ ④ 每轮按级联纪律（影响声明→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录落创作进度 append-only，**每轮汇报含创作进度文件路径**）。
 
 **断点恢复**：新会话读进度构建态「Phase B 打磨中」→ 读打磨记录最后一条 → 汇报断点 → 继续打磨环。创作瓶颈按需加载 [plot-troubleshooting.md](plot-troubleshooting.md) 症状药方（B78）。
 
@@ -153,13 +155,13 @@
 
 > 方法论照常加载：五步法第 2 步 / beat-cards BC-ID / plot-emotion-system 情绪拉扯；题材公式仅离线兜底。**虚拟对标节奏目标参照**。浮现记录本步开始随手记。
 
-**产出**：逐卷剧情单元卡（单元ID/章节范围/单元承诺/风险等级/BC-ID 章功能分配/对标剧情参照；行格式样例（B68b pace_meter 主源解析口径）：`单元 U{NN}｜章节范围：第{N}-{M} 章｜承诺/风险/BC-ID…`）；题材框架消费锚=`设定/题材定位.md`「题材框架」行+拆文产物元数据头（B71）+ 支线登记表（收束卷必填、占比≤25% mo-shu 自定）+ 每卷角色弧线段 + 单元设定 + 单元情绪弧线。博弈点未落位回查 ⚠️。不确定处标 ⚠️。
+**产出**：逐卷剧情单元卡（单元ID/章节范围/单元承诺/风险等级/BC-ID 章功能分配/对标剧情参照/承接钩·开启钩[本单元接住上一单元什么·给下一单元留什么，B85]；行格式样例（B68b pace_meter 主源解析口径）：`单元 U{NN}｜章节范围：第{N}-{M} 章｜承诺/风险/BC-ID…`）；**敌手动机注（跨卷级敌手标一行动机，单卷案件反派不强制，B85）**；题材框架消费锚=`设定/题材定位.md`「题材框架」行+拆文产物元数据头（B71）+ 支线登记表（收束卷必填、占比≤25% mo-shu 自定）+ 每卷角色弧线段（主角行含「从信X到信Y」信念轨迹，接大纲核心角色五件套顿悟轨迹，B85）+ 单元设定 + 单元情绪弧线。博弈点未落位回查 ⚠️。不确定处标 ⚠️。
 
 > **按需加载（B77）**：单元卡设计对照 [plot-patterns.md](plot-patterns.md) 校验模式元素遗漏；卷纲硬锚校验见 [outline-structure-theory.md](outline-structure-theory.md)「BS2 比例骨架」。
 
 ### Phase A Stage 5·整合检验（自动）
 
-**产出**：伏笔四态登记（兑现方式列+大伏笔铺垫链≥3 卷半揭）、反转类型覆盖检查、跨卷呼应标注、线索矩阵（八线交叉点）、动机链核验+删主角测试+删题材核心测试。发现问题标 ⚠️ 入创作进度（不打断，Phase B 处理）。进度照常实时播报。
+**产出**：伏笔四态登记（兑现方式列+大伏笔铺垫链≥3 卷半揭）、反转类型覆盖检查、跨卷呼应标注、线索矩阵（八线交叉点）、动机链核验+删主角测试+删题材核心测试、**时点兑现核对（B85：对照大纲承诺兑现时点表，确认本卷兑现哪些承诺——纯对表动作）**。发现问题标 ⚠️ 入创作进度（不打断，Phase B 处理）。进度照常实时播报。
 
 **事件关系边**（Stage 5 精修时填写，写入卷纲「事件关系边」节，B57）：
 

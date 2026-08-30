@@ -20,9 +20,9 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
-HEADER_KEYWORDS = ["卷", "一句话", "对手", "赌注", "中点", "高潮", "跃迁", "字数"]
-REQUIRED_SECTIONS = ["每卷骨架表", "全书体量与阶段总览", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力"]
-OLD_STRUCTURE_CANDIDATE = "大纲为 B16 前旧结构，建议升级（补势力场/常驻压力/六要素列）"
+HEADER_KEYWORDS = ["卷", "一句话", "对手", "赌注", "中点", "高潮", "群像", "钥匙", "跃迁", "字数"]
+REQUIRED_SECTIONS = ["每卷骨架表", "全书体量与阶段总览", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力", "卷间驱动链", "承诺兑现时点"]
+OLD_STRUCTURE_CANDIDATE = "大纲为旧版结构，建议升级（补群像/钥匙列与卷间驱动链/承诺兑现时点节，见 skeleton-template）"
 SECTION_RE = re.compile(r"^#{1,4}\s+(.+?)\s*$")
 
 
@@ -145,7 +145,7 @@ def main() -> int:
         for i, row in enumerate(data_rows, start=1):
             if len(row) < 8:
                 blocking.append(f"骨架表第 {i} 行列数不足（{len(row)} < 8）")
-            elif any(not c for c in row[:8]):
+            elif any(not c for c in row[:10]):
                 blocking.append(f"骨架表第 {i} 行存在空列")
             # d. 中点列含假胜/假败
             midpoint = row[4] if len(row) > 4 else ""
@@ -170,7 +170,7 @@ def main() -> int:
         if total_words is not None:
             row_words = 0
             for row in data_rows:
-                m = re.search(r"(\d+)", row[7] if len(row) > 7 else "")
+                m = re.search(r"(\d+)", row[9] if len(row) > 9 else "")
                 if m:
                     row_words += int(m.group(1))
             if row_words > 0 and abs(row_words - total_words) / total_words > 0.05:
