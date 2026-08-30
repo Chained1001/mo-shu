@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest (v2.5.0)**: **12-skill generation + methodology chain** — build split into moshu-outline (story architecture) + moshu-volume (volume planning), unified creation workflow template (PREPARE-DRAFT-REVIEW-POLISH-COMMIT), write-review pairing for all 12 artifacts (evaluator two lenses: structure editor / reader judge + cross-artifact review), methodology extraction (plot patterns & BS2 anchors, literary techniques, caifeng-fusion agent, writing philosophy), spawn contract single source, two-level template assembly, host adapter consolidation (Claude Code + ZCode); agents_version 44. Earlier releases see [CHANGELOG.md](CHANGELOG.md).
+> **Latest (v2.5.1)**: **Test-cycle fixes + repo slimming** — skeleton-template 4-layer 10-column (ensemble/key columns, inter-volume drive chain, promise timing table, character 5-piece with personalized motivation, causal antecedent notes) + 4 methodology extractions (golden-finger 3 rules, reader psychology, outline causality, character construction) + entry pre-checks + 4 outline fields + ledger→progress rename + caifeng v2 + prefill path + reference sketch confirmation + example≠requirement constitutional principle + step disclosure duty + attention optimization (6.5x session reduction, 36% AGENTS.md reduction, dead stock cleanup); agents_version 45
 
 ## Pipeline Overview
 

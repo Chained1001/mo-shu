@@ -118,7 +118,7 @@
 | 模板两级装配 | narrative-writer 每章 spawn | 稳定规则由 agent 模板承接（部署一次），spawn prompt 只传本章增量数据（9 组 ≤12 项）——payload −21%、attention 释放给创作 | chapter-core spawn 段+narrative-writer「流程规则承接」节（B75） |
 | 统一创作流程模板+技能拆分 | 全创作技能 | 五步骨架（PREPARE→DRAFT→REVIEW→POLISH→COMMIT）FULL/LIGHT 两档入宪；build 拆 outline（故事架构）+volume（卷规划），12 技能世代 | 宪法 §9 第 7 条+双 SKILL（B76） |
 
-技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **44**（B69 三型扩展至 40，B75a 模板承接至 41，B76.5 整改补至 42，B77 评审合并至 43，B81 采风融合至 44）、候选机检永不拦截原则全程保持；agents_version 实管部署物全量，散布 40+ 处由 bump 脚本唯一合法修改。
+技术底盘变化：追踪 schema **8**（+reveal_chapter/voice_samples/address_book/progression）、agents_version **45**（B69 三型扩展至 40，B75a 模板承接至 41，B76.5 整改补至 42，B77 评审合并至 43，B81 采风融合至 44，B87 瘦身批至 45）、候选机检永不拦截原则全程保持；agents_version 实管部署物全量，散布 40+ 处由 bump 脚本唯一合法修改。
 
 ### 2.3.2 方法论与评审能力（B77-B81，已实施 2026-08-29）
 
@@ -144,6 +144,7 @@
 
 ## 2.7 版本路线
 
+v2.5.1（已发 2026-08-31，修复四批 B84-B87：打磨+模板+萃取+瘦身）：skeleton-template 四层十节（群像/钥匙/驱动链/时点表/五件套[动机个人化]/前因注）/ 四项方法论萃取（金手指三定则/读者心理学/提纲动机链/人物构建学+消费接线）/ 入口前置三查+卷纲四字段 / 台账→创作进度改名 / 采风模板 v2 / 预填路径+参考速写确认 / 例证≠需求入宪 / 步骤告知义务 / 全仓瘦身（施工会话 6.5 倍减负+AGENTS.md 36% 减）；agents_version 45；开发标准 v1.7（§2.5 第四条+§2.6 第 11 条+§11 权威规范对齐）；审计法第七查
 v2.5.0（已发 2026-08-29，二期 B68-B81+审计 B72+整改 B73+架构 B74-B76+治理 B76.5-B76.6+写审 B77+方法论 B78-B81）：章纲生成强化/完结态全家/题材库集成/evaluator 两型（structure 责编+reader 读者评委，12 产物写审配对全覆盖+跨产物审查）/spawn 契约单一真源/模板两级装配/**build 拆分 outline+volume（12 技能世代）**/统一创作流程模板入宪/宿主适配面收口（两宿主裁定）/方法论萃取四批（情节骨架+正文手艺+采风融合智能体+写作哲学）；agents_version 44；审计法 v2.0 六查+第七查；盲区清单 v1.0；开发标准 §11 权威规范对齐；docs 瘦身 78→26。
 v2.4.0（已发 2026-08-28，开源强化 B58-B65 八批+审计 B66+整改 B67+docs 瘦身）：写作上下文按需注入（点名清单+预算闸）、伏笔剧透锁、角色语声锚与双向称谓、对话 DNA 全链、外科式修订护栏与编辑决策点、设定指纹影响面、数值 progression 域与长度候选、卡文阻塞协议、对标防撞对照（登记免责）；追踪 schema 8、agents_version 40、宪法 §3.4 涟漪面纪律。v2.5 方向：实测驱动打磨（test2-5）、审计-开源强化-v1 整改、本地守卫矩阵与 CI 对齐、路由表语义守卫、rename 工具、tracking_commit 拆分。
 
