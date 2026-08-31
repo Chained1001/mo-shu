@@ -47,6 +47,8 @@ ALLOWED_CROSS_DOMAIN: dict[str, str] = {
     # B86 方法论萃取：outline ideal-review-template 情绪目标设计跨域参照 write 侧读者心理学（消费接线）
     "workflow-revision.md": "write 侧改稿工作流；review anti-ai-writing 文字打磨纪律跨域引用执行细节（B95 deslop 收编）",
     "reader-psychology.md": "write 侧读者心理学；outline ideal-review-template 情绪目标设计跨域参照（B86 消费接线）",
+    # B99 双卡合一：scene-cards+craft-cards→cards.md，volume/write 两侧 outline-workflow 细纲质量段跨域指引 write 消费（B76 文件即接口同族）
+    "cards.md": "write 侧场景+技法双卡（B99 合并 scene-cards+craft-cards）；volume/write 两侧 outline-workflow 细纲质量段跨域指引 write 消费（B76 文件即接口同族）",
 }
 
 

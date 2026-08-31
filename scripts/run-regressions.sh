@@ -150,18 +150,66 @@ for f in "${tests[@]}"; do
   fi
 done
 
+# ---------- 守卫段（check-*，立案一余波 B99②：本地一键=CI 的 test 面+守卫面双覆盖） ----------
+echo
+echo "---------- 守卫段（check-*） ----------"
+check_total=0
+check_passed=0
+check_failed=0
+check_skipped=0
+check_failures=""
+
+# 逐项 glob scripts/check-*.sh（与 CI static-guards job 对齐；check-*.py 由 .sh 包装调用）
+for f in scripts/check-*.sh; do
+  [ -f "$f" ] || continue
+  check_total=$((check_total + 1))
+  name="$(basename "$f")"
+
+  # SKIP 判断（沿用同一 SKIP 清单——test-shared-assets 的 mode-drift 类 Windows 假红按审计法 v1.3 记原因）
+  skip_reason=""
+  for entry in "${SKIP[@]}"; do
+    sname="${entry%%|*}"
+    reason="${entry#*|}"
+    if [ "$name" = "$sname" ]; then
+      skip_reason="$reason"
+      break
+    fi
+  done
+
+  if [ -n "$skip_reason" ]; then
+    echo "[$check_total/${#tests[@]}+$check_total] $name — SKIP（$skip_reason）"
+    check_skipped=$((check_skipped + 1))
+    continue
+  fi
+
+  bash "$f" >/tmp/guard_$name.out 2>&1
+  rc=$?
+  if [ "$rc" -eq 0 ]; then
+    echo "[guard $check_total] $name … exit=$rc ✓"
+    check_passed=$((check_passed + 1))
+  else
+    echo "[guard $check_total] $name … exit=$rc ✗"
+    tail -5 "/tmp/guard_$name.out"
+    check_failed=$((check_failed + 1))
+    check_failures="$check_failures
+  $name: exit=$rc"
+  fi
+done
+
 # ---------- 汇总 ----------
 echo
 echo "========== 汇总 =========="
-echo "总数: $total | 通过: $passed | 失败: $failed | 跳过: $skipped"
-if [ "$skipped" -gt 0 ]; then
+echo "test 段: 总数 $total | 通过 $passed | 失败 $failed | 跳过 $skipped"
+echo "守卫段: 总数 $check_total | 通过 $check_passed | 失败 $check_failed | 跳过 $check_skipped"
+if [ "$skipped" -gt 0 ] || [ "$check_skipped" -gt 0 ]; then
   echo "跳过项（显式清单）："
   for entry in "${SKIP[@]}"; do
     echo "  - ${entry%%|*}：${entry#*|}"
   done
 fi
-if [ -n "$failures" ]; then
-  echo "失败清单：$failures"
+if [ -n "$failures" ] || [ -n "$check_failures" ]; then
+  [ -n "$failures" ] && echo "test 失败清单：$failures"
+  [ -n "$check_failures" ] && echo "守卫失败清单：$check_failures"
   exit 1
 fi
 echo "全部通过（exit 0）"
