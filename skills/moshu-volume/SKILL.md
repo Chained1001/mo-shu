@@ -12,7 +12,7 @@ description: "卷规划技能——每卷的单元卡/场景表/卷纲产出与�
 
 ## 读写面
 
-- 创建（产出）：`大纲/卷纲_第X卷.md`（单元卡+情绪弧线+伏笔表+反转+线索矩阵+事件边）、`大纲/场景表_单元{ID}.md`（B68）、`大纲/变更日志.md`（修订留痕）、`设定/采风-CF*.md`、`设定/虚拟对标.md`、创作进度
+- 创建（产出）：`大纲/卷纲_第X卷.md`（单元卡+情绪弧线+伏笔表+反转+线索矩阵+事件边）、`大纲/场景表_单元{ID}.md`（B68）、`大纲/变更日志.md`（修订留痕）、`设定/采风-CF*.md`、创作进度（题材定位含成品标尺节）
 - 修订（执行）：设定/*（修订流五步：`impact_scan.py` 影响分析→裁决→留痕→级联→回流）
 - 读取（消费）：`设定/`（全部，单元卡消费）、`大纲/大纲.md`、`拆文库/{书}/剧情/*.md`、`节奏.md`、`情绪模块.md`、`追踪/上下文.md`（只读）
 - 边界：细纲与正文归 /moshu-write；追踪 commit/check/report 归 write（定稿步末 tracking init）
@@ -23,7 +23,7 @@ description: "卷规划技能——每卷的单元卡/场景表/卷纲产出与�
 
 ## 流程文件
 
-- 卷规划流程权威：`references/volume-workflow.md`；修订流五步：`references/revision-workflow.md`；开新卷与防撞对照：`references/cold-path.md`；进度模板：`references/progress-template.md`；采风方法：`references/caifeng-methods.md`；虚拟对标：`references/virtual-benchmark-template.md`
+- 卷规划流程权威：`references/volume-workflow.md`；修订流五步：`references/revision-workflow.md`；开新卷与防撞对照：`references/cold-path.md`；进度模板：`references/progress-template.md`；采风方法：`references/caifeng-methods.md`；成品标尺：core-setting-template 标尺段（outline 侧）
 - 单元/场景/方法论：`references/beat-cards.md`、`references/outline-methods.md`、`references/outline-structure-theory.md`、`references/outline-workflow.md`（细纲职责在 write 侧）等共享方法论（references/ 全目录）
 
 ## 交接

@@ -339,19 +339,20 @@ def main() -> int:
         if not val or val in ("{}", "待补充", "TBD"):
             candidate.append("常驻压力行为空或占位，建议补充")
 
-    # ---------- B53 candidate：虚拟对标消费提示（设定/虚拟对标.md 存在时） ----------
-    virtual_path = project / "设定" / "虚拟对标.md"
-    if virtual_path.exists():
+    # ---------- B53/B94 candidate：成品标尺消费提示（题材定位.md 标尺节存在时） ----------
+    benchmark_path = project / "设定" / "题材定位.md"
+    if benchmark_path.exists():
         try:
-            vtext = read_text(virtual_path)
-            # 提取虚拟对标中的可锚定关键词（节奏目标/结构要点节的数字+名词短语，简单口径：
-            # 抽「每 N 章」「N 条」与 >2 字中文词），命中任一即算已消费
-            anchors = set(re.findall(r"每\s*\d+\s*章|伏笔密度|\d+\s*条", vtext))
-            consumed = any(a in text for a in anchors) if anchors else None
-            if consumed is False:
-                candidate.append("存在 虚拟对标.md 但大纲/卷纲零引用其节奏目标或结构要点关键词——可能未消费（候选提示，请人工确认）")
+            btext = read_text(benchmark_path)
+            # 标尺节可锚定关键词（节奏目标/爆发密度/爽点循环/低压容忍 任一命中即算有标尺）
+            has_ruler = any(kw in btext for kw in ("节奏目标", "爆发密度", "爽点循环", "低压容忍"))
+            if has_ruler:
+                anchors = set(re.findall(r"每\s*\d+\s*章|伏笔密度|\d+\s*条", btext))
+                consumed = any(a in text for a in anchors) if anchors else None
+                if consumed is False:
+                    candidate.append("题材定位成品标尺未被大纲引用——可能未消费（候选提示，请人工确认）")
         except OutlineError as exc:
-            candidate.append(f"虚拟对标读取异常：{exc}")
+            candidate.append(f"题材定位标尺读取异常：{exc}")
 
     # ---------- B57 candidate：事件关系边悬空引用（卷纲「事件关系边」节） ----------
     edges_section = section_text(text, "事件关系边") or ""

@@ -10,7 +10,7 @@ description: "故事架构技能——开书的故事层设计。题材定位、
 
 ## 读写面
 
-- 创建（产出）：`设定/题材定位.md`、`设定/关系.md`、`设定/题材正文提示卡.md`、`设定/理想书评.md`、`设定/角色/*.md`、`设定/势力/*.md`、`设定/世界观/*.md`、`大纲/大纲.md`（全书卷级鸟瞰+每卷骨架表）
+- 创建（产出）：`设定/题材定位.md`（含成品标尺节）、`设定/关系.md`、`设定/题材正文提示卡.md`、`设定/角色/*.md`、`设定/势力/*.md`、`设定/世界观/*.md`、`大纲/大纲.md`（全书卷级鸟瞰+每卷骨架表）
 - 读取（消费）：`拆文库/{书}/概要.md`、`拆文库/{书}/角色卡`（对话 DNA 带入）；题材卡写法参照按需跨技能只读 moshu-volume 技能的 genre-prose-cards 题材卡目录（文件即接口，B76 拆分声明）
 - 边界：本技能创建 `设定/*` 故事层档案与 `大纲/大纲.md`；卷纲（`大纲/卷纲_第X卷.md`）归 /moshu-volume；细纲与正文归 /moshu-write
 
@@ -20,7 +20,8 @@ description: "故事架构技能——开书的故事层设计。题材定位、
 
 ## 流程文件
 
-- 题材定位表模板：`references/core-setting-template.md`；理想书评（evaluator 打分锚点）：`references/ideal-review-template.md`
+- 流程权威：`references/workflow-outline.md`（Stage 1-3 主流程）
+- 题材定位表模板：`references/core-setting-template.md`（含成品标尺段——evaluator 打分锚点）
 - 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/idea-seed.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`
 
 ## 交接

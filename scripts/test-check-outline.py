@@ -64,7 +64,7 @@ COMPLIANT = """# 大纲（测试书）
 | 1 | 主角被迫查案 | 反派A为何针对主角 | 主角对决势力 |
 
 ## 承诺兑现时点
-| 理想书评承诺 | 兑现章数 | 兑现方式 |
+| 读者承诺 | 兑现章数 | 兑现方式 |
 |---|---|---|
 | 金手指首显威 | 8-12 | 探案中首次动用 |
 """
@@ -236,25 +236,25 @@ def test_power_paren_suffix(tmp: Path) -> None:
 
 
 def test_virtual_benchmark_unconsumed(tmp: Path) -> None:
-    # B53：虚拟对标.md 存在但大纲零引用其锚点关键词 → candidate 且 exit 0
+    # B53/B94：题材定位.md 成品标尺节存在但大纲零引用其锚点关键词 → candidate 且 exit 0
     project = write_project(tmp, "vbench", COMPLIANT)
     (project / "设定").mkdir()
-    (project / "设定" / "虚拟对标.md").write_text(
-        "# 虚拟对标\n## 节奏目标\n- 爆发密度：每 5 章一个小高潮\n- 伏笔密度：每卷埋 4 条 / 收 3 条参考\n", encoding="utf-8")
+    (project / "设定" / "题材定位.md").write_text(
+        "# 题材定位\n## 成品标尺\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n- 伏笔密度：每卷埋 4 条 / 收 3 条参考\n", encoding="utf-8")
     code, payload = run_check(project)
-    assert code == 0, f"虚拟对标未消费为 candidate，应 exit 0，实得 {code}: {payload}"
-    assert any("虚拟对标" in c and "零引用" in c for c in payload["candidate"]), f"应出虚拟对标未消费候选: {payload}"
+    assert code == 0, f"标尺未消费为 candidate，应 exit 0，实得 {code}: {payload}"
+    assert any("成品标尺" in c and "未被大纲引用" in c for c in payload["candidate"]), f"应出成品标尺未消费候选: {payload}"
 
 
 def test_virtual_benchmark_consumed(tmp: Path) -> None:
-    # B53：大纲显式引用虚拟对标锚点（如「每 5 章一个小高潮」）→ 不出候选
+    # B53/B94：大纲显式引用成品标尺锚点（如「每 5 章一个小高潮」）→ 不出候选
     outline = COMPLIANT.replace(
         "> 定稿：v1.0（2026-08-24，构建环）",
-        "> 定稿：v1.0（2026-08-24，构建环）\n> 参照虚拟对标：每 5 章一个小高潮（全书节奏目标）")
+        "> 定稿：v1.0（2026-08-24，构建环）\n> 参照成品标尺：每 5 章一个小高潮（全书节奏目标）")
     project = write_project(tmp, "vbenchok", outline)
     (project / "设定").mkdir()
-    (project / "设定" / "虚拟对标.md").write_text(
-        "# 虚拟对标\n## 节奏目标\n- 爆发密度：每 5 章一个小高潮\n", encoding="utf-8")
+    (project / "设定" / "题材定位.md").write_text(
+        "# 题材定位\n## 成品标尺\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n", encoding="utf-8")
     code, payload = run_check(project)
     assert code == 0, f"已消费应 exit 0，实得 {code}: {payload}"
     assert not any("零引用" in c for c in payload["candidate"]), f"已引用不应报零引用候选: {payload}"
@@ -354,7 +354,7 @@ def main() -> None:
         test_foreshadow_op_ok(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 虚拟对标未消费+已消费 / 事件边悬空+正常 / 伏笔操作悬空+合法)")
+    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 成品标尺未消费+已消费 / 事件边悬空+正常 / 伏笔操作悬空+合法)")
 
 
 if __name__ == "__main__":

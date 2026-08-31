@@ -183,7 +183,7 @@
         "related_paths",
         "score"
       ],
-      "notes": "score 仅 reader 型（B77 合并：full→reader，对照理想书评打分）；structure 型不填；related_paths=跨产物审查材料清单（structure 型带了必须逐对核对）",
+      "notes": "score 仅 reader 型（B77 合并：full→reader，对照题材定位·成品标尺打分）；structure 型不填；related_paths=跨产物审查材料清单（structure 型带了必须逐对核对）",
       "callers": [
         {
           "file": "skills/moshu-volume/references/volume-workflow.md",

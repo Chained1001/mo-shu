@@ -6,7 +6,7 @@
 >
 > **参考偏好 ≠ 对标**（B53 新增语义）：参考是学习神韵（基调/主角/风格），对标是模仿结构（拆文产物 fail-fast 校准）——两者可共存。
 >
-> **虚拟对标**（B53 新增）：无对标路线的设计约束参照——采风多源产物合成三类设计目标（节奏/情绪/结构），落盘 `设定/虚拟对标.md`；Phase A 设计时参照、Phase B 打磨时评审锚点。有对标时跳过合成。
+> **成品标尺（B94）**：无对标路线的设计约束参照——目标态三源收口为核心设定标尺段（节奏/情绪/结构）；Phase A 设计时参照、Phase B 打磨时评审锚点。有对标时锚定拆文产物。
 >
 > **对标书路径查找**（本书引用规则）：优先 `{项目}/对标/{书名}/`，不存在则回退 `拆文库/{书名}/`；排除同名或来源指向当前正文的 `对标/{当前书}/`。
 >
@@ -49,7 +49,7 @@
 3. **收尾必结**：会话结束前焦点与待定项定格（创作进度是构建期对谈的快照锚，不是机读状态机——**纯 Markdown，不作任何脚本解析**）；自动段被打断时同样先落创作进度再停。
 4. **产物必登记**（v3）：Phase A 每个 artifact 完成即更新「Phase A 产物状态」行（版本+⚠️ 待打磨项）；⚠️ 是 Phase B 打磨的初始清单。
 5. **浮现必随手记**：Phase A 单元构建填卡时涌现的灵感即时记入浮现记录——整合检验逐条处理（落实/转待定/放弃）。
-6. **开新卷重置**：产物表重置为本卷新增项（核心设定表/虚拟对标保留——全书级），进入「Phase A 进行中（开卷）」。
+6. **开新卷重置**：产物表重置为本卷新增项（核心设定表含标尺保留——全书级），进入「Phase A 进行中（开卷）」。
 
 ### 方法论副本索引（经 outline-methods 路由表按需加载）
 
@@ -69,7 +69,6 @@
 - [plot-emotion-system.md](plot-emotion-system.md)
 - [style-genre-modules.md](style-genre-modules.md)
 - [outline-workflow.md](outline-workflow.md)（细纲职责在 write 侧，本卷规划只引其分批口径）
-- [virtual-benchmark-template.md](virtual-benchmark-template.md)
 - [progress-template.md](progress-template.md)
 
 > B76 拆分注记：character-design-methods / character-basics / plot-frameworks / core-setting-template / ideal-review-template / idea-seed 六件迁往 moshu-outline 侧 workflow-outline.md——索引在彼处重列。
@@ -82,7 +81,7 @@
 
 #### Phase A/B 架构（文字概览）
 
-**Phase A「快速生成」**：Stage 1 信息采集保留全部交互（轮 1 定调+偏好、采风默认[query 分流]、虚拟对标合成、轮 2 定形六问、轮 3 理想书评、轮 4 档位）→ Stage 2-6 全速走完（不停靠不评审，⚠️ 入创作进度产物表）；Stage 2 后自动跑 check_outline（blocking only），Stage 6 全量（blocking 清零才进弹窗）→ **Phase A→B 弹窗**（✅ 进入打磨 / 📋 先看产出 / ⏸️ 暂存）。
+**Phase A「快速生成」**：Stage 1 信息采集保留全部交互（轮 1 定调+偏好、采风默认[query 分流]、标尺合成、轮 2 定形六问、轮 3 定流程+落盘）→ Stage 2-6 全速走完（不停靠不评审，⚠️ 入创作进度产物表）；Stage 2 后自动跑 check_outline（blocking only），Stage 6 全量（blocking 清零才进弹窗）→ **Phase A→B 弹窗**（✅ 进入打磨 / 📋 先看产出 / ⏸️ 暂存）。
 
 **Phase B「深度打磨」**：一个大停靠的打磨环——① evaluator 全局评审（full：三维度 JSON+score+research_needed+summary）→ ② 打磨屏（报告九格+⚠️待打磨项）→ ③ 四选项（✅确认定稿/🔧改进/🔄采风补强/📡逐维度打磨——想自己改直接说）→ ④ 每轮按级联纪律（影响声明→作者确认→一次改完→重跑 check_outline→re-spawn evaluator→打磨记录 append-only，**每轮汇报含创作进度路径**）。
 
@@ -98,7 +97,7 @@
 │  网文适配层（五步法 + 八节点 + 多卷连载）                │
 │  高潮优先 → 单元剧 → 八线 → 章位分配 → 对标回流         │
 ├─────────────────────────────────────────────────────┤
-│  对标参照层（有主对标时激活；无对标时由「虚拟对标」承担）  │
+│  对标参照层（有主对标时激活；无对标时由「成品标尺」承担）  │
 │  概要参照 → 节奏校准 → 单元参照 → 密度校准 → 坐标回流   │
 └─────────────────────────────────────────────────────┘
 ```
@@ -109,7 +108,7 @@
 
 | 步骤 | 密度 | 故事面（所有书都做） | 人物面（所有书都做） | 对标面（有主对标时） | 方法论书指引 | 卡片按需加载 |
 |---|---|---|---|---|---|---|---|
-| 信息采集 | — | 选题方向+理想书评+方法论声明 | — | **对标发现**：扫拆文库→推荐→登记主对标 | 《骨架》第 2 章（理想书评） | — |
+| 信息采集 | — | 选题方向+成品标尺+方法论声明 | — | **对标发现**：扫拆文库→推荐→登记主对标 | 《骨架》第 2 章（标尺口吻） | — |
 | 骨架构建 | 骨架构建 | 句子 | 每卷骨架表（的一句话列）+高潮定死+终局底牌+升级台阶+全书四阶段 | 核心角色**四件套**：目标/抱负/价值观冲突/顿悟 | 读对标**概要.md**：参考每卷功能定位 | 雪花法3-5章+五步法1 | naming-cards（按需） |
 | 人物构建 | 段落 | 每卷一段话（三幕+灾难性事件）+阶段边界微调 | 角色一页：背景故事+**弧线六阶段**+大纲微调 | 读对标**剧情/节奏.md**：灾难级别校准 | 雪花法6-8章+大师课9章 | 人物主题卡（8 张） |
 | 单元构建 | 单元构建 | 单元 | 逐卷**剧情单元卡**：单元 ID/章节范围/承诺/风险/对标剧情参照+章功能分配 | 每卷角色弧线段（起终点+变化节点） | 读对标**剧情/{标题}.md**：同功能单元结构/密度 | 五步法2+雪花法7/9-11章（题材公式仅离线兜底） | beat-cards + genre-writing-formulas |
@@ -127,17 +126,17 @@
 
 #### 双路设计（同流程+可选参照——不是两套流程）
 
-> 无对标路径的参照约束由「虚拟对标」承担：节奏参照 骨架构建/单元构建、情绪参照 人物构建/整合检验、结构参照 骨架构建/打磨定稿；Phase B 评审锚点。
+> 无对标路径的参照约束由「成品标尺」承担：节奏参照 骨架构建/单元构建、情绪参照 人物构建/整合检验、结构参照 骨架构建/打磨定稿；Phase B 评审锚点。
 
 | 步骤 | 无对标路径 | 有对标路径 |
 |---|---|---|
-| 信息采集 | 选题+参考偏好+理想书评+方法论声明+**虚拟对标合成** | 同左 + **对标发现**（虚拟对标跳过） |
+| 信息采集 | 选题+参考偏好+成品标尺+方法论声明+**标尺合成** | 同左 + **对标发现**（标尺锚定拆文） |
 | 骨架构建 | 雪花法→八节点定结构→每卷骨架表（的一句话列） | 同左 + **读概要参考卷功能** |
 | 人物构建 | 雪花法→弧线六阶段→角色一页 | 同左 + **读节奏校准灾难级别** |
 | 单元构建 | 五步法→单元卡（题材公式仅离线兜底） | 同左 + **读对标单元参考功能/密度** |
 | 整合检验 | 伏笔/线索/因果+可证伪 | 同左 + **读情绪模块校准密度** |
 | 打磨定稿 | 八节点占比+LOCK+定稿 | **对标回流**（五步，见 Stage 6 节）+LOCK+定稿 |
-| Phase B | evaluator 用虚拟对标做评审锚点 | evaluator 用对标拆文产物做评审锚点（精确度更高） |
+| Phase B | evaluator 用成品标尺做评审锚点 | evaluator 用对标拆文产物做评审锚点（精确度更高） |
 
 #### 交互时点（v4.0：三停靠折叠为打磨环）
 
@@ -159,7 +158,7 @@
 
 ### Phase A 单元构建
 
-> 方法论照常加载：五步法第 2 步 / beat-cards BC-ID / plot-emotion-system 情绪拉扯；题材公式仅离线兜底。**虚拟对标节奏目标参照**。浮现记录本步开始随手记。
+> 方法论照常加载：五步法第 2 步 / beat-cards BC-ID / plot-emotion-system 情绪拉扯；题材公式仅离线兜底。**成品标尺节奏目标参照**。浮现记录本步开始随手记。
 
 > **峰值三问（B88）**：单元拆分前先答——本卷读者会截图发群的是哪三处？（截图/拍案/泪点各一）答案登记卷契约「**峰值时刻×3**」行（峰值可标来源火种——来自最初灵感的情绪真实性锚，B91）；答不出=靠运气，先想再拆。
 
@@ -257,17 +256,15 @@ spawn 参数：
 token: {8 位令牌}
 eval_type: reader         ← Phase B 专用，评完整粗稿（B77：full→reader）
 target_paths: [大纲/大纲.md, 大纲/卷纲_第X卷.md, 设定/角色/*.md, 角色弧线页]
-benchmark_path: 设定/理想书评.md（结构化三维度）
-virtual_benchmark_path: 设定/虚拟对标.md   ← 无对标时传入，有对标时省略
+benchmark_path: 设定/题材定位.md（成品标尺节——节奏/情绪/结构三组目标）
 benchmark_book_paths: [对标/{书名}/剧情/节奏.md, 对标/{书名}/剧情/情绪模块.md]   ← 仅有主对标时传入（拆文精确数据，优先级最高）
 context: "Phase B 第 N 轮打磨——上一轮改了 X，本轮重点检查 Y"
 project_dir: {项目目录}
 ```
 
 **参照优先级（B55）**：
-- 有主对标 → 用 benchmark_book_paths，virtual_benchmark_path 省略（不双重传入）
-- 无对标 → 用 virtual_benchmark_path，benchmark_book_paths 省略
-- 两者都无 → 仅用 benchmark_path（理想书评——最弱参照，evaluator 应在 research_needed 中标注缺少参照）
+- 有主对标 → 用 benchmark_book_paths（拆文精确数据最高）；节缺失时降级泛化判断并在 research_needed 标注
+- 无对标 → 用 benchmark_path（成品标尺——节奏/情绪/结构三组目标）
 
 → 报告回来**主会话代写工单**（`review_tickets.py write --input <临时 JSON 文件>`——AI 产出先落文件）再 `verify-token --ticket --token` 校验（回传不符 → 弃用报告重 spawn）；脚本收口保留，evaluator 本体只读不写工单
 → evaluator 输出三维度 JSON（score/research_needed/summary/recommendation 字段定义见 agent 模板）
@@ -305,15 +302,15 @@ project_dir: {项目目录}
   ④ 情绪（核心情绪/交替模式/情绪禁区）
   ⑤ 角色（弧线锐度/升级绑弧光/配角功能位）
 
-选定维度后的闭环：AI 聚焦该维度 → 读映射表方法论 → 深度检查（对照虚拟对标/理想书评）→ 改进方案（级联纪律）→ re-spawn evaluator（context 注明"仅检查{维度}"）→ 回打磨屏
+选定维度后的闭环：AI 聚焦该维度 → 读映射表方法论 → 深度检查（对照成品标尺）→ 改进方案（级联纪律）→ re-spawn evaluator（context 注明"仅检查{维度}"）→ 回打磨屏
 
 | 维度 | 方法论文件 | 对照锚点 |
 |---|---|---|
-| 结构 | outline-methods「八节点故事结构」「势力场设计」+ outline-structure-theory「三幕式与五幕式」 | 虚拟对标 结构要点 |
-| 桥段 | plot-frameworks「核心梗与细化法」+ outline-rhythm「桥段的标准四章结构」 | 虚拟对标 爽点循环 |
-| 节奏 | outline-rhythm 全文（升级感/断期待/高潮节奏） | 虚拟对标 节奏目标 + 理想书评 节奏目标 |
-| 情绪 | plot-emotion-system「节奏与高潮控制」+ emotional-methods「情感拉扯节奏设计」 | 虚拟对标 情绪基准 + 理想书评 情绪目标 |
-| 角色 | character-design-methods「升级绑弧光」苏式问句 + character-basics「质量检查清单」 | 理想书评 结构评分 |
+| 结构 | outline-methods「八节点故事结构」「势力场设计」+ outline-structure-theory「三幕式与五幕式」 | 题材定位标尺段 结构要点 |
+| 桥段 | plot-frameworks「核心梗与细化法」+ outline-rhythm「桥段的标准四章结构」 | 成品标尺 爽点循环 |
+| 节奏 | outline-rhythm 全文（升级感/断期待/高潮节奏） | 成品标尺 节奏目标 |
+| 情绪 | plot-emotion-system「节奏与高潮控制」+ emotional-methods「情感拉扯节奏设计」 | 成品标尺 情绪基准 |
+| 角色 | character-design-methods「升级绑弧光」苏式问句 + character-basics「质量检查清单」 | 成品标尺 结构要点 |
 
 ### research_needed 与采风补强衔接
 
@@ -322,7 +319,7 @@ evaluator JSON 的 `research_needed` ≠ null 时：打磨屏展示 ⚠️「评
 作者选 🔄 后：
   → **前置检查（B93）**：`ls 设定/采风-CF*.md 2>/dev/null`——已有未消费产物→先消费再补强；无→告知「采风还在跑或需新采风」按需继续
   主线程 spawn moshu-researcher（query=research_needed 内容，CF 票据照常登记）——**spawn prompt 按 caifeng-methods『spawn prompt 必含条款』逐条搬入**
-  采风产物 → 融合四步 → 更新 `设定/虚拟对标.md` → re-spawn evaluator（context 加新采风说明）→ 回打磨屏
+  采风产物 → 融合四步 → 更新题材定位标尺节 → re-spawn evaluator（context 加新采风说明）→ 回打磨屏
 
 > **深度融合触发（B81）**：融合涉及 ≥3 个设定文件联动 → spawn researcher（type=caifeng-fusion，传采风产物路径+本书设定路径+设计需求）；轻量融合主会话 inline。
 
@@ -343,7 +340,7 @@ Agent 不可用时自评四问（简化版）：
 
 ### 开新卷（第 2 卷及后续）——冷路径
 
-见 [cold-path.md](cold-path.md)「开新卷」（按需加载：`大纲/卷复盘_第X卷.md` 产出后进入，SKILL.md 路由直达）。**Phase A/B 适配**：开新卷的 Phase A 从单元构建起增量（Stage 1-3 全书级不重做），单元构建→整合检验→定稿 全速走完 → Phase A→B 弹窗 → Phase B 打磨环（eval_type: reader，B77 迁移）；虚拟对标不重新合成（全书级沿用）；新卷引入新题材元素可触发增量采风（CF 票据照常）。
+见 [cold-path.md](cold-path.md)「开新卷」（按需加载：`大纲/卷复盘_第X卷.md` 产出后进入，SKILL.md 路由直达）。**Phase A/B 适配**：开新卷的 Phase A 从单元构建起增量（Stage 1-3 全书级不重做），单元构建→整合检验→定稿 全速走完 → Phase A→B 弹窗 → Phase B 打磨环（eval_type: reader，B77 迁移）；成品标尺不重新合成（全书级沿用）；新卷引入新题材元素可触发增量采风（CF 票据照常）。
 
 ## 卡片按需加载清单
 
