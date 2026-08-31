@@ -101,6 +101,7 @@ PR 自动运行 `.github/workflows/cross-platform.yml`。static-check job 跑以
 - `scripts/check-doc-budget.sh` — 热路径 SKILL/references/agent 模板的字数预算（按 `scripts/doc-budget.json`），防每次会话都要付的规则文本无声膨胀
 - `scripts/check-hook-regex-sync.sh` — hook 伏笔状态检测行为
 - `scripts/check-shared-files.sh` — 共享 runtime 资产清单 + 跨 skill reference 副本一致性
+- `scripts/check-methodology-wiring.py` — 方法论挂载守卫（MUST/LOAD/REF/MENTION/DEAD 五级；DEAD 零流程引用 blocking，新方法论文件必须 ≥LOAD 才合入；REF/MENTION 候选不拦截）
 - `scripts/check-moshu-setup-deployment.sh` — moshu-setup 部署完整性
 - `scripts/check-claude-adapter.sh` — Claude marketplace 与 skill 映射检查（含 version 与 SKILL.md frontmatter 一致）
 - `scripts/check-behavior-contracts.sh` — 关键行为约束静态守卫（裸调用停靠/细纲优先/S1-S2 过桥/追踪事务/候选永不拦截等契约，条数以 `scripts/behavior-contracts.json` 为准，清单见 `scripts/behavior-contracts.json`）

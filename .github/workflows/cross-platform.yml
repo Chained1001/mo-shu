@@ -40,6 +40,10 @@ jobs:
         run: bash scripts/check-shared-files.sh
       - name: Shared-asset manifest regression
         run: python3 scripts/test-shared-assets.py
+      - name: Check methodology wiring
+        run: python3 scripts/check-methodology-wiring.py
+      - name: Methodology wiring regression
+        run: python3 scripts/test_methodology_wiring.py
       - name: Check behavior contracts
         run: bash scripts/check-behavior-contracts.sh
       - name: Behavior-contract regression

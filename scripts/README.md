@@ -15,6 +15,7 @@
 | `check-shared-files.sh` | 调 `sync-shared-assets.py check` 验 runtime 副本，再验 64 组共享 reference 字节一致 | CI | B38 shared-assets 全量对账 | 未登记-待体检 |
 | `check-moshu-setup-deployment.sh` | moshu-setup 部署/运行时回归（慢，>2min） | CI | 审计-setup-v1 候选 4/5/9/10 | 2026-08-25（TS 补测批红绿） |
 | `check-doc-budget.sh` + `doc-budget.json` | 热路径 SKILL/references/agent 模板的去空白字数预算与路径合计上限；超了要么删等量旧文本，要么显式调高 budget | CI；增删热路径正文后 | B19 热路径预算 | 未登记-待体检 |
+| `check-methodology-wiring.py` + `test_methodology_wiring.py` | 方法论挂载守卫（MUST/LOAD/REF/MENTION/DEAD 五级）；DEAD（零流程引用）blocking，新方法论必须 ≥LOAD；REF/MENTION 候选；白名单 quality-rubric（review 默认评分标准待接线）；回归 fixture 三态 | CI | B92 挂载审计 | 未登记-待体检 |
 | `check-hook-regex-sync.sh` | `detect-story-gaps.sh` 伏笔状态检测行为 | CI | 伏笔状态误报事故 | 未登记-待体检 |
 | `check-hook-locale-safety.sh` | 部署 hook 在 Windows 中文 GBK 区域的字节安全 | CI | issue #164 GBK | 未登记-待体检 |
 | `check-python-invocation.sh` | 技能文档禁止裸调 `python3`（须 python3→python→py 探测） | CI | issue #121 Store 占位 | 未登记-待体检 |
