@@ -59,7 +59,6 @@
 | `test-behavior-contracts.py` | 行为契约守卫回归：正向（真仓库契约全部在位，条数以 `behavior-contracts.json` 为准）+ 反向（fixture 删约束必须失败且指向契约 id） | CI（调 check-behavior-contracts） | B39 回归 | 未登记-待体检 |
 | `test-capability-wiring.py` | 能力接线守卫回归：正向（真仓库全部接线）+ 反向（fixture 破坏调用点标记必须失败且指向能力 id 与文件） | CI（调 check-capability-wiring） | B42 回归 | 未登记-待体检 |
 | `test-reference-closure.py` | 引用闭包守卫回归（方案 A 资产宇宙）：正向（本域存在→过 / 资产宇宙内本域缺失→违规含文件名 / 白名单内→过）/ 反向（移除白名单→违规）/ 非资产宇宙运行态产物→忽略（⑤锁定方案 A 语义） | CI（调 check-reference-closure） | 批B4 回归 | 未登记-待体检 |
-| `test-next-step.py` | 下一步判定回归（审计-V3 D5）：S0-S6 各序命中 + 优先中断（拆文续跑/审查续批）+ 卷界解析降级 + 空文件完成判据 + state 缺失回退 | CI（调 skills/moshu/scripts/next_step.py） | 审计-V3 D5 | 未登记-待体检 |
 | `test-agents-version-sync.py` | agents_version 守卫回归：正向（真仓库一致）+ 反向（fixture 改一处版本必须失败） | CI（调 check-agents-version-sync） | 观察 024 回归 | 未登记-待体检 |
 | `test-story-numbers.py` | 叙述计数守卫回归：正向（fixture 数字与实测一致→退出 0）+ 反向（中文/英文数字不一致→退出 1 且指向文件） | CI（调 check-story-numbers） | 计数回归 | 未登记-待体检 |
 | `test-route-write.py` | 路由残留守卫回归（批B8 四用例）：①白名单行→过 ②blocking 行→退出 1 且指向文件 ③未知语境→candidate 打印但退出 0 ④无表格行→过 | CI（调 check-route-write） | 批B8 回归 | 未登记-待体检 |

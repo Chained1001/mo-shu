@@ -83,7 +83,7 @@ npx skills add Chained1001/mo-shu -y -g
 
 > 💡 快速记忆：**装完→开窗→setup→再开窗→build**
 
-升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。
+升级后若项目已跑过 `/moshu-setup`，建议重跑一次同步 hooks/agents/references。每版变更见 [CHANGELOG.md](CHANGELOG.md) 与 [Releases](https://github.com/Chained1001/mo-shu/releases)。版本检查功能随 moshu 技能退役——想看是否新版直接查 Releases。
 
 **多 agent 协作要先部署再新开会话：** 8 个专业 agent（moshu-architect、moshu-narrative-writer、moshu-consistency-checker 等）由 `/moshu-setup` 写入项目 `.claude/agents/`。Claude Code 在会话启动时更稳定地注册 custom agent。判断是否生效：新会话里跑 `/moshu-review`，报告头是 `Effective Mode: full/lean` 即注册成功，是 `Fallback: ... -> solo` 说明当前运行时未暴露该 agent。
 
@@ -94,7 +94,6 @@ npx skills add Chained1001/mo-shu -y -g
 | Skill | 触发 | 说明 |
 |:------|:-----|:-----|
 | `moshu-setup` | `/moshu-setup` 「部署墨枢写作环境」 | 环境部署 · Claude Code（已有配置安全合并） |
-| `moshu` | `/moshu` `/moshu dashboard` | 工具箱路由 · 模糊意图分发 + 本地拆文/项目 Dashboard |
 | `moshu-write` | `/moshu-write` `/写长篇` | 长篇写作 · 细纲与正文输出、日更续写、大修、卷复盘执行 |
 | `moshu-outline` | `/moshu-outline` | 故事架构 · 开书 Stage 1-3（题材定位→世界观→人物→全书大纲）、结构/角色/机制采风 |
 | `moshu-volume` | `/moshu-volume` | 卷规划 · Stage 4-6（单元卡→整合→定稿+卷纲）、开新卷、设定修订（修订流）、防撞对照、采风融合 |
@@ -111,14 +110,8 @@ npx skills add Chained1001/mo-shu -y -g
 - 「帮我开书」→ `moshu-outline`（首卷卷纲 → `moshu-volume`；细纲与正文 → `moshu-write`）
 - 「这篇太 AI 了」→ `/moshu-write` 改稿·文字打磨路（B95 deslop 收编）
 - 「把我的书导进来」→ `moshu-import`
-- 「打开工作台」→ `moshu dashboard`（本机浏览拆文库与写作项目，可轻量编辑）
 - 「沈栀现在什么状态」→ 自动 spawn `moshu-explorer` agent
 
-### Story Dashboard
-
-运行 `/moshu dashboard` 打开本地写作工作台，浏览拆文库与
-长篇项目文件树，并完成搜索、Markdown 预览、文本编辑、冲突保护保存和确认删除。
-服务仅监听 `127.0.0.1`，小说内容不会上传。
 
 ## Agent 体系
 

@@ -1,7 +1,7 @@
 ---
 name: moshu-setup
 version: 1.5.1
-description: "网文写作工具集基础设施部署。为 Claude Code 部署 hooks、agents、rules、CLAUDE.md 到写作项目。部署开始时会读取并展示 mo-shu 版本号与 agents_version。触发方式：/moshu-setup、「部署墨枢写作环境」。"
+description: "网文写作工具集基础设施部署。为 Claude Code 部署 hooks、agents、rules、CLAUDE.md 到写作项目。部署开始时会读取并展示 mo-shu 版本号与 agents_version。**首次使用（刚 npx skills add 安装完）**：请新开一个 Claude Code 会话，然后运行 /moshu-setup 部署写作环境——当前会话 skills 不可用且未初始化。触发方式：/moshu-setup、「部署墨枢写作环境」、「刚安装完怎么用」。"
 ---
 # moshu-setup：网文写作工具集基础设施部署
 

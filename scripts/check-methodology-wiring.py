@@ -37,7 +37,6 @@ AUTHORITY_FILES = [
     "skills/moshu-scan/SKILL.md",
     "skills/moshu-style/SKILL.md",
     "skills/moshu-cdp/SKILL.md",
-    "skills/moshu/SKILL.md",
 ]
 
 # 已知 DEAD 白名单（理由注释——处置后零 DEAD 是目标，白名单仅临时豁免；删除需作者裁定）

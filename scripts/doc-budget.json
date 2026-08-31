@@ -67,11 +67,6 @@
    "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）。→2422：B1b 路由残留第 4 例修复（流程衔接表 1 行拆 2 行：准备开书→moshu-build / 已有书续写→moshu-write，路由正确性值得每次会话付，预算=实测 2307×1.05 取整）。B59 锁定：增长须先压缩或下沉。B76.6 P2 兼容性头注统一句（+29），实测 2451，2422→2540（×1.05）"
   },
   {
-   "path": "skills/moshu/SKILL.md",
-   "budget": 5460,
-   "why": "触发 /moshu 时入口全量进上下文（审计-V3 G-3 登记：实测约 4.66K 去空白；路由/状态判定/dashboard 说明防无声膨胀）；→5186：B1b 路由切换净增（路由表拆 build/write 两行 + 判定表 build 转向，路由正确性值得每次会话付，预算=实测×1.05 取整）。B76a 路由表「开书/建设定」拆 outline/volume 两行（+~83），实测 5200，5186→5460（×1.05 取整）"
-  },
-  {
    "path": "skills/moshu-scan/SKILL.md",
    "budget": 3600,
    "why": "触发 /moshu-scan 时入口全量进上下文（审计-V3 G-3 登记：实测约 8.61K 去空白，是已登记 analyze 的 3.8 倍；Phase 1-5 流程内联，防继续膨胀）"

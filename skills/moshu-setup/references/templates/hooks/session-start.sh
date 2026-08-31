@@ -156,8 +156,8 @@ story_update_check() {
   [ -n "${STORY_NO_UPDATE_CHECK:-}" ] && return 0
   command -v curl >/dev/null 2>&1 || return 0
   local vfile=""
-  [ -f "$ROOT/.claude/skills/moshu/VERSION" ] && vfile="$ROOT/.claude/skills/moshu/VERSION"
-  [ -z "$vfile" ] && [ -f "$HOME/.claude/skills/moshu/VERSION" ] && vfile="$HOME/.claude/skills/moshu/VERSION"
+  [ -f "$ROOT/.claude/skills/moshu-setup/VERSION" ] && vfile="$ROOT/.claude/skills/moshu-setup/VERSION"
+  [ -z "$vfile" ] && [ -f "$HOME/.claude/skills/moshu-setup/VERSION" ] && vfile="$HOME/.claude/skills/moshu-setup/VERSION"
   [ -n "$vfile" ] || return 0
   local cur; cur=$(tr -dc '0-9.' < "$vfile" 2>/dev/null) || return 0
   [ -n "$cur" ] || return 0

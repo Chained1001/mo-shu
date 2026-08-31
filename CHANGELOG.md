@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## v2.6.0（2026-09-01，施工中）
 
-> B94 标尺合并+B95 写作模式重构——12 技能→**11**（moshu-deslop 收编删除）；agents_version **46**（B94 bump，B95 无 bump）
+> B94 标尺合并+B95 写作模式重构+B96 路由工作台退役——12 技能→**10**（deslop 收编+B96 删 moshu 路由与 Dashboard）；agents_version **47**（B94/B95 bump，B96 无 bump）
 
 ### 即将发布
 
 - B94 标尺合并：理想书评+虚拟对标收口为核心设定「成品标尺」段（四轮→三轮/归因单点化/过目 2→1）+ 第一章专项搬家接线 + evaluator 两档
 - B95 写作模式重构：单章+日更统一逐章写作车道（K 参数化）+ A 段分级（批中轻量 A'）+ deslop 收编改稿两路 + chapter-core 四处去重
+- B96 路由与工作台退役：删 moshu 路由技能与 Dashboard（11→10 技能）+ VERSION 迁 setup + next_step 退役（消费内联化）+ 首装引导并入 setup
 
 ## v2.5.3（2026-09-01）
 

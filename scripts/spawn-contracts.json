@@ -1,422 +1,406 @@
 {
-  "schema_version": 1,
-  "description": "spawn 契约单一真源（B74）：8 agent 的调用参数注册表。agent.required_params=模板「被调用协议」核心参数（caller 无覆盖时检查）；caller.required_params=该调用点 ±30 行内实际携带的参数锚（覆盖 agent 级）。三查守卫见 check-spawn-contracts.sh。禁止事项：本表是机检面，agent 模板「被调用协议」是文档面——互补不替代，两处都保留。",
-  "agents": [
+ "schema_version": 1,
+ "description": "spawn 契约单一真源（B74）：8 agent 的调用参数注册表。agent.required_params=模板「被调用协议」核心参数（caller 无覆盖时检查）；caller.required_params=该调用点 ±30 行内实际携带的参数锚（覆盖 agent 级）。三查守卫见 check-spawn-contracts.sh。禁止事项：本表是机检面，agent 模板「被调用协议」是文档面——互补不替代，两处都保留。",
+ "agents": [
+  {
+   "name": "moshu-narrative-writer",
+   "required_params": [
+    "任务描述",
+    "文件路径",
+    "上下文摘要"
+   ],
+   "optional_params": [
+    "上一章",
+    "场景类型",
+    "语声锚",
+    "称谓行",
+    "文风锚点",
+    "genre_prose_card",
+    "selected_emotion_module",
+    "rhythm_reference",
+    "写法参照",
+    "重点情节点标签",
+    "禁止提前释放",
+    "字数目标",
+    "情节点预算",
+    "检查范围",
+    "AI味等级",
+    "处理策略",
+    "删除优先"
+   ],
+   "notes": "协议参数源=模板「被调用协议」+ chapter-core 执行方式段（B56/B59 增量参数全量在册）",
+   "callers": [
     {
-      "name": "moshu-narrative-writer",
-      "required_params": [
-        "任务描述",
-        "文件路径",
-        "上下文摘要"
-      ],
-      "optional_params": [
-        "上一章",
-        "场景类型",
-        "语声锚",
-        "称谓行",
-        "文风锚点",
-        "genre_prose_card",
-        "selected_emotion_module",
-        "rhythm_reference",
-        "写法参照",
-        "重点情节点标签",
-        "禁止提前释放",
-        "字数目标",
-        "情节点预算",
-        "检查范围",
-        "AI味等级",
-        "处理策略",
-        "删除优先"
-      ],
-      "notes": "协议参数源=模板「被调用协议」+ chapter-core 执行方式段（B56/B59 增量参数全量在册）",
-      "callers": [
-        {
-          "file": "skills/moshu-write/references/chapter-core.md",
-          "must_contain": "本章增量数据",
-          "context": "正文写作（B 段第 1 遍；B75b 两级装配——spawn 只传增量，规则由模板承接）",
-          "required_params": [
-            "项目目录",
-            "章节",
-            "细纲文件",
-            "上一章",
-            "输出路径"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/chapter-core.md",
-          "must_contain": "审查+去AI味",
-          "context": "D3 去AI味审查",
-          "required_params": [
-            "项目目录",
-            "检查范围"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/workflow-revision.md",
-          "must_contain": "任务描述：去AI味",
-          "context": "改稿·文字打磨路（B95 deslop 收编）",
-          "required_params": [
-            "项目目录",
-            "任务描述",
-            "检查范围"
-          ]
-        }
-      ]
+     "file": "skills/moshu-write/references/chapter-core.md",
+     "must_contain": "本章增量数据",
+     "context": "正文写作（B 段第 1 遍；B75b 两级装配——spawn 只传增量，规则由模板承接）",
+     "required_params": [
+      "项目目录",
+      "章节",
+      "细纲文件",
+      "上一章",
+      "输出路径"
+     ]
     },
     {
-      "name": "moshu-architect",
-      "required_params": [
-        "任务描述",
-        "相关文件路径",
-        "上下文摘要",
-        "契约摘要"
-      ],
-      "optional_params": [
-        "任务类型",
-        "查询参数",
-        "项目目录"
-      ],
-      "notes": "契约摘要六项=spawn prompt 必须原样附带（cold-path/outline-workflow 契约摘要节是唯一来源）",
-      "callers": [
-        {
-          "file": "skills/moshu-volume/references/cold-path.md",
-          "must_contain": "moshu-architect + moshu-character-designer",
-          "context": "开新卷 Stage 2-3 骨架与人物",
-          "required_params": [
-            "任务类型",
-            "契约摘要"
-          ]
-        },
-        {
-          "file": "skills/moshu-volume/references/cold-path.md",
-          "must_contain": "任务类型：题材定位",
-          "context": "Stage 1 题材定位（复杂场景）",
-          "required_params": [
-            "项目目录",
-            "任务类型"
-          ]
-        },
-        {
-          "file": "skills/moshu-volume/references/outline-workflow.md",
-          "must_contain": "契约摘要必须原样附带",
-          "context": "细纲批设计承接",
-          "required_params": [
-            "契约摘要"
-          ]
-        },
-        {
-          "file": "skills/moshu-review/SKILL.md",
-          "must_contain": "spawn `moshu-architect` + `moshu-consistency-checker`",
-          "context": "lean 模式",
-          "required_params": []
-        }
-      ]
+     "file": "skills/moshu-write/references/chapter-core.md",
+     "must_contain": "审查+去AI味",
+     "context": "D3 去AI味审查",
+     "required_params": [
+      "项目目录",
+      "检查范围"
+     ]
     },
     {
-      "name": "moshu-character-designer",
-      "required_params": [
-        "任务描述",
-        "相关文件路径",
-        "上下文摘要"
-      ],
-      "optional_params": [
-        "任务类型"
-      ],
-      "callers": [
-        {
-          "file": "skills/moshu-volume/references/cold-path.md",
-          "must_contain": "moshu-architect + moshu-character-designer",
-          "context": "开新卷 Stage 2-3 角色设定",
-          "required_params": [
-            "任务类型"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "moshu-consistency-checker",
-      "required_params": [
-        "检查范围",
-        "已知角色列表"
-      ],
-      "optional_params": [
-        "检查重点",
-        "项目目录",
-        "last_committed_chapter",
-        "state_revision"
-      ],
-      "notes": "D2 参数遗漏事故锚定（B74）：本 agent「被调用协议」要求 prompt 携带 last_committed_chapter/state_revision 两状态值，D2 调用点曾双双漏传——两值登记在册，本守卫防再漏；调用点实际补带走后续行为批（B74 只建守卫不动行为）",
-      "callers": [
-        {
-          "file": "skills/moshu-write/references/chapter-core.md",
-          "must_contain": "检查类型：事实冲突+伏笔断线+角色属性不一致",
-          "context": "D2 质量检查",
-          "required_params": [
-            "项目目录",
-            "检查范围"
-          ]
-        },
-        {
-          "file": "skills/moshu-review/SKILL.md",
-          "must_contain": "spawn `moshu-architect` + `moshu-consistency-checker`",
-          "context": "lean 模式",
-          "required_params": []
-        }
-      ]
-    },
-    {
-      "name": "moshu-evaluator",
-      "required_params": [
-        "token",
-        "eval_type",
-        "target_path",
-        "context"
-      ],
-      "optional_params": [
-        "benchmark_path",
-        "virtual_benchmark_path",
-        "benchmark_book_paths",
-        "project_dir",
-        "research_needed",
-        "summary",
-        "recommendation",
-        "related_paths",
-        "score"
-      ],
-      "notes": "score 仅 reader 型（B77 合并：full→reader，对照题材定位·成品标尺打分）；structure 型不填；related_paths=跨产物审查材料清单（structure 型带了必须逐对核对）",
-      "callers": [
-        {
-          "file": "skills/moshu-volume/references/volume-workflow.md",
-          "must_contain": "eval_type: reader",
-          "context": "Phase B 打磨环（reader，B77 迁移）",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-write/references/outline-workflow.md",
-          "must_contain": "eval_type=structure，对象=细纲批",
-          "context": "批末细纲评审（B69 立项/B77 迁移 structure；related_paths 跨稿核对）",
-          "required_params": [
-            "eval_type=structure"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/outline-workflow.md",
-          "must_contain": "eval_type=structure，对象=设定包",
-          "context": "设定补全触发（B69 立项/B77 迁移 structure）",
-          "required_params": [
-            "eval_type=structure"
-          ]
-        },
-        {
-          "file": "skills/moshu-volume/references/revision-workflow.md",
-          "must_contain": "eval_type=structure",
-          "context": "修订评审 ①b（B69 立项/B77 迁移 structure）",
-          "required_params": [
-            "eval_type=structure"
-          ]
-        },
-        {
-          "file": "skills/moshu-outline/references/workflow-outline.md",
-          "must_contain": "eval_type=structure",
-          "context": "人物设计评审（B77 缺口补全，Stage 3 后可选）",
-          "required_params": [
-            "eval_type=structure"
-          ]
-        },
-        {
-          "file": "skills/moshu-volume/references/volume-workflow.md",
-          "must_contain": "eval_type=reader",
-          "context": "防撞升格复核（B77 缺口补全，Stage 5 候选后可选）",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-volume/references/caifeng-methods.md",
-          "must_contain": "eval_type=reader",
-          "context": "融合评审（B77 缺口补全，融合四步后可选）",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-write/references/volume-review.md",
-          "must_contain": "eval_type=structure",
-          "context": "卷末体检升格（B77 缺口补全，复盘产出后可选）",
-          "required_params": [
-            "eval_type=structure"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/workflow-daily.md",
-          "must_contain": "eval_type=reader",
-          "context": "完结清账评审（B77 缺口补全，final-report 后可选）",
-          "required_params": [
-            "eval_type=reader"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "moshu-explorer",
-      "required_params": [
-        "项目目录",
-        "查询类型",
-        "查询参数"
-      ],
-      "optional_params": [
-        "章节号",
-        "角色名",
-        "关键词"
-      ],
-      "callers": [
-        {
-          "file": "skills/moshu-write/references/chapter-core.md",
-          "must_contain": "查询类型：context_load",
-          "context": "A 段快捷加载",
-          "required_params": [
-            "项目目录",
-            "查询类型",
-            "查询参数"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/workflow-daily.md",
-          "must_contain": "查询类型：context_load",
-          "context": "批前批量加载",
-          "required_params": [
-            "项目目录",
-            "查询类型",
-            "查询参数"
-          ]
-        },
-        {
-          "file": "skills/moshu-import/references/import-workflow.md",
-          "must_contain": "查询类型：progress",
-          "context": "导入交叉验证",
-          "required_params": [
-            "项目目录",
-            "查询类型",
-            "查询参数"
-          ]
-        },
-        {
-          "file": "skills/moshu/SKILL.md",
-          "must_contain": "查询类型：{根据意图选择}",
-          "context": "路由查询",
-          "required_params": [
-            "项目目录",
-            "查询类型",
-            "查询参数"
-          ]
-        },
-        {
-          "file": "skills/moshu-review/references/review-workflow.md",
-          "must_contain": "spawn `moshu-explorer` 预查设定摘要",
-          "context": "审查预查询（可选）",
-          "required_params": []
-        }
-      ]
-    },
-    {
-      "name": "moshu-chapter-extractor",
-      "required_params": [
-        "章节编号",
-        "章节标题",
-        "章节原文文本",
-        "章节字数"
-      ],
-      "optional_params": [
-        "OUTPUT_MODE: json"
-      ],
-      "notes": "analyze 并行模式按章程序以编程方式组装参数（analyze-workflow Stage 2-2 表行）；字段由管道代码化传递，流程文档不逐字展开——caller 覆盖为空集",
-      "callers": [
-        {
-          "file": "skills/moshu-analyze/references/analyze-workflow.md",
-          "must_contain": "每章 spawn moshu-chapter-extractor agent",
-          "context": "Stage 2-2 并行拆解",
-          "required_params": []
-        }
-      ]
-    },
-    {
-      "name": "moshu-researcher",
-      "required_params": [
-        "query",
-        "project_dir"
-      ],
-      "optional_params": [
-        "type",
-        "context",
-        "cdp_port",
-        "caifeng_product",
-        "story_files",
-        "design_need"
-      ],
-      "callers": [
-        {
-          "file": "skills/moshu-outline/references/workflow-outline.md",
-          "must_contain": "spawn moshu-researcher（结构采风，CF 票据登记）",
-          "context": "Phase A Stage 1 采风默认执行（B76 拆分归 outline）",
-          "required_params": [
-            "query"
-          ]
-        },
-        {
-          "file": "skills/moshu-volume/references/volume-workflow.md",
-          "must_contain": "query=research_needed 内容",
-          "context": "Phase B research_needed 精准检索",
-          "required_params": [
-            "query"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/chapter-core.md",
-          "must_contain": "spawn `moshu-researcher` agent 搜索并输出到",
-          "context": "写作期事实查证",
-          "required_params": [
-            "参考资料"
-          ]
-        },
-        {
-          "file": "skills/moshu-write/references/workflow-revision.md",
-          "must_contain": "spawn `moshu-researcher` agent 搜索验证",
-          "context": "修订资料研究（按需）",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-write/references/workflow-daily.md",
-          "must_contain": "spawn `moshu-researcher` 输出到",
-          "context": "日更资料研究（按需）",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-review/references/review-workflow.md",
-          "must_contain": "spawn `moshu-researcher` 搜索验证",
-          "context": "可选事实核查",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu/SKILL.md",
-          "must_contain": "spawn `moshu-researcher` agent；agent 不可用时",
-          "context": "路由查资料",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-volume/references/volume-workflow.md",
-          "must_contain": "caifeng-fusion",
-          "context": "B81 深度融合触发点（research_needed 与采风补强衔接节）",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-outline/references/workflow-outline.md",
-          "must_contain": "caifeng-fusion",
-          "context": "B81 深度融合触发点（Stage 1 采风默认执行句尾）",
-          "required_params": []
-        },
-        {
-          "file": "skills/moshu-volume/references/caifeng-methods.md",
-          "must_contain": "caifeng-fusion",
-          "context": "B81 融合模式操作说明（轻重分治判据）",
-          "required_params": []
-        }
-      ]
+     "file": "skills/moshu-write/references/workflow-revision.md",
+     "must_contain": "任务描述：去AI味",
+     "context": "改稿·文字打磨路（B95 deslop 收编）",
+     "required_params": [
+      "项目目录",
+      "任务描述",
+      "检查范围"
+     ]
     }
-  ]
+   ]
+  },
+  {
+   "name": "moshu-architect",
+   "required_params": [
+    "任务描述",
+    "相关文件路径",
+    "上下文摘要",
+    "契约摘要"
+   ],
+   "optional_params": [
+    "任务类型",
+    "查询参数",
+    "项目目录"
+   ],
+   "notes": "契约摘要六项=spawn prompt 必须原样附带（cold-path/outline-workflow 契约摘要节是唯一来源）",
+   "callers": [
+    {
+     "file": "skills/moshu-volume/references/cold-path.md",
+     "must_contain": "moshu-architect + moshu-character-designer",
+     "context": "开新卷 Stage 2-3 骨架与人物",
+     "required_params": [
+      "任务类型",
+      "契约摘要"
+     ]
+    },
+    {
+     "file": "skills/moshu-volume/references/cold-path.md",
+     "must_contain": "任务类型：题材定位",
+     "context": "Stage 1 题材定位（复杂场景）",
+     "required_params": [
+      "项目目录",
+      "任务类型"
+     ]
+    },
+    {
+     "file": "skills/moshu-volume/references/outline-workflow.md",
+     "must_contain": "契约摘要必须原样附带",
+     "context": "细纲批设计承接",
+     "required_params": [
+      "契约摘要"
+     ]
+    },
+    {
+     "file": "skills/moshu-review/SKILL.md",
+     "must_contain": "spawn `moshu-architect` + `moshu-consistency-checker`",
+     "context": "lean 模式",
+     "required_params": []
+    }
+   ]
+  },
+  {
+   "name": "moshu-character-designer",
+   "required_params": [
+    "任务描述",
+    "相关文件路径",
+    "上下文摘要"
+   ],
+   "optional_params": [
+    "任务类型"
+   ],
+   "callers": [
+    {
+     "file": "skills/moshu-volume/references/cold-path.md",
+     "must_contain": "moshu-architect + moshu-character-designer",
+     "context": "开新卷 Stage 2-3 角色设定",
+     "required_params": [
+      "任务类型"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "moshu-consistency-checker",
+   "required_params": [
+    "检查范围",
+    "已知角色列表"
+   ],
+   "optional_params": [
+    "检查重点",
+    "项目目录",
+    "last_committed_chapter",
+    "state_revision"
+   ],
+   "notes": "D2 参数遗漏事故锚定（B74）：本 agent「被调用协议」要求 prompt 携带 last_committed_chapter/state_revision 两状态值，D2 调用点曾双双漏传——两值登记在册，本守卫防再漏；调用点实际补带走后续行为批（B74 只建守卫不动行为）",
+   "callers": [
+    {
+     "file": "skills/moshu-write/references/chapter-core.md",
+     "must_contain": "检查类型：事实冲突+伏笔断线+角色属性不一致",
+     "context": "D2 质量检查",
+     "required_params": [
+      "项目目录",
+      "检查范围"
+     ]
+    },
+    {
+     "file": "skills/moshu-review/SKILL.md",
+     "must_contain": "spawn `moshu-architect` + `moshu-consistency-checker`",
+     "context": "lean 模式",
+     "required_params": []
+    }
+   ]
+  },
+  {
+   "name": "moshu-evaluator",
+   "required_params": [
+    "token",
+    "eval_type",
+    "target_path",
+    "context"
+   ],
+   "optional_params": [
+    "benchmark_path",
+    "virtual_benchmark_path",
+    "benchmark_book_paths",
+    "project_dir",
+    "research_needed",
+    "summary",
+    "recommendation",
+    "related_paths",
+    "score"
+   ],
+   "notes": "score 仅 reader 型（B77 合并：full→reader，对照题材定位·成品标尺打分）；structure 型不填；related_paths=跨产物审查材料清单（structure 型带了必须逐对核对）",
+   "callers": [
+    {
+     "file": "skills/moshu-volume/references/volume-workflow.md",
+     "must_contain": "eval_type: reader",
+     "context": "Phase B 打磨环（reader，B77 迁移）",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-write/references/outline-workflow.md",
+     "must_contain": "eval_type=structure，对象=细纲批",
+     "context": "批末细纲评审（B69 立项/B77 迁移 structure；related_paths 跨稿核对）",
+     "required_params": [
+      "eval_type=structure"
+     ]
+    },
+    {
+     "file": "skills/moshu-write/references/outline-workflow.md",
+     "must_contain": "eval_type=structure，对象=设定包",
+     "context": "设定补全触发（B69 立项/B77 迁移 structure）",
+     "required_params": [
+      "eval_type=structure"
+     ]
+    },
+    {
+     "file": "skills/moshu-volume/references/revision-workflow.md",
+     "must_contain": "eval_type=structure",
+     "context": "修订评审 ①b（B69 立项/B77 迁移 structure）",
+     "required_params": [
+      "eval_type=structure"
+     ]
+    },
+    {
+     "file": "skills/moshu-outline/references/workflow-outline.md",
+     "must_contain": "eval_type=structure",
+     "context": "人物设计评审（B77 缺口补全，Stage 3 后可选）",
+     "required_params": [
+      "eval_type=structure"
+     ]
+    },
+    {
+     "file": "skills/moshu-volume/references/volume-workflow.md",
+     "must_contain": "eval_type=reader",
+     "context": "防撞升格复核（B77 缺口补全，Stage 5 候选后可选）",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-volume/references/caifeng-methods.md",
+     "must_contain": "eval_type=reader",
+     "context": "融合评审（B77 缺口补全，融合四步后可选）",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-write/references/volume-review.md",
+     "must_contain": "eval_type=structure",
+     "context": "卷末体检升格（B77 缺口补全，复盘产出后可选）",
+     "required_params": [
+      "eval_type=structure"
+     ]
+    },
+    {
+     "file": "skills/moshu-write/references/workflow-daily.md",
+     "must_contain": "eval_type=reader",
+     "context": "完结清账评审（B77 缺口补全，final-report 后可选）",
+     "required_params": [
+      "eval_type=reader"
+     ]
+    }
+   ]
+  },
+  {
+   "name": "moshu-explorer",
+   "required_params": [
+    "项目目录",
+    "查询类型",
+    "查询参数"
+   ],
+   "optional_params": [
+    "章节号",
+    "角色名",
+    "关键词"
+   ],
+   "callers": [
+    {
+     "file": "skills/moshu-write/references/chapter-core.md",
+     "must_contain": "查询类型：context_load",
+     "context": "A 段快捷加载",
+     "required_params": [
+      "项目目录",
+      "查询类型",
+      "查询参数"
+     ]
+    },
+    {
+     "file": "skills/moshu-write/references/workflow-daily.md",
+     "must_contain": "查询类型：context_load",
+     "context": "批前批量加载",
+     "required_params": [
+      "项目目录",
+      "查询类型",
+      "查询参数"
+     ]
+    },
+    {
+     "file": "skills/moshu-import/references/import-workflow.md",
+     "must_contain": "查询类型：progress",
+     "context": "导入交叉验证",
+     "required_params": [
+      "项目目录",
+      "查询类型",
+      "查询参数"
+     ]
+    },
+    {
+     "file": "skills/moshu-review/references/review-workflow.md",
+     "must_contain": "spawn `moshu-explorer` 预查设定摘要",
+     "context": "审查预查询（可选）",
+     "required_params": []
+    }
+   ]
+  },
+  {
+   "name": "moshu-chapter-extractor",
+   "required_params": [
+    "章节编号",
+    "章节标题",
+    "章节原文文本",
+    "章节字数"
+   ],
+   "optional_params": [
+    "OUTPUT_MODE: json"
+   ],
+   "notes": "analyze 并行模式按章程序以编程方式组装参数（analyze-workflow Stage 2-2 表行）；字段由管道代码化传递，流程文档不逐字展开——caller 覆盖为空集",
+   "callers": [
+    {
+     "file": "skills/moshu-analyze/references/analyze-workflow.md",
+     "must_contain": "每章 spawn moshu-chapter-extractor agent",
+     "context": "Stage 2-2 并行拆解",
+     "required_params": []
+    }
+   ]
+  },
+  {
+   "name": "moshu-researcher",
+   "required_params": [
+    "query",
+    "project_dir"
+   ],
+   "optional_params": [
+    "type",
+    "context",
+    "cdp_port",
+    "caifeng_product",
+    "story_files",
+    "design_need"
+   ],
+   "callers": [
+    {
+     "file": "skills/moshu-outline/references/workflow-outline.md",
+     "must_contain": "spawn moshu-researcher（结构采风，CF 票据登记）",
+     "context": "Phase A Stage 1 采风默认执行（B76 拆分归 outline）",
+     "required_params": [
+      "query"
+     ]
+    },
+    {
+     "file": "skills/moshu-volume/references/volume-workflow.md",
+     "must_contain": "query=research_needed 内容",
+     "context": "Phase B research_needed 精准检索",
+     "required_params": [
+      "query"
+     ]
+    },
+    {
+     "file": "skills/moshu-write/references/chapter-core.md",
+     "must_contain": "spawn `moshu-researcher` agent 搜索并输出到",
+     "context": "写作期事实查证",
+     "required_params": [
+      "参考资料"
+     ]
+    },
+    {
+     "file": "skills/moshu-write/references/workflow-revision.md",
+     "must_contain": "spawn `moshu-researcher` agent 搜索验证",
+     "context": "修订资料研究（按需）",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-write/references/workflow-daily.md",
+     "must_contain": "spawn `moshu-researcher` 输出到",
+     "context": "日更资料研究（按需）",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-review/references/review-workflow.md",
+     "must_contain": "spawn `moshu-researcher` 搜索验证",
+     "context": "可选事实核查",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-volume/references/volume-workflow.md",
+     "must_contain": "caifeng-fusion",
+     "context": "B81 深度融合触发点（research_needed 与采风补强衔接节）",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-outline/references/workflow-outline.md",
+     "must_contain": "caifeng-fusion",
+     "context": "B81 深度融合触发点（Stage 1 采风默认执行句尾）",
+     "required_params": []
+    },
+    {
+     "file": "skills/moshu-volume/references/caifeng-methods.md",
+     "must_contain": "caifeng-fusion",
+     "context": "B81 融合模式操作说明（轻重分治判据）",
+     "required_params": []
+    }
+   ]
+  }
+ ]
 }

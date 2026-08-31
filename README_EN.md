@@ -95,7 +95,6 @@ npx skills add Chained1001/mo-shu -y -g
 | Skill | Trigger | Description |
 |:------|:--------|:------------|
 | `moshu-setup` | `/moshu-setup` | Environment setup — Claude Code (safe merge) |
-| `moshu` | `/moshu` / `/moshu dashboard` | Toolbox router plus a local deconstruction/project dashboard |
 | `moshu-write` | `/moshu-write` | Long-form writing — chapter outlines and prose, daily continuation, revision, volume-review execution |
 | `moshu-outline` | `/moshu-outline` | Story architecture — book-start Stage 1-3 (genre positioning → worldview → characters → full-book outline), structure/character/mechanism research |
 | `moshu-volume` | `/moshu-volume` | Volume planning — Stage 4-6 (unit cards → integration → finalize + volume outline), new-volume flow, setting revision (revision workflow), collision check, research fusion |
@@ -108,14 +107,8 @@ npx skills add Chained1001/mo-shu -y -g
 
 
 
-Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-outline` (volume outline continues in `moshu-volume`; outlines & prose in `moshu-write`), `这篇太AI了` ("this is too AI-ish") → 改稿·文字打磨路（/moshu-write）, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `moshu-explorer`.
+Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-outline` (volume outline continues in `moshu-volume`; outlines & prose in `moshu-write`), `这篇太AI了` ("this is too AI-ish") → 改稿·文字打磨路（/moshu-write）, `把我的书导进来` ("import my book") → `moshu-import`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `moshu-explorer`.
 
-### Story Dashboard
-
-Run `/moshu dashboard` to open the local writing desk. Browse
-deconstruction libraries and long project trees, then search, preview Markdown, edit text,
-save with conflict protection, or confirm a file deletion. It listens only on `127.0.0.1` and never
-uploads moshu content.
 
 ## Agent System
 

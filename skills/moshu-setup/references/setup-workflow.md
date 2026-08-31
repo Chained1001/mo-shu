@@ -4,7 +4,7 @@
 
 ## Stage 1：检测项目状态
 
-**展示版本信息（部署第一步，让用户知道自己跑的是哪个版本）**：读 `skills/moshu/VERSION`（本 skill 包同级，一行纯文本如 `2.3.5`）和 SKILL.md 部署逻辑段中的 `agents_version: 47`（当前版本号在部署锚点节内直接可见），在部署输出首行醒目展示：
+**展示版本信息（部署第一步，让用户知道自己跑的是哪个版本）**：读 `skills/moshu-setup/VERSION`（本 skill 包同级，一行纯文本如 `2.3.5`；B96 自 moshu 技能迁移，hook 版本源同源）和 SKILL.md 部署逻辑段中的 `agents_version: 47`（当前版本号在部署锚点节内直接可见），在部署输出首行醒目展示：
 > 🚀 **mo-shu v{VERSION}**（agents_version {N} · setup_skill v{本 skill frontmatter version}）
 > 如与预期版本不符，先 `npx skills add Chained1001/mo-shu -y` 更新再跑本 skill。
 

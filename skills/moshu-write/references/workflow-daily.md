@@ -87,7 +87,7 @@
 1. 对项目运行 `tracking_commit.py check`；验证 state schema、逐章记录连续/规范/未超限、续写状态卡固定 7 栏且 ≤12288 字节、全部派生视图与 state 一致。
 2. 确认本批每章都有对应 `追踪/逐章记录/第NNN章.md`，每个文件 ≤3072 字节。缺失或超限时不手工补文件，回到该章事务修正并重跑 `commit`。
 
-然后向用户口头汇报本批完成情况（章数、字数、漂移、下一批建议），不另存为文件；**汇报含产物路径**（正文/第N章*.md 与 追踪/ 更新摘要）。**滚动补纲预告（B95）**：批末 `ls`/读卷纲探测下一批细纲覆盖——当前单元剩余 ≤2 章或下单元细纲未建 → 汇报选项「现在补下一单元细纲（推荐）/下次再说」，选补即走 [outline-workflow.md](outline-workflow.md) 补纲小流程后收尾。若最新定稿章 = 当前卷卷纲末章，提示作者执行卷复盘（见 [volume-review.md](volume-review.md)）；复盘产出后可选 spawn evaluator（eval_type=structure，对象=卷末体检，B77）独立评审，报告呈报作者。若该卷为大纲登记的末卷（或作者已写 `大纲/完结宣告.md`）：建议作者宣告完结 → 跑 `tracking_commit.py final-report` 全书清账 → **告知作者 final-report 产物路径（追踪/完结清账.md）** → 完结清账评审（B77 缺口补全，可选：spawn evaluator，eval_type=reader，对象=完结清账；target_paths=追踪/完结清账.md，报告呈报作者——作者确认完结宣告前最后一道读者之眼；agent 不可用则 fallback 自评标注 Fallback）→ 按细纲「完结章」形态写终章（完结判定可跑 next_step.py，FINALIZE 为建议非拦截）。
+然后向用户口头汇报本批完成情况（章数、字数、漂移、下一批建议），不另存为文件；**汇报含产物路径**（正文/第N章*.md 与 追踪/ 更新摘要）。**滚动补纲预告（B95）**：批末 `ls`/读卷纲探测下一批细纲覆盖——当前单元剩余 ≤2 章或下单元细纲未建 → 汇报选项「现在补下一单元细纲（推荐）/下次再说」，选补即走 [outline-workflow.md](outline-workflow.md) 补纲小流程后收尾。若最新定稿章 = 当前卷卷纲末章，提示作者执行卷复盘（见 [volume-review.md](volume-review.md)）；复盘产出后可选 spawn evaluator（eval_type=structure，对象=卷末体检，B77）独立评审，报告呈报作者。若该卷为大纲登记的末卷（或作者已写 `大纲/完结宣告.md`）：建议作者宣告完结 → 跑 `tracking_commit.py final-report` 全书清账 → **告知作者 final-report 产物路径（追踪/完结清账.md）** → 完结清账评审（B77 缺口补全，可选：spawn evaluator，eval_type=reader，对象=完结清账；target_paths=追踪/完结清账.md，报告呈报作者——作者确认完结宣告前最后一道读者之眼；agent 不可用则 fallback 自评标注 Fallback）→ 按细纲「完结章」形态写终章。
 
 > **漂移处理**：aligned = 按计划推进；adaptive = 细节适配但不改契约；structural 漂移 / 结构性漂移 = 正文已经改变卷契约、单元承诺、推进线或兑现归属，必须修正文或重规划未来章节细纲，不能只在增量里备注。下一章必须修的漂移进入 `next_chapter_commitments`，跨章风险进入 `continuity_risks`；两者都受续写状态卡上限约束，完整语义以紧凑增量和大纲为准。
 

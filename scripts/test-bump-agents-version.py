@@ -77,7 +77,7 @@ def make_fixture(tmp: Path) -> Path:
     (project / "scripts/current-contract.json").write_text(
         json.dumps({"agents_version": 33, "setup_skill_version": "1.5.1",
                     "deployment_manifest": {"deployment_fingerprint": "stale-fingerprint"}}), encoding="utf-8")
-    (project / "skills/moshu/SKILL.md").write_text(SKILL_SAMPLE, encoding="utf-8")
+    (project / "skills/moshu-setup/SKILL.md").write_text(SKILL_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/SKILL.md").write_text(SETUP_SKILL_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/templates/hooks/session-start.sh").write_text(HOOK_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/deploy-manual.md").write_text(DEPLOY_SAMPLE, encoding="utf-8")
@@ -119,7 +119,7 @@ def test_bump_all_six(project: Path) -> None:
     cc = json.loads((project / "scripts/current-contract.json").read_text(encoding="utf-8"))
     assert cc["agents_version"] == 34, f"current-contract 应 34: {cc}"
     assert cc["deployment_manifest"]["deployment_fingerprint"] != "stale-fingerprint", "bump 应更新部署物指纹（bump 义务守卫登记面）"
-    sk = (project / "skills/moshu/SKILL.md").read_text(encoding="utf-8")
+    sk = (project / "skills/moshu-setup/SKILL.md").read_text(encoding="utf-8")
     assert "`agents_version: 34`" in sk and "大于 34" in sk, f"SKILL 反引号+无反引号应替换: {sk}"
     setup = (project / "skills/moshu-setup/SKILL.md").read_text(encoding="utf-8")
     assert "小于 `34`" in setup and "等于 `34`" in setup and "大于 `34`" in setup, f"setup SKILL 判定门（含等于态）应替换: {setup}"
@@ -147,7 +147,7 @@ def test_rollback_on_guard_fail(project: Path) -> None:
     cc = json.loads((project / "scripts/current-contract.json").read_text(encoding="utf-8"))
     assert cc["agents_version"] == 33, f"回滚后 current-contract 应还原 33: {cc}"
     assert cc["deployment_manifest"]["deployment_fingerprint"] == "stale-fingerprint", "回滚后部署物指纹应还原登记值（F9）"
-    sk = (project / "skills/moshu/SKILL.md").read_text(encoding="utf-8")
+    sk = (project / "skills/moshu-setup/SKILL.md").read_text(encoding="utf-8")
     assert "agents_version: 33" in sk and "agents_version: 34" not in sk, f"回滚后 SKILL 应还原: {sk}"
     hook = (project / "skills/moshu-setup/references/templates/hooks/session-start.sh").read_text(encoding="utf-8")
     assert "-lt 33" in hook, f"回滚后 hook 应还原: {hook}"

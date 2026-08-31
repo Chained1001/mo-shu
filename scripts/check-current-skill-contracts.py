@@ -203,7 +203,6 @@ LEGACY_RULES = (
 
 
 SPAWN_CAPABLE_SKILLS = (
-    "skills/moshu/SKILL.md",
     "skills/moshu-import/SKILL.md",
     "skills/moshu-analyze/SKILL.md",
     "skills/moshu-write/SKILL.md",
@@ -1320,7 +1319,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def deployment_manifest_findings(repo_root: Path, manifest: ContractManifest) -> List[Finding]:
-    """B39：部署契约断言——deploy.py 常量/文档数字/next_step 正则/章节范围模板与契约一致。"""
+    """B39：部署契约断言——deploy.py 常量/文档数字/章节范围模板与契约一致（next_step 正则已随 B96 退役）。"""
     dm = manifest.deployment_manifest or {}
     findings: List[Finding] = []
 
@@ -1355,10 +1354,6 @@ def deployment_manifest_findings(repo_root: Path, manifest: ContractManifest) ->
 
     crf = dm.get("chapter_range_format", "")
     if crf:
-        ns = repo_root / "skills" / "moshu" / "scripts" / "next_step.py"
-        nst = ns.read_text(encoding="utf-8", errors="ignore")
-        check("next-step-chapter-prefix", "第" in nst and "[-—~至]" in nst,
-              "next_step.py 章节范围正则应含「第」前缀与 [-—~至] 形态", ns)
         for rel in ("skills/moshu-volume/references/volume-workflow.md",
                     "skills/moshu-write/references/artifact-protocols.md"):
             doc = repo_root / rel
