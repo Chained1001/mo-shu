@@ -10,13 +10,13 @@
 
 **先自检参考目录**：以正在执行的 `SKILL.md` 所在目录为准，列出与它同级的 `references/` 下的子目录，核对 `agent-references`、`templates` 两个名字是否都在**且都非空**；同级 `scripts/merge-claude-settings.py` 也必须存在（Claude hooks 合并算法依赖它）。**用一条命令完成自检**（如 `ls references/ scripts/` 并核对输出），不要分多轮 Bash 逐步探索。有缺即 skill 包没装全，**立即停止，不写任何部署文件**，报告里区分「缺目录」和「目录为空」，并给修复指令：「moshu-setup 参考资料包不完整，缺 {目录名}。按你的安装方式重装 mo-shu（git pull 或 marketplace 面板重装），再执行 /moshu-setup。」
 
-**状态四查**（第 2-4 查为展示性检查，不改变部署决策；四项用一条命令完成，如 `cat .story-deployed 2>/dev/null; ls -d */追踪 .claude/settings.local.json .active-book 2>/dev/null`，不要分多轮 Bash）：
+**状态四查**（第 2-4 查为展示性检查，不改变部署决策；四项用一条命令完成，如 `cat .story-deployed 2>/dev/null; ls -d 追踪 设定 大纲 */追踪 .claude/settings.local.json .active-book 2>/dev/null`，不要分多轮 Bash）：
 
 1. 检查当前目录是否已部署过（存在 `.story-deployed`）
    - `agents_version` 缺失、非整数或小于 `45` → 标记为待更新，继续执行当前部署
    - `agents_version: 45` → 使用 AskUserQuestion 确认是否重新部署；提示里写明重新部署只用**当前本地 skill 包**刷新项目文件，要拿 skill 本身的新版本得先更新 mo-shu（`git pull` 或 marketplace），再回来重跑
    - `agents_version` 大于 `45` → 当前 moshu-setup 比项目部署旧；停止以避免降级覆盖，提示先更新 mo-shu，不写任何部署文件
-2. 检查是否有书名目录（包含 `追踪/` 子目录的目录，或用户自定义结构）：有 → 识别为长篇项目并显示当前项目信息；无 → 新项目
+2. 检查项目根是否存在 `追踪/` 或 `设定/` 或 `大纲/` 任一目录（**项目根直查**——主口径扁平；兼容旧嵌套另看 `*/追踪` 备位一句）：有 → 识别为长篇项目并显示当前项目信息；无 → 新项目
 3. 检查 `.claude/settings.local.json`：存在 → 读取现有配置，后续合并；不存在 → 后续创建
 4. 检查 `.active-book`：存在 → 显示当前活跃书目；不存在 → 跳过
 
@@ -24,7 +24,7 @@
 
 使用 AskUserQuestion 确认部署位置后，依次执行。
 
-**部署位置确认（弹窗规格化）**：AskUserQuestion 问题「部署到哪个项目目录？」——选项①当前目录（默认）②输入其他路径；选定后在**同一弹窗**内一并确认 `--name`（项目名，**必填**——弹窗留空时由 AI 用当前目录名代入）与 `--book`（书名，未指定=项目名），不另起多轮提问。
+**部署位置确认（弹窗规格化）**：AskUserQuestion 问题「部署到哪个项目目录？」——选项①当前目录（默认）②输入其他路径；选定后在**同一弹窗**内一并确认 `--name`（项目名，**必填**——弹窗留空时由 AI 用当前目录名代入），不另起多轮提问。附注：书名在开书流程提案（目录扁平：一文件夹一书，部署时不需指定）。
 
 **优先一键执行（三层分工：脚本做确定性的）**：确定性步骤全部由 `scripts/deploy.py` 完成——
 `deploy.py deploy --project {项目目录} --name {项目名} [--book {书名}]` 一次完成 hooks 复制+chmod、

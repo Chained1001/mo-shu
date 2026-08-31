@@ -267,7 +267,7 @@ project_dir: {项目目录}
 - 无对标 → 用 virtual_benchmark_path，benchmark_book_paths 省略
 - 两者都无 → 仅用 benchmark_path（理想书评——最弱参照，evaluator 应在 research_needed 中标注缺少参照）
 
-→ 报告回来先用 review_tickets.py verify-token 校验令牌（回传不符 → 弃用报告重 spawn）
+→ 报告回来**主会话代写工单**（`review_tickets.py write --input <临时 JSON 文件>`——AI 产出先落文件）再 `verify-token --ticket --token` 校验（回传不符 → 弃用报告重 spawn）；脚本收口保留，evaluator 本体只读不写工单
 → evaluator 输出三维度 JSON（score/research_needed/summary/recommendation 字段定义见 agent 模板）
 
 ### 打磨屏（AskUserQuestion 主屏）
