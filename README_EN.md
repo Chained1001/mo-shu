@@ -157,8 +157,7 @@ The file system separates settings, outlines, prose, and tracking into independe
 │   ├── 角色/            # Characters: one file per person (江晨.md, 钟嘉嘉.md)
 │   ├── 势力/            # Factions: one file per faction/organization (火箭军文工团.md)
 │   ├── 关系.md          # Character relationship map
-│   ├── 题材定位.md      # Genre core trope + benchmark analysis + endgame trump card
-│   ├── 理想书评.md      # Full-book north-star yardstick (Stage 1 output)
+│   ├── 题材定位.md      # Genre core trope + benchmark analysis + endgame trump card + yardstick section (pace/emotion/structure, since B94)
 │   ├── 题材正文提示卡.md  # Genre boundaries / payoff points / no-drift
 │   ├── 构建台账.md      # Six-step status / build state / open items / emergence log
 │   ├── 角色弧线.md      # Six arc types × six stages + emotion engine + low-pressure side

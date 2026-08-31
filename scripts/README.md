@@ -35,6 +35,7 @@
 
 | 脚本 | 测什么 | 何时跑 | 事故出身 | 末次能红验证 |
 |---|---|---|---|---|
+| `run-regressions.sh` | **本地一键全跑 CI 回归面**——`test-*.py`+`test_*.py`（python 探测链）`test-*.sh`（bash）`test-*.js`（node）；内嵌 PRD 轻量 lint（退役词，C4 降级版）；SKIP 清单显式带原因（首项 test-shared-assets.py=Windows chmod 假红）；**不进 CI**（定位=本地一次性入口，B98 审计四期立案一收口） | 本地验收/整改后（规格 README §2 验收纪律 B98 起建议必跑） | 7f99404 CI 红（本地只跑守卫漏回归） | — |
 | `test-ai-patterns.sh` | 确定性 AI 句式检测器 `check-ai-patterns.js` 回归 | CI | 机检回归（B31） | 未登记-待体检 |
 | `test-outline-copy.sh` | 细纲照搬检测器 `check-outline-copy.js` 回归 | CI | 细纲照搬机检 | 未登记-待体检 |
 | `test-degeneration.sh` | 模型退化检测器 `check-degeneration.js` 回归 | CI | 退化机检 | 未登记-待体检 |

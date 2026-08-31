@@ -12,7 +12,7 @@ labels: enhancement
 ## 环境信息
 - **操作系统：** [macOS / Windows / Linux]
 - **使用模型：** [例如 Claude Opus 4.6 / GLM-5.1 / DeepSeek-V4]
-- **使用 Skill：** [moshu-write / moshu-review / moshu-deslop / moshu-import / 其他]
+- **使用 Skill：** [moshu-write / moshu-review / moshu-import / 其他]
 - **写作类型：** [长篇]
 
 ## 使用截图
