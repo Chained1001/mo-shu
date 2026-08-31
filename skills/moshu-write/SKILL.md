@@ -167,18 +167,17 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 
 | 场景 | 加载文件 |
 |------|---------|
-| 章节钩子 | `references/hooks-chapter.md` |
+| 章节钩子 / 段落级钩子（微张力） | `references/hooks-chapter.md` |
 | 悬念设计 | `references/hooks-suspense.md` |
-| 段落级钩子 | `references/hooks-paragraph.md` |
 | 题材正文提示卡 / 题材分类卡 | `references/genre-prose-cards.md` 索引 + `references/genre-prose-cards/` 单题材卡目录（按题材分类优先） + `references/style-genre-modules.md`（通用流派补充） |
 | 打斗/装逼 | `references/style-combat-face.md` |
 | 喜剧/吐槽/梗场景 | `references/meme-craft.md`（热梗手法学） |
-| 高频场景（团战/谈判/揭露/重逢/宴会/审讯） | `references/scene-cards.md`（SC-001~006，冷路径） |
+| 高频场景 + 落笔技法卡 | `references/cards.md`（场景工艺卡 SC-001~006 + 落笔技法卡 14 张，B99 双卡合一） |
 | 商业创作核心方法 | `references/commercial-core-methods.md` |
 | 对话 | `references/dialogue-mastery.md` |
 | 人物深化 | `references/character-design-methods.md` |
 | 情绪技法 + 叙事单元 | `references/plot-emotion-system.md` + `references/emotional-methods.md` |
-| 正文技艺（第 3 遍打磨） | `references/literary-techniques.md`（过滤词/系动词/比喻/POV 距离/叙事时间五技，B80）+ `references/craft-cards.md`（技法卡 14 张） |
+| 正文技艺（第 3 遍打磨） | `references/writing-craft.md`（决策路由 + 0.落笔五技[过滤词/系动词/比喻/POV 距离/叙事时间，B99 并入]） |
 | 写作技法全程参考 | `references/writing-craft.md`（**写作技法总入口**，按任务路由 + 14 张技法卡） |
 | 格式与结构规范 | `references/format-and-structure.md`（仅对话/段落格式适用长篇） |
 | 状态追踪协议 | `references/state-tracking.md` |

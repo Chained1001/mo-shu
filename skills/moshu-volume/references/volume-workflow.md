@@ -353,8 +353,7 @@ Agent 不可用时自评四问（简化版）：
 | hooks-suspense | Stage 5（按需） | 跨卷悬念设计 | ⚠️ 待评估 |
 | genre-prose-cards | write 侧 | — | ❌ 不进 build |
 | hooks-chapter | write 侧 | — | ❌ 不进 build |
-| scene-cards | write 侧 | — | ❌ 不进 build |
-| craft-cards | write 侧 | — | ❌ 不进 build |
+| cards（场景+技法） | write 侧 | — | ❌ 不进 build |
 
 ---
 
