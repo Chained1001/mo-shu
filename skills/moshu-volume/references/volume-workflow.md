@@ -320,7 +320,8 @@ project_dir: {项目目录}
 evaluator JSON 的 `research_needed` ≠ null 时：打磨屏展示 ⚠️「评审员需要更多参照：{research_needed}」，🔄 选项自动填充检索需求
 
 作者选 🔄 后：
-  主线程 spawn moshu-researcher（query=research_needed 内容，CF 票据照常登记）
+  → **前置检查（B93）**：`ls 设定/采风-CF*.md 2>/dev/null`——已有未消费产物→先消费再补强；无→告知「采风还在跑或需新采风」按需继续
+  主线程 spawn moshu-researcher（query=research_needed 内容，CF 票据照常登记）——**spawn prompt 按 caifeng-methods『spawn prompt 必含条款』逐条搬入**
   采风产物 → 融合四步 → 更新 `设定/虚拟对标.md` → re-spawn evaluator（context 加新采风说明）→ 回打磨屏
 
 > **深度融合触发（B81）**：融合涉及 ≥3 个设定文件联动 → spawn researcher（type=caifeng-fusion，传采风产物路径+本书设定路径+设计需求）；轻量融合主会话 inline。
