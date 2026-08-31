@@ -23,7 +23,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 2. 从验证过的模式出发。先问"什么被验证过有效，我如何重新交付"，少从"我想写什么"直接起步。扫榜找方向，拆文找模块，对标找节奏。
 3. 用模块组装，不要重新发明。每个题材都有验证过的剧情模式——反转怎么铺、爽点怎么爆、感情怎么拉扯。找到对的模块，把对标书的具体角色看成功能位（对手/盟友/催化剂），再映射到你的角色。用你自己的素材填充这些功能位。
 4. 只加载必需信息。写每章时只加载"不知道就会写错"的信息。涉及角色的状态、待回收的伏笔、相关设定。其余留在文件系统里。
-5. 契约与推进决策走权威参考文件。涉及读者契约、主角代理权、利益安全、期待债、终局储备（终局底牌/升级台阶）、机构/势力边界和 契约安全 / 需补强 / 契约破坏 风险判定时，先按 `references/reader-contract-and-progression.md` 校准，不在 SKILL.md 内复制长规则。
+5. 契约与推进决策走权威参考文件。涉及读者契约、主角代理权、利益安全、期待债、终局储备（终局底牌/升级台阶）、机构/势力边界与契约安全/需补强/契约破坏风险判定时，先按 `references/reader-contract-and-progression.md` 校准，不在 SKILL.md 内复制长规则。
 6. **三层分工（宪法级，防越权与遗漏）**：**脚本做确定性的**——机检（字数/毒句式/退化/细纲照搬/标点）、追踪事务、守卫拦截，能数的绝不让模型估，AI 不做可计数的事；**AI 做语义的**——写稿、写前准备、审查判断、大纲设计，脚本/守卫不拦的语义决策归 AI；**作者做品味的**——开书与细纲确认、审查裁决、卷复盘决策、定稿敲定，AI 只提候选与建议，不替作者拍品味决策。任何环节发现职责越界（AI 估数、作者被跳过、脚本做语义判断）都回到本原则修正。
 
 | 题材 | 核心情绪 | 重点参考 |
@@ -34,7 +34,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 | 悬疑/惊悚 | 紧张+好奇 | references/hooks-suspense.md |
 | 日常装逼 | 期待感 | references/hooks-chapter.md |
 
-> 情绪反查题材：如果用户先说了情绪感觉但没提题材，从上表反向匹配——例如「爽感释放」指向打脸/逆袭，再从 `references/genre-catalog.md` 找该题材下的细分方向。
+> 情绪反查题材：用户先说情绪没提题材时从上表反向匹配——例如「爽感释放」→ 打脸/逆袭，再从 `references/genre-catalog.md` 找细分方向。
 
 ---
 
@@ -173,6 +173,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 | 段落级钩子 | `references/hooks-paragraph.md` |
 | 题材正文提示卡 / 题材分类卡 | `references/genre-prose-cards.md` 索引 + `references/genre-prose-cards/` 单题材卡目录（按题材分类优先） + `references/style-genre-modules.md`（通用流派补充） |
 | 打斗/装逼 | `references/style-combat-face.md` |
+| 喜剧/吐槽/梗场景 | `references/meme-craft.md`（热梗手法学） |
 | 高频场景（团战/谈判/揭露/重逢/宴会/审讯） | `references/scene-cards.md`（SC-001~006，冷路径） |
 | 商业创作核心方法 | `references/commercial-core-methods.md` |
 | 对话 | `references/dialogue-mastery.md` |
