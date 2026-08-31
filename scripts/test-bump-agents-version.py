@@ -77,8 +77,8 @@ def make_fixture(tmp: Path) -> Path:
     (project / "scripts/current-contract.json").write_text(
         json.dumps({"agents_version": 33, "setup_skill_version": "1.5.1",
                     "deployment_manifest": {"deployment_fingerprint": "stale-fingerprint"}}), encoding="utf-8")
-    (project / "skills/moshu-setup/SKILL.md").write_text(SKILL_SAMPLE, encoding="utf-8")
-    (project / "skills/moshu-setup/SKILL.md").write_text(SETUP_SKILL_SAMPLE, encoding="utf-8")
+    # B96 后 moshu 与 moshu-setup 的 SKILL 合并为同一路径，两个 SAMPLE 须一次写入（双写会互相覆盖）
+    (project / "skills/moshu-setup/SKILL.md").write_text(SKILL_SAMPLE + SETUP_SKILL_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/templates/hooks/session-start.sh").write_text(HOOK_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/deploy-manual.md").write_text(DEPLOY_SAMPLE, encoding="utf-8")
     (project / "skills/moshu-setup/references/setup-workflow.md").write_text(SETUP_WORKFLOW_SAMPLE, encoding="utf-8")

@@ -63,8 +63,8 @@ with tempfile.TemporaryDirectory(prefix="agents-version-") as tmp:
     authority_dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(REPO_ROOT / AUTHORITY, authority_dst)
 
-    # 把第一个被扫描的 SKILL.md 的 agents_version 改成 24
-    target = root / "skills" / "moshu" / "SKILL.md"
+    # 把第一个被扫描的 SKILL.md 的 agents_version 改成 24（B96 后 moshu 已删，用存活技能 moshu-write 替代）
+    target = root / "skills" / "moshu-write" / "SKILL.md"
     text = target.read_text(encoding="utf-8")
     target.write_text(text.replace(f"agents_version: {expected}", "agents_version: 24"), encoding="utf-8")
 
@@ -77,8 +77,8 @@ with tempfile.TemporaryDirectory(prefix="agents-version-") as tmp:
         print(result.stderr)
         fails += 1
 
-    # 反向二：references/ 里的活指令行写错版本也必须被抓（审计-V3 IM1 根因回归）
-    ref = root / "skills" / "moshu" / "references" / "fake-workflow.md"
+    # 反向二：references/ 里的活指令行写错版本也必须被抓（审计-V3 IM1 根因回归；moshu 删后迁 moshu-write 存活路径）
+    ref = root / "skills" / "moshu-write" / "references" / "fake-workflow.md"
     ref.parent.mkdir(parents=True, exist_ok=True)
     ref.write_text("只有 agents_version: 24 通过后才执行。\n", encoding="utf-8")
     result = run(root)
