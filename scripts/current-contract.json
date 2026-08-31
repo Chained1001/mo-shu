@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "setup_skill_version": "1.5.1",
-  "agents_version": 46,
+  "agents_version": 47,
   "topic_decision_phase": 5,
   "progress_schema_version": 2,
   "primary_benchmark_artifacts": [
@@ -38,7 +38,7 @@
       "Compact 后恢复上下文"
     ],
     "chapter_range_format": "第{N}-{M}章",
-    "deployment_fingerprint": "f08c1378f7fdb2c8cfeabc3cc83425bbe555c0b5b824d174b5a5ac7445f20882"
+    "deployment_fingerprint": "7d5c01e245ff332f74a378581b036375b488736bb2df07d40a03bfd2014d0a7d"
   },
   "artifact_contracts": [
     {
