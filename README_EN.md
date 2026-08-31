@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest (v2.5.1)**: **Test-cycle fixes + repo slimming** — skeleton-template 4-layer 10-column (ensemble/key columns, inter-volume drive chain, promise timing table, character 5-piece with personalized motivation, causal antecedent notes) + 4 methodology extractions (golden-finger 3 rules, reader psychology, outline causality, character construction) + entry pre-checks + 4 outline fields + ledger→progress rename + caifeng v2 + prefill path + reference sketch confirmation + example≠requirement constitutional principle + step disclosure duty + attention optimization (6.5x session reduction, 36% AGENTS.md reduction, dead stock cleanup); agents_version 45
+> **Latest (v2.6.0)**: Yardstick consolidation (ideal-review + virtual-benchmark → core-setting yardstick section) + writing-mode refactor (unified per-chapter lane with K parameter / A-stage tiering / two-way revision) + deslop absorption & moshu router/Dashboard retirement (12→10 skills) + audit-phase-4 fixes (run-regressions one-click suite / false-green guard #15) + repo slimming (spec archival / methodology merging, net −3 files); agents_version 47
 
 ## Pipeline Overview
 

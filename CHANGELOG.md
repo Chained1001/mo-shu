@@ -2,15 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
-## v2.6.0（2026-09-01，施工中）
+## v2.6.0（2026-09-01）
 
-> B94 标尺合并+B95 写作模式重构+B96 路由工作台退役——12 技能→**10**（deslop 收编+B96 删 moshu 路由与 Dashboard）；agents_version **47**（B94/B95 bump，B96 无 bump）
+> B94 标尺合并+B95 写作模式重构+B96 路由工作台退役+B97 产品文档同步+B98 审计四期整改+B99 全仓瘦身——12 技能→**10**（deslop 收编+B96 删 moshu 路由与 Dashboard）；agents_version **47**（B94/B95 bump，B96 无 bump；B99 指纹确认性重登记 36656ff98c5f）
 
-### 即将发布
+### 新增与变更
 
 - B94 标尺合并：理想书评+虚拟对标收口为核心设定「成品标尺」段（四轮→三轮/归因单点化/过目 2→1）+ 第一章专项搬家接线 + evaluator 两档
 - B95 写作模式重构：单章+日更统一逐章写作车道（K 参数化）+ A 段分级（批中轻量 A'）+ deslop 收编改稿两路 + chapter-core 四处去重
 - B96 路由与工作台退役：删 moshu 路由技能与 Dashboard（11→10 技能）+ VERSION 迁 setup + next_step 退役（消费内联化）+ 首装引导并入 setup
+- B97 产品文档与审计法同步：PRD+FSD v3（成品标尺/逐章写作/改稿两路术语同步+版本路线补 v2.5.2/2.5.3/2.6.0+10 技能终态+上游谱系核）+ 术语表 +5 条（含退役词消歧）+ 审计法 v2.1 三条固化（第七查无条件/独立重跑 grep/运行时路径依赖）
+- B98 审计四期整改：N1-N3 修复（ISSUE_TEMPLATE 删 deslop 枚举/README 产物树同步/write SKILL 术语对齐）+ 立案一收口 run-regressions.sh（本地一键回归+PRD 轻量 lint）+ 立案二盲区 #15 防假绿四条 + 规格 README 验收纪律条款
+- B99 全仓瘦身：规格归档 12 份（B87-B98 入归档/）+ 方法论合并（hooks-paragraph→hooks-chapter/双卡合一 cards.md/五技入 writing-craft，净减 3 文件）+ 共享资产收敛（清单①③均空——无消组并组）+ 引用全仓改造（防假绿四条纪律）——审计四期 C1 三方向（C/F/G）落地，方法论零删除
 
 ## v2.5.3（2026-09-01）
 
