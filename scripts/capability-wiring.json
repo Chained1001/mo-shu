@@ -188,14 +188,14 @@
     {
       "id": "exemption-marker",
       "producer": "check-ai-patterns.js 的 <!-- 去味:跳过 --> 豁免语义",
-      "rationale": "豁免标记会整文件跳过扫描——deslop 主职能的文档必须指示「不得把跳过当零命中」",
+      "rationale": "豁免标记会整文件跳过扫描——文档必须指示「不得把跳过当零命中」（B95 deslop 收编后落 anti-ai-writing）",
       "consumers": [
         {
-          "file": "skills/moshu-deslop/references/deslop-workflow.md",
+          "file": "skills/moshu-write/references/anti-ai-writing.md",
           "must_contain": "去味:跳过"
         },
         {
-          "file": "skills/moshu-deslop/references/deslop-workflow.md",
+          "file": "skills/moshu-write/references/anti-ai-writing.md",
           "must_contain": "不得把跳过当成零命中"
         }
       ]

@@ -137,7 +137,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
    - `check-ai-patterns.js` 的 findings 合并进 `prose`：severity=blocking 的类别一律按 S2（当前为 `not-is-comparison` / `em-dash` / `voice-contrast` / `negation-parade` / `reverse-not-is` / `trailer-ending` / `trailer-summary`），修法直接采用检测器输出的建议（删否定铺垫/反差腔/排比否定/章尾预告腔/章尾状态总结句，直接写后项或具体动作；破折号按功能改成动作/短句/逗号/冒号）。
    - 其余 prose findings 统一按 S4：只指出读感风险，不替代人工判断；功能性写法标 `[需复核]` 并保留。完整类别和修法见 `anti-ai-writing.md`。
    - `check-degeneration.js` 报告模型退化（逐字复读/截断/占位符/工程词泄漏），每条带 `severity: blocking|advisory`：blocking（复读/截断/tier1 工程词）作为 S1/S2 `prose` findings，修复建议是「重新生成该段，不是改写」；advisory（tier2 章节/歧义词）作为 S4。
-   - 这三个预检脚本只读；`moshu-review` **不修改正文、设定或大纲文件**，需要自动修复正文时建议转 `/moshu-deslop`。full / lean 模式只有下方「追踪文件维护」允许修改 `追踪/`；分批审查的所有模式都可按上方契约写 **.moshu-review/state.md**，solo 除该状态外不写项目内容。
+   - 这三个预检脚本只读；`moshu-review` **不修改正文、设定或大纲文件**，需要自动修复正文时建议转 /moshu-write 改稿·文字打磨路（B95 deslop 收编）。full / lean 模式只有下方「追踪文件维护」允许修改 `追踪/`；分批审查的所有模式都可按上方契约写 **.moshu-review/state.md**，solo 除该状态外不写项目内容。
    - 默认 `--quote-mode keep`，不把古言/日式的 `「」` 当作问题；只有项目明确指定引号风格时才检查对应转换建议。
 
 **moshu-explorer 预查询（可选）**。仅当 `Effective Mode` 仍为 `full`/`lean`、当前允许 spawn 且 Agent/Task 工具可用时，才可检查 moshu-explorer 是否已部署（部署判定见 /moshu-setup）并 spawn `moshu-explorer` 预查设定摘要；`solo` 或子代理递归保护场景下不得 spawn，只能直接 Read/Grep。Prompt 示例：
@@ -169,8 +169,8 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   length_coefficient: 1.0                                     # 字数系数 0.5-2.0，整改后期望=原×系数
 ```
 
-> **保留清单填写权红线（B60）**：`preserve` 只有**作者**与 `[需复核]` 转正两个来源——审查启动时作者输入采集优先；reviewer/deslop **不得自填**（防「自我保留」架空整改）。
-> **整改执行**：作者裁决后的整改遵守 deslop-workflow「外科手术纪律」（章级两轮/保留清单 grep 在位/事实保真/字数系数），不在此复制。
+> **保留清单填写权红线（B60）**：`preserve` 只有**作者**与 `[需复核]` 转正两个来源——审查启动时作者输入采集优先；reviewer/改稿执行 **不得自填**（防「自我保留」架空整改）。
+> **整改执行**：作者裁决后的整改遵守 workflow-revision 文字打磨路「外科手术纪律」（章级两轮/保留清单 grep 在位/事实保真/字数系数，B95 deslop 收编），不在此复制。
 
 严重度定义：
 - **S1**：会破坏主线、角色动机、世界规则或读者信任，需优先修。
@@ -215,7 +215,7 @@ full/lean 模式下，主会话必须把“审查基准包摘要”直接写进�
   9. 按平台 rubric 或通用内容 rubric 逐项对照，标记 PASS/FAIL。
   10. 继承的开放项里，本批本该兑现的钩子/伏笔是否落空？
   11. 开头同质化（仅当本章是全书开篇/前 3 章）：开局切口是不是同题材的默认套路（穿越即退婚、系统绑定、末世第一天、开场即打脸等），能不能原样换到任意同类书？"有钩子/非天气开场"不等于不同质。对照 references/plot-core-methods.md「噱头分类与开篇流程」判断——能整体换到同类书=同质化（撞题材模板至少 S2；套路化但有具体人物/处境微差 S3）。
-  12. 结尾总结：章尾是总结/升华/复述式收尾（"就这样……""他终于明白……""这一夜注定……"），还是落在动作/画面/悬念上？检测器已判 blocking 的（`trailer-summary`）按上面「blocking 一律 S2」处理，不重复定级；检测器没覆盖的总结/升华/复述式收尾按影响定 S2/S3（改写走 /moshu-deslop Gate F，本 skill 只标问题不改写）。
+  12. 结尾总结：章尾是总结/升华/复述式收尾（"就这样……""他终于明白……""这一夜注定……"），还是落在动作/画面/悬念上？检测器已判 blocking 的（`trailer-summary`）按上面「blocking 一律 S2」处理，不重复定级；检测器没覆盖的总结/升华/复述式收尾按影响定 S2/S3（改写走 /moshu-write 改稿·文字打磨路（Gate F 对应结尾去升华），本 skill 只标问题不改写）。
 
   输出格式：
   VERDICT: APPROVE / CONCERNS / REJECT

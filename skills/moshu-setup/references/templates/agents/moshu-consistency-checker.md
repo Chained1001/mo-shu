@@ -42,7 +42,7 @@ maxTurns: 15
 
 > 下文出现的 `moshu-setup/references/agent-references/{文件名}` 均为**逻辑路径**，实际读取时一律使用上方第 1 条的 canonical 路径：`{项目根}/.claude/skills/moshu-setup/references/agent-references/{文件名}`。
 >
-> **包内路由表边界**：包内文件（writing-craft.md / outline-methods.md / beat-cards.md）路由表可能引用本部署包不存在的文件（如 workflow-chapter.md、plot-emotion-system.md，属主会话 moshu-write）。此类引用按缺失处理，用包内等价技法替代，**不得**跨 skill 读取；缺失即如实报告。
+> **包内路由表边界**：包内文件（writing-craft.md / outline-methods.md / beat-cards.md）路由表可能引用本部署包不存在的文件（如 workflow-daily.md、plot-emotion-system.md，属主会话 moshu-write）。此类引用按缺失处理，用包内等价技法替代，**不得**跨 skill 读取；缺失即如实报告。
 
 ## 检查流程
 

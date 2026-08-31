@@ -72,7 +72,7 @@ description: "多视角对抗式审查。full/lean 模式在已部署 reviewer a
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
 | 要修改查出的问题 | moshu-write | 返回对应写作 skill 修改 |
-| 发现 AI 味需清理 | moshu-deslop | `/moshu-deslop` |
+| 发现 AI 味需清理 | /moshu-write 改稿·文字打磨路 | workflow-revision（B95 deslop 收编） |
 | 需要重新拆解对标书 | moshu-analyze | `/moshu-analyze` |
 
 ---

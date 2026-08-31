@@ -2,7 +2,7 @@
 
 # mo-shu
 
-长篇网文写作 skill 包，覆盖扫榜、拆文、写作、审查、导入、文风、去AI味的全流程。内置适配 Claude Code。
+长篇网文写作 skill 包，覆盖扫榜、拆文、写作、审查、导入、文风、去AI味（收编入写作改稿）的全流程。内置适配 Claude Code。
 
 ## 核心思路
 
@@ -51,7 +51,7 @@ flowchart LR
     end
 
     subgraph S4 ["  精修定稿"]
-        deslop["去 AI 味"]:::final
+        write_r["改稿·文字打磨"]:::final
     end
 
     entry_l --> setup
@@ -62,7 +62,7 @@ flowchart LR
     entry_i -.->|推荐先部署| setup
     setup -.->|逆向导入| import_l
     import_l -.->|续写| write_l
-    write_l --> deslop
+    write_l --> write_r
 ```
 
 > 完整架构与项目全书见 [产品需求与详细设计文档（PRD+FSD）](docs/mo-shu项目-产品需求与详细设计文档（PRD+FSD）.md)（理念与概念词典/全流程走查/全仓清单，单文件）。
@@ -100,17 +100,16 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-volume` | `/moshu-volume` | 卷规划 · Stage 4-6（单元卡→整合→定稿+卷纲）、开新卷、设定修订（修订流）、防撞对照、采风融合 |
 | `moshu-analyze` | `/moshu-analyze` 『进行拆书』 | 网文拆书 · 黄金三章、爽点设计、节奏分析 |
 | `moshu-scan` | `/moshu-scan` 「网文扫榜」 | 网文扫榜 · 起点/番茄/晋江市场趋势 |
-| `moshu-deslop` | `/moshu-deslop` `/去AI味` | 去AI味 · 检测并清除 AI 写作痕迹 |
 | `moshu-style` | `/moshu-style` `/学文风` | 文风学习 · 从任意量原文提取写作风格基准（句长/标点/对话技法/锚点），产出 `文风库/文风.md` |
 | `moshu-import` | `/moshu-import` `/导入小说` | 逆向导入 · 将已有小说反向解析为标准项目结构 |
 | `moshu-review` | `/moshu-review` `/审查` | 多视角审查 · 4 Agent 多视角审稿 + 番茄/起点评分标准 |
 | `moshu-cdp` | `/moshu-cdp` | 浏览器操控 · CDP 协议复用登录态抓取数据 |
 
-> `moshu-deslop` 的本地检查是写作 lint：blocking 只限确定性句式/标点问题，其他提示按读感判断；朱雀等外部检测只作自测参考，不替代人工读感。
+
 
 自然语言同样触发：
 - 「帮我开书」→ `moshu-outline`（首卷卷纲 → `moshu-volume`；细纲与正文 → `moshu-write`）
-- 「这篇太 AI 了」→ `moshu-deslop`
+- 「这篇太 AI 了」→ `/moshu-write` 改稿·文字打磨路（B95 deslop 收编）
 - 「把我的书导进来」→ `moshu-import`
 - 「打开工作台」→ `moshu dashboard`（本机浏览拆文库与写作项目，可轻量编辑）
 - 「沈栀现在什么状态」→ 自动 spawn `moshu-explorer` agent

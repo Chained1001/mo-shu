@@ -1,7 +1,7 @@
 ---
 name: moshu-write
-version: 1.7.1
-description: "长篇网文写作。承接开书构建（/moshu-outline → /moshu-volume）之后的细纲与正文：细纲补建/滚动、日更续写（写作三遍法）、大修、卷复盘执行。触发方式：/moshu-write、/写长篇、「出细纲」「补细纲」「日更」「续写」「继续写」「修改第X章」「回炉」「重写第X章」；开书/建设定/写大纲 → /moshu-outline；卷纲 → /moshu-volume。"
+version: 1.8.0
+description: "长篇网文写作。承接开书构建（/moshu-outline → /moshu-volume）之后的细纲与正文：细纲补建/滚动、逐章写作（K 参数，单章与日更统一）、改稿两路（文字打磨+问题修复）、卷复盘执行。触发方式：/moshu-write、/写长篇、「出细纲」「补细纲」「日更」「续写」「继续写」「写第N章」「修改第X章」「回炉」「重写第X章」；开书/建设定/写大纲 → /moshu-outline；卷纲 → /moshu-volume。"
 ---
 # moshu-write：长篇网文写作
 
@@ -45,10 +45,9 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 | 场景 | 触发条件 | 执行流程 |
 |------|----------|----------|
 | 开书/设定/大纲/卷纲 | "帮我开书" / 项目目录为空 | → `/moshu-outline` 开书故事层（题材定位、世界观、人物、全书大纲）→ `/moshu-volume` 首卷卷纲；本 skill 接力细纲与写作（见 [outline-workflow.md](references/outline-workflow.md)） |
-| 写指定章 | "写第 N 章" / "写第1章" / "开书并写首章" | Stage 4 单章写作；只写用户点名的章节，写完 Stage 5 检查后停止。空项目/无细纲（如"开书并写首章"）先经 /moshu-outline+/moshu-volume 建纲再写点名章 |
-| 补纲/扩纲 | "出细纲/补细纲/规划下一段剧情/接下来写XX剧情（先出细纲）" 且项目已有大纲 | [outline-workflow.md](references/outline-workflow.md)「中途补纲/扩纲小流程」：选同类剧情单元→追加剧情单元卡→按剧情批滚动补细纲；**默认停在细纲交付，不自动写正文** |
-| 日更续写 | 关键词（"日更"/"续写"/"继续写"）且项目已有正文+追踪 | 加载 `references/workflow-daily.md` |
-| 大修 | "修改第X章" / "回炉" / "重写第X章" | 加载 `references/workflow-revision.md` |
+| 补纲/产纲 | "出细纲/补细纲/规划下一段剧情/接下来写XX剧情（先出细纲）" 且项目已有大纲 | [outline-workflow.md](references/outline-workflow.md)「中途补纲/扩纲小流程」：选同类剧情单元→追加剧情单元卡→按剧情批滚动补细纲；**默认停在细纲交付，不自动写正文** |
+| 逐章写作 | "写/续写/日更/写第N章" 且项目已有正文+追踪 | 加载 `references/workflow-daily.md`（**K 参数化 B95**：无数量意图默认 1/日更 2-3/点名 N→min(N,3)；指定写某章三落点：N=下一章→顺序写 K=1、N≤已写→改稿、跳章→引导回顺序写） |
+| 改稿 | "修改第X章" / "回炉" / "重写第X章" | 加载 `references/workflow-revision.md`（改稿两路：文字打磨/问题修复，B95） |
 
 > 开新卷：新卷构建（增量设定/卷纲/新卷规划）→ `/moshu-volume` 开新卷（消费卷复盘下卷方向候选）；本 skill 接力新卷细纲与写作（细纲见 [outline-workflow.md](references/outline-workflow.md)）。
 
@@ -64,7 +63,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 
 **正文批量上限**：写正文必须由用户显式给出章节范围或日更意图。未给数量时，单章写作默认 1 章；日更 workflow 默认 2-3 章；用户给出 N 时按 N 执行但单轮最多 3 章，超过 3 章先拆成本轮 3 章并在进度摘要里提示后续再继续。
 
-**匹配优先级**：同时命中多行时，按 大修 → 写指定章 → 补纲/扩纲 → 日更续写 → 开书 的顺序匹配。用户点名要"细纲/补纲/规划剧情"而未要正文时，优先入 补纲/扩纲，不入日更。日更续写的 AND 条件（项目已有正文+追踪）不满足时，提示用户"项目还没有正文，建议先开书/写第1章"。
+**匹配优先级**：同时命中多行时，按 改稿 → 逐章写作 → 补纲/产纲 → 开书 的顺序匹配。用户点名要"细纲/补纲/规划剧情"而未要正文时，优先入 补纲/产纲，不入逐章写作。逐章写作的 AND 条件（项目已有正文+追踪）不满足时，提示用户"项目还没有正文，建议先开书/写第1章"。
 
 日更续写保持在 workflow 内：一旦本次请求路由到 `references/workflow-daily.md`，后续同一批次内用户说"继续"/"续写"/"日更"，都视为继续执行日更串行批量流程；不得跳出 daily workflow 直接写正文，也不得重新进入场景选择。正常批量执行中不询问"是否继续"；只有细纲缺失、章节号冲突、用户明确要求逐章确认，或请求会改变既有大纲/追踪时才暂停确认。
 
@@ -96,11 +95,11 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 
 #### 项目文件结构
 
-项目结构树与产物映射表见 [references/artifact-protocols.md](references/artifact-protocols.md) 开头「项目文件结构」节；缺失文件处理、对标分析权威优先级、追踪文件体积见 [references/workflow-chapter.md](references/workflow-chapter.md) 的「写前准备契约」节。
+项目结构树与产物映射表见 [references/artifact-protocols.md](references/artifact-protocols.md) 开头「项目文件结构」节；缺失文件处理、对标分析权威优先级、追踪文件体积见 [references/chapter-core.md](references/chapter-core.md) 的「写前准备契约」节。
 
 #### 单章写作流程
 
-执行前先读 [references/workflow-chapter.md](references/workflow-chapter.md)，按其中的单章写作流程（Stage 4-C1~4-C13，**B 段按三遍法执行：第 1 遍快写→第 2 遍读者重读→第 3 遍技艺打磨**，见 chapter-core「B 段」）、写作技巧提醒、字数验收权威与 Stage 5 质量检查执行。日更批量另加载 `references/workflow-daily.md` 控制批次。
+执行前先读 [references/workflow-daily.md](references/workflow-daily.md)（逐章写作统一车道，每章执行序 13 步见其「每章执行序」；**B 段按三遍法执行：第 1 遍快写→第 2 遍读者重读→第 3 遍技艺打磨**，见 chapter-core「B 段」）、写作技巧提醒、字数验收权威与 Stage 5 质量检查执行。
 
 ## 交接
 
@@ -115,7 +114,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 
 | 时机 | 跳转到 | 命令 |
 |---|---|---|
-| 写完，去 AI 味 | moshu-deslop | `/moshu-deslop` |
+| 写完，去 AI 味 | 本技能改稿·文字打磨路 | `references/workflow-revision.md`（B95 deslop 收编） |
 | 想对比参考书 | moshu-analyze | `/moshu-analyze` |
 | 需要市场方向 | moshu-scan | `/moshu-scan` |
 

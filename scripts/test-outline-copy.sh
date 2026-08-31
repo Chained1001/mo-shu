@@ -12,7 +12,7 @@ fi
 SCRIPT="$REPO_ROOT/skills/moshu-write/scripts/check-outline-copy.js"
 DETECTOR_COPIES=(
   "$REPO_ROOT/skills/moshu-write/scripts/check-outline-copy.js"
-  "$REPO_ROOT/skills/moshu-deslop/scripts/check-outline-copy.js"
+  "$REPO_ROOT/skills/moshu-write/scripts/check-outline-copy.js"
 )
 for detector_copy in "${DETECTOR_COPIES[@]}"; do
   node --check "$detector_copy" >/dev/null

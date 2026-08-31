@@ -52,9 +52,9 @@
           ]
         },
         {
-          "file": "skills/moshu-deslop/references/deslop-workflow.md",
+          "file": "skills/moshu-write/references/workflow-revision.md",
           "must_contain": "任务描述：去AI味",
-          "context": "去AI味整改",
+          "context": "改稿·文字打磨路（B95 deslop 收编）",
           "required_params": [
             "项目目录",
             "任务描述",

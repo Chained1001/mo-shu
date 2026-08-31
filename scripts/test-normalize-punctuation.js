@@ -11,7 +11,7 @@ const { spawnSync } = require("child_process");
 const repoRoot = path.resolve(__dirname, "..");
 const normalizer = path.join(
   repoRoot,
-  "skills/moshu-deslop/scripts/normalize-punctuation.js"
+  "skills/moshu-write/scripts/normalize-punctuation.js"
 );
 const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), "normalize-punctuation-"));
 

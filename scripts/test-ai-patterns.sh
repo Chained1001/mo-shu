@@ -9,16 +9,15 @@ if [ -z "$REPO_ROOT" ]; then
   exit 1
 fi
 
-SCRIPT="$REPO_ROOT/skills/moshu-deslop/scripts/check-ai-patterns.js"
+SCRIPT="$REPO_ROOT/skills/moshu-write/scripts/check-ai-patterns.js"
 DETECTOR_COPIES=(
-  "$REPO_ROOT/skills/moshu-deslop/scripts/check-ai-patterns.js"
   "$REPO_ROOT/skills/moshu-write/scripts/check-ai-patterns.js"
   "$REPO_ROOT/skills/moshu-review/scripts/check-ai-patterns.js"
 )
 for detector_copy in "${DETECTOR_COPIES[@]}"; do
   node --check "$detector_copy" >/dev/null
   cmp -s "$SCRIPT" "$detector_copy" || {
-    echo "FAIL: detector copy drifted from moshu-deslop source: $detector_copy" >&2
+    echo "FAIL: detector copy drifted from write source: $detector_copy" >&2
     exit 1
   }
 done

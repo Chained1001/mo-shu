@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## v2.6.0（2026-09-01，施工中）
+
+> B94 标尺合并+B95 写作模式重构——12 技能→**11**（moshu-deslop 收编删除）；agents_version **46**（B94 bump，B95 无 bump）
+
+### 即将发布
+
+- B94 标尺合并：理想书评+虚拟对标收口为核心设定「成品标尺」段（四轮→三轮/归因单点化/过目 2→1）+ 第一章专项搬家接线 + evaluator 两档
+- B95 写作模式重构：单章+日更统一逐章写作车道（K 参数化）+ A 段分级（批中轻量 A'）+ deslop 收编改稿两路 + chapter-core 四处去重
+
 ## v2.5.3（2026-09-01）
 
 > B93 单批：采风接线与竞态修复——12 技能世代不变；agents_version **45**（无部署物变更）

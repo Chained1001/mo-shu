@@ -89,7 +89,7 @@
 
 | 场景 | 引用位置 |
 |---|---|
-| 单章写作失败处理 | `workflow-chapter.md` Stage 4-C12「更新追踪」 |
+| 逐章写作失败处理 | `workflow-daily.md` 每章执行序 step 12（core D4 追踪事务提交） |
 | 日更批量失败处理 | `workflow-daily.md` Stage 4-D2 事务提交 5 条 + 批末校验 |
 | 回炉大修失败处理 | `workflow-revision.md`「提交与重试」 |
 | 追踪事务语义 | `tracking-transaction.md`（唯一提交点 / append 幂等 / 退役表述） |

@@ -3,32 +3,22 @@
  "groups": [
   {
    "name": "prose-ai-pattern-detector",
-   "source": "skills/moshu-deslop/scripts/check-ai-patterns.js",
+   "source": "skills/moshu-write/scripts/check-ai-patterns.js",
    "targets": [
-    "skills/moshu-write/scripts/check-ai-patterns.js",
     "skills/moshu-review/scripts/check-ai-patterns.js"
    ]
   },
   {
-   "name": "prose-outline-copy-detector",
-   "source": "skills/moshu-write/scripts/check-outline-copy.js",
-   "targets": [
-    "skills/moshu-deslop/scripts/check-outline-copy.js"
-   ]
-  },
-  {
    "name": "prose-degeneration-detector",
-   "source": "skills/moshu-deslop/scripts/check-degeneration.js",
+   "source": "skills/moshu-write/scripts/check-degeneration.js",
    "targets": [
-    "skills/moshu-write/scripts/check-degeneration.js",
     "skills/moshu-review/scripts/check-degeneration.js"
    ]
   },
   {
    "name": "prose-punctuation-normalizer",
-   "source": "skills/moshu-deslop/scripts/normalize-punctuation.js",
+   "source": "skills/moshu-write/scripts/normalize-punctuation.js",
    "targets": [
-    "skills/moshu-write/scripts/normalize-punctuation.js",
     "skills/moshu-review/scripts/normalize-punctuation.js"
    ]
   },
@@ -59,9 +49,8 @@
   },
   {
    "name": "banned-words-reference",
-   "source": "skills/moshu-deslop/references/banned-words.md",
+   "source": "skills/moshu-write/references/banned-words.md",
    "targets": [
-    "skills/moshu-write/references/banned-words.md",
     "skills/moshu-review/references/banned-words.md",
     "skills/moshu-setup/references/agent-references/banned-words.md"
    ]
@@ -76,11 +65,10 @@
   },
   {
    "name": "anti-ai-writing-reference",
-   "source": "skills/moshu-deslop/references/anti-ai-writing.md",
+   "source": "skills/moshu-write/references/anti-ai-writing.md",
    "targets": [
     "skills/moshu-review/references/anti-ai-writing.md",
-    "skills/moshu-setup/references/agent-references/anti-ai-writing.md",
-    "skills/moshu-write/references/anti-ai-writing.md"
+    "skills/moshu-setup/references/agent-references/anti-ai-writing.md"
    ]
   },
   {

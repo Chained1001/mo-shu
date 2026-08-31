@@ -204,7 +204,6 @@ LEGACY_RULES = (
 
 SPAWN_CAPABLE_SKILLS = (
     "skills/moshu/SKILL.md",
-    "skills/moshu-deslop/SKILL.md",
     "skills/moshu-import/SKILL.md",
     "skills/moshu-analyze/SKILL.md",
     "skills/moshu-write/SKILL.md",

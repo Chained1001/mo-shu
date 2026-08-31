@@ -53,7 +53,7 @@ flowchart LR
     end
 
     subgraph S4 ["  Polish"]
-        deslop["De-AI-ify"]:::final
+        write_r["Revise·de-AI polish"]:::final
     end
 
     entry_l --> setup
@@ -64,7 +64,7 @@ flowchart LR
     entry_i -.->|Setup Recommended| setup
     setup -.->|Reverse Import| import_l
     import_l -.->|Continue Writing| write_l
-    write_l --> deslop
+    write_l --> write_r
 ```
 
 ## Installation
@@ -101,15 +101,14 @@ npx skills add Chained1001/mo-shu -y -g
 | `moshu-volume` | `/moshu-volume` | Volume planning — Stage 4-6 (unit cards → integration → finalize + volume outline), new-volume flow, setting revision (revision workflow), collision check, research fusion |
 | `moshu-analyze` | `/moshu-analyze` | Web novel deconstruction — Golden First 3 Chapters, payoff design, pacing analysis |
 | `moshu-scan` | `/moshu-scan` | Web novel trend scan — Qidian/Fanqie/Jinjiang market trends |
-| `moshu-deslop` | `/moshu-deslop` | De-AI-ify — detect and remove AI writing traces |
 | `moshu-style` | `/moshu-style` | Style learning — extract a writing-style baseline (sentence length / punctuation / dialogue technique / anchor excerpts) from any amount of source text into `文风库/文风.md` |
 | `moshu-import` | `/moshu-import` | Reverse import — parse existing novels into standard project structure |
 | `moshu-review` | `/moshu-review` | Multi-perspective review — 4-agent adversarial review + Fanqie/Qidian scoring rubrics |
 | `moshu-cdp` | `/moshu-cdp` | Browser control — CDP protocol for scraping with reusable login sessions |
 
-> `moshu-deslop` uses local prose linting: blocking applies only to deterministic style/punctuation issues, while other findings require read-through judgment; external detectors such as Zhuque are self-check references, not replacements for human review.
 
-Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-outline` (volume outline continues in `moshu-volume`; outlines & prose in `moshu-write`), `这篇太AI了` ("this is too AI-ish") → `moshu-deslop`, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `moshu-explorer`.
+
+Natural language also triggers: `帮我开书` ("help me start writing") → `moshu-outline` (volume outline continues in `moshu-volume`; outlines & prose in `moshu-write`), `这篇太AI了` ("this is too AI-ish") → 改稿·文字打磨路（/moshu-write）, `把我的书导进来` ("import my book") → `moshu-import`, `打开工作台` ("open the dashboard") → `moshu dashboard`, `沈栀现在什么状态` ("what's Shen Zhi's current status") → `moshu-explorer`.
 
 ### Story Dashboard
 
@@ -227,7 +226,7 @@ Each skill includes a `references/` knowledge base loaded on demand to keep cont
 | Twist Toolbox | Types · Timing · Misdirection base paths | moshu-write |
 | Style Modules | Dialogue · Combat · Mind games · Cinematic writing · Face-slapping · Plain description | moshu-write |
 | Advanced Techniques | 4-step micro-outline · Climax reverse-engineering · Dual-thread structure · AB interweaving | moshu-write |
-| De-AI-ify | Prevention · 3-pass de-AI method · Rewrite examples · Banned word list | deslop / moshu-write |
+| De-AI-ify | Prevention · 3-pass de-AI method · Rewrite examples · Banned word list | /moshu-write 改稿·文字打磨路 |
 | Quality Checks | General · Long-form specific · Toxic trope detection | moshu-write |
 | Deconstruction Methods | Golden First 3 Chapters · Emotion curves · Structure breakdown | moshu-analyze |
 | Reader Profiles | 9-dimension profiles · Target reader analysis | moshu-scan |

@@ -23,18 +23,13 @@
   },
   {
    "path": "skills/moshu-write/references/workflow-daily.md",
-   "budget": 12000,
-   "why": "日更每次会话加载，且与 SKILL.md 叠加。预算 10800→10900：新增审查记录消费点与卷复盘触发（v7 学习落地，日更路径每次会话付）；→11000：设定转正规则（故事对象两阶段）；→11300：章后对照第 9 步（细纲落地核对 landed/missed/deviated + 未提事件归类，笔枢 observer/arbiter 补学，防细纲老化——首批细纲默认 5 章同类痛点，日更路径每次会话付）；→11400：章后对照认知边界核对（笔枢信息边界补学，日更路径付）；→11500：P0-5 统一脚本命令路径，引入 {SKILL_DIR} 定位说明（修复文档命令按字面不可执行，日更路径付）；→11700：审计-V3 批A——为 W1（每章事务补 information_gap_changes 可选键，接通批 3a 信息差域的生产端）、W3（批前查 open 工单，接通批 6 闭环）、S2（候选机检 --style/--gaps 参数示例）腾出净增量；→12000：批E 实测落地后按净增量校准（W1/W3/S2 三项实增约 330 字，日更路径付）"
-  },
-  {
-   "path": "skills/moshu-write/references/workflow-chapter.md",
-   "budget": 1650,
-   "why": "workflow-chapter 预算调整记录（原文编码丢失，2026-08-25 审计标注；历史沿革见批B12 施工日志与 git 历史） B92 增量（微张力+章级钩子按需加载句——段落级悬念挂载，写章路径每次会话付）：压缩对冲后实测 1489，1400→1500 B94 增量（第一章专项自 daily 移入——单章车道实际加载位）：实测 1633，1500→1650"
+   "budget": 9500,
+   "why": "日更每次会话加载，且与 SKILL.md 叠加。预算 10800→10900：新增审查记录消费点与卷复盘触发（v7 学习落地，日更路径每次会话付）；→11000：设定转正规则（故事对象两阶段）；→11300：章后对照第 9 步（细纲落地核对 landed/missed/deviated + 未提事件归类，笔枢 observer/arbiter 补学，防细纲老化——首批细纲默认 5 章同类痛点，日更路径每次会话付）；→11400：章后对照认知边界核对（笔枢信息边界补学，日更路径付）；→11500：P0-5 统一脚本命令路径，引入 {SKILL_DIR} 定位说明（修复文档命令按字面不可执行，日更路径付）；→11700：审计-V3 批A——为 W1（每章事务补 information_gap_changes 可选键，接通批 3a 信息差域的生产端）、W3（批前查 open 工单，接通批 6 闭环）、S2（候选机检 --style/--gaps 参数示例）腾出净增量；→12000：批E 实测落地后按净增量校准（W1/W3/S2 三项实增约 330 字，日更路径付） B95 统一车道重构净减（D1 加载表压缩+细纲补建迁出+13 步执行序并入）：实测 9363，12000→9500 锁精简"
   },
   {
    "path": "skills/moshu-write/references/outline-workflow.md",
-   "budget": 8800,
-   "why": "细纲工作流（自 write 侧开书工作流细纲段拆分，V2.1 B1b；细纲/中途补纲/设定补全路径每次会话付，预算=实测×1.05 取整）。B56 细纲质量要求补「章节定位供 A 段场景卡召回消费」句，实测 7042，6986→7400。B58b 细纲模板加「伏笔操作」行+reveal_chapter 对齐句（伏笔剧透锁设计层登记），单文件实测 7230、预算 7400 不变（组随动见组条目）。B68 章纲方法论四件（场景表步/一进一出问句/写作浮现声明+收割步/拆并章规程），实测 8157——规格估算 +450 调 7900，实际 +927 超估：判因=①场景表步按规格完整表头+七列全枚举+分层声明落文（约 330 字，估算法未含列名级展开）；②写作浮现声明与浮现收割步双落点、补纲流程插步重编号；③拆并章规程含千章字典序警示；偏差记录见施工日志，7400→8700（含 68b 补纲/拆并章两处 pace_meter 调用句预留 ~80 字后 ×1.05 取整，组随动见组条目） B94 增量（首批细纲停靠加第一章专项回指）：实测 8753，8700→8800"
+   "budget": 8900,
+   "why": "细纲工作流（自 write 侧开书工作流细纲段拆分，V2.1 B1b；细纲/中途补纲/设定补全路径每次会话付，预算=实测×1.05 取整）。B56 细纲质量要求补「章节定位供 A 段场景卡召回消费」句，实测 7042，6986→7400。B58b 细纲模板加「伏笔操作」行+reveal_chapter 对齐句（伏笔剧透锁设计层登记），单文件实测 7230、预算 7400 不变（组随动见组条目）。B68 章纲方法论四件（场景表步/一进一出问句/写作浮现声明+收割步/拆并章规程），实测 8157——规格估算 +450 调 7900，实际 +927 超估：判因=①场景表步按规格完整表头+七列全枚举+分层声明落文（约 330 字，估算法未含列名级展开）；②写作浮现声明与浮现收割步双落点、补纲流程插步重编号；③拆并章规程含千章字典序警示；偏差记录见施工日志，7400→8700（含 68b 补纲/拆并章两处 pace_meter 调用句预留 ~80 字后 ×1.05 取整，组随动见组条目） B94 增量（首批细纲停靠加第一章专项回指）：实测 8753，8700→8800 B95 E 组增量（批末细纲评审两问+探索稿关键章默认）：实测 8881，8800→8900"
   },
   {
    "path": "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
@@ -67,11 +62,6 @@
    "why": "触发 /moshu-import 时入口全量进上下文（P-A 骨架化后约 2.5K 去空白；防膨胀，流程在 references/import-workflow.md）"
   },
   {
-   "path": "skills/moshu-deslop/SKILL.md",
-   "budget": 3470,
-   "why": "触发 /moshu-deslop 时入口全量进上下文（P-A 骨架化后约 3.3K 去空白；防膨胀，流程在 references/deslop-workflow.md）。B59 锁定：增长须先压缩或下沉。B76.6 P2 兼容性头注统一句（宿主路径探测→部署语义，+29），实测 3307，3300→3470（×1.05）"
-  },
-  {
    "path": "skills/moshu-analyze/SKILL.md",
    "budget": 2540,
    "why": "触发 /moshu-analyze 时入口全量进上下文（P-A 骨架化后约 2.2K 去空白；防膨胀，流程在 references/analyze-workflow.md）。→2422：B1b 路由残留第 4 例修复（流程衔接表 1 行拆 2 行：准备开书→moshu-build / 已有书续写→moshu-write，路由正确性值得每次会话付，预算=实测 2307×1.05 取整）。B59 锁定：增长须先压缩或下沉。B76.6 P2 兼容性头注统一句（+29），实测 2451，2422→2540（×1.05）"
@@ -98,8 +88,8 @@
   },
   {
    "path": "skills/moshu-write/references/chapter-core.md",
-   "budget": 21800,
-   "why": "（原文编码丢失，2026-08-25 审计标注；历史沿革见批B12 施工日志与 git 历史）批B12 显式调高 17100→19600：B 段重构为三遍法（快写→读者重读→技艺打磨）——每遍换帽子（创作帽/读者帽/技艺帽）+方法论书指引块（大师课/小说写作/骨架章节索引）+上下文隔离铁律+四查/五磨操作步骤+卡片按需加载（beat-cards/hooks-chapter/文风库/genre-prose-cards）。先压缩同文件旧文本（写作技巧提醒删 4 行与三遍重叠项[对话/爽点密度/章尾/情绪验证]、三遍方法论书行精简、B4 悬空引用修复）后实测 18604 非空白字符仍超——三遍法为 B12 规格硬性要求（每章写作都付），按 doc-budget 纪律显式调高。B56 场景感知与三遍法增强（A 段场景卡召回+锚点选路+虚拟对标 fallback / spawn 四材料 / 三遍法场景行+四查五磨苏式化 / Burroway 8/10 章），node 实测 20566，19600→21500 B92 增量（第 3 遍微张力半句——段落级悬念挂载，每章写作付）：压缩对冲后实测 21563，21500→21600 B94 增量（D3 定位声明+成品标尺回退链，A1 删清单对冲后仍净增）：实测 21763，21600→21800"
+   "budget": 22250,
+   "why": "（原文编码丢失，2026-08-25 审计标注；历史沿革见批B12 施工日志与 git 历史）批B12 显式调高 17100→19600：B 段重构为三遍法（快写→读者重读→技艺打磨）——每遍换帽子（创作帽/读者帽/技艺帽）+方法论书指引块（大师课/小说写作/骨架章节索引）+上下文隔离铁律+四查/五磨操作步骤+卡片按需加载（beat-cards/hooks-chapter/文风库/genre-prose-cards）。先压缩同文件旧文本（写作技巧提醒删 4 行与三遍重叠项[对话/爽点密度/章尾/情绪验证]、三遍方法论书行精简、B4 悬空引用修复）后实测 18604 非空白字符仍超——三遍法为 B12 规格硬性要求（每章写作都付），按 doc-budget 纪律显式调高。B56 场景感知与三遍法增强（A 段场景卡召回+锚点选路+虚拟对标 fallback / spawn 四材料 / 三遍法场景行+四查五磨苏式化 / Burroway 8/10 章），node 实测 20566，19600→21500 B92 增量（第 3 遍微张力半句——段落级悬念挂载，每章写作付）：压缩对冲后实测 21563，21500→21600 B94 增量（D3 定位声明+成品标尺回退链，A1 删清单对冲后仍净增）：实测 21763，21600→21800 B95 增量（A 段分级声明+批内时序+细纲补建归位+文字打磨分界——去重对冲后仍净增）：实测 22126，21800→22200 B95 E3 增量（关键章条件聚焦环）：实测 22209，22200→22250"
   },
   {
    "path": "skills/moshu-volume/references/volume-workflow.md",
@@ -128,18 +118,13 @@
   },
   {
    "path": "skills/moshu-write/references/workflow-revision.md",
-   "budget": 3800,
-   "why": "B59 覆盖面补全（作者裁定⑤）：修订工作流被 write SKILL 与 workflow-daily 均无条件引用；node 实测 3587×1.05 取整百=3800"
+   "budget": 5500,
+   "why": "B59 覆盖面补全（作者裁定⑤）：修订工作流被 write SKILL 与 workflow-daily 均无条件引用；node 实测 3587×1.05 取整百=3800 B95 改稿两路重构（文字打磨路 deslop 收编迁入+问题修复路 R1-R5 保留）：实测 5399，3800→5500"
   },
   {
    "path": "skills/moshu-import/references/import-workflow.md",
    "budget": 14200,
    "why": "B59 覆盖面补全（作者裁定⑤）：导入工作流被 moshu-import SKILL 引用 6 处（无条件主流程）；node 实测 13524×1.05 取整百=14200"
-  },
-  {
-   "path": "skills/moshu-deslop/references/deslop-workflow.md",
-   "budget": 10600,
-   "why": "B59 覆盖面补全（作者裁定⑤）：去AI味工作流被 moshu-deslop SKILL 引用 5 处（无条件主流程）；node 实测 10003×1.05 取整百=10600"
   },
   {
    "path": "skills/moshu-outline/references/workflow-outline.md",
@@ -160,32 +145,32 @@
  "paths": [
   {
    "label": "长篇日更主会话",
-   "budget": 36200,
+   "budget": 39500,
    "files": [
     "skills/moshu-write/SKILL.md",
-    "skills/moshu-write/references/workflow-daily.md",
-    "skills/moshu-write/references/workflow-chapter.md"
-   ]
+    "skills/moshu-write/references/workflow-daily.md"
+   ],
+   "why": "B95 随动（workflow-daily 降+chapter-core 升，组实测 ~39400"
   },
   {
    "label": "长篇开书",
-   "budget": 18600,
+   "budget": 18700,
    "files": [
     "skills/moshu-write/SKILL.md",
     "skills/moshu-write/references/outline-workflow.md"
    ],
-   "why": "。B58b 伏笔操作行增量（outline-workflow 7042→7230，组实测 16544 超 16400，调 16400→16700 吸收）。B68 章纲方法论四件（outline-workflow 7230→8157，组实测 17471；规格估 17200，实际超估判因见 outline-workflow 条目偏差记录），16700→18500（含 68b 调用句预留，组实测+预留后 ×1.05 取整） B94 随动（outline-workflow 第一章专项回指，组实测 18548，18500→18600"
+   "why": "。B58b 伏笔操作行增量（outline-workflow 7042→7230，组实测 16544 超 16400，调 16400→16700 吸收）。B68 章纲方法论四件（outline-workflow 7230→8157，组实测 17471；规格估 17200，实际超估判因见 outline-workflow 条目偏差记录），16700→18500（含 68b 调用句预留，组实测+预留后 ×1.05 取整） B94 随动（outline-workflow 第一章专项回指，组实测 18548，18500→18600 B95 E 组随动（outline-workflow 批末评审两问，组实测 18649，18600→18700"
   },
   {
    "label": "正文 agent 上下文",
-   "budget": 45100,
+   "budget": 45600,
    "files": [
     "skills/moshu-setup/references/templates/agents/moshu-narrative-writer.md",
     "skills/moshu-write/references/writing-craft.md",
     "skills/moshu-write/references/anti-ai-writing.md",
     "skills/moshu-write/references/banned-words.md"
    ],
-   "why": "。B56 随动（chapter-core 19600→21500、writing-craft 12000→12500，组 43700→45100）"
+   "why": "。B56 随动（chapter-core 19600→21500、writing-craft 12000→12500，组 43700→45100） B95 随动（anti-ai-writing 文字打磨纪律增节，组实测 45516，45100→45600"
   },
   {
    "label": "卷规划路径",

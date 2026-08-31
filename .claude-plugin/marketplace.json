@@ -110,7 +110,7 @@
       "description": "长篇网文写作。从大纲到正文，辅助长篇网络小说的创作，包括世界观、人物、情节线管理。",
       "source": "./",
       "strict": false,
-      "version": "1.7.1",
+      "version": "1.8.0",
       "category": "novel-writing",
       "keywords": [
         "long-novel",
@@ -122,26 +122,6 @@
       ],
       "skills": [
         "./skills/moshu-write"
-      ]
-    },
-    {
-      "name": "moshu-deslop",
-      "description": "网文去AI味。检测并清除文本中的AI写作痕迹，让文字回归自然。覆盖禁用词替换、句式去套路、心理外化、节奏打碎。",
-      "source": "./",
-      "strict": false,
-      "version": "1.1.1",
-      "category": "novel-polish",
-      "keywords": [
-        "de-ai",
-        "humanize",
-        "deslop",
-        "去AI味",
-        "润色",
-        "去味",
-        "chinese"
-      ],
-      "skills": [
-        "./skills/moshu-deslop"
       ]
     },
     {

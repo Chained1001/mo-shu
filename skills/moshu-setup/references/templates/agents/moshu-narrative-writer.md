@@ -10,7 +10,7 @@ tools: [Read, Glob, Grep, Write, Edit, Bash]
 model: sonnet
 maxTurns: 30
 # maxTurns: 30 — 覆盖正文写作场景（场景展开、情绪弧线、去AI味 7 Gate）。
-skills: [moshu-deslop]
+skills: []  # B95 deslop 收编——去 AI 味由主会话 write 改稿·文字打磨路承担
 # 注：不加载 moshu-review。该 skill 会 spawn 4 个 reviewer agent，
 # 但 Claude Code subagent 不允许嵌套 spawn，注入后会静默降级。
 # moshu-review 应由调用方（主 skill）平级 spawn。
@@ -52,7 +52,7 @@ memory: project
 禁止只读裸文件名、禁止跳级、禁止跨 skill 读其他 skill 的 references。
 
 > 下文（含参考文件体系表与正文）出现的 `moshu-setup/references/agent-references/{文件名}` 均为**逻辑路径**，实际读取时一律使用上方第 1 条的 canonical 路径：`{项目根}/.claude/skills/moshu-setup/references/agent-references/{文件名}`。
-> **包内路由表边界**：包内文件（writing-craft.md / outline-methods.md / beat-cards.md）路由表可能引用本部署包不存在的文件（如 workflow-chapter.md、plot-emotion-system.md，属主会话 moshu-write）。此类引用按缺失处理，用包内等价技法替代，**不得**跨 skill 读取；缺失即如实报告。
+> **包内路由表边界**：包内文件（writing-craft.md / outline-methods.md / beat-cards.md）路由表可能引用本部署包不存在的文件（如 workflow-daily.md、plot-emotion-system.md，属主会话 moshu-write）。此类引用按缺失处理，用包内等价技法替代，**不得**跨 skill 读取；缺失即如实报告。
 
 ## 参考文件体系
 

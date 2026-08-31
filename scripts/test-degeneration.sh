@@ -9,7 +9,7 @@ if [ -z "$REPO_ROOT" ]; then
   exit 1
 fi
 
-SCRIPT="$REPO_ROOT/skills/moshu-deslop/scripts/check-degeneration.js"
+SCRIPT="$REPO_ROOT/skills/moshu-write/scripts/check-degeneration.js"
 TMP_DIR="$(mktemp -d)"
 cleanup() { rm -rf "$TMP_DIR"; }
 trap cleanup EXIT
@@ -237,7 +237,7 @@ NODE
 
 # --- wiring：携带 check-degeneration.js 副本的 skill 必须在自己的工作流文本里实际调用它 ---
 # 调用点可以在 SKILL.md，也可以在该 skill 的 references/ 工作流文件里（长篇的单章流程
-# 就随 Phase 4-5 下沉到了 references/workflow-chapter.md）。只要求「在本 skill 内被调用」，
+# 就随 Phase 4-5 下沉到了 references/chapter-core.md）。只要求「在本 skill 内被调用」，
 # 不再钉死在 SKILL.md 这一个文件上；一处都没有仍然 FAIL。
 for skill_js in $(find "$REPO_ROOT/skills" -name check-degeneration.js); do
   skill_dir="$(dirname "$(dirname "$skill_js")")"

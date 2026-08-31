@@ -23,7 +23,6 @@ AUTHORITY_FILES = [
     "skills/moshu-outline/references/workflow-outline.md",
     "skills/moshu-volume/references/volume-workflow.md",
     "skills/moshu-write/references/workflow-daily.md",
-    "skills/moshu-write/references/workflow-chapter.md",
     "skills/moshu-write/references/chapter-core.md",
     "skills/moshu-write/references/outline-workflow.md",
     "skills/moshu-volume/references/cold-path.md",
@@ -37,7 +36,6 @@ AUTHORITY_FILES = [
     "skills/moshu-import/SKILL.md",
     "skills/moshu-scan/SKILL.md",
     "skills/moshu-style/SKILL.md",
-    "skills/moshu-deslop/SKILL.md",
     "skills/moshu-cdp/SKILL.md",
     "skills/moshu/SKILL.md",
 ]

@@ -28,8 +28,8 @@ def require_all(text: str, needles: tuple[str, ...], label: str) -> None:
 
 def test_transaction_is_the_only_tracking_writer() -> None:
     for path in (
-        # 追踪体积/写入契约自入口下沉后位于 workflow-chapter.md「写前准备契约」节
-        "skills/moshu-write/references/workflow-chapter.md",
+        # 追踪体积/写入契约自入口下沉后位于 chapter-core.md「写前准备契约」节
+        "skills/moshu-write/references/workflow-daily.md",
         "skills/moshu-write/references/workflow-daily.md",
         "skills/moshu-write/references/workflow-revision.md",
         # 拆分后导入的追踪契约承载在 references/import-workflow.md
