@@ -182,7 +182,7 @@
 
 ## Stage 3·人物构建（自动）
 
-> 方法论照常加载：**人物构建开始前必读 [character-construction.md](character-construction.md)**（B86）+ [character-design-methods.md](character-design-methods.md)（苏式问句/升级绑弧光/人物主题卡）；卡字段见 [character-basics.md](character-basics.md)。**成品标尺情绪基准参照**（无对标时）。角色采风按需（产物命名与融合规程见 moshu-volume 侧 caifeng-methods.md）。角色卡含「对话 DNA」五要素（口头禅功能位/句长习惯/语气词与标点/回避话题/情绪外显）——有主对标时从拆文库角色卡带入作派（学结构不抄血肉），无对标留占位；write 语声锚消费（B59）。
+> 方法论照常加载：**人物构建开始前必读 [character-construction.md](character-construction.md)**（B86）+ [character-design-methods.md](character-design-methods.md)（苏式问句/升级绑弧光/人物主题卡）；卡字段见 [character-basics.md](character-basics.md)。**成品标尺情绪基准参照**（无对标时）。角色采风按需（产物命名与融合规程见 moshu-volume 侧 caifeng-methods.md）。角色卡含「对话 DNA」五要素（口头禅功能位/句长习惯/语气词与标点/回避话题/情绪外显）——有主对标时从拆文库角色卡带入作派（学结构不抄血肉），无对标留占位；write 语声锚消费（B59）。采风产物含人物原型/时代质感节时参照消费（真实人物故事→弧线功能位素材，C21①②）。
 
 **产出**：每卷一段话（三幕+灾难）、每角色一页（背景+弧线六阶段+大纲微调）、势力场总览回填、世界观完善、情绪引擎设计。不确定标 ⚠️ 入创作进度（移交 volume Phase B）。
 
