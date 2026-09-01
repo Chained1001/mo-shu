@@ -18,7 +18,7 @@ Professional authors follow a three-step method:
 
 Built around four pillars: reverse-engineering hits · plot modularization · layered state management · human-AI collaboration.
 
-> **Latest (v2.6.0)**: Yardstick consolidation (ideal-review + virtual-benchmark → core-setting yardstick section) + writing-mode refactor (unified per-chapter lane with K parameter / A-stage tiering / two-way revision) + deslop absorption & moshu router/Dashboard retirement (12→10 skills) + audit-phase-4 fixes (run-regressions one-click suite / false-green guard #15) + repo slimming (spec archival / methodology merging, net −3 files); agents_version 47
+> **Latest (v2.6.1)**: External-experience absorption — C20 six process refinements (big-nodes-first taboo / chapter-end-state anchor / aggressive info-gap use / volume pacing ratio [non-cited] / subplot-anchor trilemma / four-stage outline-flow note [design-side only]) + C21 three material extensions (caifeng five→seven categories: character-prototype + era-texture [Wuzui-sourced] / overnight cold-edit timing) + C22 three parameter additions (payoff-density defaults [uncited, overridable] / setup-quality 3 questions / familiar-surprise ratio) + blind-spot #16 exit-code discipline; agents_version 47
 
 ## Pipeline Overview
 
