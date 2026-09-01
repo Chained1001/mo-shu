@@ -16,7 +16,7 @@ description: "故事架构技能——开书的故事层设计。题材定位、
 
 ## 采风触发面
 
-- 结构采风（Stage 2）/角色采风（Stage 3）/机制采风（设定面）——执行体为 moshu-researcher agent（跨技能，采风方法见 volume 侧 caifeng-methods.md）
+- **主采风=Stage 2 备料步**（口味锚点/同题材结构/人物原型/时代质感合并跑）；角色采风（Stage 3）按需；机制采风（设定面）——执行体为 moshu-researcher agent（跨技能，采风方法见 volume 侧 caifeng-methods.md
 
 ## 流程文件
 
