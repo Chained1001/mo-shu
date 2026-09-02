@@ -4,6 +4,7 @@
 守护对象：B16 骨架六要素结构（每卷骨架表八列 / 对手梯队与势力场 / 常驻压力 / 终局底牌 / 升级台阶）的确定性校验。
 禁：LLM/联网（反模式 #8）；候选影响退出码（宪法 §2.7）；解析失败升级 blocking（宁可漏拦不可误伤）。
 纪律：断言跟 B16 模板走——模板变更须同批同步（清单类断言最易过期，本批纪律写进此头注）。
+B102：skeleton 十二节→十节（因果闭环表合并/体量总览并入骨架表合计尾注）；必备节缺失按结构代际降 candidate 不 blocking（老书不红）；基本设定/采风子目录双路径回退。
 版本兼容（B18 自审补丁）：检测到旧结构（无八列表头或缺新节）时，新节相关 blocking 断言整体降级为
 一条 candidate「大纲为 B16 前旧结构，建议升级」——不对存量旧项目误伤；八列表头齐全才启用全套 blocking。
 退出码：0=通过（含仅 candidate）；1=blocking 违规；2=参数/读文件错误（读失败三分类：缺/空/坏）。
@@ -21,7 +22,8 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 HEADER_KEYWORDS = ["卷", "一句话", "对手", "赌注", "中点", "高潮", "群像", "钥匙", "跃迁", "字数"]
-REQUIRED_SECTIONS = ["每卷骨架表", "全书体量与阶段总览", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力", "卷间驱动链", "承诺兑现时点"]
+REQUIRED_SECTIONS = ["每卷骨架表", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力", "卷间因果闭环", "承诺兑现时点"]
+OLD10_STRUCTURE_CANDIDATE = "大纲为 B102 前十列两表结构，建议升级十节（因果闭环表合并、体量总览并入骨架表，见 skeleton-template）"
 OLD_STRUCTURE_CANDIDATE = "大纲为旧版结构，建议升级（补群像/钥匙列与卷间驱动链/承诺兑现时点节，见 skeleton-template）"
 SECTION_RE = re.compile(r"^#{1,4}\s+(.+?)\s*$")
 
@@ -119,7 +121,13 @@ def main() -> int:
                 eight_col = True
                 break
 
-    # ---------- a. 必备节存在 ----------
+    # ---------- a. 必备节存在（B102 门细分：旧代际整体降级提示；新代际缺节才 blocking） ----------
+    if "卷间驱动链" in text or "全书体量与阶段总览" in text:
+        # B102 前十列两表结构（如 test1-5 存量）——只提示升级，老书不红
+        candidate.append(OLD10_STRUCTURE_CANDIDATE)
+        print(json.dumps({"ok": True, "blocking": [], "candidate": list(dict.fromkeys(candidate))}, ensure_ascii=False))
+        return 0
+
     missing_sections = [s for s in REQUIRED_SECTIONS if s not in text]
     if missing_sections:
         if eight_col:
@@ -151,18 +159,17 @@ def main() -> int:
             midpoint = row[4] if len(row) > 4 else ""
             if midpoint and "假胜" not in midpoint and "假败" not in midpoint:
                 blocking.append(f"骨架表第 {i} 行中点列未标注假胜/假败")
-        # c. 表行数 vs 体量节登记卷数
+        # c. 表行数 vs 登记卷数（B102：体量总览已并入骨架表合计尾注——全文找「共 N 卷」）
         volume_count = None
-        volume_section = section_text(text, "全书体量与阶段总览") or text
-        for line in volume_section.splitlines():
+        for line in text.splitlines():
             if re.search(r"(?:分|共|总)?\s*(\d+)\s*卷", line):
                 volume_count = int(re.search(r"(\d+)\s*卷", line).group(1))
                 break
         if volume_count is not None and len(data_rows) != volume_count:
-            candidate.append(f"骨架表行数 {len(data_rows)} ≠ 体量节登记卷数 {volume_count}")
-        # e. 字数加总 vs 登记总字数（±5%）
+            candidate.append(f"骨架表行数 {len(data_rows)} ≠ 合计尾注登记卷数 {volume_count}")
+        # e. 字数加总 vs 登记总字数（±5%）——合计尾注「总字数约 {X} 万字」
         total_words = None
-        for line in (section_text(text, "全书体量与阶段总览") or "").splitlines() + text.splitlines():
+        for line in text.splitlines():
             m = re.search(r"(?:总字数|预计字数)[^\d]{0,6}(\d+)", line)
             if m:
                 total_words = int(m.group(1))
@@ -177,9 +184,8 @@ def main() -> int:
                 blocking.append(f"每卷字数加总 {row_words} 与登记总字数 {total_words} 偏差超 ±5%")
 
     # ---------- f. 四阶段占比加总=100（±0.5） ----------
-    volume_section = section_text(text, "全书体量与阶段总览") or ""
     pcts = []
-    for line in volume_section.splitlines():
+    for line in text.splitlines():  # B102：体量总览并入骨架表后改全文扫（期词不现则本检查休眠）
         if re.search(r"(开篇|发展|高潮|收尾)期", line):
             # B24：排除括号内注释（如「（合计 100%）」），避免 % 正则误捕注释值（宁可漏拦不可误伤）
             line_clean = re.sub(r"（[^）]*）", "", line)
@@ -303,7 +309,11 @@ def main() -> int:
 
     # ---------- k. candidate：采风专名比对（设定/采风-*.md 通配，B19 联动） ----------
     harvest_dir = project / "设定"
-    harvest_files = sorted(harvest_dir.glob("采风-*.md")) if harvest_dir.is_dir() else []
+    harvest_files = (
+        sorted(list((harvest_dir / "采风").glob("采风-*.md")) + list(harvest_dir.glob("采风-*.md")))
+        if harvest_dir.is_dir()
+        else []
+    )  # B102 ㉒ 双路径：设定/采风/ 子目录优先，根散落回退
     if harvest_files:
         for harvest_path in harvest_files:
             try:
@@ -318,7 +328,7 @@ def main() -> int:
 
     # ---------- B21 candidate：采风产物未消费提示（采风-CF*.md 元数据状态） ----------
     if harvest_dir.is_dir():
-        cf_files = sorted(harvest_dir.glob("采风-CF*.md"))
+        cf_files = sorted(list((harvest_dir / "采风").glob("采风-CF*.md")) + list(harvest_dir.glob("采风-CF*.md")))
         if cf_files:
             unconsumed = []
             for cf in cf_files:
@@ -340,7 +350,9 @@ def main() -> int:
             candidate.append("常驻压力行为空或占位，建议补充")
 
     # ---------- B53/B94 candidate：成品标尺消费提示（题材定位.md 标尺节存在时） ----------
-    benchmark_path = project / "设定" / "题材定位.md"
+    benchmark_path = project / "设定" / "基本设定.md"
+    if not benchmark_path.exists():  # B102 ㉓ 双路径：旧书回退题材定位
+        benchmark_path = project / "设定" / "题材定位.md"
     if benchmark_path.exists():
         try:
             btext = read_text(benchmark_path)
@@ -350,9 +362,9 @@ def main() -> int:
                 anchors = set(re.findall(r"每\s*\d+\s*章|伏笔密度|\d+\s*条", btext))
                 consumed = any(a in text for a in anchors) if anchors else None
                 if consumed is False:
-                    candidate.append("题材定位成品标尺未被大纲引用——可能未消费（候选提示，请人工确认）")
+                    candidate.append("基本设定成品标尺未被大纲引用——可能未消费（候选提示，请人工确认）")
         except OutlineError as exc:
-            candidate.append(f"题材定位标尺读取异常：{exc}")
+            candidate.append(f"基本设定标尺读取异常：{exc}")
 
     # ---------- B57 candidate：事件关系边悬空引用（卷纲「事件关系边」节） ----------
     edges_section = section_text(text, "事件关系边") or ""

@@ -44,7 +44,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 
 | 场景 | 触发条件 | 执行流程 |
 |------|----------|----------|
-| 开书/设定/大纲/卷纲 | "帮我开书" / 项目目录为空 | → `/moshu-outline` 开书故事层（题材定位、世界观、人物、全书大纲）→ `/moshu-volume` 首卷卷纲；本 skill 接力细纲与写作（见 [outline-workflow.md](references/outline-workflow.md)） |
+| 开书/设定/大纲/卷纲 | "帮我开书" / 项目目录为空 | → `/moshu-outline` 开书故事层（基本设定、世界观、人物、全书大纲）→ `/moshu-volume` 首卷卷纲；本 skill 接力细纲与写作（见 [outline-workflow.md](references/outline-workflow.md)） |
 | 补纲/产纲 | "出细纲/补细纲/规划下一段剧情/接下来写XX剧情（先出细纲）" 且项目已有大纲 | [outline-workflow.md](references/outline-workflow.md)「中途补纲/扩纲小流程」：选同类剧情单元→追加剧情单元卡→按剧情批滚动补细纲；**默认停在细纲交付，不自动写正文** |
 | 逐章写作 | "写/续写/日更/写第N章" 且项目已有正文+追踪 | 加载 `references/workflow-daily.md`（**K 参数化 B95**：无数量意图默认 1/日更 2-3/点名 N→min(N,3)；指定写某章三落点：N=下一章→顺序写 K=1、N≤已写→改稿、跳章→引导回顺序写） |
 | 改稿 | "修改第X章" / "回炉" / "重写第X章" | 加载 `references/workflow-revision.md`（改稿两路：文字打磨/问题修复，B95） |
@@ -169,7 +169,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 |------|---------|
 | 章节钩子 / 段落级钩子（微张力） | `references/hooks-chapter.md` |
 | 悬念设计 | `references/hooks-suspense.md` |
-| 题材正文提示卡 / 题材分类卡 | `references/genre-prose-cards.md` 索引 + `references/genre-prose-cards/` 单题材卡目录（按题材分类优先） + `references/style-genre-modules.md`（通用流派补充） |
+| 题材卡（每章 JIT，不落盘）/ 题材分类卡 | `references/genre-prose-cards.md` 索引 + `references/genre-prose-cards/` 单题材卡目录（按题材分类优先） + `references/style-genre-modules.md`（通用流派补充） |
 | 打斗/装逼 | `references/style-combat-face.md` |
 | 喜剧/吐槽/梗场景 | `references/meme-craft.md`（热梗手法学） |
 | 高频场景 + 落笔技法卡 | `references/cards.md`（场景工艺卡 SC-001~006 + 落笔技法卡 14 张，B99 双卡合一） |
@@ -209,7 +209,7 @@ description: "长篇网文写作。承接开书构建（/moshu-outline → /mosh
 | 女频写作 | **`references/female-audience-writing.md`**（女频长篇：核心原则/文案/题材/感情线长线/平台） | `references/genre-readers.md`（读者心理/平台差异）· `references/character-relations.md`（感情线总框架） |
 | 去AI味 | **`references/anti-ai-writing.md`**（AI指纹/核心规则/Show Don't Tell） | `references/banned-words.md`（禁用词扫描）· `references/quality-checklist.md`（成稿检查） |
 | 失败恢复 | **`references/recovery-protocol.md`**（A 环境/B 状态/C 主产物/D 模型四类失败分类与恢复动作） | `references/tracking-transaction.md`（事务重试语义）· `/moshu-import`（旧追踪迁移）· `/moshu-analyze`（拆解管道恢复机制） |
-| 卷复盘 | **`references/volume-review.md`**（卷末四步：伏笔清账/卷摘要/下卷规划/契约修订候选） | `/moshu-volume` 开新卷（消费下卷方向候选）· `追踪/伏笔.md`（清账数据源）· `设定/题材定位.md`（终局储备与契约） |
+| 卷复盘 | **`references/volume-review.md`**（卷末四步：伏笔清账/卷摘要/下卷规划/契约修订候选） | `/moshu-volume` 开新卷（消费下卷方向候选）· `追踪/伏笔.md`（清账数据源）· `设定/基本设定.md`（终局储备与契约） |
 | 起名 | **`references/naming-cards.md`**（NC-001~005：书名/章节名/卷名/角色名/绰号，冷路径） | — |
 
 ---

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """test-check-outline.py — check_outline.py 正式回归测试
 
-守护对象：大纲机检脚本（B18 批）——blocking 九项（结构完备/八列/行数/字数容差/占比/台阶算术/底牌/伏笔闭合）+candidate 四项（单链条提示/采风专名比对/常驻压力/反转覆盖）+版本兼容降级（旧结构不误伤）。
+守护对象：大纲机检脚本（B18 批）——blocking 九项（结构完备/八列/行数/字数容差/占比/台阶算术/底牌/伏笔闭合）+candidate 四项（单链条提示/采风专名比对/常驻压力/反转覆盖）+版本兼容降级（旧结构不误伤；B102 增：十节结构/旧十列 OLD10 降级/采风子目录与基本设定双路径）。
 禁：断言实现细节/真实上游/脆弱快照；fixture 自清理（tempfile）。
 退出码语义：0=通过（含仅 candidate）；1=blocking 违规；2=参数/读文件错误。
 """
@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "skills/moshu-outline/scripts/check_outline.py"
 PY = sys.executable
 
-COMPLIANT = """# 大纲（测试书）
+OLD10_COMPLIANT = """# 大纲（测试书·B102 前十列两表结构）
 
 > 定稿：v1.0（2026-08-24，构建环）
 
@@ -70,6 +70,43 @@ COMPLIANT = """# 大纲（测试书）
 """
 
 
+COMPLIANT = (
+    OLD10_COMPLIANT
+    .replace(
+        """## 全书体量与阶段总览
+- 总章节数：250 章；总字数：100 万字（分 2 卷）
+- 开篇期 15% / 发展期 55% / 高潮期 20% / 收尾期 10%
+
+## 每卷骨架表
+| 卷 | 一句话（主角中心） |""",
+        """## 每卷骨架表
+| 卷（卷名） | 一句话（主角中心） |""",
+    )
+    .replace("| 1 | 主角被迫查案 |", "| 1｜开卷 | 主角被迫查案 |")
+    .replace("| 2 | 主角对决势力 |", "| 2｜终卷 | 主角对决势力 |")
+    .replace(
+        """| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |
+""",
+        """| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |
+
+- 合计：共 2 卷｜总字数约 100 万字
+- 阶段配比参考（C20⑤）：开篇期 15% / 发展期 55% / 高潮期 20% / 收尾期 10%
+""",
+    )
+    .replace(
+        """## 卷间驱动链
+| 卷 | 前台问题 | 卷末钥匙 | 下一卷前台问题 |
+|---|---|---|---|
+| 1｜开卷 | 主角被迫查案 | 反派A为何针对主角 | 主角对决势力 |""",
+        """## 卷间因果闭环
+| 卷 | 前台问题 | 因为上一卷的什么 | 卷末钥匙 | 所以下卷起于 |
+|---|---|---|---|---|
+| 1 | 主角被迫查案 | （开书设定债） | 反派A为何针对主角 | 承接：对决势力 |
+| 2 | 主角对决势力 | 反派A为何针对主角 | 底牌先导 | 终局对决 |""",
+    )
+)
+
+
 def run_check(project: Path) -> tuple[int, dict]:
     r = subprocess.run([PY, str(SCRIPT), "--project", str(project)], capture_output=True, text=True, encoding="utf-8")
     try:
@@ -110,8 +147,8 @@ def test_missing_midpoint(tmp: Path) -> None:
 
 
 def test_wordcount_drift(tmp: Path) -> None:
-    outline = COMPLIANT.replace("| 2 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |",
-                                "| 2 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 反击→终局 | 80 |")
+    outline = COMPLIANT.replace("| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |",
+                                "| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 反击→终局 | 80 |")
     project = write_project(tmp, "words", outline)
     code, payload = run_check(project)
     assert code == 1 and any("字数加总" in b for b in payload["blocking"]), f"字数超 ±5% 应 blocking: {payload}"
@@ -130,6 +167,14 @@ def test_missing_section(tmp: Path) -> None:
     project = write_project(tmp, "missing", outline)
     code, payload = run_check(project)
     assert code == 1 and any("必备节缺失" in b for b in payload["blocking"]), f"删整节应 blocking: {payload}"
+
+
+def test_old10_structure_downgrade(tmp: Path) -> None:
+    # B102：B102 前十列两表结构（test1-5 存量形态）→ OLD10 升级建议 candidate，exit 0
+    project = write_project(tmp, "old10", OLD10_COMPLIANT)
+    code, payload = run_check(project)
+    assert code == 0, f"旧十列结构应降级 exit 0，实得 {code}: {payload}"
+    assert any("B102 前十列两表" in c for c in payload["candidate"]), f"旧十列应出 OLD10 候选: {payload}"
 
 
 def test_old_structure_downgrade(tmp: Path) -> None:
@@ -182,7 +227,8 @@ def test_unconsumed_caifeng(tmp: Path) -> None:
     # B21：采风-CF*.md 元数据状态「未消费」→ candidate 且 exit 0
     project = write_project(tmp, "cf", COMPLIANT)
     (project / "设定").mkdir()
-    (project / "设定" / "采风-CF001-角色-师爷.md").write_text(
+    (project / "设定" / "采风").mkdir()
+    (project / "设定" / "采风" / "采风-CF001-角色-师爷.md").write_text(
         "# 采风-CF001-角色-师爷\n## 元数据头\n- 类型/主题：角色/师爷｜触发需求：步 2 人物｜状态：未消费\n## 来源清单\n| 作品 | URL | 日期 | 占比 |\n## 要素表\n| 要素 | 内容 | 来源 URL |\n## 来源专有名词清单\n## 转译三问初答（机制类）\n## 融合与消费记录\n", encoding="utf-8")
     code, payload = run_check(project)
     assert code == 0, f"未消费采风为 candidate，应 exit 0，实得 {code}: {payload}"
@@ -239,8 +285,8 @@ def test_virtual_benchmark_unconsumed(tmp: Path) -> None:
     # B53/B94：题材定位.md 成品标尺节存在但大纲零引用其锚点关键词 → candidate 且 exit 0
     project = write_project(tmp, "vbench", COMPLIANT)
     (project / "设定").mkdir()
-    (project / "设定" / "题材定位.md").write_text(
-        "# 题材定位\n## 成品标尺\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n- 伏笔密度：每卷埋 4 条 / 收 3 条参考\n", encoding="utf-8")
+    (project / "设定" / "基本设定.md").write_text(
+        "# 基本设定\n## 成品标尺\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n- 伏笔密度：每卷埋 4 条 / 收 3 条参考\n", encoding="utf-8")
     code, payload = run_check(project)
     assert code == 0, f"标尺未消费为 candidate，应 exit 0，实得 {code}: {payload}"
     assert any("成品标尺" in c and "未被大纲引用" in c for c in payload["candidate"]), f"应出成品标尺未消费候选: {payload}"
@@ -336,6 +382,7 @@ def main() -> None:
         test_wordcount_drift(work)
         test_dangling_foreshadow(work)
         test_missing_section(work)
+        test_old10_structure_downgrade(work)
         test_old_structure_downgrade(work)
         test_missing_outline(work)
         test_harvest_proper_names(work)

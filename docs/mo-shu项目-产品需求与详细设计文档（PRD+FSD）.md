@@ -66,7 +66,7 @@
 - **正则（grep 模式）**：描述文字匹配模式的语法；残留清点/断言的底层手段。
 - **SKILL.md**：技能的「散文 main()」——frontmatter（name/version/description=路由匹配依据）给系统读，正文（角色/铁律/流程索引/锚点）在触发时全文注入 AI 上下文；确定性动作不写在它里面，由它指挥 AI 调脚本执行。
 - **触发分工**：moshu 路由已于 B96 退役（模糊意图引导由 10 技能各自入口+setup 首装引导承担），技能自身保留精确触发（命令+规范短语，如 setup 的「部署墨枢写作环境」/「刚安装完怎么用」）——防松短语误触发。
-- **成品标尺**：无对标路线的设计约束参照（B94 收口理想书评+虚拟对标）——`设定/题材定位.md` 标尺节三组目标态（节奏目标/情绪基准/结构要点），无对标采风合成/有对标锚定拆文产物；Phase A 设计时参照、Phase B 打磨时作为 evaluator 打分锚点（benchmark_path）。
+- **成品标尺**：无对标路线的设计约束参照（B94 收口理想书评+虚拟对标）——`设定/基本设定.md`（B102 前旧名题材定位.md）标尺节三组目标态（节奏目标/情绪基准/结构要点），无对标采风合成/有对标锚定拆文产物；Phase A 设计时参照、Phase B 打磨时作为 evaluator 打分锚点（benchmark_path）。
 - **参考偏好**：0-3 部作品+各自偏好维度（如"诡秘的悬疑氛围"）——学习神韵非模仿结构（对标=拆文产物直接 fail-fast）。采风的定向检索锚点（有参考→精准搜，无→泛化搜）。
 - **Phase A/B**：build 内部的双 Phase 架构——Phase A 快速生成（Stage 1 交互+Stage 2-6 全速不停靠），Phase B 深度打磨（evaluator 全局评审→逐维度改进→循环直到确认）。
 - **打磨环**：Phase B 的大停靠——内含五选项主屏（确认/按建议改进/触发采风/逐维度打磨/自己改）+ 级联变更协议 + append-only 打磨记录（创作进度 v3）。
@@ -89,7 +89,7 @@
 
 ## 2.3 能力全景
 
-技能层（10）：setup 部署、outline 故事架构（Stage 1-3：题材定位/世界观/人物/全书大纲）、volume 卷规划（Stage 4-6/开新卷/修订流/采风/防撞）、write 逐章写作+改稿、analyze 拆文、scan 扫榜、review 审查、import 导入、style 文风、cdp 浏览器采集（moshu 路由与 Dashboard B96 退役、deslop B95 收编）。Agent 层（8）：architect/character-designer/narrative-writer/consistency-checker/researcher/explorer/chapter-extractor/evaluator。自动化层：8 hook+守卫/契约体系+版本散射工具化。数据层：项目七区+追踪事务单写入口。
+技能层（10）：setup 部署、outline 故事架构（Stage 1-3：基本设定/世界观/人物/全书大纲）、volume 卷规划（Stage 4-6/开新卷/修订流/采风/防撞）、write 逐章写作+改稿、analyze 拆文、scan 扫榜、review 审查、import 导入、style 文风、cdp 浏览器采集（moshu 路由与 Dashboard B96 退役、deslop B95 收编）。Agent 层（8）：architect/character-designer/narrative-writer/consistency-checker/researcher/explorer/chapter-extractor/evaluator。自动化层：8 hook+守卫/契约体系+版本散射工具化。数据层：项目七区+追踪事务单写入口。
 
 ### 2.3.1 开源强化机制层（v2.5.0，批 B58-B71，2026-08-28 反哺）
 
@@ -132,7 +132,7 @@
 
 ## 2.4 用户旅程（五条）
 
-分步产品走查见 §2.9（本行是浓缩链路）。安装（npx→开窗→setup→再开窗）→ 开书（`/moshu-outline` 立意表单五屏[念头框→缺啥问啥→口味种子→档位→核心设定 v1 过目]→备料步[采风确认+四路合并跑+标尺 v1→v2 校准]→骨架构建自动机检+骨架轻过目→人物构建（对话 DNA 带入）→交接 `/moshu-volume`）→ 卷规划（Stage 4 单元→Stage 5 整合+**防撞对照**→Stage 6 定稿+机检清零→打磨环（evaluator 全局评审→打磨屏五选→循环）→tracking init）→ 逐章写作（`/moshu-write` K 参数统一车道：无数量意图 K=1/日更意图 2-3/点名 N→min(N,3)；批中轻量 A'[三个每章差异项]；写前准备（**点名注入+剧透锁+语声/称谓注入**）→细纲（**一进一出自检**）→正文（**卡文阻塞协议**；三遍法批内时序；**写作浮现随手记**）→机检（**长度候选**）→追踪事务（**语声/称谓/progression 提取**）→批末（**pace_meter 仪表**+滚动补纲预告））→ 改稿两路（**文字打磨路**：表达层不满/AI 味深度清理——deslop 收编工序；**问题修复路**：review 工单→级联事务→复审闭环）→ 审查（review **工单四键+编辑决策点**，永不改文只出工单）→ 卷复盘开新卷（write 复盘→`/moshu-volume` 从 Stage 4 增量）→ 完结（卷末判定=文件证据[最新定稿章=卷纲末章/完结宣告.md]→作者宣告完结（大纲/完结宣告.md，含有意留白标注权）→ final-report 全书终账（追踪/完结清账.md）→ 完结章写作（收束清单））。
+分步产品走查见 §2.9（本行是浓缩链路）。安装（npx→开窗→setup→再开窗）→ 开书（/moshu-outline` 立意表单五步[念头框→回读+缺啥问啥（AI 速写）→口味种子→档位→核心设定 v1 定稿过目（确认三选）]→备料步[采风确认+四路合并跑+标尺 v1→v2 校准]→骨架构建自动机检+骨架轻过目→人物构建（对话 DNA 带入）→交接 `/moshu-volume`）→ 卷规划（Stage 4 单元→Stage 5 整合+**防撞对照**→Stage 6 定稿+机检清零→打磨环（evaluator 全局评审→打磨屏五选→循环）→tracking init）→ 逐章写作（`/moshu-write` K 参数统一车道：无数量意图 K=1/日更意图 2-3/点名 N→min(N,3)；批中轻量 A'[三个每章差异项]；写前准备（**点名注入+剧透锁+语声/称谓注入**）→细纲（**一进一出自检**）→正文（**卡文阻塞协议**；三遍法批内时序；**写作浮现随手记**）→机检（**长度候选**）→追踪事务（**语声/称谓/progression 提取**）→批末（**pace_meter 仪表**+滚动补纲预告））→ 改稿两路（**文字打磨路**：表达层不满/AI 味深度清理——deslop 收编工序；**问题修复路**：review 工单→级联事务→复审闭环）→ 审查（review **工单四键+编辑决策点**，永不改文只出工单）→ 卷复盘开新卷（write 复盘→`/moshu-volume` 从 Stage 4 增量）→ 完结（卷末判定=文件证据[最新定稿章=卷纲末章/完结宣告.md]→作者宣告完结（大纲/完结宣告.md，含有意留白标注权）→ final-report 全书终账（追踪/完结清账.md）→ 完结章写作（收束清单））。
 
 ## 2.5 产品哲学
 
@@ -162,14 +162,14 @@ RAG/向量检索、LLM 导演黑盒自治、每章全量快照、自动连写污
 
 ### 2.9.1 第一阶·大纲——开书故事层（/moshu-outline，Stage 1-3）
 
-**这一阶回答**：「我要写一本什么书」——题材定位、世界观、人物、全书骨架。作者输入意图，AI 产出故事层全部设计产物。
+**这一阶回答**：「我要写一本什么书」——基本设定、世界观、人物、全书骨架。作者输入意图，AI 产出故事层全部设计产物。
 
 **第 1 步·四轮式开场（信息采集，作者深度参与）**：
 - **轮 1 定调（开放对话）**：AI 问「你想写什么类型的故事？希望给读者什么感觉？」；追加参考偏好快问（喜欢的作品 0-3 部，只取风格气质，不等同对标）；随后**默认执行采风**（AI 声明约 5 分钟联网检索参考作品的结构要素，可说「跳过」）；无对标书时采风产物合成「成品标尺」（三类设计目标：节奏/情绪/结构，落题材定位标尺节）。AI 会主动扫描拆文库推荐同题材对标书，弹窗供作者选定或跳过。
 - **轮 2 定形（弹窗批问，一屏 ≤4 问）**：体量三数（总字数/章数/卷数，不确定按 200 万字 5 卷）、目标平台（起点/番茄/晋江…）、终局口径（完结设计 vs 开放式连载）、情绪基调（爽/虐/甜/悬疑/燃可多选）、更新频率、禁区雷点（不要后宫/不要虐主…——负面约束比正面偏好更防翻车）。
 - **轮 3 成品标尺（AI 起草→作者一次过目）**：以「完全读懂成品的评论家」视角推演目标态，按三组量化（节奏目标/情绪基准/结构要点）——落盘 `设定/题材定位.md` 标尺节，**它是后续打磨评审的打分锚点**（B94 收口理想书评）。
 - **轮 4 档位（一问弹窗）**：构建精细度三档（快速试水/标准·推荐/完整多线）——答完创建创作进度。
-- **确认点**：核心设定表成稿先展示作者过目，确认后落盘 `设定/题材定位.md`+`关系.md`+`题材正文提示卡.md`。
+- **确认点**：核心设定表成稿先展示作者过目（确认三选），确认后落盘 `设定/基本设定.md`+最小创作进度（B102：关系归 Stage 3 角色域，提示卡退役为正文教训档案）。
 
 **第 2 步·骨架构建（AI 自动）**：产出 `大纲/大纲.md`——每卷八列骨架表、终局底牌+升级台阶、对手梯队与势力场、暗线层次表、核心角色四件套、全书阶段总览。完成后自动跑结构机检（阻断项标记进创作进度，移交下一阶打磨，本阶不自评自改）。
 
@@ -292,7 +292,7 @@ flowchart TD
 | 产品步骤 | 实现机制 | 机检/Agent | 产物 | 作者确认点 |
 |---|---|---|---|---|
 | PREPARE·三轮开场 | 交互模态规则（封闭选择弹窗/开放采集对话/合批≤4问/带推荐标注）；选题决策.md 读取（scan 产物，过期提示+待拆文验证提示）；灵感种子收敛（模糊灵感时）；主对标发现（拆文库扫描+排除自对标） | 采风 spawn moshu-researcher（CF 票据）+融合流程（Stage 1 语境） | 灵感种子.md/主对标登记/成品标尺（标尺节，无对标采风合成） | 轮 1-3 全部作答；采风跳过权 |
-| 轮 3 落盘 | core-setting-template 七段+成品标尺段成稿展示（评论家口吻推演） | — | 设定/题材定位.md（题材框架行 B71+终局底牌+成品标尺节）+关系.md+题材正文提示卡.md+创作进度.md（最小创作进度） | 核心设定表一次过目（B94 过目 2→1） |
+| 轮 3 落盘 | core-setting-template 七段+成品标尺段成稿展示（评论家口吻推演） | — | 设定/基本设定.md（题材框架行 B71+终局底牌+成品标尺节）+创作进度.md（最小创作进度，项目根） | 核心设定表一次过目（B94 过目 2→1；B102 落盘两件——关系归 Stage 3/提示卡退役） |
 | DRAFT·骨架构建 | 方法论按需加载（outline-methods 路由表+按节精读纪律）；成品标尺节奏目标参照 | check_outline（blocking 自动，⚠️ 移交 Phase B） | 大纲/大纲.md（八列骨架表/终局底牌+升级台阶/势力场/暗线/角色四件套/阶段总览） | — |
 | DRAFT·人物构建 | 苏式问句/升级绑弧光/弧线六阶段；对话 DNA 带入（对标拆文角色卡） | — | 角色/*.md+势力场精化+情绪引擎 | — |
 | REVIEW/POLISH | **本阶不自评自改**——⚠️ 统一移交 volume Phase B 打磨环 | — | ⚠️ 待打磨清单（随创作进度） | — |
@@ -690,7 +690,7 @@ D1 快速上下文加载
   ⚡可选 spawn moshu-explorer(context_load)；手动 6 项表（tracking check 取 last_committed_chapter+1/状态卡/细纲/卷纲/角色双档）
   旧信息走 6 级成本表（单章查询>3 次=细纲没写清）
 D2 串行批量（K=2-3 章连续，每章全走 chapter-core A→B→C→D）：
-  A 写前准备（6 输入：文风库两级检查⚡缺失三选项不静默/变更日志/状态卡 7 栏/参考资料/对标 情绪模块+节奏【⚡缺失=missing_primary_contract 停止】/题材正文提示卡 genre_prose_card 三级来源）
+  A 写前准备（6 输入：文风库两级检查⚡缺失三选项不静默/变更日志/状态卡 7 栏/参考资料/对标 情绪模块+节奏【⚡缺失=missing_primary_contract 停止】/题材卡 genre_prose_card 每章 JIT 组装（B102 ⑱㉔ 不落盘；正文教训档案另读））
   B 三遍法（1 快写禁边写边改 → 2 读者重读四查 → 3 技艺打磨+字数 90% 放行）
     ⚡spawn moshu-narrative-writer（prompt 只传本章必需：细纲/上一章/对标召回/文风+锚点/阶段位置/禁止提前释放/字数预算；细纲消费两分法=内容层严格+形状层自由；令牌回传）
   C 机检收尾链（6 脚本顺序：check-ai-patterns --check → check-outline-copy → normalize-punctuation（唯一改写）→ check-degeneration → check-prose-candidates（候选永不拦）→ ⚡共享 2 轮自动修复预算）
@@ -739,7 +739,7 @@ write 侧卷复盘（references/volume-review.md 四步）→ `大纲/卷复盘_
 **skills/（321）**：
 
 - **moshu（8）**：SKILL.md（路由表 13 行意图）／VERSION（2.3.6）／scripts/next_step.py（S0-S6 DTO）／scripts/dashboard-server.mjs（本地工作台：回环监听/冲突保护/原子写）／assets/×3（前端页）／references/dashboard-guide.md。
-- **moshu-setup（97）**：SKILL.md ／UPGRADING.md（版本权威）／scripts/{deploy.py,merge-claude-settings.py} ／references/{setup-workflow.md 流程权威,deploy-manual.md 冷兜底}／templates/（CLAUDE.md.tmpl、settings-hooks.json、agents/×8、hooks/×12〔8 sh+core.js+cli.js+lib×2〕、rules/×4）／references/agent-references/×33（方法论包，agent 按需加载：方法论/题材/文风卡/钩子/反 AI 等）＋genre-prose-cards/×32（单题材正文提示卡）。
+- **moshu-setup（97）**：SKILL.md ／UPGRADING.md（版本权威）／scripts/{deploy.py,merge-claude-settings.py} ／references/{setup-workflow.md 流程权威,deploy-manual.md 冷兜底}／templates/（CLAUDE.md.tmpl、settings-hooks.json、agents/×8、hooks/×12〔8 sh+core.js+cli.js+lib×2〕、rules/×4）／references/agent-references/×33（方法论包，agent 按需加载：方法论/题材/文风卡/钩子/反 AI 等）＋genre-prose-cards/×32（单题材卡——每章 JIT 组装原料，B102 起不落盘书项目）。
 - **moshu-outline（12）**：SKILL.md ／scripts/check_outline.py ／references/×10（workflow-outline 开书流程[Stage 1-3] / core-setting-template / ideal-review-template / 人物族 character-{basics,relations,design-methods} / genre 族 {genre-core-mechanics,genre-catalog,genre-readers,genre-writing-formulas} / idea-seed / opening-design / plot-frameworks / reader-contract-and-progression——多数为 write 同源副本）。
 - **moshu-volume（63）**：SKILL.md ／scripts/{design_fingerprints.py,impact_scan.py,tracking_commit.py,pace_meter.py} ／references/×25（volume-workflow 热路径主文档[Stage 4-6+Phase B] / cold-path 冷路径 / caifeng-methods 采风手册 / revision-workflow / progress-template / virtual-benchmark-template / tracking-transaction / 大纲族 outline-{methods,conflict,rhythm,structure-theory,workflow} / 剧情族 plot-{core-methods,emotion-system,special-topics}+reversal-toolkit+emotional-{methods,arc-design} / 卡片族 beat-cards/naming-cards / genre 族 {genre-prose-cards,readers,writing-formulas,core-mechanics}——多为 write 同源副本）＋genre-prose-cards/×32（write 同源副本）。
 - **moshu-write（88）**：SKILL.md（三 lane 路由）／scripts/×6（check-ai-patterns / check-degeneration / check-outline-copy / check-prose-candidates / normalize-punctuation / tracking_commit）／references/×49（三工作流薄壳 workflow-{chapter,daily,revision} + 内核 chapter-core + artifact-protocols + recovery-protocol + tracking-transaction + state-tracking + writing-craft+技法卡族 + 大纲族（含 outline-workflow 补纲）+ 剧情族 + 人物族 + 钩子族 + 题材族 + quality-checklist + banned-words + anti-ai-writing + format-and-structure + reader-contract-and-progression + volume-review + idea-seed + genre-writing-formulas 等，与 build/deslop 侧部分为共享副本）＋genre-prose-cards/×32（源）。
