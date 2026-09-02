@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "setup_skill_version": "1.5.1",
-  "agents_version": 47,
+  "agents_version": 48,
   "topic_decision_phase": 5,
   "progress_schema_version": 2,
   "primary_benchmark_artifacts": [
@@ -38,7 +38,7 @@
       "Compact 后恢复上下文"
     ],
     "chapter_range_format": "第{N}-{M}章",
-    "deployment_fingerprint": "8b22cc2837ab6e58d60a028de74b8b66c9dc1de26680014dc97f081bc10e91f3"
+    "deployment_fingerprint": "f4642c1a1e222fcd117672622fbfb0f4af4c00165543c017ca83c7bd5382edd0"
   },
   "artifact_contracts": [
     {
@@ -95,7 +95,7 @@
       "anchor_docs": [
         "skills/moshu-volume/references/volume-workflow.md",
         "skills/moshu-volume/references/progress-template.md",
-        "skills/moshu-volume/references/caifeng-methods.md"
+        "skills/moshu-volume/references/caifeng-volume.md"
       ]
     }
   ],

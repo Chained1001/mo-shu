@@ -292,6 +292,26 @@ def main() -> int:
     if dark_section:
         candidate.append("暗线每卷至少推进一格——请对照整合记录线索矩阵核对推进点登记（机检无法确定性验证）")
 
+    # ---------- k. 大纲第 0 节（B103：4.1 梗概+核心卖点落位） ----------
+    # 新结构第 0 节=主题尺子句行；梗概/卖点写入第 0 节（4.1 产物）。旧结构无第 0 节概念→降 candidate 不 blocking。
+    if "主题尺子" in text or "一句话梗概" in text:
+        zero_ok = bool(re.search(r"(一句话梗概|核心卖点|卖点[:：])", text))
+        if not zero_ok:
+            candidate.append("大纲第 0 节缺「一句话梗概/核心卖点」落位（B103 4.1 产物）——建议补（候选提示，请人工确认）")
+
+    # ---------- l. candidate：参考档案完整性（B103：设定/参考/*.md 九段 schema 存在性） ----------
+    ref_dir = project / "设定" / "参考"
+    if ref_dir.is_dir():
+        for ref_file in sorted(ref_dir.glob("*.md")):
+            try:
+                ref_text = ref_file.read_text(encoding="utf-8")
+                nine_segments = ["故事脉络", "关键剧情", "主要设定", "主要人物", "底色", "缺点", "专名", "来源"]
+                missing_seg = [seg for seg in nine_segments if seg not in ref_text]
+                if missing_seg:
+                    candidate.append(f"参考档案 {ref_file.name} 缺 schema 段：{'/'.join(missing_seg)}（B103 九段完整性——候选提示，采风差量补）")
+            except Exception as exc:
+                candidate.append(f"参考档案 {ref_file.name} 读取异常：{exc}")
+
     # ---------- j. candidate：势力场互引（疑似单链条） ----------
     power_section = section_text(text, "对手梯队与势力场") or ""
     power_tables = extract_tables(power_section)

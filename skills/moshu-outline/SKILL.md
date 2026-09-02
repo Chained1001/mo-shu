@@ -16,13 +16,13 @@ description: "故事架构技能——开书的故事层设计。基本设定（
 
 ## 采风触发面
 
-- **主采风=Stage 2 备料步**（口味锚点/同题材结构/人物原型/时代质感合并跑）；角色采风（Stage 3）按需；机制采风（设定面）——执行体为 moshu-researcher agent（跨技能，采风方法见 volume 侧 caifeng-methods.md
+- **素材收集=Stage 2 三域深采**（剧情/设定/人设——caifeng-outline.md L1 手册）；草稿 4.3 定向素材按需；机制采风（设定面）——执行体为 moshu-researcher agent（跨技能，采风方法见 [caifeng-outline.md](references/caifeng-outline.md)
 
 ## 流程文件
 
 - 流程权威：`references/workflow-outline.md`（Stage 1-3 主流程）
 - 基本设定表模板：`references/core-setting-template.md`（含成品标尺段——evaluator 打分锚点）
-- 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/idea-seed.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`
+- 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`
 
 ## 交接
 

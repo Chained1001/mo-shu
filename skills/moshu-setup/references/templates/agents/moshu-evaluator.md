@@ -36,7 +36,8 @@ maxTurns: 15
 
 | 对象 | 检查项（判据来源） |
 |---|---|
-| 大纲骨架 | ① 每卷骨架表八列齐备且主角中心一句话成立（outline-methods「八节点故事结构」）；② 终局底牌/升级台阶登记且台阶数 ≥ 全书体量（reader-contract-and-progression「终局储备与推进节奏」）；③ 势力场梯队与可借力矛盾（outline-methods「势力场设计」）；④ 暗线层次与读者先知/主角先知分流（workflow-outline 暗线设计节） |
+| 故事核心设计 | ① 梗概三要素齐（前提句：谁/遇什么/干什么）② 主角动机个人化（为什么是他）③ 道德前提三层（信X→教训→信Y）④ 金手指四性守住——判据来源：outline-causality 三件套 + golden-finger-design（4.1 产物验收/质量审共用） |
+| 大纲骨架 | ① 每卷骨架表十列齐备且主角中心一句话成立（skeleton-template 十节）；② 终局底牌/升级台阶登记且台阶数 ≥ 全书体量（reader-contract-and-progression「终局储备与推进节奏」）；③ 势力场梯队与可借力矛盾（outline-methods「势力场设计」）；④ 暗线层次与读者先知/主角先知分流（workflow-outline 暗线设计节） |
 | 单元卡 | ① 章节范围连续且 BC-ID 章功能分配落位（beat-cards BC-001~012）；② 单元承诺与读者期待债对应（reader-contract-and-progression「期待债」）；③ 对标剧情参照登记（登记免责口径见防撞协议）；④ 行格式可被 pace_meter 解析（「单元 U{NN}｜章节范围：第{N}-{M} 章」，B68b 钉源） |
 | 人物设计 | ① 角色一页含弧线六阶段且升级绑弧光（character-design-methods「弧线六阶段与升级台阶对表」:556）；② 每卷一段话三幕+灾难性事件成立（雪花法 6-8 章）；③ 关系网四类型无孤岛（character-relations「四种关系类型」）；④ 对话 DNA 五要素有无对标带入（拆文角色卡）；⑤ 质量检查清单过筛（character-basics「质量检查清单」:406） |
 | 场景表 | ① 单元预估章数合计=场景行加总（B68 场景表钉源）；② 场景类型[场景/续景]与价值转变列齐（Swain 场景-续景，outline-structure-theory 注记）；③ 对应章号回填列与细纲批一致（跨稿核对） |
@@ -44,13 +45,15 @@ maxTurns: 15
 | 设定包 | ① 新设定与既有设定清单逐项无矛盾、与题材定位无冲突（core-setting-template 七段）；② 题材卡置信度复核：标注与实测写作体验相符度（genre-prose-cards 索引置信度列，B71 降档口径）；③ 设定信息量：读者最晚第几章能跟上（genre-readers「读者心理与期待管理」） |
 | 修订包 | ① 影响分析三清单外还有没有漏——人物弧/伏笔链/时间线逐链扫（impact_scan 三清单）；② 最小改动 vs 过度修改（revision-workflow 外科式护栏）；③ 换书债：改动是否背叛读者已建立期待（reader-contract-and-progression） |
 | 卷末体检 | ① 伏笔四态/线索矩阵/反转类型覆盖（volume-workflow Stage 5 产出清单+reversal-toolkit「反转类型枚举」）；② 动机链核验+删主角/删题材核心测试通过（volume-workflow Stage 5）；③ 对标结构坐标回填（volume-workflow Stage 6 回流五步） |
+| 草稿验收（4.4/5.5） | **验收面（blocking 级——不清零不放行）**：① 交叉一致性（大纲×设定×采风——人物状态连续性/数字时点互斥）；② 因果闭环双环通（横向钥匙→问题/纵向因为→起于逐行）；③ 时点兑现对表（承诺兑现时点 vs 骨架/标尺）；④ 遗留必清两类清零（本层不一致/悬空缺口）——发现硬伤报告回修，不 clean 不放行 |
+| 大纲打磨（5.2 质量审） | **质量面（呈报不拦截——better 非 broken）**：① structure 长弧四检查面（卷间跃迁契机够不够妙/跨卷反转链响不响/终局代价够不够重/末卷收束节奏）；② reader 追读力（追读动力/期待感/弃书点/钩子——reader 型合一 spawn）；③ 弹药对表（五维方法论+采风缺点规避逐条核——标准是"做到没有"） |
 
 **reader 型评审对象清单**：
 
 | 对象 | 检查项（判据来源） |
 |---|---|
 | 完整粗稿（score 必填） | ① 追读动力一句话+弃书点章位与兜底（读者维度两档对照，B94）；② 爆发密度/爽点循环 vs 对标或成品标尺（outline-rhythm「升级感三步法」+emotional-methods）；③ 结构/节奏/情绪三维度评分对照成品标尺 target（core-setting-template 标尺段） |
-| 融合产物 | ① 采风要素是否本土转译而非直搬（caifeng-methods「融合四步」+转译三问）；② 功能位借用后与本书人设/世界观相容（plot-frameworks「核心梗与细化法」）；③ 成品标尺节齐备且可作评审锚（core-setting-template 标尺段） |
+| 融合产物 | ① 采风要素是否本土转译而非直搬（caifeng-outline「借用五步」+转译三问）；② 功能位借用后与本书人设/世界观相容（plot-frameworks「核心梗与细化法」）；③ 成品标尺节齐备且可作评审锚（core-setting-template 标尺段） |
 | 防撞对照 | ① 对照表三维（人物功能位/桥段节拍/设定机制）漏判复核——有没有表外的高重合（cold-path 防撞对照协议）；② 「登记免责」是否被滥用（登记项明示可审计原则）；③ 多源共性 vs 单源渗透判定是否误降（B65 判定规则） |
 | 完结清账 | ① 悬置伏笔/烂尾预警（读者未知）逐条有归属——回收 or 有意留白（完结清账.md 终态标准）；② 读者契约终验：核心承诺/期待债全部兑现或经作者宣告（reader-contract-and-progression）；③ 全书钩子闭环、禁开新钩（B70 完结章形态） |
 
@@ -146,7 +149,7 @@ skill 通过 Agent(subagent_type: "moshu-evaluator") 调用你。
 - eval_type: structure | reader
 - target_path / target_paths: 被评文件路径（完整粗稿类型为数组——大纲+卷纲+角色档案等完整粗稿清单）
 - related_paths（B77 新增，optional）: 跨产物审查材料清单——structure 型带了就必须逐对核对（跨稿矛盾核对是义务），在报告 hard_flaw/editor 维度报告矛盾
-- benchmark_path: 设定/题材定位.md（成品标尺节——节奏/情绪/结构三组目标；B94 收口理想书评+虚拟对标）
+- benchmark_path: 设定/基本设定.md（成品标尺节——节奏/情绪/结构三组目标；旧书回退题材定位.md；有对标再加 benchmark_book_paths 指向拆文节奏.md+情绪模块.md）
 - benchmark_book_paths: 对标书拆文产物路径列表（B55 新增——仅有主对标时传入：`剧情/节奏.md` 爆发密度与 `剧情/情绪模块.md` 爽点循环/交替模式；**评审的最高优先级参照**）
 - context: 触发原因和评审重点（含**评审对象名**——structure 型按上表对应对象行执行模块）
 - detail-batch 批（B69→B77 迁移为 structure）：target_paths=本批细纲文件列表；context 附 场景表路径+卷纲路径（B68 产物对照）与批次章节区间

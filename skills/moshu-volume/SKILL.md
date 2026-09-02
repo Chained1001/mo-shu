@@ -23,7 +23,7 @@ description: "卷规划技能——每卷的单元卡/场景表/卷纲产出与�
 
 ## 流程文件
 
-- 卷规划流程权威：`references/volume-workflow.md`；修订流五步：`references/revision-workflow.md`；开新卷与防撞对照：`references/cold-path.md`；进度模板：`references/progress-template.md`；采风方法：`references/caifeng-methods.md`；成品标尺：core-setting-template 标尺段（outline 侧）
+- 卷规划流程权威：`references/volume-workflow.md`；修订流五步：`references/revision-workflow.md`；开新卷与防撞对照：`references/cold-path.md`；进度模板：`references/progress-template.md`；采风方法：`references/caifeng-volume.md`（L2 工艺学）+ outline 侧 caifeng-outline.md（L1）；成品标尺：core-setting-template 标尺段（outline 侧）
 - 单元/场景/方法论：`references/beat-cards.md`、`references/outline-methods.md`、`references/outline-structure-theory.md`、`references/outline-workflow.md`（细纲职责在 write 侧）等共享方法论（references/ 全目录）
 
 ## 交接
