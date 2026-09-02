@@ -33,7 +33,7 @@ ALLOWED_CROSS_DOMAIN: dict[str, str] = {
     "writing-craft.md": "write 域执行技法；build 构建对谈不加载，仅跨域指引（批B4 裁决二）",
     "style-combat-face.md": "write 域文风技法；build 构建对谈不加载，仅跨域指引（批B4 裁决二）",
     # B76 build 拆分（D-B76-1 裁决 E：outline/volume 互为上下游，文件即接口；方法论互引由 9+1 组交叉副本承载导航，提及类走白名单）
-    "volume-workflow.md": "volume 侧卷规划流程（Stage 4-6+Phase B）；outline 侧交接指针与对照引用（B76 拆分）",
+    "volume-workflow.md": "volume 侧卷规划流程（Stage 4-6+Phase 2）；outline 侧交接指针与对照引用（B76 拆分）",
     "workflow-outline.md": "outline 侧开书流程（Stage 1-3）；volume-workflow 头部交接指针指回（B76 拆分）",
     "caifeng-volume.md": "volume 侧 L2 工艺学手册（B103 拆分）；outline 侧素材收集 L1 手册=caifeng-outline（同技能内不跨域）",
     "caifeng-outline.md": "outline 侧 L1 三域手册（B103 拆分）；volume 侧 L2 引用不加载（跨域指引）",

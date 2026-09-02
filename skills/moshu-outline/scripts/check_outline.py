@@ -22,7 +22,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 HEADER_KEYWORDS = ["卷", "一句话", "对手", "赌注", "中点", "高潮", "群像", "钥匙", "跃迁", "字数"]
-REQUIRED_SECTIONS = ["每卷骨架表", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力", "卷间因果闭环", "承诺兑现时点"]
+REQUIRED_SECTIONS = ["每卷骨架表", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力", "卷间因果闭环", "承诺兑现时点", "核心角色五件套"]
 OLD10_STRUCTURE_CANDIDATE = "大纲为 B102 前十列两表结构，建议升级十节（因果闭环表合并、体量总览并入骨架表，见 skeleton-template）"
 OLD_STRUCTURE_CANDIDATE = "大纲为旧版结构，建议升级（补群像/钥匙列与卷间驱动链/承诺兑现时点节，见 skeleton-template）"
 SECTION_RE = re.compile(r"^#{1,4}\s+(.+?)\s*$")
@@ -151,8 +151,8 @@ def main() -> int:
         if not data_rows:
             blocking.append("每卷骨架表无数据行")
         for i, row in enumerate(data_rows, start=1):
-            if len(row) < 8:
-                blocking.append(f"骨架表第 {i} 行列数不足（{len(row)} < 8）")
+            if len(row) < 10:
+                blocking.append(f"骨架表第 {i} 行列数不足（{len(row)} < 10）")
             elif any(not c for c in row[:10]):
                 blocking.append(f"骨架表第 {i} 行存在空列")
             # d. 中点列含假胜/假败
@@ -292,14 +292,17 @@ def main() -> int:
     if dark_section:
         candidate.append("暗线每卷至少推进一格——请对照整合记录线索矩阵核对推进点登记（机检无法确定性验证）")
 
-    # ---------- k. 大纲第 0 节（B103：4.1 梗概+核心卖点落位） ----------
+    # ---------- k0. 大纲第 0 节（B103：4.1 梗概+核心卖点落位） ----------
     # 新结构第 0 节=主题尺子句行；梗概/卖点写入第 0 节（4.1 产物）。旧结构无第 0 节概念→降 candidate 不 blocking。
-    if "主题尺子" in text or "一句话梗概" in text:
+    # 始终查第 0 节存在性（B104 去前置漏洞：整缺第 0 节也必须提示）
+    if "第 0 节" not in text and "主题尺子" not in text:
+        blocking.append("大纲缺第 0 节（主题尺子句/一句话梗概+核心卖点落位——4.1 产物）")
+    else:
         zero_ok = bool(re.search(r"(一句话梗概|核心卖点|卖点[:：])", text))
         if not zero_ok:
             candidate.append("大纲第 0 节缺「一句话梗概/核心卖点」落位（B103 4.1 产物）——建议补（候选提示，请人工确认）")
 
-    # ---------- l. candidate：参考档案完整性（B103：设定/参考/*.md 九段 schema 存在性） ----------
+    # ---------- l0. candidate：参考档案完整性（B103：设定/参考/*.md 九段 schema 存在性） ----------
     ref_dir = project / "设定" / "参考"
     if ref_dir.is_dir():
         for ref_file in sorted(ref_dir.glob("*.md")):

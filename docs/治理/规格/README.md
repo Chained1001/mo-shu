@@ -66,6 +66,16 @@
 6. **规格侧正确性（第六查）**：抽验**规格自身**的锚点与数字 vs 当前实测——「现状事实」的预算基线/文件计数/版本值/盘点数抽 2-3 项 grep/实测复核（防过时基线随规格流入施工与审核——B65 组基线、PRD 盘点两起实证，均系旗舰起草时未当刻实测）；另核对偏差记录：凡施工中发现「规格与实测不符」处必须有偏差申报或待决记录，**静默按实测执行=违规打回**。
 7. **agent 模板零改动声明对照（第七查，B76.5 整改 R4 增设）**：规格/施工日志声明「零 agent 模板变更」的批次，`git show --stat` 对照 `skills/moshu-setup/references/templates/agents/` 实 diff（零差异才算守住；B76d 改 2 模板称谓未 bump 漏抓实证——F2）；**全套守卫固定成员**：涉及部署面的批次，`bash scripts/check-agents-version-sync.sh`（登记指纹 vs 实测+agents_version 全链一致）列入验收守卫矩阵必跑项，改 templates/agent-references/deploy.py/merge-claude-settings.py 即同批 bump+UPGRADING+指纹重登记（宪法 §3.3）。
 
+### 风险分级审查（B104 起生效——按改动风险选择审查深度，低风险不重复全量复跑）
+
+| 级别 | 触发条件（任一命中即该级） | 审查动作 |
+|---|---|---|
+| 🔴 高风险 | ①agent 模板改动（templates/agents/）②schema/机检脚本改动（check_outline/tracking_commit）③跨技能接口改动（文件路径/spawn 契约）④新脚本或守卫⑤部署物改动（CLAUDE.tmpl/deploy.py） | **全量独立复跑**规格验收命令全套+git diff agent 模板+指纹+test 套件 |
+| 🟡 中风险 | ①方法论/参考文件内容改动（references/*.md）②shared 副本改动（sync 涉面）③progress-template/workflow 本体改动④AGENTS.md/宪法改动 | **git diff 目标文件**+targeted grep（改动声明的关键词）+sync 检查+doc-budget |
+| 🟢 低风险 | ①纯文档（术语表/PRD/CHANGELOG/施工日志/规格本体）②代码注释/格式修复③测试夹具更新 | **git stat 范围核对**+grep 旧词清零哨兵 |
+
+**执行规则**：一批含多级改动时——按最高级别走；🔴项独立复跑、🟡🟢项可合并 diff 审查。审核记录标注各级别项数与所用审查方式。
+
 审核产出追加到 `docs/治理/审核记录.md`（单文件按批分节）：结论（通过/有条件通过+条件/打回+问题清单，每条带证据路径）→ flash 在同文件对应批次的"整改回执"小节逐条回执。**审核记录与规格同级别，flash 不得修改除"整改回执"小节外的任何内容。**
 
 ## 7. 环境须知
