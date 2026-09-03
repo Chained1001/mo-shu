@@ -22,7 +22,7 @@ description: "故事架构技能——开书的故事层设计。基本设定（
 
 - 流程权威：`references/workflow-outline.md`（Stage 1-4 主流程）
 - 基本设定表模板：`references/core-setting-template.md`（含成品标尺段——evaluator 打分锚点）
-- 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`
+- 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/character-construction.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`
 
 ## 交接
 
