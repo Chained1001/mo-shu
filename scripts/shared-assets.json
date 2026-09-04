@@ -184,10 +184,11 @@
     },
     {
       "name": "reversal-toolkit-reference",
-      "source": "skills/moshu-write/references/reversal-toolkit.md",
+      "source": "skills/moshu-outline/references/reversal-toolkit.md",
       "targets": [
         "skills/moshu-setup/references/agent-references/reversal-toolkit.md",
-        "skills/moshu-volume/references/reversal-toolkit.md"
+        "skills/moshu-volume/references/reversal-toolkit.md",
+        "skills/moshu-write/references/reversal-toolkit.md"
       ]
     },
     {
@@ -594,6 +595,14 @@
       "source": "skills/moshu-write/references/plot-troubleshooting.md",
       "targets": [
         "skills/moshu-volume/references/plot-troubleshooting.md"
+      ]
+    },
+    {
+      "name": "progress-template-reference",
+      "source": "skills/moshu-outline/references/progress-template.md",
+      "targets": [
+        "skills/moshu-volume/references/progress-template.md",
+        "skills/moshu-write/references/progress-template.md"
       ]
     }
   ]
