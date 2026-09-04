@@ -75,22 +75,7 @@ echo "========== run-regressions.sh（本地回归全跑） =========="
 echo "共 $total 个 test 文件（SKIP 清单 $(( ${#SKIP[@]} )) 项）"
 echo
 
-# ---------- step 0：PRD 轻量 lint（C4/C6 降级版，作者裁定 2026-09-01） ----------
-echo "[PRD lint] grep 退役词（理想书评/虚拟对标/moshu-deslop/moshu dashboard）…"
-PRD="docs/mo-shu项目-产品需求与详细设计文档（PRD+FSD）.md"
-prd_hits=$(grep -n "理想书评\|虚拟对标\|moshu-deslop\|moshu dashboard" "$PRD" 2>/dev/null \
-  | grep -v "^[0-9]*:v2\." \
-  | grep -v "收口\|退役\|已删" || true)
-if [ -n "$prd_hits" ]; then
-  echo "  [PRD lint] 命中退役词（历史版本行 v2. 前缀与迁移注记已排除）："
-  echo "$prd_hits"
-  failed=$((failed + 1))
-  failures="$failures
-  PRD lint: 退役词残留（见上）"
-else
-  echo "  [PRD lint] 零命中 ✓"
-fi
-echo
+# ---------- step 0：PRD lint 已退役（2026-09-04 作者裁定 PRD 归档——lint 使命终结；原逻辑因归档静默假绿，故整段移除） ----------
 
 # ---------- 逐项跑 ----------
 i=0
