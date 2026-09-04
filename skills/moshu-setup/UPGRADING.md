@@ -3,11 +3,13 @@
 ## 当前版本
 
 - `setup_skill_version: 1.5.1`
-- `agents_version: 48`
+- `agents_version: 49`
 
 > **别名注记（版本地图乱点②处置）**：sentinel 字段 `setup_skill_version` 与 moshu-setup SKILL.md frontmatter `version` 是**同一版本号的两个名字**（别名关系，值恒等）——`bump-agents-version.py --setup-version` 唯一合法修改；deploy.py verify 校验 sentinel 写入值 == 常量、TS10 校验 frontmatter == current-contract，双向一致。
 
-`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `48`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `48`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v48 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+`.story-deployed` 缺失任一字段，或 `agents_version` 缺失 / 非整数 / 小于 `49`，都视为待更新部署。直接重新运行 `/moshu-setup`；不在运行时逐级兼容历史模板。如项目 `agents_version` 大于 `49`，说明本地 moshu-setup 比项目旧：先更新 mo-shu，不得用 v49 降级覆盖。历史版本改动见仓库根目录 `CHANGELOG.md`。
+
+**v48 → v49 变更**：B107 大纲流程施工批——evaluator 模板**新增 panel 型**（三评委面板：读者/编辑/作家三视角+关注面+判据内置[reader-contract/outline-structure-theory/plot-frameworks/genre-core-mechanics/reversal-toolkit]+结构化输出；moshu-outline 打磨阶段 spawn 用）；researcher 模板**新增采风专用模式节**（type=caifeng/survey 四域检查单+九段/八节产物 schema+源优先级内嵌——spawn 只传对象+模式）。agent 模板变更，重跑 `/moshu-setup` 并新开会话后生效。
 
 **v47 → v48 变更**：B103 大纲阶段重构——evaluator 模板新增「故事核心设计/草稿验收」对象行+「大纲打磨（5.2 质量审）」质量面行+benchmark_path 改 `设定/基本设定.md`（旧书回退题材定位.md）；researcher 模板改分层引用（内嵌六节骨架→指向 caifeng-outline.md schema）+产物路径三路（设定/参考/{书}.md+设定/采风/CF-*.md+设定/资料/{专题}.md）。agent 模板变更，重跑 `/moshu-setup` 并新开会话后生效。
 
@@ -132,7 +134,7 @@
 ## 升级步骤
 
 1. 在项目根目录重新运行 moshu-setup。
-2. 确认 `.story-deployed` 写入 `agents_version: 48` 与 `setup_skill_version: 1.5.1`。
+2. 确认 `.story-deployed` 写入 `agents_version: 49` 与 `setup_skill_version: 1.5.1`。
 3. 确认目标 CLI 的 agents、hooks/rules 和 reference bundle 都通过安装验证。
 4. 新开会话，使 custom agents 与 hooks 按当前文件重新注册。
 5. **长篇在写项目必做**：检查每本书的 `追踪/_tracking-state.json` 是否存在。不存在就是旧追踪结构，按下方「追踪模型迁移」重建，否则写下一章会被拦。

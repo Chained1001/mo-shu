@@ -61,7 +61,8 @@
             "检查范围"
           ]
         }
-      ]
+      ],
+      "call_points": []
     },
     {
       "name": "moshu-architect",
@@ -110,7 +111,8 @@
           "context": "lean 模式",
           "required_params": []
         }
-      ]
+      ],
+      "call_points": []
     },
     {
       "name": "moshu-character-designer",
@@ -131,7 +133,8 @@
             "任务类型"
           ]
         }
-      ]
+      ],
+      "call_points": []
     },
     {
       "name": "moshu-consistency-checker",
@@ -162,7 +165,8 @@
           "context": "lean 模式",
           "required_params": []
         }
-      ]
+      ],
+      "call_points": []
     },
     {
       "name": "moshu-evaluator",
@@ -251,7 +255,8 @@
             "eval_type=reader"
           ]
         }
-      ]
+      ],
+      "call_points": []
     },
     {
       "name": "moshu-explorer",
@@ -302,7 +307,8 @@
           "context": "审查预查询（可选）",
           "required_params": []
         }
-      ]
+      ],
+      "call_points": []
     },
     {
       "name": "moshu-chapter-extractor",
@@ -323,7 +329,8 @@
           "context": "Stage 2-2 并行拆解",
           "required_params": []
         }
-      ]
+      ],
+      "call_points": []
     },
     {
       "name": "moshu-researcher",
@@ -342,8 +349,8 @@
       "callers": [
         {
           "file": "skills/moshu-outline/references/workflow-outline.md",
-          "must_contain": "spawn moshu-researcher（必含条款+CDP 预检",
-          "context": "Stage 2 素材收集三域深采（B103 四 Stage）",
+          "must_contain": "spawn moshu-researcher（type=caifeng",
+          "context": "Stage 2 素材收集三域深采（B107 四步——采风专用模式节内嵌 researcher 模板）",
           "required_params": [
             "query"
           ]
@@ -389,18 +396,13 @@
           "required_params": []
         },
         {
-          "file": "skills/moshu-outline/references/workflow-outline.md",
-          "must_contain": "caifeng-fusion",
-          "context": "B81 深度融合触发点（Stage 1 采风默认执行句尾）",
-          "required_params": []
-        },
-        {
           "file": "skills/moshu-volume/references/caifeng-volume.md",
           "must_contain": "caifeng-fusion",
           "context": "B81 融合模式操作说明（轻重分治判据）",
           "required_params": []
         }
-      ]
+      ],
+      "call_points": []
     }
   ]
 }
