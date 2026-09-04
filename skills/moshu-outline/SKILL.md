@@ -1,7 +1,7 @@
 ---
 name: moshu-outline
 version: 1.0.0
-description: "故事架构技能——开书的故事层设计。基本设定（含成品标尺）、世界观、人物设计、全书大纲（大纲/大纲.md）。触发方式：/moshu-outline、开书、设计故事、搭大纲、建世界观、人物设计。产出设定/ 和 大纲/大纲.md；卷纲归 /moshu-volume、细纲与正文归 /moshu-write。"
+description: "故事架构技能——开书的故事层设计。基本设定（含品类参考）、世界观、人物设计、全书大纲（大纲/大纲.md）。触发方式：/moshu-outline、开书、设计故事、搭大纲、建世界观、人物设计。产出设定/ 和 大纲/大纲.md；卷纲归 /moshu-volume、细纲与正文归 /moshu-write。"
 ---
 
 # moshu-outline：故事架构（开书的故事层）
@@ -12,7 +12,7 @@ description: "故事架构技能——开书的故事层设计。基本设定（
 
 - 创建（产出）：`设定/基本设定.md`（含标尺节）、`设定/角色/*`（含关系.md⑲）、`设定/势力`、`设定/世界观`、`大纲/大纲.md`（十节+每卷一段话）；`创作进度.md`（项目根）；正文教训档案空启⑱㉔
 - 读取（消费）：`拆文库/{书}/概要.md`、`拆文库/{书}/角色卡`（对话 DNA 带入）；题材卡写法参照按需跨技能只读 moshu-volume 技能的 genre-prose-cards 题材卡目录（文件即接口，B76 拆分声明）
-- 边界：本技能创建 `设定/*` 故事层档案与 `大纲/大纲.md`；卷纲（`大纲/卷纲_第X卷.md`）归 /moshu-volume；细纲与正文归 /moshu-write
+- 边界：本技能创建 `设定/*` 故事层档案与 `大纲/大纲.md`；卷纲（`大纲/卷纲_第X卷.md`）归 /moshu-volume（卷纲模板=volume 侧 volume-outline-template）；细纲与正文归 /moshu-write
 
 ## 采风触发面
 
@@ -21,8 +21,10 @@ description: "故事架构技能——开书的故事层设计。基本设定（
 ## 流程文件
 
 - 流程权威：`references/workflow-outline.md`（Stage 1-4 主流程）
-- 基本设定表模板：`references/core-setting-template.md`（含成品标尺段——evaluator 打分锚点）
-- 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/character-construction.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`
+- 基本设定表模板：`references/core-setting-template.md`（含品类参考段——evaluator 参照锚点，非评分标准）
+- 创作进度模板：`references/progress-template.md`（检查单制 v3——三技能共用源，volume/write 同步副本）
+- 世界观问句件：`references/worldview-design.md`（四件设计问句骨架版——4.2 每次必读）
+- 骨架与人物方法论：`references/character-basics.md`、`references/character-design-methods.md`、`references/character-relations.md`、`references/character-construction.md`、`references/genre-core-mechanics.md`、`references/plot-frameworks.md`、`references/genre-catalog.md`、`references/reader-contract-and-progression.md`、`references/reversal-toolkit.md`、`references/opening-design.md`、`references/genre-writing-formulas.md`
 
 ## 交接
 

@@ -128,8 +128,8 @@
     },
     {
       "path": "skills/moshu-outline/SKILL.md",
-      "budget": 1360,
-      "why": "故事架构技能薄壳（B76 新建：读写面/采风触发面/流程文件/交接），实测 1215×1.05 取整；B101 采风触发面更新（主采风=Stage 2 备料步四路合并跑）：实测 1298，1280→1300；B103 采风触发面更新（素材收集 L1 手册引用）：实测 1302，1300→1310；候选处置（2026-09-03）：方法论索引补链 character-construction.md（dead-reference 清零——B102-B105 推送任务遗留候选裁定）：实测 1345，1310→1360"
+      "budget": 1710,
+      "why": "故事架构技能薄壳（B76 新建：读写面/采风触发面/流程文件/交接），实测 1215×1.05 取整；B101 采风触发面更新（主采风=Stage 2 备料步四路合并跑）：实测 1298，1280→1300；B103 采风触发面更新（素材收集 L1 手册引用）：实测 1302，1300→1310；候选处置（2026-09-03）：方法论索引补链 character-construction.md（dead-reference 清零——B102-B105 推送任务遗留候选裁定）：实测 1345，1310→1360；B107-E6（2026-09-05）：索引接线五件[progress-template+worldview-design 两模板行+reversal-toolkit/opening-design/genre-writing-formulas 三件子步 3 丢链回接]+品类参考更名两处+卷纲模板纯文字指针——dead-reference 5→2（outline 域清零）：实测 1625，1360→1710"
     },
     {
       "path": "skills/moshu-volume/SKILL.md",
