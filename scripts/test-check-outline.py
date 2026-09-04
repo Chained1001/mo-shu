@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """test-check-outline.py — check_outline.py 正式回归测试
 
-守护对象：大纲机检脚本（B18 批）——blocking 九项（结构完备/八列/行数/字数容差/占比/台阶算术/底牌/伏笔闭合）+candidate 四项（单链条提示/采风专名比对/常驻压力/反转覆盖）+版本兼容降级（旧结构不误伤；B102 增：十节结构/旧十列 OLD10 降级/采风子目录与基本设定双路径）。
+守护对象：大纲机检脚本（B18 批；B107 子步 1 适配）——十三列代际全套 blocking（结构完备/十三列/行数/字数容差/占比/台阶算术/底牌登记位/伏笔闭合/暗线表+反转谱表两子节/主要人物节）+candidate（单链条提示/采风专名比对/常驻压力/反转覆盖/新三列空占位）+版本兼容降级（B102 前两表 OLD10 降级、B102-B106 十列代际降级、旧结构降级——老书不误伤）。
 禁：断言实现细节/真实上游/脆弱快照；fixture 自清理（tempfile）。
 退出码语义：0=通过（含仅 candidate）；1=blocking 违规；2=参数/读文件错误。
 """
@@ -70,7 +70,8 @@ OLD10_COMPLIANT = """# 大纲（测试书·B102 前十列两表结构）
 """
 
 
-COMPLIANT = (
+# B102-B106 十列代际（B104 版 COMPLIANT 原样保留——现作十列降级用例 fixture）
+GEN1_TENCOL = (
     OLD10_COMPLIANT
     .replace(
         """## 全书体量与阶段总览
@@ -117,6 +118,87 @@ COMPLIANT = (
 )
 
 
+# B107 十三列现行为代际 fixture（GEN1 十列升级：+3 列/第 7 节两子节/第 9 节主要人物/第 3 节两行/第 4 节登记位）
+COMPLIANT = (
+    GEN1_TENCOL
+    .replace(
+        "# 大纲（测试书·B104 十节结构）\n",
+        "# 大纲（测试书·B107 十三列结构）\n",
+    )
+    .replace(
+        "核心卖点：金手指+主角+模式浓缩。\n",
+        "核心卖点：金手指+主角+模式浓缩。\n支柱场面清单：①开局钩——主角当众受辱立誓 ②中段爆点——师门血案真凶半揭 ③结局画面——与终极阻碍终局对质\n",
+    )
+    .replace(
+        "| 卷末跃迁 | 字数 |",
+        "| 卷末跃迁 | 字数 | 本卷反转 | 关系变化 | 爽点类型 |",
+    )
+    .replace(
+        "|---|---|---|---|---|---|---|---|---|---|",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|---|",
+    )
+    .replace(
+        "| 1｜开卷 | 主角被迫查案 | 反派A（私人纠缠） | 心理死亡 | 假胜 | 揭穿阴谋 | 师门旧案配角入场 | 反派A为何针对主角 | 自保→反击 | 50 |",
+        "| 1｜开卷 | 主角被迫查案 | 反派A（私人纠缠） | 心理死亡 | 假胜 | 揭穿阴谋 | 师门旧案配角入场 | 反派A为何针对主角 | 自保→反击 | 50 | 无 | 师门信任→同盟反目 | 打脸 |",
+    )
+    .replace(
+        "| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |",
+        "| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 | 师尊未死反为主使 | 盟友转敌 | 装逼 |",
+    )
+    .replace(
+        "| 金手指首显威 | 8-12 | 探案中首次动用 |\n",
+        "| 金手指首显威 | 8-12 | 探案中首次动用 |\n| 必备场景·真相对质 | 投射第 20 章 → 兑现第 90 章 | 主角与反派当面对质 |\n| 宏观悬念句·谁灭了师门 | 全书 | 逐卷半揭（对表第 7 节暗线表） |\n",
+    )
+    .replace(
+        "- 底牌四（解锁卷 2）\n",
+        "- 底牌四（解锁卷 2）\n- 最终抉择：查清真相 vs 保住师门仅存名义\n- 剥夺清单：金手指外壳（终局战前失效）\n- 收梗方式：大梗专章收｜小梗配角一句交代\n- 终局牺牲：放弃为师门复仇的私刑权\n",
+    )
+    .replace(
+        "- 50 档 × 2 卷\n",
+        "- 50 档 × 2 卷\n- 赌注三通道：情节赌注扩（师门案→藩王案）｜人物赌注扩（失孤→失义）｜社会赌注扩（江湖→庙堂）\n",
+    )
+    .replace(
+        "| 丙 | 目的C | 盟友 | 与甲博弈 | 1-2 |\n",
+        "| 丙 | 目的C | 盟友 | 与甲博弈 | 1-2 |\n\n- 阻力三维度对照：数量 3 层（恶霸→帮派→藩王）｜类型 外部敌人+内心挣扎交替｜递增 每卷加码\n",
+    )
+    .replace(
+        """## 暗线设计
+| 层次 | 内容 | 读者感知节奏 | 主角知晓节奏 | 揭示卷 |
+|---|---|---|---|---|
+| 暗线一 | 身世之谜 | 第2卷闻到味/第4卷揭半层 | 主角先不知 | 卷9 |
+""",
+        """## 第 7 节 暗线与反转谱
+
+### 暗线表
+| 线名 | 埋设章 | 揭示章 | 必收性 | 知情关系 | 承载人物 |
+|---|---|---|---|---|---|
+| 暗线一·身世 | 第5章 | 第95章 | 主线必收 | 悬念 | 主角 |
+
+### 反转谱表
+| 位置 | 等级 | 翻转内容（以为A实际B） | 误导手段 | 链式关系 |
+|---|---|---|---|---|
+| 第2卷中点 | 卷级大 | 以为师尊被害实际师尊是主使 | 视角限知 | 本次揭示=终局级伏笔 |
+""",
+    )
+    .replace(
+        """## 核心角色五件套（B104 十节补全）
+| 角色 | 目标 | 抱负 | 价值观冲突 | 顿悟 |
+|---|---|---|---|---|
+| 主角 | 查案 | 复仇 | 正义 vs 私仇 | 放过 |""",
+        """## 第 9 节 主要人物
+
+- **主角·陈砚**：他是谁：灭门幸存的少年捕快｜与主角关系轴：自体——欲望复仇与需求放下的错位｜弧线起点→终点：从信以杀止杀到信法理昭雪
+- **主角弧线卷级分解**：卷1 自保→反击｜卷2 反击→顿悟放过
+
+（五件套功能索引）
+
+| 角色 | 目标 | 动机（为什么是他） | 价值观冲突 | 顿悟 |
+|---|---|---|---|---|
+| 主角 | 查案 | 凶案只与他身世相关 | 正义 vs 私仇 | 放过 |""",
+    )
+)
+
+
 def run_check(project: Path) -> tuple[int, dict]:
     r = subprocess.run([PY, str(SCRIPT), "--project", str(project)], capture_output=True, text=True, encoding="utf-8")
     try:
@@ -157,8 +239,9 @@ def test_missing_midpoint(tmp: Path) -> None:
 
 
 def test_wordcount_drift(tmp: Path) -> None:
-    outline = COMPLIANT.replace("| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 |",
-                                "| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 反击→终局 | 80 |")
+    outline = COMPLIANT.replace(
+        "| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 盟友丙入场 | 底牌先导 | 反击→终局 | 50 | 师尊未死反为主使 | 盟友转敌 | 装逼 |",
+        "| 2｜终卷 | 主角对决势力 | 反派B（私人纠缠） | 职业死亡 | 假败 | 清算合流 | 反击→终局 | 80 |")
     project = write_project(tmp, "words", outline)
     code, payload = run_check(project)
     assert code == 1 and any("字数加总" in b for b in payload["blocking"]), f"字数超 ±5% 应 blocking: {payload}"
@@ -173,7 +256,18 @@ def test_dangling_foreshadow(tmp: Path) -> None:
 
 
 def test_missing_section(tmp: Path) -> None:
-    outline = COMPLIANT.replace("## 终局底牌\n- 底牌一（解锁卷 2）\n- 底牌二（解锁卷 2）\n- 底牌三（解锁卷 2）\n- 底牌四（解锁卷 2）\n\n", "")
+    outline = COMPLIANT.replace(
+        """## 终局底牌
+- 底牌一（解锁卷 2）
+- 底牌二（解锁卷 2）
+- 底牌三（解锁卷 2）
+- 底牌四（解锁卷 2）
+- 最终抉择：查清真相 vs 保住师门仅存名义
+- 剥夺清单：金手指外壳（终局战前失效）
+- 收梗方式：大梗专章收｜小梗配角一句交代
+- 终局牺牲：放弃为师门复仇的私刑权
+
+""", "")
     project = write_project(tmp, "missing", outline)
     code, payload = run_check(project)
     assert code == 1 and any("必备节缺失" in b for b in payload["blocking"]), f"删整节应 blocking: {payload}"
@@ -185,6 +279,23 @@ def test_old10_structure_downgrade(tmp: Path) -> None:
     code, payload = run_check(project)
     assert code == 0, f"旧十列结构应降级 exit 0，实得 {code}: {payload}"
     assert any("B102 前十列两表" in c for c in payload["candidate"]), f"旧十列应出 OLD10 候选: {payload}"
+
+
+def test_tencol_gen1_downgrade(tmp: Path) -> None:
+    # B107：B102-B106 十列代际 → 十列降级升级建议 candidate，exit 0（老书兼容——不再 blocking）
+    project = write_project(tmp, "gen1", GEN1_TENCOL)
+    code, payload = run_check(project)
+    assert code == 0, f"十列代际应降级 exit 0，实得 {code}: {payload}"
+    assert any("B107 前十列" in c for c in payload["candidate"]), f"十列代际应出降级候选: {payload}"
+
+
+def test_newcol_placeholder(tmp: Path) -> None:
+    # B107：新三列「—」占位 → candidate 提示（不 blocking，允许空）
+    outline = COMPLIANT.replace("| 无 | 师门信任→同盟反目 | 打脸 |", "| — | — | — |")
+    project = write_project(tmp, "ph", outline)
+    code, payload = run_check(project)
+    assert code == 0, f"新列「—」占位应 exit 0，实得 {code}: {payload}"
+    assert any("新列" in c and "占位" in c for c in payload["candidate"]), f"应出新列占位候选: {payload}"
 
 
 def test_old_structure_downgrade(tmp: Path) -> None:
@@ -209,10 +320,28 @@ def test_missing_outline(tmp: Path) -> None:
 
 
 def test_missing_dark_section(tmp: Path) -> None:
-    outline = COMPLIANT.replace("## 暗线设计\n| 层次 | 内容 | 读者感知节奏 | 主角知晓节奏 | 揭示卷 |\n|---|---|---|---|---|\n| 暗线一 | 身世之谜 | 第2卷闻到味/第4卷揭半层 | 主角先不知 | 卷9 |\n\n", "")
+    outline = COMPLIANT.replace(
+        """### 暗线表
+| 线名 | 埋设章 | 揭示章 | 必收性 | 知情关系 | 承载人物 |
+|---|---|---|---|---|---|
+| 暗线一·身世 | 第5章 | 第95章 | 主线必收 | 悬念 | 主角 |
+
+""", "")
     project = write_project(tmp, "noad", outline)
     code, payload = run_check(project)
-    assert code == 1 and any("暗线设计" in b for b in payload["blocking"]), f"缺暗线设计节应 blocking: {payload}"
+    assert code == 1 and any("暗线表" in b for b in payload["blocking"]), f"缺暗线表子节应 blocking: {payload}"
+
+
+def test_missing_reversal_section(tmp: Path) -> None:
+    outline = COMPLIANT.replace(
+        """### 反转谱表
+| 位置 | 等级 | 翻转内容（以为A实际B） | 误导手段 | 链式关系 |
+|---|---|---|---|---|
+| 第2卷中点 | 卷级大 | 以为师尊被害实际师尊是主使 | 视角限知 | 本次揭示=终局级伏笔 |
+""", "")
+    project = write_project(tmp, "norv", outline)
+    code, payload = run_check(project)
+    assert code == 1 and any("反转谱表" in b for b in payload["blocking"]), f"缺反转谱表子节应 blocking: {payload}"
 
 
 def test_missing_branch_section(tmp: Path) -> None:
@@ -292,28 +421,28 @@ def test_power_paren_suffix(tmp: Path) -> None:
 
 
 def test_virtual_benchmark_unconsumed(tmp: Path) -> None:
-    # B53/B94：题材定位.md 成品标尺节存在但大纲零引用其锚点关键词 → candidate 且 exit 0
+    # B53/B94：基本设定品类参考节存在但大纲零引用其锚点关键词 → candidate 且 exit 0（B107 更名）
     project = write_project(tmp, "vbench", COMPLIANT)
     (project / "设定").mkdir()
     (project / "设定" / "基本设定.md").write_text(
-        "# 基本设定\n## 成品标尺\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n- 伏笔密度：每卷埋 4 条 / 收 3 条参考\n", encoding="utf-8")
+        "# 基本设定\n## 品类参考\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n- 伏笔密度：每卷埋 4 条 / 收 3 条参考\n", encoding="utf-8")
     code, payload = run_check(project)
-    assert code == 0, f"标尺未消费为 candidate，应 exit 0，实得 {code}: {payload}"
-    assert any("成品标尺" in c and "未被大纲引用" in c for c in payload["candidate"]), f"应出成品标尺未消费候选: {payload}"
+    assert code == 0, f"品类参考未消费为 candidate，应 exit 0，实得 {code}: {payload}"
+    assert any("品类参考" in c and "未被大纲引用" in c for c in payload["candidate"]), f"应出品类参考未消费候选: {payload}"
 
 
 def test_virtual_benchmark_consumed(tmp: Path) -> None:
-    # B53/B94：大纲显式引用成品标尺锚点（如「每 5 章一个小高潮」）→ 不出候选
+    # B53/B94：大纲显式引用品类参考锚点（如「每 5 章一个小高潮」）→ 不出候选
     outline = COMPLIANT.replace(
         "> 定稿：v1.0（2026-08-24，构建环）",
-        "> 定稿：v1.0（2026-08-24，构建环）\n> 参照成品标尺：每 5 章一个小高潮（全书节奏目标）")
+        "> 定稿：v1.0（2026-08-24，构建环）\n> 参照品类参考：每 5 章一个小高潮（全书节奏目标）")
     project = write_project(tmp, "vbenchok", outline)
     (project / "设定").mkdir()
-    (project / "设定" / "题材定位.md").write_text(
-        "# 题材定位\n## 成品标尺\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n", encoding="utf-8")
+    (project / "设定" / "基本设定.md").write_text(
+        "# 基本设定\n## 品类参考\n### 节奏目标\n- 爆发密度：每 5 章一个小高潮\n", encoding="utf-8")
     code, payload = run_check(project)
     assert code == 0, f"已消费应 exit 0，实得 {code}: {payload}"
-    assert not any("零引用" in c for c in payload["candidate"]), f"已引用不应报零引用候选: {payload}"
+    assert not any("未被大纲引用" in c for c in payload["candidate"]), f"已引用不应报未引用候选: {payload}"
 
 
 def test_event_edge_dangling(tmp: Path) -> None:
@@ -393,11 +522,14 @@ def main() -> None:
         test_dangling_foreshadow(work)
         test_missing_section(work)
         test_old10_structure_downgrade(work)
+        test_tencol_gen1_downgrade(work)
+        test_newcol_placeholder(work)
         test_old_structure_downgrade(work)
         test_missing_outline(work)
         test_harvest_proper_names(work)
         test_unconsumed_caifeng(work)
         test_missing_dark_section(work)
+        test_missing_reversal_section(work)
         test_missing_branch_section(work)
         test_percent_annotation_not_caught(work)
         test_ladder_chinese_quantifier(work)
@@ -411,7 +543,7 @@ def main() -> None:
         test_foreshadow_op_ok(work)
     finally:
         shutil.rmtree(work, ignore_errors=True)
-    print("OK: check_outline (合规 0 / 占比/中点/字数/F引用/删节 各 1 / 旧结构降级 0 / 缺文件 2 / 采风专名候选 / 缺暗线·支线 各 1 / 成品标尺未消费+已消费 / 事件边悬空+正常 / 伏笔操作悬空+合法)")
+    print("OK: check_outline (十三列合规 0 / 占比/中点/字数/F引用/删节 各 1 / OLD10+十列+旧结构 降级 3 / 新列占位 candidate / 缺文件 2 / 采风专名候选 / 缺暗线表·反转谱表·支线 各 1 / 品类参考未消费+已消费 / 事件边悬空+正常 / 伏笔操作悬空+合法)")
 
 
 if __name__ == "__main__":

@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """check_outline.py — 大纲确定性机检（blocking + candidate 两列，候选永不拦截）
 
-守护对象：B16 骨架六要素结构（每卷骨架表八列 / 对手梯队与势力场 / 常驻压力 / 终局底牌 / 升级台阶）的确定性校验。
+守护对象：B16 骨架六要素结构（每卷骨架表 / 对手梯队与势力场 / 常驻压力 / 终局底牌 / 升级台阶）的确定性校验。
 禁：LLM/联网（反模式 #8）；候选影响退出码（宪法 §2.7）；解析失败升级 blocking（宁可漏拦不可误伤）。
 纪律：断言跟 B16 模板走——模板变更须同批同步（清单类断言最易过期，本批纪律写进此头注）。
 B102：skeleton 十二节→十节（因果闭环表合并/体量总览并入骨架表合计尾注）；必备节缺失按结构代际降 candidate 不 blocking（老书不红）；基本设定/采风子目录双路径回退。
-版本兼容（B18 自审补丁）：检测到旧结构（无八列表头或缺新节）时，新节相关 blocking 断言整体降级为
-一条 candidate「大纲为 B16 前旧结构，建议升级」——不对存量旧项目误伤；八列表头齐全才启用全套 blocking。
+B107：骨架表十三列（+本卷反转/关系变化/爽点类型）为现行为代际——全套 blocking 只对十三列启用；
+第 7 节拆「暗线表+反转谱表」两子节（blocking 存在性）；第 9 节「核心角色五件套」升「主要人物」（blocking）；
+新三列允许空/「—」占位（candidate 提示，不 blocking）；B102-B106 十列代际整体降级 candidate（老书兼容升级提示）。
+版本兼容（B18 自审补丁）：检测到旧结构（无十三列/十列表头或缺新节）时，新节相关 blocking 断言整体降级为
+一条 candidate「大纲为旧版结构，建议升级」——不对存量旧项目误伤；十三列表头齐全才启用全套 blocking。
 退出码：0=通过（含仅 candidate）；1=blocking 违规；2=参数/读文件错误（读失败三分类：缺/空/坏）。
 """
 
@@ -22,8 +25,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
 HEADER_KEYWORDS = ["卷", "一句话", "对手", "赌注", "中点", "高潮", "群像", "钥匙", "跃迁", "字数"]
-REQUIRED_SECTIONS = ["每卷骨架表", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力", "卷间因果闭环", "承诺兑现时点", "核心角色五件套"]
+HEADER_KEYWORDS_13 = HEADER_KEYWORDS + ["本卷反转", "关系变化", "爽点类型"]
+REQUIRED_SECTIONS = ["每卷骨架表", "终局底牌", "升级台阶", "对手梯队与势力场", "常驻压力", "卷间因果闭环", "承诺兑现时点", "主要人物"]
 OLD10_STRUCTURE_CANDIDATE = "大纲为 B102 前十列两表结构，建议升级十节（因果闭环表合并、体量总览并入骨架表，见 skeleton-template）"
+TEN_COL_STRUCTURE_CANDIDATE = "大纲为 B107 前十列结构（B102-B106 代际），建议升级十三列——骨架表加本卷反转/关系变化/爽点类型列、第 7 节拆暗线表+反转谱表两子节、第 9 节升主要人物（见 skeleton-template）"
 OLD_STRUCTURE_CANDIDATE = "大纲为旧版结构，建议升级（补群像/钥匙列与卷间驱动链/承诺兑现时点节，见 skeleton-template）"
 SECTION_RE = re.compile(r"^#{1,4}\s+(.+?)\s*$")
 
@@ -110,51 +115,58 @@ def main() -> int:
     blocking: list[str] = []
     candidate: list[str] = []
 
-    # ---------- 版本兼容检测（B18 §二·五）：八列表头是否齐全 ----------
+    # ---------- 版本兼容检测（B18 §二·五；B107 代际门）：十三列（现行为）→全套 blocking；十列（B102-B106）→降级 candidate ----------
     skeleton_section = section_text(text, "每卷骨架表")
-    eight_col = False
+    thirteen_col = False
+    ten_col = False
     skeleton_tables: list[list[list[str]]] = []
     if skeleton_section:
         skeleton_tables = extract_tables(skeleton_section)
         for table in skeleton_tables:
-            if table and is_header_row(table[0], HEADER_KEYWORDS):
-                eight_col = True
+            if table and is_header_row(table[0], HEADER_KEYWORDS_13):
+                thirteen_col = True
                 break
+        if not thirteen_col:
+            for table in skeleton_tables:
+                if table and is_header_row(table[0], HEADER_KEYWORDS):
+                    ten_col = True
+                    break
 
-    # ---------- a. 必备节存在（B102 门细分：旧代际整体降级提示；新代际缺节才 blocking） ----------
+    # ---------- a. 必备节存在（B102 门细分：旧代际整体降级提示；十三列代际缺节才 blocking） ----------
     if "卷间驱动链" in text or "全书体量与阶段总览" in text:
         # B102 前十列两表结构（如 test1-5 存量）——只提示升级，老书不红
         candidate.append(OLD10_STRUCTURE_CANDIDATE)
         print(json.dumps({"ok": True, "blocking": [], "candidate": list(dict.fromkeys(candidate))}, ensure_ascii=False))
         return 0
 
-    missing_sections = [s for s in REQUIRED_SECTIONS if s not in text]
-    if missing_sections:
-        if eight_col:
-            blocking.append(f"必备节缺失：{('、'.join(missing_sections))}")
+    if not thirteen_col:
+        # B107 代际门：十列（B102-B106）与更旧结构整体降级为升级建议，不 blocking
+        if ten_col:
+            candidate.append(TEN_COL_STRUCTURE_CANDIDATE)
         else:
-            candidate.append(OLD_STRUCTURE_CANDIDATE)
-
-    if not eight_col:
-        # 旧结构：新节相关 blocking 整体降级为一条 candidate
-        if skeleton_section is None or "全书卷级鸟瞰" in text:
             candidate.append(OLD_STRUCTURE_CANDIDATE)
         print(json.dumps({"ok": True, "blocking": [], "candidate": list(dict.fromkeys(candidate))}, ensure_ascii=False))
         return 0
 
-    # ---------- b. 八列表头 + c. 行数/非空 ----------
-    skeleton_table = next((t for t in skeleton_tables if is_header_row(t[0], HEADER_KEYWORDS)), None)
+    missing_sections = [s for s in REQUIRED_SECTIONS if s not in text]
+    if missing_sections:
+        blocking.append(f"必备节缺失：{('、'.join(missing_sections))}")
+
+    # ---------- b. 十三列表头 + c. 行数/非空（新三列允许空/「—」占位→candidate） ----------
+    skeleton_table = next((t for t in skeleton_tables if is_header_row(t[0], HEADER_KEYWORDS_13)), None)
     if skeleton_table is None:
-        blocking.append("每卷骨架表未找到八列表头（卷/一句话/对手/赌注/中点/高潮/跃迁/字数）")
+        blocking.append("每卷骨架表未找到十三列表头（卷/一句话/对手/赌注/中点/高潮/跃迁/字数/本卷反转/关系变化/爽点类型）")
     else:
         data_rows = skeleton_table[1:]
         if not data_rows:
             blocking.append("每卷骨架表无数据行")
         for i, row in enumerate(data_rows, start=1):
-            if len(row) < 10:
-                blocking.append(f"骨架表第 {i} 行列数不足（{len(row)} < 10）")
+            if len(row) < 13:
+                blocking.append(f"骨架表第 {i} 行列数不足（{len(row)} < 13）")
             elif any(not c for c in row[:10]):
                 blocking.append(f"骨架表第 {i} 行存在空列")
+            elif any(row[j] in ("", "—") for j in range(10, 13) if j < len(row)):
+                candidate.append(f"骨架表第 {i} 行新列（本卷反转/关系变化/爽点类型）为空或「—」占位——建议补（候选提示，请人工确认）")
             # d. 中点列含假胜/假败
             midpoint = row[4] if len(row) > 4 else ""
             if midpoint and "假胜" not in midpoint and "假败" not in midpoint:
@@ -219,7 +231,8 @@ def main() -> int:
         if s:
             bottom_lines.append(s)
     if bottom_lines:
-        entries = [ln for ln in bottom_lines if re.search(r"(底牌|终局|解锁|卷)", ln)]
+        # B107：登记位行（最终抉择/剥夺清单/收梗方式/终局牺牲）不按底牌条目计——条目须点名底牌或带解锁卷标注
+        entries = [ln for ln in bottom_lines if re.search(r"(底牌|解锁|第\s*\d+\s*卷|卷\s*\d+)", ln)]
         if len(entries) < 4:
             blocking.append(f"终局底牌条目数 {len(entries)} < 4")
         for ln in entries:
@@ -241,33 +254,35 @@ def main() -> int:
         except OutlineError as exc:
             candidate.append(f"整合记录读取异常：{exc}")
 
-    # ---------- B20 扩展：暗线设计 / 支线登记（观察 017；断言与 B20 模板同批更新） ----------
-    dark_section = section_text(text, "暗线设计")
+    # ---------- B20/B107 扩展：第 7 节两子节（暗线表+反转谱表）/ 支线登记 ----------
+    dark_section = section_text(text, "暗线表")
+    reversal_section = section_text(text, "反转谱表")
     branch_section = section_text(text, "支线登记")
-    if eight_col:
-        if dark_section is None:
-            blocking.append("必备节缺失：暗线设计")
-        else:
-            dark_rows = [r for t in extract_tables(dark_section) for r in t[1:]]
-            if not dark_rows:
-                blocking.append("暗线设计层次表无数据行")
-            for row in dark_rows:
-                if len(row) > 2 and not row[2].strip():
-                    blocking.append("暗线设计层次表存在空节奏列（读者感知节奏）")
-                    break
-        if branch_section is None:
-            blocking.append("必备节缺失：支线登记")
-        else:
-            branch_tables = extract_tables(branch_section)
-            if branch_tables and not any("配角高光" in "".join(r) for r in branch_tables[0][:1]):
-                blocking.append("支线登记表头缺「配角高光」列（选填列，表头须在）")
-            branch_rows = [r for t in branch_tables for r in t[1:]]
-            if not branch_rows:
-                blocking.append("支线登记表无数据行")
-            for row in branch_rows:
-                if len(row) > 6 and not row[6].strip():
-                    blocking.append("支线登记表存在空收束卷列（无收束=坑）")
-                    break
+    if dark_section is None:
+        blocking.append("必备子节缺失：第 7 节须含「暗线表」子节（暗线与反转谱两表——见 skeleton-template）")
+    else:
+        dark_rows = [r for t in extract_tables(dark_section) for r in t[1:]]
+        if not dark_rows:
+            blocking.append("暗线表无数据行")
+    if reversal_section is None:
+        blocking.append("必备子节缺失：第 7 节须含「反转谱表」子节（暗线与反转谱两表——见 skeleton-template）")
+    else:
+        reversal_rows = [r for t in extract_tables(reversal_section) for r in t[1:]]
+        if not reversal_rows:
+            candidate.append("反转谱表暂无数据行——全书反转分布（等级/位置/链式）建议尽早规划（候选提示，请人工确认）")
+    if branch_section is None:
+        blocking.append("必备节缺失：支线登记")
+    else:
+        branch_tables = extract_tables(branch_section)
+        if branch_tables and not any("配角高光" in "".join(r) for r in branch_tables[0][:1]):
+            blocking.append("支线登记表头缺「配角高光」列（选填列，表头须在）")
+        branch_rows = [r for t in branch_tables for r in t[1:]]
+        if not branch_rows:
+            blocking.append("支线登记表无数据行")
+        for row in branch_rows:
+            if len(row) > 6 and not row[6].strip():
+                blocking.append("支线登记表存在空收束卷列（无收束=坑）")
+                break
     # candidate：大伏笔中间卷无半揭/误导
     if integration_path.exists() and dark_section:
         try:
@@ -372,7 +387,7 @@ def main() -> int:
         if not val or val in ("{}", "待补充", "TBD"):
             candidate.append("常驻压力行为空或占位，建议补充")
 
-    # ---------- B53/B94 candidate：成品标尺消费提示（题材定位.md 标尺节存在时） ----------
+    # ---------- B53/B94 candidate：品类参考消费提示（基本设定·品类参考节存在时；B107 更名） ----------
     benchmark_path = project / "设定" / "基本设定.md"
     if not benchmark_path.exists():  # B102 ㉓ 双路径：旧书回退题材定位
         benchmark_path = project / "设定" / "题材定位.md"
@@ -385,7 +400,7 @@ def main() -> int:
                 anchors = set(re.findall(r"每\s*\d+\s*章|伏笔密度|\d+\s*条", btext))
                 consumed = any(a in text for a in anchors) if anchors else None
                 if consumed is False:
-                    candidate.append("基本设定成品标尺未被大纲引用——可能未消费（候选提示，请人工确认）")
+                    candidate.append("基本设定品类参考未被大纲引用——可能未消费（候选提示，请人工确认）")
         except OutlineError as exc:
             candidate.append(f"基本设定标尺读取异常：{exc}")
 
