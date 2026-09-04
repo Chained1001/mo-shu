@@ -181,6 +181,26 @@ for f in scripts/check-*.sh; do
   fi
 done
 
+# 收编 .py 直跑守卫（无 .sh 包装、CI static-guards 直调者——消本地/CI 验收面漂移，B107 CI 红判因）
+# 清单维护纪律：CI static-guards 新增直调 .py 守卫时同批在此登记（与 8.1 三处同步同性质）。
+for f in scripts/check-methodology-wiring.py; do
+  [ -f "$f" ] || continue
+  check_total=$((check_total + 1))
+  name="$(basename "$f")"
+  python "$f" >/tmp/guard_$name.out 2>&1
+  rc=$?
+  if [ "$rc" -eq 0 ]; then
+    echo "[guard $check_total] $name … exit=$rc ✓"
+    check_passed=$((check_passed + 1))
+  else
+    echo "[guard $check_total] $name … exit=$rc ✗"
+    tail -5 "/tmp/guard_$name.out"
+    check_failed=$((check_failed + 1))
+    check_failures="$check_failures
+  $name: exit=$rc"
+  fi
+done
+
 # ---------- 汇总 ----------
 echo
 echo "========== 汇总 =========="
